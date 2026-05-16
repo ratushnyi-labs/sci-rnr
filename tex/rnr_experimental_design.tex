@@ -105,8 +105,9 @@ effect size on real data).
 \textbf{2.1 Type-I rate (Theorems 4.1, 4.2)}
 
 \textbf{H1 {[}quantifying{]}:} On English-language text and source code
-corpora, an RNR Type-I coder with the Code12 $E_{12}$-A mapping and a small
-(5--20 MB amortized) byte-level transformer predictor achieves coding
+corpora, an RNR Type-I coder with the Code12 $E_{12}$-A mapping and the
+shared 8--16 MB amortized byte-level transformer predictor (§4.3)
+achieves coding
 rate 1.5--2.0 bits per byte, competitive with LZMA at maximum preset
 (2.1--2.5 bpb) and behind NNCP (1.3--1.6 bpb). The gap to NNCP narrows
 under $E_{12}$-C (learned mapping).
@@ -197,9 +198,10 @@ $q$ is poorly fit. The theorem is unaffected.
 \textbf{H8 {[}confirming{]}:} A reference RNR implementation built to
 the conditions of Theorem 10.1 (integer arithmetic, deterministic
 non-linearity tables, fixed reduction order) produces byte-identical
-archive outputs across (a) x86-64 Linux with stock libc, (b) ARM64
-Linux on Apple Silicon, (c) RISC-V QEMU emulation, (d) Windows x86-64
-with MSVC runtime, on a 100-block test corpus.
+archive outputs across the six test platforms enumerated in §8.2
+(x86-64 Linux without AVX-512, x86-64 Linux with AVX-512, ARM64 Linux
+on Apple Silicon, ARM64 macOS, RISC-V via QEMU, Windows x86-64 with
+MSVC runtime), on a 100-block test corpus.
 
 \emph{Falsification:} if any platform produces a byte-divergent archive
 on any test block, the reference implementation does not meet Theorem
@@ -208,7 +210,7 @@ unaffected.
 
 \textbf{H9 {[}confirming{]}:} Online adaptation via a compatible
 integer-arithmetic optimizer (integer SGD, signSGD, or integer Adam per
-Definition 10.1) produces byte-identical archives across the same four
+Definition 10.1) produces byte-identical archives across the same six
 platforms as H8, after 1000 adaptation steps.
 
 \textbf{2.8 Random access scaling (Theorems 10.3, 10.4)}
@@ -257,8 +259,10 @@ squashfs+zstd on the same ISO.
 \textbf{H13 {[}confirming{]}:} Random 4 KiB reads issued via the mounted
 filesystem at uniformly random offsets show 95th-percentile latency
 below 100 milliseconds on CPU SIMD path, below 5 milliseconds on GPU
-path, and below 1 millisecond on NPU path, for a small distilled
-byte-level transformer predictor (10 to 50 million int8 parameters).
+path, and below 1 millisecond on NPU path, for a separately-trained
+small distilled byte-level transformer predictor (10 to 50 million
+int8 parameters, used here in place of the shared §4.3 predictor to
+exercise the lowest-latency NPU regime).
 
 \emph{Falsification:} if mounted-filesystem latency exceeds 5 times
 squashfs latency on any tested platform, the inference cost dominates
@@ -887,7 +891,7 @@ pre-registration, open artifacts, and explicit falsification criteria
 makes the resulting experimental paper falsifiable by independent
 replication. Whatever the outcome, the framework's theoretical content (the 27
 formal results in v0.8 --- 25 theorems, 1 lemma, and 1 proposition,
-plus 3 definitions and 1 remark) is unchanged by experimental
+plus 8 definitions and 1 remark) is unchanged by experimental
 outcomes; the empirical paper says only how well the framework's
 conditional predictions match natural-data reality.
 

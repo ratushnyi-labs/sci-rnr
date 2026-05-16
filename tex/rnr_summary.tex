@@ -134,8 +134,8 @@ complexity{]}}
 $\alpha$-approximation for optimal $E_{12}$ exists unless $P = NP$.
 
 \emph{Proof.} The QAP reduction in 4.3 is gap-preserving;
-Sahni-Gonzalez established no constant-factor PTAS for QAP unless
-$P = NP$. Inapproximability transfers.
+Sahni-Gonzalez established no constant-factor polynomial-time
+approximation for QAP unless $P = NP$. Inapproximability transfers.
 
 \emph{Why it matters.} Strengthens 4.3: even loose approximations
 are intractable. Defends the empirical, heuristic-based choice of
@@ -378,11 +378,15 @@ Slepian-Wolf bound. Cites BB-ANS and Bit-Swap.
 
 \begin{quote}
 \emph{Statement.} Joint dictionary-and-predictor learning is
-NP-hard, even when $M$ is fixed to the trivial constant predictor.
+NP-hard, even when $M$ is fixed to the trivial constant predictor and
+$D$ is restricted to the recursive (straight-line grammar) dictionary
+class.
 
-\emph{Proof.} Reduction from the Smallest Grammar Problem (Charikar et
-al. 2005): each grammar non-terminal corresponds to a dictionary token;
-MDL admission corresponds to grammar-rule selection.
+\emph{Proof.} Polynomial-time reduction from the Smallest Grammar
+Problem (Charikar et al. 2005): under the constant predictor on the
+recursive-$D$ class, the Type-III-C objective reduces to grammar
+size; the bijection between dictionaries and straight-line grammars
+preserves optimality.
 
 \emph{Why it matters.} Defends the heuristic nature of practical
 dictionary learning (BPE, MDL-greedy). Optimal learning is not
@@ -394,11 +398,13 @@ complexity{]}}
 
 \begin{quote}
 \emph{Statement.} Joint dictionary-and-predictor learning is
-APX-hard. An explicit inapproximability constant $\gamma > 1$
-follows from the Charikar et al. SGP bound.
+APX-hard: some constant $\gamma > 1$ exists such that no polynomial-
+time $\alpha$-approximation exists for $\alpha < \gamma$, unless
+$P = NP$ (the explicit numerical $\gamma$ is left open).
 
-\emph{Proof.} The SGP reduction in 6.7 is gap-preserving; Charikar et
-al. proved SGP has an explicit APX-hardness constant.
+\emph{Proof.} The SGP reduction in 6.7 transfers Charikar et al.'s
+APX-hardness of SGP up to the encoding-convention slack between
+symbol-count and bit-count objectives.
 
 \emph{Why it matters.} Strengthens 6.7: even constant-factor
 approximation is hard. Pairs with 4.4 to give the framework a complete
@@ -479,12 +485,11 @@ integer-valued, its update is a deterministic integer-to-integer
 function, and any non-integer operations are replaced by deterministic
 integer approximations.
 
-\emph{Proof.} Direct definition specifying integer-state,
-integer-update, and integer-approximation requirements.
+\emph{Examples.} Integer SGD, signSGD, integer Adam with reciprocal-
+square-root replaced by an integer-table lookup.
 
 \emph{Why it matters.} Names the class of optimizers that admit
-bit-exact reproduction. Published examples: integer SGD, signSGD,
-integer Adam.
+bit-exact reproduction. Required input to Theorem 10.2.
 \end{quote}
 
 \textbf{Theorem 10.2 (bit-exact adaptive predictors) ---
@@ -514,10 +519,9 @@ compatible optimizer.
 \emph{Statement.} $M$ is $W$-bounded if $M(C_i)$ depends only on the
 previous $W$ bytes of public context.
 
-\emph{Proof.} Architectural condition: satisfied by transformers with
-fixed context window, $n$-gram and finite-state models, any
-feedforward predictor with bounded receptive field. Not satisfied by
-RNNs, LSTMs, or state-space models.
+\emph{Examples.} Transformers with fixed context window, $n$-gram and
+finite-state models, any feedforward predictor with bounded receptive
+field. Not satisfied by RNNs, LSTMs, or state-space models.
 
 \emph{Why it matters.} Enables the random-access theorem. The
 bounded-context property is what makes seek-and-read work with cost
@@ -531,7 +535,7 @@ polylogarithmic in archive size.
 reset to a known initial value, with the encoder maintaining a seek
 index from sync point identifier to bit offset in $R$.
 
-\emph{Proof.} Construction: encoder inserts sync points every $K$
+\emph{Construction.} Encoder inserts sync points every $K$
 positions and writes a per-sync index in the archive footer.
 
 \emph{Why it matters.} The seek-and-read mechanism. Sync-point
@@ -554,7 +558,8 @@ $O((K + k) \cdot \mathrm{cost}(M))$; output the requested bytes.
 
 \emph{Why it matters.} The kill feature relative to other neural
 compressors. NNCP, PixelCNN++, and Bit-Swap require $O(N)$ time per
-access; RNR achieves $O(K + k)$ at less than 1\% ratio overhead.
+access; RNR achieves $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$
+at approximately 1\% ratio overhead.
 Matches bgzip and zstd seekable for speed while preserving neural
 ratio.
 \end{quote}
