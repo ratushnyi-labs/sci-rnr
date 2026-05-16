@@ -288,7 +288,7 @@ This article makes the following contributions.
   approximately 1 percent for typical parameters. This functionality is
   absent from existing neural compressors (NNCP, PixelCNN++, Bit-Swap)
   and matches the seek capability of dictionary-based seekable formats
-  while preserving the neural ratio advantage. Corollary 10.4 covers
+  while preserving the neural ratio advantage. Theorem 10.4 covers
   non-W-bounded predictors via state snapshots.
 \item
   Block-device and read-only filesystem deployment with hardware-target
@@ -1154,7 +1154,7 @@ prefix of positions sorted by Q\_v(i), and (b) the support-set
 construction is at best equivalent to per-position arithmetic coding
 under Q.
 
-\textbf{Theorem 5.5 (Optimal support is a prefix; arithmetic coding is
+\textbf{Proposition 5.5 (Optimal support is a prefix; arithmetic coding is
 the limit).} \emph{Fix a symbol v and a predictor Q with positions
 sorted in decreasing order of Q\_v(i). Among all support sets S\_v of
 any size, the choice that minimizes the expected Theorem 5.3 residual
@@ -1565,7 +1565,7 @@ per‑tile best mode varies.
 
 Several parameters in the framework are input-dependent: the codeword
 rate k in Type-I (Code-k), the alphabet size K in Type-II, the support
-threshold tau\_v in Theorem 5.5, the tile size in Type-III-A, the
+threshold tau\_v in Proposition 5.5, the tile size in Type-III-A, the
 dictionary size in Type-III-C, and others. No single setting is optimal
 across all inputs; the right approach is input probing at encode time,
 where the encoder scans the block, estimates the relevant structural
@@ -1882,7 +1882,7 @@ Transformers with fixed context window W are W-bounded, as are n-gram
 and finite-state predictors of order W and any feedforward architecture
 with bounded receptive field. RNNs, LSTMs, GRUs, and state-space models
 (Mamba, S4) are not W-bounded in general; their state can depend on
-arbitrarily long history. Corollary 10.4 below covers the non-W-bounded
+arbitrarily long history. Theorem 10.4 below covers the non-W-bounded
 case via state snapshots.
 
 \textbf{Definition 10.3 (Sync point).} A sync point at position P in the
@@ -2460,7 +2460,7 @@ point to the relevant theorems.
   Random access (seek-and-read) into a compressed archive in time
   independent of archive size --- resolved by Definitions 10.2
   (W-bounded predictor) and 10.3 (sync point) and Theorem 10.3 (random
-  access in O(K + k) time), with Corollary 10.4 covering non-W-bounded
+  access in O(K + k) time), with Theorem 10.4 covering non-W-bounded
   predictors via state snapshots. This is the
   framework\textquotesingle s deployment-grade distinguishing feature
   relative to other neural compressors, which lack random-access support
