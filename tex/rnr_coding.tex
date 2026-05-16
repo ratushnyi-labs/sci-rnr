@@ -83,7 +83,7 @@ semi-non-factorized Type-II via linear codes, generalized to any
 source by the multi-information identity $\mathrm{TC}(D_N)$; and a
 tight $2\varepsilon$ approximate-oracle bound for Type-III-A mode
 selection. The framework's deployment-grade feature is random-access
-decoding in time independent of archive size for $W$-bounded
+decoding with cost polylogarithmic in archive size for $W$-bounded
 predictors, at a sync-point compression cost of approximately one
 percent --- matching dictionary-based seekable formats while
 preserving the neural-ratio advantage, a capability absent from
@@ -268,11 +268,11 @@ This article makes the following contributions.
   showing all rooted binary tree decompositions of the 256-byte
   alphabet achieve the same information-theoretic rate.
 \item
-  Complete characterization of Type-III-C: the MDL admission
+  Complete characterization of Type-III-C: the greedy MDL admission
   criterion (Theorem 6.5), the bits-back integration with an exact
   KL-divergence accounting (Theorem 6.6), NP-hardness of joint
-  dictionary-and-predictor learning (Theorem 6.7), and
-  inapproximability with an explicit constant transferred from the
+  dictionary-and-predictor learning (Theorem 6.7), and APX-hardness
+  transferred from the super-constant inapproximability of the
   Smallest Grammar Problem (Theorem 6.8).
 \item
   A no-universal-dominance result (Theorem 8.1) establishing the
@@ -287,10 +287,12 @@ This article makes the following contributions.
   conformance specification matched by published
   low-precision-training methods.
 \item
-  Random-access (seek-and-read) capability in $O(K + k)$ time
-  independent of archive size (Theorem 10.3 with Definitions 10.2,
-  10.3 of $W$-bounded predictors and sync points), at a sync-point
-  compression cost of approximately 1 percent for typical parameters.
+  Random-access (seek-and-read) capability with cost
+  $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ --- only
+  polylogarithmic in archive size $N$ --- via Theorem 10.3 with
+  Definitions 10.2, 10.3 of $W$-bounded predictors and sync points, at
+  a sync-point compression cost of approximately 1 percent for typical
+  parameters.
   This functionality is absent from existing neural compressors
   (NNCP, PixelCNN++, Bit-Swap) and matches the seek capability of
   dictionary-based seekable formats while preserving the neural ratio
@@ -299,9 +301,9 @@ This article makes the following contributions.
 \item
   Block-device and read-only filesystem deployment with
   hardware-target portability (Theorems 10.5 and 10.6 in §10.8): an
-  OS-level driver can serve LBA-indexed read requests in time
-  independent of archive size, with the predictor running bit-exactly
-  on any conforming hardware target (CPU scalar, CPU SIMD including
+  OS-level driver can serve LBA-indexed read requests with cost
+  polylogarithmic in archive size, with the predictor running
+  bit-exactly on any conforming hardware target (CPU scalar, CPU SIMD including
   AVX-512, GPU integer Tensor Cores, integer NPUs). This enables the
   squashfs-style mounted-compressed-filesystem use case for neural
   compression, which existing neural compressors cannot support.
@@ -2756,11 +2758,12 @@ point to the relevant theorems.
   across implementations, with several published optimizers fitting
   the compatible class.
 \item
-  Random access (seek-and-read) into a compressed archive in time
-  independent of archive size --- resolved by Definitions 10.2
+  Random access (seek-and-read) into a compressed archive with cost
+  polylogarithmic in archive size --- resolved by Definitions 10.2
   ($W$-bounded predictor) and 10.3 (sync point) and Theorem 10.3
-  (random access in $O(K + k)$ time), with Theorem 10.4 covering
-  non-$W$-bounded predictors via state snapshots. This is the
+  (random access in $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$
+  time), with Theorem 10.4 covering non-$W$-bounded predictors via
+  state snapshots. This is the
   framework's deployment-grade distinguishing feature relative to
   other neural compressors, which lack random-access support
   entirely.
@@ -2768,7 +2771,7 @@ point to the relevant theorems.
   Block-device and read-only filesystem deployment with
   hardware-target portability --- resolved by Theorem 10.5
   (block-device interface: an OS-level driver serves LBA-indexed
-  read requests in time independent of archive size) and Theorem
+  read requests with cost polylogarithmic in archive size) and Theorem
   10.6 (hardware-target portability: bit-exact predictor execution
   on CPU scalar, CPU SIMD, GPU integer Tensor Cores, and integer
   NPUs follows from Theorem 10.1's conformance specification). The

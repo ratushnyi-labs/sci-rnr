@@ -520,8 +520,8 @@ feedforward predictor with bounded receptive field. Not satisfied by
 RNNs, LSTMs, or state-space models.
 
 \emph{Why it matters.} Enables the random-access theorem. The
-bounded-context property is what makes seek-and-read work in time
-independent of archive size.
+bounded-context property is what makes seek-and-read work with cost
+polylogarithmic in archive size.
 \end{quote}
 
 \textbf{Definition 10.3 (Sync point) --- {[}definition{]}}
@@ -545,11 +545,12 @@ compression cost.
 \begin{quote}
 \emph{Statement.} For $W$-bounded $M$ with sync points every $K$
 positions, random access to $k$ bytes at any position $N$ requires
-$O(K + k)$ predictor evaluations, independent of $N$.
+$O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ time, only
+polylogarithmic in $N$.
 
 \emph{Proof.} Binary-search the seek index for the nearest sync
-point $P$; decode forward from $P$ to $N + k$; output the requested
-bytes. Cost: $O(\log(N/K))$ seek plus $K + k$ decode operations.
+point $P$ in $O(\log(N/K))$; decode forward from $P$ to $N + k$ in
+$O((K + k) \cdot \mathrm{cost}(M))$; output the requested bytes.
 
 \emph{Why it matters.} The kill feature relative to other neural
 compressors. NNCP, PixelCNN++, and Bit-Swap require $O(N)$ time per
@@ -582,8 +583,9 @@ deployable codecs.
 \begin{quote}
 \emph{Statement.} An OS-level block-device driver mapping
 LBA-indexed reads to RNR random-access calls serves any read request
-in $O((K + k) \cdot \mathrm{cost}(M))$ time and $O(K + k)$ working
-memory, independent of archive size $N$.
+in $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ time and
+$O(K + k)$ working memory, with only polylogarithmic dependence on
+archive size $N$.
 
 \emph{Proof.} Direct corollary of Theorem 10.3 in driver terms:
 translate $(\mathrm{LBA}, k)$ to $(\text{byte\_position}, k)$ and
@@ -703,7 +705,7 @@ percent. NNCP and PixelCNN-class systems cannot do this. Theorem
 and use it like a real drive?''}
 
 \textbf{A:} Theorem 10.5: yes. An OS-level driver serves block-device
-read requests in time independent of archive size. Use the
+read requests with cost polylogarithmic in archive size. Use the
 squashfs+overlayfs pattern: read-only RNR base, copy-on-write writable
 layer. The driver architecture is identical to existing compressed
 filesystems except the predictor replaces the dictionary decompressor.
