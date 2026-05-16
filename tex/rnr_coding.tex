@@ -680,31 +680,36 @@ overheads $L(M_I), L(V), L(\Theta)$ gives the bound. Taking
 expectation under $D$ and comparing to $\mathbb{E}_D[B(X)]$ yields
 the advantage condition. \hfill$\blacksquare$
 
-\textbf{Theorem 4.2 (Type-I converse).} \emph{Let $X \sim D$ be a
-source over length-$N$ byte blocks and $Y = M_I(C)$ be
-decoder-reproducible side information. For any uniquely decodable
-lossless code for $X$ whose decoder uses no information about $X$
-beyond the codeword and $Y$, the expected code length satisfies
-$\mathbb{E}[L(X \mid Y)] \geq H(X \mid Y)$. The Type-I achievability
-of Theorem 4.1 therefore matches the conditional source-coding lower
-bound to first order: the gap is $L(M_I) + L(V) + L(\Theta) +
-\varepsilon_N$, which is $O(1)$ in $N$.}
+\textbf{Theorem 4.2 (Type-I converse and ideal achievability).}
+\emph{Let $X \sim D$ be a source over length-$N$ byte blocks and let
+$Y = M_I(C)$ be decoder-reproducible side information. Any uniquely
+decodable lossless code for $X$ whose decoder uses only the codeword
+and $Y$ has expected length at least $H(X \mid Y)$. Conversely, an
+\emph{ideal} Type-I class-and-payload coder driven by the true
+conditional law of the Code12 error variable $E = E_{12}(X) \oplus Y$
+achieves expected length $H(X \mid Y) + \varepsilon_N$, plus the
+constant headers $L(M_I) + L(V) + L(\Theta)$. A concrete coder using
+an approximate class model or a uniform within-class payload pays the
+corresponding cross-entropy, which matches the bound only when those
+models match the true conditional law.}
 
-\emph{\textbf{Proof.}} This is Shannon's noiseless source coding
-theorem applied to the conditional distribution $P(X \mid Y)$. Since
-$Y$ is available to the decoder as a deterministic function of public
-context $C$, the encoder needs only convey enough information for the
-decoder to disambiguate $X$ within its conditional support given $Y$.
-The minimum expected length of any uniquely decodable code for $X$
-given $Y$ is the conditional entropy $H(X \mid Y)$ (Cover and Thomas
-2006, Theorem 5.4.1). The Type-I coder achieves
-$N \cdot H(P_E) + N \cdot \ell_{\text{cond}} + \varepsilon_N$ for the
-repair stream; by construction the class-and-payload decomposition is a
-particular factorization of the conditional distribution of $X$ given
-$Y$, so $N \cdot H(P_E) + N \cdot \ell_{\text{cond}} = H(X \mid Y)$
-when the predictor is matched to the data. The remaining
-$L(M_I) + L(V) + L(\Theta)$ terms are $O(1)$ constants independent of
-$N$. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} The converse is Shannon's noiseless source
+coding theorem applied to the conditional distribution
+$P(X \mid Y)$ (Cover and Thomas 2006, Theorem 5.4.1). For
+achievability, fix an injective Code12 map and define
+$E = E_{12}(X) \oplus Y$. Given $Y$, the map $X \leftrightarrow E$ is
+bijective, so $H(E \mid Y) = H(X \mid Y)$. Encoding first the class
+$C_E$ of $E$ and then the payload within that class, both under their
+true conditional probabilities given $Y$, achieves
+$H(C_E \mid Y) + H(E \mid C_E, Y) = H(E \mid Y) = H(X \mid Y)$ by the
+chain rule. An entropy coder driven by these conditional laws attains
+this rate up to arithmetic-coding redundancy $\varepsilon_N$. A
+specific Code12 implementation that uses an approximate $P(C_E \mid Y)$
+or a uniform within-class payload (the construction of Theorem 4.1)
+pays the corresponding cross-entropy in place of the entropy; it
+equals the bound only when those models match the true conditional
+law. The constant headers $L(M_I) + L(V) + L(\Theta)$ are $O(1)$
+independent of $N$. \hfill$\blacksquare$
 
 \textbf{4.5 Reduction to NNCP}
 
@@ -959,44 +964,52 @@ Enumerative coding describes the partition by its rank in this class.
 
 \textbf{Theorem 5.3 (Type-II support-set advantage with escape).}
 \emph{Let $\Pi(X) = (M_0, \ldots, M_{15})$ be the true partition with
-counts $k_v$. Suppose for each $v$ the predictor supplies a candidate
-support set $S_v$ of size $s_v$, and let
-$\alpha_v = |M_v \setminus S_v|$ be the number of true positions
-outside the predicted support. Encode each $M_v$ by (i) the rank of
-$M_v \cap S_v$ among the $\binom{s_v}{k_v - \alpha_v}$ subsets of
-$S_v$ of size $k_v - \alpha_v$, plus (ii) an escape stream listing
-the $\alpha_v$ positions of $M_v \setminus S_v$ among the at most $N$
-positions not in $S_v$. The total partition code length is at most}
+counts $k_v$ and predicted support sets $S_v$ of size $s_v$.
+Encode symbols in fixed order $v = 0, 1, \ldots, 15$. Let
+$U_v = \bigcup_{u < v} M_u$ be the positions already claimed,
+$A_v = \{1, \ldots, N\} \setminus U_v$ the remaining universe
+($|A_v| = N - \sum_{u<v} k_u$), $S'_v = S_v \cap A_v$ the support
+restricted to $A_v$ with $s'_v = |S'_v|$, and
+$\alpha_v = |M_v \setminus S'_v|$ the escape count.
+After transmitting the count vector $(k_v)$ and the escape-count
+vector $(\alpha_v)$, encode $M_v \cap S'_v$ by its rank among
+$\binom{s'_v}{k_v - \alpha_v}$ subsets of $S'_v$ of that size, and
+$M_v \setminus S'_v$ by its rank among
+$\binom{|A_v| - s'_v}{\alpha_v}$ subsets of $A_v \setminus S'_v$ of
+that size. The total partition code length is at most}
 
 \[
-L_{R\Pi} \leq \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N - s_v}{\alpha_v}\right] + L(\text{counts}) + \varepsilon_N.
+L_{R\Pi} \leq \sum_v \left[\log_2 \binom{s'_v}{k_v - \alpha_v} + \log_2 \binom{|A_v| - s'_v}{\alpha_v}\right] + L(\text{counts}) + L(\alpha) + \varepsilon_N,
 \tag{5.1}
 \]
+\emph{where one may take
+$L(\alpha) \leq \sum_v \lceil \log_2 (k_v + 1) \rceil + O(1)$ bits to
+describe the escape-count vector explicitly.}
 
 \emph{Comparing against the multinomial baseline
 $\log_2 M(N; k_0, \ldots, k_{15})$ of Theorem 5.2, the positional
 gain is}
 
 \[
-G_{\text{pos}} = \log_2 M(N; k_0, \ldots, k_{15}) - \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N - s_v}{\alpha_v}\right].
+G_{\text{pos}} = \log_2 M(N; k_0, \ldots, k_{15}) - \sum_v \left[\log_2 \binom{s'_v}{k_v - \alpha_v} + \log_2 \binom{|A_v| - s'_v}{\alpha_v}\right].
 \tag{5.2}
 \]
 
 \emph{Type-II is conditionally advantageous when $G_{\text{pos}}$
-exceeds $L(M_{\text{pos}}) + L(V) + L(\Theta) + \varepsilon_N$ plus
-the cost of describing the count vector and any per-symbol support
-headers.}
+exceeds $L(M_{\text{pos}}) + L(V) + L(\Theta) + L(\alpha) +
+\varepsilon_N$ plus the cost of describing the count vector and any
+per-symbol support headers.}
 
-\emph{\textbf{Proof.}} For each symbol $v$, $M_v$ decomposes as the
-disjoint union of $M_v \cap S_v$ (a subset of $S_v$ of size
-$k_v - \alpha_v$) and $M_v \setminus S_v$ (a subset of
-$\{1, \ldots, N\} \setminus S_v$ of size $\alpha_v$). The first
-component is encoded by its enumerative rank among
-$\binom{s_v}{k_v - \alpha_v}$ subsets; the second by its enumerative
-rank among the $\binom{N - s_v}{\alpha_v}$ escape subsets. Summing
-the two log-binomials across $v$ gives the residual length. The
-advantage condition follows by subtracting this from the multinomial
-baseline and accounting for overhead. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} The decoder reconstructs $M_0, M_1, \ldots$ in
+order. At step $v$ the available universe is $A_v$ (positions not
+yet claimed by $M_0, \ldots, M_{v-1}$), so the newly decoded set is
+automatically disjoint from all previous $M_u$. The transmitted
+$\alpha_v$ specifies the two subset sizes; the two enumerative ranks
+then identify $M_v \cap S'_v$ within $S'_v$ and $M_v \setminus S'_v$
+within $A_v \setminus S'_v$ uniquely. Summing the two log-binomials
+across $v$ and adding the count, escape-count, and arithmetic-coder
+overheads gives (5.1). The gain identity (5.2) follows by subtracting
+from the multinomial baseline. \hfill$\blacksquare$
 
 Theorem 5.3 differs from a natural but flawed formulation in two
 respects. First, it uses the multinomial coefficient as the baseline,
@@ -1018,16 +1031,18 @@ question is whether semi-non-factorized Type-II provides a genuine
 separation. The next theorem answers this in the affirmative for a
 concrete family of joint distributions.
 
-\textbf{Theorem 5.4 (Type-II semi-non-factorized separation).}
-\emph{There exists a family of distributions $D_N$ over length-$N$
-nibble strings, and a positive constant $c > 0$, such that for every
-sufficiently large $N$ the optimal factorized per-position arithmetic
-coder driven by the true marginals
+\textbf{Theorem 5.4 (Type-II semi-non-factorized separation,
+amortized).} \emph{There exists a family of distributions $D_N$ over
+length-$N$ nibble strings, and a positive constant $c > 0$, such that
+for every sufficiently large $N$ the optimal factorized per-position
+arithmetic coder driven by the true marginals
 $Q^{\text{marg}}_v(i) = \Pr_{X \sim D_N}(x_i = v)$ has expected code
 length at least $4N$ bits, while a semi-non-factorized Type-II coder
 that has access to a single bit per position of joint side information
-(membership in a structured set) achieves expected length at most
-$(4 - c)N + O(\log N)$ bits. The separation is therefore $\Theta(N)$.}
+(membership in a structured set) achieves amortized expected length at
+most $(4 - c)N + O(\log N)$ bits per block, when amortized over
+$B_N = \Omega(N^2)$ blocks sharing the same generator-matrix model
+header. The amortized per-block separation is therefore $\Theta(N)$.}
 
 \emph{\textbf{Proof.}} Fix a parameter $c \in (0, 4)$ and set
 $d := (4 - c) N$ (the message dimension). Let $G$ be a
@@ -1042,7 +1057,9 @@ equivalently, the $j$-th column of $G$ is non-zero;
 \item[\textbf{(P2)}]
 for every nibble position $i \in \{1, \ldots, N\}$, the four
 columns of $G$ at codeword coordinates $4(i-1)+1, \ldots, 4i$ are
-linearly independent in $\mathrm{GF}(2)^d$.
+linearly independent in $\mathrm{GF}(2)^d$;
+\item[\textbf{(P3)}]
+$G$ has full row rank $d$.
 \end{itemize}
 Such matrices exist with high probability over the uniform
 distribution on $d \times 4N$ matrices over $\mathrm{GF}(2)$. For
@@ -1054,19 +1071,23 @@ the $2^4 - 1 = 15$ non-zero $\mathrm{GF}(2)$-linear combinations
 yields the zero vector; each such combination of four uniform
 independent random vectors in $\mathrm{GF}(2)^d$ is itself uniform
 on $\mathrm{GF}(2)^d$ and vanishes with probability $2^{-d}$. Union
-over $N$ nibble positions: $\leq 15 N \cdot 2^{-d}$. The combined
-failure probability is $\leq 19 N \cdot 2^{-d} = 19 N \cdot 2^{-(4-c)N}$,
-which is $o(1)$ as $N \to \infty$ for any fixed $c \in (0, 4)$
-(and $O(2^{-\delta N})$ for any $\delta < 4 - c$).
+over $N$ nibble positions: $\leq 15 N \cdot 2^{-d}$. For
+\textbf{(P3)}, a fixed non-zero row-combination
+$\lambda \in \mathrm{GF}(2)^d \setminus \{0\}$ produces
+$\lambda G \in \mathrm{GF}(2)^{4N}$ which vanishes identically (on
+all $4N$ columns) with probability $2^{-4N}$ over the random choice
+of $G$; a union bound over the $2^d - 1 < 2^d$ non-zero combinations
+gives failure probability $\leq 2^{d - 4N} = 2^{-cN}$.
+Combined failure probability:
+$\leq 19 N \cdot 2^{-(4-c)N} + 2^{-cN}$, which is $o(1)$ as
+$N \to \infty$ for any fixed $c \in (0, 4)$.
 
 Let $S_N \subset \{0, \ldots, 15\}^N$ be the image of all $2^d$
 messages under $G$, with the $4N$ output bits parsed as $N$ nibbles.
-Property \textbf{(P2)} in particular implies that $G$ has full row
-rank $d$ (otherwise some non-trivial combination of the $d$ rows
-would vanish on \emph{all} columns, contradicting linear independence
-of any 4 of them), so the encoding map $m \mapsto mG$ is injective
-and $|S_N| = 2^d = 2^{(4-c)N}$. Define $D_N$ as the uniform
-distribution on $S_N$.
+Property \textbf{(P3)} implies that $G$ has full row rank $d$, so the
+encoding map $m \mapsto mG$ is injective and
+$|S_N| = 2^d = 2^{(4-c)N}$. Define $D_N$ as the uniform distribution
+on $S_N$.
 
 \textbf{(i) Marginal uniformity.} Fix a nibble position
 $i \in \{1, \ldots, N\}$. The four bits encoding the nibble at
@@ -1089,14 +1110,18 @@ $Q^{\text{marg}}$, up to the redundancy $\varepsilon_N$.
 
 \textbf{(iii) Joint upper bound.} A semi-non-factorized coder that
 encodes membership in $S_N$ as the unique $d$-bit message index per
-block, followed by deterministic expansion via $G$, achieves length
+block, followed by deterministic expansion via $G$, achieves per-block
+content length
 $\log_2 |S_N| + \varepsilon_N = d + \varepsilon_N = (4 - c)N +
-\varepsilon_N$ bits. The savings over the factorized bound (ii) are
-$4N - d = cN$ bits per block. Describing the generator matrix $G$
-itself (one-time, amortized across the block) costs $L(G) = d \cdot
-4N = 4(4-c)N^2$ bits, absorbed into the $L(M_{\text{pos}})$ term of
-(3.1) and amortized across many blocks encoded with the same $G$;
-per-block it does not enter the rate.
+\varepsilon_N$ bits, i.e., savings of $4N - d = cN$ bits per block
+\emph{before} model-header amortization. Describing the generator
+matrix $G$ itself costs $L(G) = d \cdot 4N = 4(4-c)N^2$ bits, paid
+once and absorbed into the $L(M_{\text{pos}})$ term of (3.1). When
+the same $G$ is reused across $B_N$ blocks, the per-block model
+contribution is $L(G)/B_N$; taking $B_N = \Omega(N^2)$ (e.g.,
+$B_N = N^2$) makes this $O(1)$ bits per block, absorbed into the
+$O(\log N)$ overhead. For fewer blocks the per-block cost is
+correspondingly higher.
 
 \textbf{(iv) Separation.} Subtracting the per-block upper bound (iii)
 from the per-block lower bound (ii):
@@ -1173,7 +1198,9 @@ is a standard consequence of the chain rule for entropy; the novelty
 is the placement of this quantity as the operational separator
 between Type-I and Type-II under the RNR framework. The $\Theta(N)$
 separation observed in Theorem 5.4 corresponds to
-$\mathrm{TC} = (4 - c)N$ for the linear-code family. For general
+$\mathrm{TC} = cN$ for the linear-code family (sum of marginals
+$\sum_i H_{\text{marg}}(X_i) = 4N$ minus joint entropy
+$H(D_N) = (4-c)N$). For general
 $D_N$, the magnitude of $\mathrm{TC}(D_N)$ determines whether Type-II
 provides a constant-factor or vanishing improvement over factorized
 coding.
@@ -1243,41 +1270,34 @@ prefix of positions sorted by $Q_v(i)$, and (b) the support-set
 construction is at best equivalent to per-position arithmetic coding
 under $Q$.
 
-\textbf{Proposition 5.7 (Optimal support is a prefix; arithmetic
-coding is the limit).} \emph{Fix a symbol $v$ and a predictor $Q$
-with positions sorted in decreasing order of $Q_v(i)$. Among all
-support sets $S_v$ of any size, the choice that minimizes the
-expected Theorem 5.3 residual cost is the top-$s_v^\star$ prefix,
-where $s_v^\star$ is determined by the marginal-balance condition}
-\[
-\frac{\mathrm{d}}{\mathrm{d}s_v} \!\left[\log_2 \binom{s_v}{k_v - \alpha_v(s_v)} + \log_2 \binom{N - s_v}{\alpha_v(s_v)}\right] = 0.
-\]
-\emph{Moreover, the expected cost of the optimal support-set
-construction is at least the expected cost of per-position arithmetic
-coding driven by the same $Q$, with equality only in the degenerate
-limit where $Q$ is binary (each $Q_v(i) \in \{0, 1\}$).}
+\textbf{Proposition 5.7 (Support selection and arithmetic benchmark).}
+\emph{Fix $v$, $k_v$, and a support size $s$. Write
+$A_s(\alpha) = \log_2 \binom{s}{k_v - \alpha} + \log_2 \binom{N - s}{\alpha}$.
+If $A_s(\alpha)$ is non-decreasing on the feasible escape counts
+$\alpha$ that can occur under $Q$, then among supports of size $s$
+the top-$s$ positions sorted by $Q_v(i)$ minimize the expected
+Theorem 5.3 residual. Without this monotonicity condition, no universal
+prefix-optimality statement is claimed.}
 
-\emph{\textbf{Proof.}} Part~(a): suppose $S_v$ is not a top-$Q_v$
-prefix. Then there exist positions $i, j$ with $i \in S_v$,
-$j \notin S_v$, and $Q_v(j) > Q_v(i)$. Swapping $i$ and $j$ in $S_v$
-leaves $|S_v| = s_v$ unchanged but increases the expected number of
-true-positives in $S_v$ (since $j$ is more likely to be in $M_v$ than
-$i$ under $Q$), which decreases the expected $\alpha_v$ and therefore
-decreases the expected sum in Theorem 5.3 (both
-$\log_2 \binom{s_v}{k_v - \alpha_v}$ and
-$\log_2 \binom{N - s_v}{\alpha_v}$ are monotone in $\alpha_v$).
-Iterating this swap argument terminates at the top-prefix
-configuration.
-Part~(b): per-position arithmetic coding under $Q$ achieves expected
-length $-\sum_i \log_2 Q_{x_i}(i)$, which by Shannon's source coding
-theorem is the conditional entropy $H(X \mid Q)$ and is minimal among
-coders driven by $Q$. The support-set construction encodes membership
-in $S_v$ (a hard binary decision) and then a rank within
-$\binom{s_v}{k_v - \alpha_v}$, discarding the soft probability
-information in $Q$. By the data-processing inequality applied to this
-discretization, the support-set cost is at least the arithmetic-coding
-cost, with equality only when $Q$ is already binary (so no
-discretization loss occurs). \hfill$\blacksquare$
+\emph{Moreover, if $Q$ is the true conditional distribution used by
+the decoder, per-position arithmetic coding achieves expected length
+$H(X \mid Q) + \varepsilon_N$, and any support-set code using the
+same side information has expected length at least $H(X \mid Q) - O(1)$.
+For an arbitrary misspecified predictor $Q$, the arithmetic-coding
+rate is the cross-entropy
+$\mathbb{E}_D [-\sum_i \log_2 Q_{X_i}(i)]$, which equals the
+conditional entropy only when $Q$ matches the true conditional law
+and is not a lower bound on all other codes in general.}
+
+\emph{\textbf{Proof.}} Under the stated monotonicity condition,
+swapping a lower-$Q_v$ included position $i$ with a higher-$Q_v$
+excluded position $j$ stochastically decreases $\alpha_v$, hence
+cannot increase $\mathbb{E}[A_s(\alpha_v)]$. Iterating the swap
+argument terminates at the top-prefix configuration.
+The arithmetic-coding statement is Shannon's converse when $Q$ is
+the true conditional law (Cover and Thomas 2006, Theorem 5.4.1);
+under misspecification the expected length is cross-entropy by
+definition. \hfill$\blacksquare$
 
 Proposition 5.7 has a practical consequence: for predictors producing
 real-valued probabilities, the support-set construction of Theorem 5.3
@@ -1584,15 +1604,21 @@ where the three terms encode the latent under the prior, the data
 under the conditional, and recover the auxiliary bits respectively.
 Its expectation under $X \sim D$ and $z \sim q$ satisfies}
 \[
-\mathbb{E}[L(R \mid Y)] = H(X \mid Y) + \mathrm{KL}\!\left(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y)\right).
+\mathbb{E}[L(R \mid Y)] = \mathbb{E}_{X \sim D}[-\log_2 P_X(X \mid Y)]
++ \mathbb{E}_{X \sim D} \mathrm{KL}\!\left(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y)\right),
 \tag{6.4}
 \]
-\emph{When $q$ equals the true posterior, the KL term vanishes and
-the bits-back rate equals the conditional entropy $H(X \mid Y)$,
-matching the Slepian-Wolf lower bound. Type-III-C with continuous
-latents is therefore a strict generalization of Type-III-C with a
-discrete dictionary, with the dictionary case as the degenerate limit
-$q \to \delta$ at the nearest discrete token.}
+\emph{where $P_X(\cdot \mid Y)$ is the model marginal over $X$ given
+$Y$. Equivalently, the first term equals
+$H_D(X \mid Y) + \mathrm{KL}(D(\cdot \mid Y) \Vert P_X(\cdot \mid Y))$,
+the cross-entropy of the data under the model. The bits-back rate
+equals the conditional entropy $H_D(X \mid Y)$ only when the model
+marginal matches the data conditional ($D = P_X$) and $q$ equals the
+true posterior; under both conditions matching the Slepian-Wolf lower
+bound. Type-III-C with continuous latents is therefore a strict
+generalization of Type-III-C with a discrete dictionary, with the
+dictionary case as the degenerate limit $q \to \delta$ at the nearest
+discrete token.}
 
 \emph{\textbf{Proof.}} The three-stream bits-back coder transmits
 $\log_2 \tfrac{1}{P(z \mid Y)}$ bits for the latent under the prior,
@@ -1610,95 +1636,57 @@ using the joint factorization
 $P(X, z \mid Y) = P(X \mid Y) \cdot P(z \mid X, Y)$. Taking
 expectation under $q(z \mid X, Y)$ conditional on $X$:
 $\mathbb{E}[\text{net} \mid X] = -\log_2 P(X \mid Y) + \mathrm{KL}(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y))$.
-Taking expectation under $X \sim D$:
-$\mathbb{E}[\text{net}] = H(X \mid Y) + \mathbb{E}_{X \sim D}[\mathrm{KL}(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y))]$.
-When $q$ equals the posterior, KL is zero and the rate is
-$H(X \mid Y)$. \hfill$\blacksquare$
+Taking expectation under $X \sim D$ gives (6.4). The first term is
+cross-entropy under the model marginal $P_X(\cdot \mid Y)$, not
+entropy unless $P_X(\cdot \mid Y) = D(\cdot \mid Y)$; the second
+term is the variational gap. When both vanish the rate is
+$H_D(X \mid Y)$. \hfill$\blacksquare$
 
 \textbf{Theorem 6.7 (Joint dictionary and predictor learning is
-NP-hard).} \emph{Given a corpus $X$, the problem of jointly choosing
-a token dictionary $D$ and a predictor $M$ to minimize the total
-Type-III-C code length $L(M) + L(D) + L(R \mid Y)$ is NP-hard. The
-problem remains NP-hard even when $M$ is constrained to be the trivial
-constant predictor and $D$ is the recursive (straight-line grammar)
-dictionary class introduced in §6.5.}
+NP-hard).} \emph{Given a corpus $X$, jointly choosing a token
+dictionary $D$ and predictor $M$ to minimize Type-III-C description
+length is NP-hard. This remains true in the restricted normal-form
+case where $M$ is fixed to the trivial constant predictor, the repair
+stream is the distinguished start token, and $D$ is a recursive
+straight-line dictionary measured by symbol count.}
 
-\emph{\textbf{Proof.}} We exhibit a polynomial-time reduction from
-the Smallest Grammar Problem (SGP) of Charikar, Lehman, Liu,
-Panigrahy, Prabhakaran, Sahai and Shelat (2005). An instance of SGP
-is a string $s \in \Sigma^\star$ over an alphabet $\Sigma$ (we may
-take $\Sigma = \{0,1\}^8$ for concreteness), and the task is to find
-a straight-line grammar $G$ with $L(G) = \{s\}$ minimizing the
+\emph{\textbf{Proof.}} Reduce from the Smallest Grammar Problem (SGP)
+of Charikar, Lehman, Liu, Panigrahy, Prabhakaran, Sahai and Shelat
+(2005). An instance of SGP is a string $s \in \Sigma^\star$ (we may
+take $\Sigma = \{0,1\}^8$ for concreteness); the task is to find a
+straight-line grammar $G$ with $L(G) = \{s\}$ minimizing the
 \emph{grammar size}
-$|G| = \sum_{A \to \alpha \in P} |\alpha|$, the total length over all
-right-hand sides $\alpha$ (each symbol --- terminal or non-terminal
-reference --- counted as one). SGP is NP-hard (Charikar et al. 2005,
-Theorem 3.4).
+$|G| = \sum_{A \to \alpha \in P} |\alpha|$. SGP is NP-hard (Charikar
+et al. 2005, Theorem 3.4).
 
-\emph{Reduction.} Given an SGP instance $s$, construct the
-Type-III-C instance $\Phi(s)$ as follows:
-\begin{itemize}
-\item Corpus $X := s$;
-\item Predictor $M$ := the constant predictor that, at every position
-where a dictionary token is required, outputs the uniform
-distribution over the current dictionary $D$; the predictor's
-description thus consists only of the dictionary size $K = |D|$, so
-$L(M) = \lceil \log_2 N \rceil$ bits (a single integer $\leq |s| = N$);
-\item Dictionary representation: tokens are recursive in the sense of
-§6.5 above, i.e., each token $\tau_i \in D$ is specified by a
-right-hand side $\alpha_i \in (\Sigma \cup \{\tau_0, \ldots,
-\tau_{K-1}\})^\star$ over the terminal alphabet $\Sigma$ and
-references to other tokens, with the dependency graph required to
-be acyclic;
-\item Dictionary description cost:
-$L(D) := \sum_{i=0}^{K-1} \left( |\alpha_i| + \lceil \log_2 K \rceil \right)$,
-where the $|\alpha_i|$ term counts the symbols in $\alpha_i$ (each
-symbol coded in $\lceil \log_2(|\Sigma| + K) \rceil$ bits) and the
-$\lceil \log_2 K \rceil$ term is the bookkeeping (token id and
-length prefix). For asymptotic analysis only the leading $|\alpha_i|$
-term matters; lower-order $\log K$ overheads are absorbed into the
-$o(1)$ analysis of Theorem 6.8;
-\item Repair stream: under the constant predictor, the repair
-stream $R \mid Y$ consists of a single pointer to the start token
-$\tau_0$ (which expands deterministically into $s$), of length
-$L(R \mid Y) = \lceil \log_2 K \rceil$.
-\end{itemize}
+Use \emph{normal-form} dictionaries: $\tau_0$ is the distinguished
+start token; every token is reachable from $\tau_0$; the dependency
+graph is acyclic; no token has a unit-production right-hand side; and
+duplicate terminal expansions are identified. These are the standard
+harmless normalizations for straight-line grammars: unreachable
+rules, unit productions, and duplicate nonterminals can be removed
+without increasing grammar size.
 
-\emph{Bijection between Type-III-C dictionaries on $\Phi(s)$ and
-straight-line grammars deriving $\{s\}$.} Every straight-line grammar
-$G = (V, \Sigma, P, S_0)$ deriving $\{s\}$ yields a Type-III-C
-dictionary $D(G)$ with $|D(G)| = |V|$ tokens, one per non-terminal,
-where the right-hand side $\alpha_A$ of the production $A \to \alpha_A$
-in $G$ becomes the right-hand side of token $\tau_A$ in $D(G)$ with
-non-terminal references replaced by token references; conversely,
-every recursive dictionary $D$ whose start-token $\tau_0$ expands
-deterministically to $s$ yields a straight-line grammar
-$G(D)$ deriving $\{s\}$ with $|V(G(D))| = |D|$ non-terminals and
-$|G(D)| = \sum_i |\alpha_i|$. The two maps are mutual inverses, and
-under them
+Given an SGP instance $s$, set $X := s$, fix $M$ to the trivial
+predictor, and require $\tau_0$ to expand deterministically to $s$.
+Define the hardness objective
 \[
-L(D) = |G(D)| + |D(G)| \cdot \lceil \log_2 |D(G)| \rceil = |G| + O(K \log K).
+L_{\mathrm{sym}}(D) = \sum_i |\alpha_i|,
 \]
-With $L(M) + L(R \mid Y) = O(\log N) + O(\log K) = O(\log N)$,
-the total Type-III-C objective satisfies
+where $\alpha_i$ is the right-hand side of token $\tau_i$ and each
+terminal or token reference counts as one symbol. Normal-form
+recursive dictionaries on $\Phi(s)$ are in bijection with normal-form
+straight-line grammars deriving exactly $\{s\}$ --- map each token to
+the homonymous non-terminal and vice versa --- and the bijection
+preserves the objective value exactly:
 \[
-L_{\text{Type-III-C}}(D) = |G(D)| + O(K \log K) + O(\log N).
+L_{\mathrm{sym}}(D(G)) = |G|.
 \]
-
-\emph{Consequence.} A polynomial-time algorithm that minimizes
-$L_{\text{Type-III-C}}$ on $\Phi(s)$ would, by the bijection,
-minimize $|G|$ over straight-line grammars deriving $\{s\}$ (up to
-the lower-order $O(K \log K) + O(\log N)$ term, which is sub-linear
-in $|G^\star|$ whenever $|G^\star| = \omega(\log N)$ --- a regime that
-holds for all SGP instances with $|s| \geq 2$ distinct symbols,
-since $|G^\star| \geq |s| / \log |s|$ by a simple counting argument).
-This would yield a polynomial-time solver for SGP, contradicting
-Charikar et al. (2005, Theorem 3.4). The reduction $s \mapsto \Phi(s)$
-is computable in linear time in $|s|$.
-
-The general case (non-constant predictor $M$, or flat-only
-dictionary) is at least as hard as the constant-$M$, recursive-$D$
-case treated here, and therefore inherits NP-hardness.
+Thus an exact polynomial-time optimizer for this restricted
+Type-III-C case would exactly solve SGP. Since SGP is NP-hard
+(Charikar et al.\ 2005, Theorem 3.4), the restricted Type-III-C
+problem is NP-hard, and the unrestricted problem is at least as hard.
+The reduction is computable in linear time in $|s|$.
 \hfill$\blacksquare$
 
 Theorems 6.6 and 6.7 together establish the boundary of what is
@@ -1723,66 +1711,35 @@ $\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 preserves
 approximability up to constant factors, then transfer the
 APX-hardness of SGP.
 
-\emph{Symbol-count formulation.} The Type-III-C objective in
-Theorem 6.7 was specified in \emph{symbol count}: $L(D) = \sum_i
-|\alpha_i| + K \cdot \lceil \log_2 K \rceil$ measures the total
-length of all token right-hand sides in symbols, plus per-token
-bookkeeping. We retain that convention here. (The bit-level objective
-of \S6.5 differs from the symbol-count objective by a per-symbol
-factor of $\lceil \log_2(|\Sigma| + K) \rceil$, which is bounded
-above and below by constants on instances of bounded dictionary
-size; the APX-hardness conclusion is invariant under this rescaling
-because APX-hardness is preserved by linear transformations of the
-objective with bounded multiplicative slack.)
+\emph{Symbol-count normal form.} For the APX statement we use the
+normal-form symbol-count objective of Theorem 6.7,
+$L_{\mathrm{sym}}(D) = \sum_i |\alpha_i|$. The dictionary-to-grammar
+map and grammar-to-dictionary map preserve this objective exactly, so
+an $\alpha$-approximation for the restricted Type-III-C problem yields
+an $\alpha$-approximation for SGP with no additive bookkeeping slack.
 
-\emph{Bijection preserves approximability.} Let $\mathrm{OPT}_{\text{SGP}}(s) = |G^\star|$
-denote the size of the smallest grammar deriving $\{s\}$. From the
-bijection in the proof of Theorem 6.7,
-\[
-L_{\text{III-C}}(D) = |G(D)| + K(D) \cdot \lceil \log_2 K(D) \rceil + O(\log N).
-\]
-Under the standard SGP normalization (each rule has right-hand-side
-length $\geq 2$, eliminating unit productions), $K(D) \leq |G(D)|/2$,
-so $K(D) \log K(D) = O(|G(D)| \log |G(D)|)$. Furthermore, any
-instance with $|G^\star| = O(1)$ is solvable in polynomial time by
-exhaustive enumeration over grammars of bounded size; the
-interesting regime is $|G^\star| \to \infty$ with input length $N$,
-and in that regime the bookkeeping satisfies $K \log K + \log N =
-O(|G| \log |G|)$.
+\emph{Transfer of APX-hardness.} Charikar, Lehman, Liu, Panigrahy,
+Prabhakaran, Sahai and Shelat (2005, Theorem 3.4) prove an explicit
+constant inapproximability bound for SGP: no polynomial-time algorithm
+achieves approximation ratio smaller than $8569/8568$ unless $P = NP$.
+Their proof is a constant-gap reduction from MAX-3SAT-3, not a
+Set-Cover / Lund--Yannakakis logarithmic inapproximability theorem.
+Combined with the exact bijection above, a polynomial-time
+$\alpha$-approximation for the restricted Type-III-C problem with
+$\alpha < 8569/8568$ would yield a polynomial-time approximation to
+SGP below the Charikar et al.\ threshold, contradicting $P \neq NP$.
+The unrestricted Type-III-C problem is at least as hard, so the same
+inapproximability bound transfers. \hfill$\blacksquare$
 
-Therefore, an $\alpha$-approximation for $L_{\text{III-C}}$ yields a
-grammar $G_A$ with
-\[
-|G_A| \leq L_{\text{III-C}}(D_A) \leq \alpha \cdot L_{\text{III-C}}(\text{OPT}_{\text{III-C}}) \leq \alpha \cdot c_{\text{enc}} \cdot |G^\star|,
-\]
-where $c_{\text{enc}} = O(\log |G^\star|)$ in worst case but is
-bounded by a constant in any specific encoding-convention regime
-(e.g., $c_{\text{enc}} \leq C$ for some constant $C$ when
-$|G^\star| \leq |s|$ and $|s|$ ranges over a bounded family, which is
-the standard APX-hardness setting). Hence an $\alpha$-approximation
-for Type-III-C gives a $(C \cdot \alpha)$-approximation for SGP for
-some absolute constant $C$.
-
-\emph{Transfer of APX-hardness.} Charikar et al. (2005, Theorem 3.4)
-established a $\Omega(\log n / \log \log n)$ inapproximability
-threshold for SGP via a reduction from Set Cover and the Lund and
-Yannakakis (1994) inapproximability of Set Cover. Their bound is
-super-constant in the input size $n = |s|$; in particular, for any
-constant $\gamma > 1$ there exists $n_0$ such that no polynomial-time
-$\gamma$-approximation to SGP exists on instances of size $\geq n_0$,
-unless $P = NP$. Combined with the constant-factor approximability
-transfer above ($\alpha$-approximation for Type-III-C yields a
-$(C \alpha)$-approximation for SGP), this gives: no polynomial-time
-$\alpha$-approximation exists for Type-III-C with $\alpha \leq
-\gamma / C$ for any constant $\gamma > 1$ and sufficiently large
-instances, unless $P = NP$. Existence of such a constant $\gamma > 1$
-suffices for APX-hardness of Type-III-C. \hfill$\blacksquare$
-
-\textbf{Remark on the constant.} The explicit numerical value of
-$\gamma$ depends on the dictionary-encoding convention (bit-cost
-vs.\ symbol-cost, choice of bookkeeping format). We claim only that
-\emph{some} constant $\gamma > 1$ exists; pinning down the optimal
-constant for a specific encoding is left to follow-up work.
+\textbf{Remark on the constant.} The $8569/8568$ figure is the
+explicit threshold proved by Charikar et al.\ for SGP; for the
+unrestricted Type-III-C objective (with bit-cost bookkeeping rather
+than symbol-cost), the inherited constant is at most this value
+divided by the worst-case per-symbol encoding ratio
+$\lceil \log_2(|\Sigma|+K) \rceil$, which is bounded on any fixed
+family of instances. We claim only that \emph{some} constant $\gamma >
+1$ exists in the general case; pinning down the optimal constant for
+a specific encoding convention is left to follow-up work.
 
 Together, Theorems 6.7 and 6.8 confirm that the heuristic nature of
 practical dictionary learners (BPE, WordPiece, MDL-greedy variants)
@@ -1998,19 +1955,22 @@ bit-exact across any pair of conforming implementations.
 
 \textbf{Theorem 10.1 (Bit-exact reproduction under deterministic
 integer inference).} \emph{Let $M$ be an inference graph with $L$
-layers, where each layer is implemented as an integer matrix-vector
-product followed by a non-linearity. Suppose: (i)~all weights and
-inputs are integers; (ii)~all intermediate accumulators use bit-width
-$b$ satisfying
-$b \geq \lceil \log_2(L \cdot W_{\max} \cdot I_{\max}) \rceil + 1$,
-where $W_{\max}$ is an upper bound on the $L_1$ norm of any weight
-row and $I_{\max}$ is an upper bound on the magnitude of any layer
-input; (iii)~all non-linearities are deterministic
+layers, where layer $\ell$ is implemented as an integer matrix-vector
+product of fan-in $d_\ell$ followed by a non-linearity. Suppose:
+(i)~all weights and inputs are integers; (ii)~every accumulator in
+layer $\ell$ uses signed bit-width $b_\ell$ satisfying
+\[
+b_\ell \geq \lceil \log_2(d_\ell \cdot W_\ell \cdot I_{\ell-1}) \rceil + 1,
+\]
+where $W_\ell$ is an upper bound on the magnitude of any weight entry
+at layer $\ell$ and $I_{\ell-1}$ is an upper bound on the magnitude of
+any input to layer $\ell$; (iii)~all non-linearities are deterministic
 integer-to-integer mappings (e.g., piecewise-constant lookup tables);
 (iv)~all reduction operations (sums in matrix-vector products) follow
 a fixed, deterministic order specified by the model description. Then
-$M(C)$ produces bit-identical output for any input $C$ on any two
-implementations conforming to (i) through (iv).}
+no accumulator overflows and $M(C)$ produces bit-identical output for
+any input $C$ on any two implementations conforming to (i) through
+(iv).}
 
 \emph{\textbf{Proof.}} Under (i) and (ii), each integer multiplication
 and addition produces a result within the representable range; no
@@ -2026,11 +1986,18 @@ induction on layer depth, the output of layer $l$ is identical across
 implementations, hence the final $M(C)$ is identical.
 \hfill$\blacksquare$
 
-The bit-width condition
-$b \geq \lceil \log_2(L \cdot W_{\max} \cdot I_{\max}) \rceil + 1$
-is the precision required to avoid overflow in the worst case; in
-practice, $b = 32$ is sufficient for any $L \leq 64$,
-$W_{\max} \leq 2^{16}$, $I_{\max} \leq 2^{16}$, which covers all
+The bit-width condition is per layer. If each layer renormalizes or
+clips outputs so that $|x| \leq I_{\max}$ holds uniformly, then a
+uniform sufficient condition is
+$b \geq \lceil \log_2(d_{\max} \cdot W_{\max} \cdot I_{\max}) \rceil + 1$,
+where $d_{\max} = \max_\ell d_\ell$ is the maximum fan-in. Without
+inter-layer renormalization, intermediate magnitudes can grow
+recursively: $I_\ell \leq d_\ell \cdot W_\ell \cdot I_{\ell-1}$ in
+the worst case, so $I_\ell \leq I_0 \prod_{r \leq \ell} d_r W_r$ and
+depth enters multiplicatively, not linearly. In practice, with
+quantized activations clipped to $I_{\max} \leq 2^{16}$ and weight
+entries bounded by $W_{\max} \leq 2^{16}$ at each layer, $b = 32$
+suffices for any fan-in $d_{\max} \leq 2^{16}$, which covers all
 practical predictor sizes. The non-linearity table requirement
 excludes any function involving real-valued division, square root, or
 transcendentals; sigmoid, tanh, GELU, and softmax must be replaced by
