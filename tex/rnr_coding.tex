@@ -65,53 +65,37 @@ Pavlo Ratushnyi
 \textbf{Abstract}
 
 We introduce Ratushnyi Neural Repair Coding (RNR Coding), a framework
-for lossless compression in which a deterministic, decoder‑reproducible
-neural or hybrid model produces side information about a source block,
-and a short repair description reconstructs the exact original from that
-side information. The framework is organized along the dimensionality
-and target of prediction. Type‑I performs one‑dimensional stream repair:
-the model predicts a damaged version of the source stream and the
-archive stores a residual sufficient to invert that damage. Type‑II
-performs two‑dimensional positional symbol coding: a block is
-represented as a partition of positions among symbol classes, and the
-archive stores the residual needed to reconstruct the exact partition
-from a predicted positional probability field. Type‑III performs
-multi‑dimensional tensor entropy‑field coding, and is further divided
-into three subtypes --- III‑A (entropy‑field meta‑prediction with
-per‑tile mode selection), III‑B (byte‑tensor coding capturing the joint
-structure of high and low nibbles), and III‑C (token‑tensor coding over
-a learned, hierarchically indexed dictionary). For each type and subtype
-we give a concrete construction, achievability and converse bounds, and
-a worked numerical example. The main results are: paired achievability
-and converse bounds for Type-I matching the conditional source-coding
-limit; NP-hardness and inapproximability of optimal codeword-mapping
-selection in Type-I; a corrected positional-advantage theorem; a
-$\Theta(N)$ separation theorem for semi-non-factorized Type-II via a
-linear-code construction, generalized to any source via the
-multi-information identity $\mathrm{TC}(D_N)$ and quantified for
-natural data by the manifold hypothesis; an optimal-support
-characterization for Type-II partition coding; a tight $2\varepsilon$
-approximate-oracle bound for Type-III-A mode selection with a
-matching lower bound; an information-theoretic invariance result for
-hierarchical decomposition in Type-III-B; bits-back integration into
-the framework's code-length decomposition with exact KL accounting;
-NP-hardness and APX-hardness of joint dictionary-and-predictor
-learning in Type-III-C via reduction from the Smallest Grammar
-Problem; sufficient conditions for bit-exact decoder reproduction
-under both fixed and adaptive predictors via deterministic integer
-arithmetic, with the adaptive case relying on a class of compatible
-online optimizers drawn from the low-precision-training literature;
-and a random-access (seek-and-read) capability in time independent of
-archive size for $W$-bounded predictors, at a sync-point compression
-cost of approximately one percent, matching the seekable
-functionality of dictionary-based formats while preserving the
-neural-ratio advantage and exceeding the capability of existing
-neural compressors which lack random access entirely. We do not claim
-universal dominance --- no lossless code can map every input of
-length $n$ to a strictly shorter one --- and the framework is
-evaluated conditionally on data classes for which side information
-reduces residual uncertainty by more than the model and repair
-overhead costs.
+for lossless compression in which a deterministic,
+decoder-reproducible neural or hybrid model produces side information
+about a source block, and a short repair description reconstructs the
+exact original from that side information. The framework is organized
+along the dimensionality and target of prediction. Type-I performs
+one-dimensional stream repair; Type-II performs two-dimensional
+positional symbol coding over a partition of positions among symbol
+classes; Type-III performs multi-dimensional tensor entropy-field
+coding, divided into III-A (entropy-field meta-prediction), III-B
+(byte-tensor coding of joint nibble structure), and III-C
+(token-tensor coding over a learned hierarchically indexed
+dictionary). For each subtype we give a concrete construction,
+matching achievability and converse bounds, complexity results
+(including NP-hardness and APX-hardness of the two natural search
+problems), and a worked example. Two structural results connect the
+framework to natural data: a $\Theta(N)$ separation theorem for
+semi-non-factorized Type-II via linear codes, generalized to any
+source by the multi-information identity $\mathrm{TC}(D_N)$; and a
+tight $2\varepsilon$ approximate-oracle bound for Type-III-A mode
+selection. The framework's deployment-grade feature is random-access
+decoding in time independent of archive size for $W$-bounded
+predictors, at a sync-point compression cost of approximately one
+percent --- matching dictionary-based seekable formats while
+preserving the neural-ratio advantage, a capability absent from
+existing neural compressors. Bit-exact cross-platform reproduction is
+reduced to a precision-and-determinism specification satisfied by
+published integer-arithmetic methods. We do not claim universal
+dominance --- no lossless code can map every input of length $n$ to a
+strictly shorter one --- and the framework is evaluated conditionally
+on data classes for which side information reduces residual
+uncertainty by more than the model and repair overhead costs.
 
 \textbf{Keywords:} lossless compression, neural compression, side
 information, Slepian--Wolf coding, syndrome coding, positional coding,
