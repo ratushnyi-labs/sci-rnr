@@ -1590,139 +1590,142 @@ tens of bytes per amortized block.
 
 \textbf{7. Composition and mode selection}
 
-RNR types compose by hierarchical mode selection. The top‑level
-scheduler is a Type‑III‑A coder whose mode set M contains the available
-lower‑level coders, including all Type‑I, Type‑II, and Type‑III‑B/C
-constructions. For each tile, the scheduler predicts a per‑mode cost
-vector U\_*(t), selects the argmin mode, and delegates encoding to that
-mode.
+RNR types compose by hierarchical mode selection. The top-level
+scheduler is a Type-III-A coder whose mode set $M$ contains the
+available lower-level coders, including all Type-I, Type-II, and
+Type-III-B/C constructions. For each tile, the scheduler predicts a
+per-mode cost vector $U_*(t)$, selects the argmin mode, and delegates
+encoding to that mode.
 
-\textbf{Theorem 7.1 (Composition correctness).} \emph{Let M be a finite
-set of RNR mode coders, each producing a uniquely decodable repair
-stream conditional on its mode flag. The Type‑III‑A composition with
-mode set M, deterministic mode selection m\_hat(t) = argmin\_m U\_m(t),
-and a uniquely decodable mode‑flag stream produces a uniquely decodable
-codeword for X.}
+\textbf{Theorem 7.1 (Composition correctness).} \emph{Let $M$ be a
+finite set of RNR mode coders, each producing a uniquely decodable
+repair stream conditional on its mode flag. The Type-III-A composition
+with mode set $M$, deterministic mode selection
+$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$, and a uniquely
+decodable mode-flag stream produces a uniquely decodable codeword for
+$X$.}
 
 \emph{\textbf{Proof.}} The decoder reads the metadata, reconstructs
-U\_*(t) deterministically from public state, recovers m\_hat(t) by the
-same argmin, reads the per‑tile repair stream, and applies the decoder
-of mode m\_hat(t) to recover the tile. Each step is uniquely determined;
-the concatenation is therefore an injection from X to codewords.
-\hfill$\blacksquare$
+$U_*(t)$ deterministically from public state, recovers $\hat{m}(t)$
+by the same argmin, reads the per-tile repair stream, and applies the
+decoder of mode $\hat{m}(t)$ to recover the tile. Each step is
+uniquely determined; the concatenation is therefore an injection from
+$X$ to codewords. \hfill$\blacksquare$
 
-Composition also implies a strict no‑regret guarantee for the framework
-as a whole: by including every coder in M, the Type‑III‑A composition is
-at worst within 2 * max\_t eps\_t of the best single coder per tile, and
-strictly better than any single coder on heterogeneous data where the
-per‑tile best mode varies.
+Composition also implies a strict no-regret guarantee for the
+framework as a whole: by including every coder in $M$, the Type-III-A
+composition is at worst within $2 \max_t \varepsilon_t$ of the best
+single coder per tile, and strictly better than any single coder on
+heterogeneous data where the per-tile best mode varies.
 
 \textbf{7.2 Runtime parameter selection}
 
 Several parameters in the framework are input-dependent: the codeword
-rate k in Type-I (Code-k), the alphabet size K in Type-II, the support
-threshold tau\_v in Proposition 5.5, the tile size in Type-III-A, the
-dictionary size in Type-III-C, and others. No single setting is optimal
-across all inputs; the right approach is input probing at encode time,
-where the encoder scans the block, estimates the relevant structural
-parameter, and selects the parameter accordingly. The parameter choice
-is recorded in the metadata stream L(Theta) so the decoder can reproduce
-the selection.
+rate $k$ in Type-I (Code-$k$), the alphabet size $K$ in Type-II, the
+support threshold $\tau_v$ in Proposition 5.5, the tile size in
+Type-III-A, the dictionary size in Type-III-C, and others. No single
+setting is optimal across all inputs; the right approach is input
+probing at encode time, where the encoder scans the block, estimates
+the relevant structural parameter, and selects the parameter
+accordingly. The parameter choice is recorded in the metadata stream
+$L(\Theta)$ so the decoder can reproduce the selection.
 
 Parameter selection is structurally identical to mode selection: each
 parameter value defines a distinct coder, and the Type-III-A scheduler
-chooses among them by predicted cost. The composition theorem (Theorem
-7.1) and the approximate-oracle bound (Theorem 6.1) both extend to
-parameterized modes without change, with the per-mode prediction error
-eps\_t now defined over the cross product of (mode, parameter) pairs.
-The cost is the metadata overhead of encoding the parameter choice,
-typically O(log K\_params) bits per tile or per block, which is
-negligible against the per-mode repair stream.
+chooses among them by predicted cost. The composition theorem
+(Theorem 7.1) and the approximate-oracle bound (Theorem 6.1) both
+extend to parameterized modes without change, with the per-mode
+prediction error $\varepsilon_t$ now defined over the cross product of
+(mode, parameter) pairs. The cost is the metadata overhead of encoding
+the parameter choice, typically $O(\log K_{\text{params}})$ bits per
+tile or per block, which is negligible against the per-mode repair
+stream.
 
-Two practical patterns are standard. First, batch probing: scan a small
-prefix of the block (e.g., the first 1 KiB), estimate key statistics
-(entropy rate, marginal sparsity, expected Hamming weight of Code-k
-errors), select parameters once, and encode the rest of the block with
-the chosen parameters. Second, tiled probing: at each tile boundary in
-Type-III-A, re-estimate parameters from the most recently verified
-subblocks and adjust. Both patterns fit the existing framework: the
-parameter-selection function is itself part of M (deterministic,
-decoder-reproducible from public state), and the parameter values are
-part of L(Theta).
+Two practical patterns are standard. First, batch probing: scan a
+small prefix of the block (e.g., the first 1 KiB), estimate key
+statistics (entropy rate, marginal sparsity, expected Hamming weight
+of Code-$k$ errors), select parameters once, and encode the rest of
+the block with the chosen parameters. Second, tiled probing: at each
+tile boundary in Type-III-A, re-estimate parameters from the most
+recently verified subblocks and adjust. Both patterns fit the
+existing framework: the parameter-selection function is itself part
+of $M$ (deterministic, decoder-reproducible from public state), and
+the parameter values are part of $L(\Theta)$.
 
 This framing resolves the input-dependent design questions that would
-otherwise appear as open problems: there is no single optimal Code-k or
-optimal alphabet size, only an optimal parameter-selection function for
-a given data distribution, and the latter is part of M just like any
-other learned component.
+otherwise appear as open problems: there is no single optimal
+Code-$k$ or optimal alphabet size, only an optimal
+parameter-selection function for a given data distribution, and the
+latter is part of $M$ just like any other learned component.
 
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
-injective map C from \{0,1\}\^{}n to binary strings of length less than
-n assigns every input string of length n a strictly shorter codeword.}
+injective map $C$ from $\{0,1\}^n$ to binary strings of length less
+than $n$ assigns every input string of length $n$ a strictly shorter
+codeword.}
 
-\emph{\textbf{Proof.}} There are 2\^{}n binary strings of length n.
-There are 2\^{}n - 1 binary strings of length strictly less than n,
-summing 2\^{}k for k from 0 to n-1. Any injection from 2\^{}n inputs to
-fewer than 2\^{}n outputs is impossible by the pigeonhole principle.
+\emph{\textbf{Proof.}} There are $2^n$ binary strings of length $n$.
+There are $2^n - 1$ binary strings of length strictly less than $n$,
+summing $\sum_{k=0}^{n-1} 2^k$. Any injection from $2^n$ inputs to
+fewer than $2^n$ outputs is impossible by the pigeonhole principle.
 \hfill$\blacksquare$
 
-Theorem 8.1 is standard and short; we include it to fix the framework's
-honest claim. RNR does not assert that any fixed coder dominates any
-baseline on every input. The claim is conditional and distributional:
-for data classes whose conditional entropy under deterministic side
-information is below the baseline rate by more than the model and
-overhead cost, RNR is advantageous in expectation.
+Theorem 8.1 is standard and short; we include it to fix the
+framework's honest claim. RNR does not assert that any fixed coder
+dominates any baseline on every input. The claim is conditional and
+distributional: for data classes whose conditional entropy under
+deterministic side information is below the baseline rate by more than
+the model and overhead cost, RNR is advantageous in expectation.
 
 \textbf{9. Verification and error containment}
 
 Autoregressive RNR modes update the predictor context with previously
-decoded subblocks. An undetected decoding error in subblock i would
-propagate into the context for subblock i + 1 and beyond, with cascading
-consequences. We discipline this by requiring that the decoder update
-its context only after verifying the candidate decoded subblock against
-a stored hash.
+decoded subblocks. An undetected decoding error in subblock $i$ would
+propagate into the context for subblock $i + 1$ and beyond, with
+cascading consequences. We discipline this by requiring that the
+decoder update its context only after verifying the candidate decoded
+subblock against a stored hash.
 
-Let X = (X\_1, ..., X\_m) be partitioned into verified subblocks, with
-stored verification values v\_i = H\_v(X\_i). The decoder produces
-X\_hat\_i, checks H\_v(X\_hat\_i) = v\_i, and only on success uses
-X\_hat\_i to update C for subblock i + 1. The following theorem rules
-out cross‑subblock error propagation.
+Let $X = (X_1, \ldots, X_m)$ be partitioned into verified subblocks,
+with stored verification values $v_i = H_v(X_i)$. The decoder produces
+$\hat{X}_i$, checks $H_v(\hat{X}_i) = v_i$, and only on success uses
+$\hat{X}_i$ to update $C$ for subblock $i + 1$. The following theorem
+rules out cross-subblock error propagation.
 
-\textbf{Theorem 9.1 (No cross‑subblock error propagation).}
-\emph{Suppose H\_v is a cryptographic hash with negligible collision
-probability delta on the considered set of candidate subblocks. Then the
-probability that an incorrect X\_hat\_i is used to update the context
-for subblock i + 1 is at most delta.}
+\textbf{Theorem 9.1 (No cross-subblock error propagation).}
+\emph{Suppose $H_v$ is a cryptographic hash with negligible collision
+probability $\delta$ on the considered set of candidate subblocks.
+Then the probability that an incorrect $\hat{X}_i$ is used to update
+the context for subblock $i + 1$ is at most $\delta$.}
 
 \emph{\textbf{Proof.}} The context update rule is conditional on
-H\_v(X\_hat\_i) = v\_i. If X\_hat\_i is not equal to X\_i, then
-H\_v(X\_hat\_i) = v\_i can occur only as a hash collision with the
-unique stored v\_i. Under the cryptographic hash assumption, this
-happens with probability at most delta per candidate. The bound holds by
-union over the considered candidates if delta is interpreted
-accordingly. \hfill$\blacksquare$
+$H_v(\hat{X}_i) = v_i$. If $\hat{X}_i \neq X_i$, then
+$H_v(\hat{X}_i) = v_i$ can occur only as a hash collision with the
+unique stored $v_i$. Under the cryptographic hash assumption, this
+happens with probability at most $\delta$ per candidate. The bound
+holds by union over the considered candidates if $\delta$ is
+interpreted accordingly. \hfill$\blacksquare$
 
-The theorem is stated for cryptographic H\_v because non‑cryptographic
-hashes (CRCs, simple checksums) admit structured collisions that an
-adversarial or simply unlucky predictor may produce. In practice we
-recommend a truncated SHA‑256 per verified subblock. A 64‑bit truncation
-gives delta approximately 2\^{}\{-64\}, which is operationally
-negligible and costs 8 bytes per subblock; a full SHA‑256 costs 32
-bytes.
+The theorem is stated for cryptographic $H_v$ because
+non-cryptographic hashes (CRCs, simple checksums) admit structured
+collisions that an adversarial or simply unlucky predictor may
+produce. In practice we recommend a truncated SHA-256 per verified
+subblock. A 64-bit truncation gives $\delta \approx 2^{-64}$, which
+is operationally negligible and costs 8 bytes per subblock; a full
+SHA-256 costs 32 bytes.
 
 \textbf{10. Practical considerations}
 
-\textbf{10.1 Bit‑exact decoder reproduction of M}
+\textbf{10.1 Bit-exact decoder reproduction of $M$}
 
-All RNR types require that the decoder reproduce the model output Y =
-M(C), Q, or U bit‑for‑bit identically to the encoder. IEEE‑754
-floating‑point arithmetic is non‑associative, GPU reduction kernels are
-non‑deterministic by default, and cuDNN/cuBLAS algorithm selection
+All RNR types require that the decoder reproduce the model output
+$Y = M(C), Q,$ or $U$ bit-for-bit identically to the encoder. IEEE-754
+floating-point arithmetic is non-associative, GPU reduction kernels
+are non-deterministic by default, and cuDNN/cuBLAS algorithm selection
 varies by hardware and library version. A model executed naively on a
-heterogeneous fleet of decoders will not produce identical output, and a
-single bit of divergence breaks lossless decoding.
+heterogeneous fleet of decoders will not produce identical output, and
+a single bit of divergence breaks lossless decoding.
 
 Three remedies are available.
 
@@ -1746,40 +1749,42 @@ Three remedies are available.
   binary.
 \end{itemize}
 
-We recommend integer arithmetic with explicit per‑layer scale and
-zero‑point parameters as the default for any RNR realization. The model
-description L(M) then includes both the parameter table and the
-per‑layer quantization scheme.
+We recommend integer arithmetic with explicit per-layer scale and
+zero-point parameters as the default for any RNR realization. The
+model description $L(M)$ then includes both the parameter table and
+the per-layer quantization scheme.
 
 \textbf{10.2 Model amortization regimes}
 
-L(M) is paid once per archive. For a single‑block archive, the model
-cost dominates and RNR is competitive only if the model is small (a few
-kilobytes), or if the model is pre‑shared between encoder and decoder
-via a public release. For a multi‑block archive, the amortized cost is
-L(M) / m where m is the number of blocks; for streaming applications
-where m is large, L(M) effectively vanishes. The three regimes have
-different optimal model sizes and warrant separate evaluation.
+$L(M)$ is paid once per archive. For a single-block archive, the model
+cost dominates and RNR is competitive only if the model is small (a
+few kilobytes), or if the model is pre-shared between encoder and
+decoder via a public release. For a multi-block archive, the amortized
+cost is $L(M)/m$ where $m$ is the number of blocks; for streaming
+applications where $m$ is large, $L(M)$ effectively vanishes. The
+three regimes have different optimal model sizes and warrant separate
+evaluation.
 
 \textbf{10.3 Verification overhead analysis}
 
-A SHA‑256 per 4 KiB subblock is 32 / 4096 = 0.78\% overhead. A truncated
-64‑bit hash per 4 KiB subblock is 8 / 4096 = 0.20\%. A truncated 32‑bit
-hash is 0.10\%, but with a 2\^{}\{-32\} collision probability that may
-be acceptable in some applications. Reducing the subblock size to 1 KiB
-increases overhead proportionally. The right balance depends on the
-underlying error rate of the predictor; if errors are rare, larger
-subblocks are acceptable.
+A SHA-256 per 4 KiB subblock is $32/4096 = 0.78\%$ overhead. A
+truncated 64-bit hash per 4 KiB subblock is $8/4096 = 0.20\%$. A
+truncated 32-bit hash is $0.10\%$, but with a $2^{-32}$ collision
+probability that may be acceptable in some applications. Reducing the
+subblock size to 1 KiB increases overhead proportionally. The right
+balance depends on the underlying error rate of the predictor; if
+errors are rare, larger subblocks are acceptable.
 
 \textbf{10.4 Fallback modes}
 
 Every RNR coder must include a fallback mode that handles the case in
 which the chosen primary mode fails to compress. Two fallbacks are
-standard: (i) raw storage of the subblock, costing 8N bits plus headers;
-(ii) baseline coder storage, applying a fixed external coder (e.g.,
-zstd) to the subblock. The choice between fallbacks is per‑subblock and
-recorded in the mode‑flag stream of the Type‑III‑A scheduler. The cost
-of the fallback flag must be included in L(Theta).
+standard: (i)~raw storage of the subblock, costing $8N$ bits plus
+headers; (ii)~baseline coder storage, applying a fixed external coder
+(e.g., zstd) to the subblock. The choice between fallbacks is
+per-subblock and recorded in the mode-flag stream of the Type-III-A
+scheduler. The cost of the fallback flag must be included in
+$L(\Theta)$.
 
 \textbf{10.5 A sufficient condition for bit-exact reproduction}
 
@@ -1788,46 +1793,50 @@ mechanism but does not formalize when it suffices. The following theorem
 gives a sufficient condition under which a quantized neural predictor is
 bit-exact across any pair of conforming implementations.
 
-\textbf{Theorem 10.1 (Bit-exact reproduction under deterministic integer
-inference).} \emph{Let M be an inference graph with L layers, where each
-layer is implemented as an integer matrix-vector product followed by a
-non-linearity. Suppose: (i) all weights and inputs are integers; (ii)
-all intermediate accumulators use bit-width b satisfying b \textgreater=
-ceil(log\_2(L * W\_max * I\_max)) + 1, where W\_max is an upper bound on
-the L1 norm of any weight row and I\_max is an upper bound on the
-magnitude of any layer input; (iii) all non-linearities are
-deterministic integer-to-integer mappings (e.g., piecewise-constant
-lookup tables); (iv) all reduction operations (sums in matrix-vector
-products) follow a fixed, deterministic order specified by the model
-description. Then M(C) produces bit-identical output for any input C on
-any two implementations conforming to (i) through (iv).}
+\textbf{Theorem 10.1 (Bit-exact reproduction under deterministic
+integer inference).} \emph{Let $M$ be an inference graph with $L$
+layers, where each layer is implemented as an integer matrix-vector
+product followed by a non-linearity. Suppose: (i)~all weights and
+inputs are integers; (ii)~all intermediate accumulators use bit-width
+$b$ satisfying
+$b \geq \lceil \log_2(L \cdot W_{\max} \cdot I_{\max}) \rceil + 1$,
+where $W_{\max}$ is an upper bound on the $L_1$ norm of any weight
+row and $I_{\max}$ is an upper bound on the magnitude of any layer
+input; (iii)~all non-linearities are deterministic
+integer-to-integer mappings (e.g., piecewise-constant lookup tables);
+(iv)~all reduction operations (sums in matrix-vector products) follow
+a fixed, deterministic order specified by the model description. Then
+$M(C)$ produces bit-identical output for any input $C$ on any two
+implementations conforming to (i) through (iv).}
 
 \emph{\textbf{Proof.}} Under (i) and (ii), each integer multiplication
 and addition produces a result within the representable range; no
 overflow or saturation occurs. Integer arithmetic is associative and
 commutative, so any ordering of additions produces the same exact sum.
 Under (iv), the ordering is pinned by the model description, so two
-implementations choose the same ordering and produce the same sum. Under
-(iii), the non-linearity is a deterministic function from integer inputs
-to integer outputs that is fully specified by the model description
-(typically as a lookup table); two implementations applying the same
-table to the same input produce the same output. By induction on layer
-depth, the output of layer l is identical across implementations, hence
-the final M(C) is identical. \hfill$\blacksquare$
+implementations choose the same ordering and produce the same sum.
+Under (iii), the non-linearity is a deterministic function from
+integer inputs to integer outputs that is fully specified by the model
+description (typically as a lookup table); two implementations
+applying the same table to the same input produce the same output. By
+induction on layer depth, the output of layer $l$ is identical across
+implementations, hence the final $M(C)$ is identical.
+\hfill$\blacksquare$
 
-The bit-width condition b \textgreater= ceil(log\_2(L * W\_max *
-I\_max)) + 1 is the precision required to avoid overflow in the worst
-case; in practice, b = 32 is sufficient for any L \textless= 64, W\_max
-\textless= 2\^{}16, I\_max \textless= 2\^{}16, which covers all
-practical predictor sizes. The non-linearity table requirement excludes
-any function involving real-valued division, square root, or
+The bit-width condition
+$b \geq \lceil \log_2(L \cdot W_{\max} \cdot I_{\max}) \rceil + 1$
+is the precision required to avoid overflow in the worst case; in
+practice, $b = 32$ is sufficient for any $L \leq 64$,
+$W_{\max} \leq 2^{16}$, $I_{\max} \leq 2^{16}$, which covers all
+practical predictor sizes. The non-linearity table requirement
+excludes any function involving real-valued division, square root, or
 transcendentals; sigmoid, tanh, GELU, and softmax must be replaced by
-piecewise-linear or integer-quantized approximations, which is standard
-practice in quantized inference. The reduction ordering requirement
-excludes any platform-specific parallelization (e.g., GPU atomics) that
-does not commit to a deterministic order; this is satisfied by
-sequential CPU implementations and by GPU implementations that use
-tree-reduction with a fixed schedule.
+piecewise-linear or integer-quantized approximations, which is
+standard practice in quantized inference. The reduction ordering
+requirement excludes any platform-specific parallelization (e.g., GPU
+atomics) that does not commit to a deterministic order; this is
+satisfied by sequential CPU implementations and by GPU implementations
+that use tree-reduction with a fixed schedule.
 
 Theorem 10.1 reduces the reproducibility question from a software
 engineering problem to a precision-and-determinism specification. A
@@ -1840,70 +1849,73 @@ engineering work and is deferred to a companion artifact (§13.3).
 \textbf{10.6 Bit-exact adaptive predictors under integer-arithmetic
 optimization}
 
-Theorem 10.1 covers the forward pass of a fixed predictor M. For RNR
-coders that adapt M online from previously verified subblocks during
-encoding --- a useful capability for streams whose statistics drift over
-a long archive --- the adaptation must itself be deterministic and
-decoder-reproducible. Otherwise the encoder and decoder would diverge
-after the first adaptation step. The relevant discipline is
+Theorem 10.1 covers the forward pass of a fixed predictor $M$. For RNR
+coders that adapt $M$ online from previously verified subblocks during
+encoding --- a useful capability for streams whose statistics drift
+over a long archive --- the adaptation must itself be deterministic
+and decoder-reproducible. Otherwise the encoder and decoder would
+diverge after the first adaptation step. The relevant discipline is
 integer-arithmetic optimization, developed in the recent
 low-precision-training literature.
 
 \textbf{Definition 10.1 (Compatible online optimizer).} An online
-optimizer Opt is compatible with bit-exact reproduction if: (a) its
-state at step t, denoted S\_t (parameters, momentum, accumulators, and
-any auxiliary buffers), is a tuple of fixed-bit-width integers; (b) its
-update function S\_\{t+1\} = Opt(S\_t, g\_t) takes the current state and
-a fixed-bit-width integer gradient g\_t and produces the new state via a
-deterministic computation using only integer arithmetic, lookup tables,
-and seeded pseudorandom number generation; (c) any operation that would
-otherwise require real-valued computation (division, square root,
-exponential, transcendentals) is replaced with a specified deterministic
-integer approximation (integer division with explicit rounding mode,
-integer square root, fixed-point or lookup-table-based approximation of
-transcendentals).
+optimizer $\mathrm{Opt}$ is compatible with bit-exact reproduction if:
+(a)~its state at step $t$, denoted $S_t$ (parameters, momentum,
+accumulators, and any auxiliary buffers), is a tuple of
+fixed-bit-width integers; (b)~its update function
+$S_{t+1} = \mathrm{Opt}(S_t, g_t)$ takes the current state and a
+fixed-bit-width integer gradient $g_t$ and produces the new state via
+a deterministic computation using only integer arithmetic, lookup
+tables, and seeded pseudorandom number generation; (c)~any operation
+that would otherwise require real-valued computation (division, square
+root, exponential, transcendentals) is replaced with a specified
+deterministic integer approximation (integer division with explicit
+rounding mode, integer square root, fixed-point or lookup-table-based
+approximation of transcendentals).
 
-Several practical optimizers fit Definition 10.1. Integer-quantized SGD
-with quantized gradients (Wu, Yan, Wang, Maxson, Xu, He 2018) is the
-canonical example: parameters, gradients, and learning-rate-scaled
-updates are all integers, and the update is parameter -=
-shift\_right(gradient * learning\_rate, scale). SignSGD (Bernstein,
-Wang, Azizzadenesheli, Anandkumar 2018) is compatible by construction
-since the only non-trivial operation is sign extraction.
-Integer-arithmetic Adam (Banner, Hubara, Hoffer, Soudry 2018) is
-compatible when the reciprocal-square-root operation is replaced with a
-deterministic integer approximation (typically a piecewise-linear lookup
-table). Non-examples include any floating-point optimizer without
-quantization wrappers, Adam with real-valued square roots, and
-stochastic optimizers with unseeded random masking.
+Several practical optimizers fit Definition 10.1. Integer-quantized
+SGD with quantized gradients (Wu, Yan, Wang, Maxson, Xu, He 2018) is
+the canonical example: parameters, gradients, and
+learning-rate-scaled updates are all integers, and the update is
+$\text{parameter} \mathrel{-}= \mathrm{shift\_right}(\text{gradient} \cdot \text{learning\_rate}, \text{scale})$.
+SignSGD (Bernstein, Wang, Azizzadenesheli, Anandkumar 2018) is
+compatible by construction since the only non-trivial operation is
+sign extraction. Integer-arithmetic Adam (Banner, Hubara, Hoffer,
+Soudry 2018) is compatible when the reciprocal-square-root operation
+is replaced with a deterministic integer approximation (typically a
+piecewise-linear lookup table). Non-examples include any
+floating-point optimizer without quantization wrappers, Adam with
+real-valued square roots, and stochastic optimizers with unseeded
+random masking.
 
-\textbf{Theorem 10.2 (Bit-exact adaptive predictors).} \emph{Suppose the
-forward pass of M satisfies the conditions of Theorem 10.1. Suppose the
-encoder updates M online via a compatible online optimizer (Definition
-10.1) with gradient computed by deterministic integer backpropagation.
-Suppose the order in which subblocks are used for adaptation is pinned
-by the model description and identical on encoder and decoder. Then at
-every subblock boundary, the encoder\textquotesingle s and
-decoder\textquotesingle s parameter states are bit-identical, and the
+\textbf{Theorem 10.2 (Bit-exact adaptive predictors).} \emph{Suppose
+the forward pass of $M$ satisfies the conditions of Theorem 10.1.
+Suppose the encoder updates $M$ online via a compatible online
+optimizer (Definition 10.1) with gradient computed by deterministic
+integer backpropagation. Suppose the order in which subblocks are
+used for adaptation is pinned by the model description and identical
+on encoder and decoder. Then at every subblock boundary, the
+encoder's and decoder's parameter states are bit-identical, and the
 resulting predictor outputs are bit-identical.}
 
-\emph{\textbf{Proof.}} Induction on the adaptation step t. Base case (t
-= 0): the initial parameter state is part of L(M) and is bit-identical
-by construction. Induction step (t -\textgreater{} t+1): assume S\_t is
-bit-identical between encoder and decoder. The subblock X\_t used for
-adaptation is verified by Theorem 9.1 to be the same on both sides. The
-gradient g\_t = grad(L(X\_t; S\_t)) is computed by deterministic integer
-backpropagation. Integer backpropagation through a forward pass
-satisfying Theorem 10.1\textquotesingle s conditions is itself
-deterministic (each backward operation is an integer matrix-vector
-product with a fixed reduction order, followed by an integer-to-integer
-derivative-of-non-linearity table). Therefore g\_t is bit-identical on
-both sides. The update S\_\{t+1\} = Opt(S\_t, g\_t) applies the
-deterministic integer-to-integer function from Definition 10.1 to
-bit-identical inputs, producing bit-identical outputs. By induction,
-S\_t is bit-identical for all t. By Theorem 10.1 applied to each S\_t,
-the predictor output is bit-identical at every adaptation step.
-\hfill$\blacksquare$
+\emph{\textbf{Proof.}} Induction on the adaptation step $t$. Base
+case ($t = 0$): the initial parameter state is part of $L(M)$ and is
+bit-identical by construction. Induction step ($t \to t+1$): assume
+$S_t$ is bit-identical between encoder and decoder. The subblock
+$X_t$ used for adaptation is verified by Theorem 9.1 to be the same
+on both sides. The gradient
+$g_t = \nabla \mathcal{L}(X_t; S_t)$ is computed by deterministic
+integer backpropagation. Integer backpropagation through a forward
+pass satisfying Theorem 10.1's conditions is itself deterministic
+(each backward operation is an integer matrix-vector product with a
+fixed reduction order, followed by an integer-to-integer
+derivative-of-non-linearity table). Therefore $g_t$ is bit-identical
+on both sides. The update $S_{t+1} = \mathrm{Opt}(S_t, g_t)$ applies
+the deterministic integer-to-integer function from Definition 10.1
+to bit-identical inputs, producing bit-identical outputs. By
+induction, $S_t$ is bit-identical for all $t$. By Theorem 10.1
+applied to each $S_t$, the predictor output is bit-identical at every
+adaptation step. \hfill$\blacksquare$
 
 Theorem 10.2 reduces the adaptive-predictor reproducibility question to
 the existence of a compatible online optimizer with adequate training
@@ -1927,98 +1939,105 @@ deployment blocker for archive-style use cases where partial reads are
 common. The RNR framework supports random access in time independent of
 N, provided the predictor has bounded context. We make this precise.
 
-\textbf{Definition 10.2 (W-bounded predictor).} A predictor M is
-W-bounded if its output Y\_i = M(C\_i) at position i depends only on the
-previous W bytes of public context: Y\_i = M(X\_\{i-W\}, ...,
-X\_\{i-1\}) when C is built incrementally from decoded subblocks. The
-bound W is a structural property of M\textquotesingle s architecture,
-not a tunable parameter at inference time.
+\textbf{Definition 10.2 ($W$-bounded predictor).} A predictor $M$ is
+$W$-bounded if its output $Y_i = M(C_i)$ at position $i$ depends only
+on the previous $W$ bytes of public context:
+$Y_i = M(X_{i-W}, \ldots, X_{i-1})$ when $C$ is built incrementally
+from decoded subblocks. The bound $W$ is a structural property of
+$M$'s architecture, not a tunable parameter at inference time.
 
-Transformers with fixed context window W are W-bounded, as are n-gram
-and finite-state predictors of order W and any feedforward architecture
-with bounded receptive field. RNNs, LSTMs, GRUs, and state-space models
-(Mamba, S4) are not W-bounded in general; their state can depend on
-arbitrarily long history. Theorem 10.4 below covers the non-W-bounded
-case via state snapshots.
+Transformers with fixed context window $W$ are $W$-bounded, as are
+$n$-gram and finite-state predictors of order $W$ and any feedforward
+architecture with bounded receptive field. RNNs, LSTMs, GRUs, and
+state-space models (Mamba, S4) are not $W$-bounded in general; their
+state can depend on arbitrarily long history. Theorem 10.4 below
+covers the non-$W$-bounded case via state snapshots.
 
-\textbf{Definition 10.3 (Sync point).} A sync point at position P in the
-source is a position where the predictor\textquotesingle s context state
-is reset to a known initial value Q\_init independent of bytes {[}0, P).
-The encoder inserts sync points at fixed intervals K and includes a seek
-index in the archive mapping each sync point identifier to its bit
-offset in R and byte offset in X. The seek index has size at most
-ceil(N/K) * ceil(log\_2 L(R)) bits.
+\textbf{Definition 10.3 (Sync point).} A sync point at position $P$ in
+the source is a position where the predictor's context state is reset
+to a known initial value $Q_{\text{init}}$ independent of bytes
+$[0, P)$. The encoder inserts sync points at fixed intervals $K$ and
+includes a seek index in the archive mapping each sync point
+identifier to its bit offset in $R$ and byte offset in $X$. The seek
+index has size at most $\lceil N/K \rceil \cdot \lceil \log_2 L(R) \rceil$
+bits.
 
 Each sync point forfeits some compression efficiency because the
-predictor restarts cold and cannot exploit the prior W bytes of context.
-For a W-bounded predictor, the per-sync-point cost is bounded by W *
-(cold-context rate minus asymptotic rate), typically a few hundred
-bytes. The total compression cost of sync points is O((N/K) * W) bytes.
+predictor restarts cold and cannot exploit the prior $W$ bytes of
+context. For a $W$-bounded predictor, the per-sync-point cost is
+bounded by $W \cdot (\text{cold-context rate} - \text{asymptotic rate})$,
+typically a few hundred bytes. The total compression cost of sync
+points is $O((N/K) \cdot W)$ bytes.
 
-\textbf{Theorem 10.3 (Random access in time O(K + k)).} \emph{Let X be
-compressed under RNR with a W-bounded predictor M satisfying Theorem
-10.1 and with sync points placed every K positions. Random access to k
-consecutive bytes starting at any position N requires: (i) O(log(N/K))
-bits read from the seek index to locate the sync point P less than or
-equal to N closest to N; (ii) decoding of at most K + k positions of R,
-of which at most K positions are warmup (discarded output); (iii) K + k
-predictor evaluations and entropy-coder updates. Total work is O((K + k)
-* cost(M)), independent of N.}
+\textbf{Theorem 10.3 (Random access in time $O(K + k)$).} \emph{Let
+$X$ be compressed under RNR with a $W$-bounded predictor $M$
+satisfying Theorem 10.1 and with sync points placed every $K$
+positions. Random access to $k$ consecutive bytes starting at any
+position $N$ requires: (i)~$O(\log(N/K))$ bits read from the seek
+index to locate the sync point $P \leq N$ closest to $N$;
+(ii)~decoding of at most $K + k$ positions of $R$, of which at most
+$K$ positions are warmup (discarded output); (iii)~$K + k$ predictor
+evaluations and entropy-coder updates. Total work is
+$O((K + k) \cdot \mathrm{cost}(M))$, independent of $N$.}
 
-\emph{\textbf{Proof.}} Binary-search the seek index for the largest sync
-point P with P \textless= N; the index has at most ceil(N/K) entries,
-giving O(log(N/K)) seek cost. By Definition 10.3, decoding from
-R\textquotesingle s bit offset at P proceeds with predictor state
-initialized to Q\_init. Decode forward one position at a time: at each
-position i in \{P, P+1, ..., N+k-1\}, compute Y\_i = M(C\_i) where C\_i
-is the context built from previously decoded positions {[}P, i). By the
-W-bounded property (Definition 10.2), Y\_i depends only on bytes {[}i-W,
-i), which are all available within the decoded prefix once i exceeds P +
-W. The first W positions after P may have shortened context (positions
-{[}P, P+W) see fewer than W bytes), which the encoder accommodates by
-encoding those positions with reduced-context predictions; this is
-exactly the cold-context cost analyzed before. Continue decoding until
-position N + k; output bytes {[}N, N+k). By Theorem 10.1, all predictor
-evaluations are deterministic and bit-identical to a full decoding from
-position 0, so the output matches the original X on {[}N, N+k). Total
-decoded positions: N + k - P \textless= K + k since P \textgreater{} N -
-K. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} Binary-search the seek index for the largest
+sync point $P$ with $P \leq N$; the index has at most
+$\lceil N/K \rceil$ entries, giving $O(\log(N/K))$ seek cost. By
+Definition 10.3, decoding from $R$'s bit offset at $P$ proceeds with
+predictor state initialized to $Q_{\text{init}}$. Decode forward one
+position at a time: at each position $i \in \{P, P+1, \ldots, N+k-1\}$,
+compute $Y_i = M(C_i)$ where $C_i$ is the context built from
+previously decoded positions $[P, i)$. By the $W$-bounded property
+(Definition 10.2), $Y_i$ depends only on bytes $[i-W, i)$, which are
+all available within the decoded prefix once $i$ exceeds $P + W$. The
+first $W$ positions after $P$ may have shortened context (positions
+$[P, P+W)$ see fewer than $W$ bytes), which the encoder accommodates
+by encoding those positions with reduced-context predictions; this is
+exactly the cold-context cost analyzed before. Continue decoding
+until position $N + k$; output bytes $[N, N+k)$. By Theorem 10.1, all
+predictor evaluations are deterministic and bit-identical to a full
+decoding from position 0, so the output matches the original $X$ on
+$[N, N+k)$. Total decoded positions: $N + k - P \leq K + k$ since
+$P > N - K$. \hfill$\blacksquare$
 
-Theorem 10.3 establishes that random access in RNR archives runs in time
-independent of archive size. For K = 64 KiB and k = 1 KiB, the cost is
-roughly K + k = 65 KiB worth of predictor evaluations --- typically on
-the order of 10 to 100 milliseconds for a small distilled transformer on
-commodity hardware. This is asymptotically a factor of N/(K + k) faster
-than full sequential decoding, which for archive sizes of 1 GiB and K =
-64 KiB is a roughly 16,000-fold speedup.
+Theorem 10.3 establishes that random access in RNR archives runs in
+time independent of archive size. For $K = 64$ KiB and $k = 1$ KiB,
+the cost is roughly $K + k = 65$ KiB worth of predictor evaluations
+--- typically on the order of 10 to 100 milliseconds for a small
+distilled transformer on commodity hardware. This is asymptotically a
+factor of $N/(K + k)$ faster than full sequential decoding, which for
+archive sizes of 1 GiB and $K = 64$ KiB is a roughly 16{,}000-fold
+speedup.
 
-\textbf{Theorem 10.4 (Random access for non-W-bounded predictors).}
-\emph{For a non-W-bounded predictor (RNN, LSTM, state-space model),
-random access requires storing a snapshot of M\textquotesingle s
-internal state at each sync point. Let L(state) be the bit length of one
-snapshot. The seek index grows to O((N/K) * (log L(R) + L(state))) bits.
-The random-access cost is unchanged: O((K + k) * cost(M)) per access,
-independent of N.}
+\textbf{Theorem 10.4 (Random access for non-$W$-bounded predictors).}
+\emph{For a non-$W$-bounded predictor (RNN, LSTM, state-space model),
+random access requires storing a snapshot of $M$'s internal state at
+each sync point. Let $L(\text{state})$ be the bit length of one
+snapshot. The seek index grows to
+$O((N/K) \cdot (\log L(R) + L(\text{state})))$ bits. The random-access
+cost is unchanged: $O((K + k) \cdot \mathrm{cost}(M))$ per access,
+independent of $N$.}
 
-\emph{\textbf{Proof.}} Augment each sync point\textquotesingle s index
-entry with M\textquotesingle s full internal state at position P,
-serialized as a fixed-bit-width integer tuple as required by Theorem
-10.1. The state snapshot adds L(state) bits per sync point, multiplying
-the index size by (1 + L(state) / log L(R)). To random-access bytes
-{[}N, N+k), locate the latest sync point P \textless= N, deserialize the
-stored state into the decoder\textquotesingle s predictor instance, and
-decode forward as in Theorem 10.3. The decoded output is bit-identical
-by Theorem 10.1 applied to the restored state. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} Augment each sync point's index entry with
+$M$'s full internal state at position $P$, serialized as a
+fixed-bit-width integer tuple as required by Theorem 10.1. The state
+snapshot adds $L(\text{state})$ bits per sync point, multiplying the
+index size by $(1 + L(\text{state}) / \log L(R))$. To random-access
+bytes $[N, N+k)$, locate the latest sync point $P \leq N$, deserialize
+the stored state into the decoder's predictor instance, and decode
+forward as in Theorem 10.3. The decoded output is bit-identical by
+Theorem 10.1 applied to the restored state. \hfill$\blacksquare$
 
-For LSTM predictors with d-dimensional state, L(state) is O(d * b) bits
-where b is the per-component bit-width. For modern state-space models
-with structured state-transition matrices, L(state) can be O(d\^{}2).
-With d = 1024 and b = 16, an LSTM state snapshot is 16 Kbits = 2 KiB;
-placing one snapshot per K = 64 KiB sync point adds 3\% index overhead.
-State-space models with d = 256 and structured-state representation can
-require 64 KiB snapshots, doubling the seek index. This motivates the
-W-bounded design choice for deployable RNR codecs, particularly for
-archive formats where the seek index is co-located with the data and
+For LSTM predictors with $d$-dimensional state, $L(\text{state})$ is
+$O(d \cdot b)$ bits where $b$ is the per-component bit-width. For
+modern state-space models with structured state-transition matrices,
+$L(\text{state})$ can be $O(d^2)$. With $d = 1024$ and $b = 16$, an
+LSTM state snapshot is 16 Kbits = 2 KiB; placing one snapshot per
+$K = 64$ KiB sync point adds 3\% index overhead. State-space models
+with $d = 256$ and structured-state representation can require 64 KiB
+snapshots, doubling the seek index. This motivates the $W$-bounded
+design choice for deployable RNR codecs, particularly for archive
+formats where the seek index is co-located with the data and
 contributes to its size.
 
 \emph{\textbf{Trade-offs}}
@@ -2027,31 +2046,31 @@ Three trade-offs govern random-access design in RNR archives.
 
 \begin{itemize}
 \item
-  Sync-point spacing K. Smaller K means faster seek and smaller warmup
-  cost, but more sync points and therefore more cold-context compression
-  overhead. Typical choices: K = 4 KiB (aggressive seek), K = 64 KiB
-  (balanced), K = 1 MiB (compression-favored).
+  Sync-point spacing $K$. Smaller $K$ means faster seek and smaller
+  warmup cost, but more sync points and therefore more cold-context
+  compression overhead. Typical choices: $K = 4$ KiB (aggressive
+  seek), $K = 64$ KiB (balanced), $K = 1$ MiB (compression-favored).
 \item
-  Type-II semi-non-factorized coding. Theorem 5.4\textquotesingle s
-  Theta(N) separation requires joint structure across all N positions of
-  a block. Inserting sync points every K positions partitions the block
-  into independent K-length subblocks, recovering only Theta(K)
-  separation per subblock. For K = 64 KiB and N = 1 GiB, the
-  per-subblock advantage is preserved but the cross-subblock joint
-  structure is forfeited. Type-I, Type-III-B, and Type-III-C are not
-  affected by this trade-off because their constructions are already
-  local (per-position or per-tile).
+  Type-II semi-non-factorized coding. Theorem 5.4's $\Theta(N)$
+  separation requires joint structure across all $N$ positions of a
+  block. Inserting sync points every $K$ positions partitions the
+  block into independent $K$-length subblocks, recovering only
+  $\Theta(K)$ separation per subblock. For $K = 64$ KiB and $N = 1$
+  GiB, the per-subblock advantage is preserved but the cross-subblock
+  joint structure is forfeited. Type-I, Type-III-B, and Type-III-C
+  are not affected by this trade-off because their constructions are
+  already local (per-position or per-tile).
 \item
-  Verification under random access. Theorem 9.1\textquotesingle s
-  chained-hash verification covers sequential decoding; a random-access
-  reader cannot verify bytes {[}0, N) it never decoded. Three solutions
-  exist: (a) per-sync-point hashes that allow local verification,
-  costing O((N/K) * \textbar hash\textbar) bits; (b) a Merkle tree over
-  the repair stream allowing verified random access with O(log N) hash
-  overhead per read; (c) explicitly unverified random access for
+  Verification under random access. Theorem 9.1's chained-hash
+  verification covers sequential decoding; a random-access reader
+  cannot verify bytes $[0, N)$ it never decoded. Three solutions
+  exist: (a)~per-sync-point hashes that allow local verification,
+  costing $O((N/K) \cdot |\text{hash}|)$ bits; (b)~a Merkle tree over
+  the repair stream allowing verified random access with $O(\log N)$
+  hash overhead per read; (c)~explicitly unverified random access for
   trusted-source archives. The Merkle-tree option is standard in
-  content-addressable storage and is the recommended default for archive
-  deployments.
+  content-addressable storage and is the recommended default for
+  archive deployments.
 \end{itemize}
 
 \emph{\textbf{Comparison with existing systems}}
@@ -2060,30 +2079,33 @@ Standard random-access lossless compressors:
 
 \begin{itemize}
 \item
-  bgzip (block-gzip): independent gzip blocks, ratio cost approximately
-  3 to 7 percent versus monolithic gzip, random access in O(K + k) time.
-  Widely used in bioinformatics for indexed FASTA and BAM files.
+  bgzip (block-gzip): independent gzip blocks, ratio cost
+  approximately 3 to 7 percent versus monolithic gzip, random access
+  in $O(K + k)$ time. Widely used in bioinformatics for indexed FASTA
+  and BAM files.
 \item
-  zstd seekable mode: independent zstd frames with a footer index, ratio
-  cost approximately 2 to 10 percent versus monolithic zstd, random
-  access in O(K + k) time.
+  zstd seekable mode: independent zstd frames with a footer index,
+  ratio cost approximately 2 to 10 percent versus monolithic zstd,
+  random access in $O(K + k)$ time.
 \item
-  LZMA seekable wrappers (ad hoc xz multi-stream archives): ratio cost
-  approximately 5 to 15 percent, random access in O(K + k) time.
+  LZMA seekable wrappers (ad hoc xz multi-stream archives): ratio
+  cost approximately 5 to 15 percent, random access in $O(K + k)$
+  time.
 \end{itemize}
 
 Existing neural lossless compressors (NNCP, PixelCNN++, Bit-Swap,
-IDF++): no random access. To extract byte N, the decoder must process
-bytes {[}0, N) sequentially; cost is O(N) predictor evaluations. For a 1
-GiB archive this is hours of wall-clock time per access.
+IDF++): no random access. To extract byte $N$, the decoder must
+process bytes $[0, N)$ sequentially; cost is $O(N)$ predictor
+evaluations. For a 1 GiB archive this is hours of wall-clock time per
+access.
 
-RNR with a W-bounded transformer predictor and sync points every K
-positions: random access in O(K + k) predictor evaluations independent
-of N, at a compression cost of O((N/K) * W) bytes. For K = 64 KiB and W
-= 4 KiB on a 1 GiB archive, this is approximately 1 percent ratio
-overhead for sync points, comparable to bgzip and zstd seekable while
-preserving the neural compressor\textquotesingle s substantial ratio
-advantage on natural data.
+RNR with a $W$-bounded transformer predictor and sync points every
+$K$ positions: random access in $O(K + k)$ predictor evaluations
+independent of $N$, at a compression cost of $O((N/K) \cdot W)$
+bytes. For $K = 64$ KiB and $W = 4$ KiB on a 1 GiB archive, this is
+approximately 1 percent ratio overhead for sync points, comparable to
+bgzip and zstd seekable while preserving the neural compressor's
+substantial ratio advantage on natural data.
 
 This is the framework\textquotesingle s deployment-grade distinguishing
 feature relative to other neural compressors. The bounded-context
@@ -2110,45 +2132,50 @@ as decompressing all preceding bytes; for archive sizes typical of disk
 images (gigabytes to terabytes), this is prohibitive. RNR removes this
 obstruction. The two theorems below formalize the application.
 
-\textbf{Theorem 10.5 (Block-device interface).} \emph{Let X be
-compressed under RNR with a W-bounded predictor M satisfying Theorem
-10.1 and sync points placed every K positions. A block-device driver
-that maps logical-block-address-indexed read requests (LBA L, length k
-bytes) to RNR random-access calls can serve any read request in time
-O((K + k) * cost(M)) and working memory O(K + k), independent of the
-archive size N.}
+\textbf{Theorem 10.5 (Block-device interface).} \emph{Let $X$ be
+compressed under RNR with a $W$-bounded predictor $M$ satisfying
+Theorem 10.1 and sync points placed every $K$ positions. A
+block-device driver that maps logical-block-address-indexed read
+requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR random-access
+calls can serve any read request in time
+$O((K + k) \cdot \mathrm{cost}(M))$ and working memory $O(K + k)$,
+independent of the archive size $N$.}
 
-\emph{\textbf{Proof.}} Each LBA-indexed read request (L, k) corresponds
-to a byte-range request on the underlying source X starting at byte
-position N = L * sector\_size and continuing for k bytes. By Theorem
-10.3, RNR random access to k bytes at position N runs in O((K + k) *
-cost(M)) time and requires O(K + k) bytes of working memory (the warmup
-buffer for K positions plus the output buffer for k positions). The
-translation from (LBA, k) to (N, k) is a constant-time arithmetic
-operation. The total cost per read request is therefore O((K + k) *
-cost(M)), independent of N. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} Each LBA-indexed read request $(\mathcal{L},
+k)$ corresponds to a byte-range request on the underlying source $X$
+starting at byte position
+$N = \mathcal{L} \cdot \text{sector\_size}$ and continuing for $k$
+bytes. By Theorem 10.3, RNR random access to $k$ bytes at position
+$N$ runs in $O((K + k) \cdot \mathrm{cost}(M))$ time and requires
+$O(K + k)$ bytes of working memory (the warmup buffer for $K$
+positions plus the output buffer for $k$ positions). The translation
+from $(\mathcal{L}, k)$ to $(N, k)$ is a constant-time arithmetic
+operation. The total cost per read request is therefore
+$O((K + k) \cdot \mathrm{cost}(M))$, independent of $N$.
+\hfill$\blacksquare$
 
-The cost(M) factor governs whether the driver is fast enough for
-interactive use. For a small distilled byte-level transformer (10 to 50
-million parameters, int8 weights), one forward pass costs approximately
-10 microseconds on a single CPU core, 1 microsecond on a server GPU, and
-0.1 microseconds on a high-end NPU. Per-byte inference rate is thus
-approximately 1 MB/s on CPU, 100 MB/s on GPU, and 1 GB/s on NPU. For K +
-k = 64 KiB, the random-access latency ranges from approximately 64
-milliseconds (CPU) to 64 microseconds (NPU). The NPU end of this range
-matches modern NVMe random-read latency; the CPU end is closer to
-spinning-disk latency. Production deployments will target NPU or GPU
-paths when low latency is required and fall back to CPU only for archive
-inspection or compatibility.
+The $\mathrm{cost}(M)$ factor governs whether the driver is fast
+enough for interactive use. For a small distilled byte-level
+transformer (10 to 50 million parameters, int8 weights), one forward
+pass costs approximately 10 microseconds on a single CPU core, 1
+microsecond on a server GPU, and 0.1 microseconds on a high-end NPU.
+Per-byte inference rate is thus approximately 1 MB/s on CPU, 100 MB/s
+on GPU, and 1 GB/s on NPU. For $K + k = 64$ KiB, the random-access
+latency ranges from approximately 64 milliseconds (CPU) to 64
+microseconds (NPU). The NPU end of this range matches modern NVMe
+random-read latency; the CPU end is closer to spinning-disk latency.
+Production deployments will target NPU or GPU paths when low latency
+is required and fall back to CPU only for archive inspection or
+compatibility.
 
-\textbf{Theorem 10.6 (Hardware-target portability).} \emph{Let M satisfy
-the integer-arithmetic, lookup-table, and fixed-reduction-order
-conditions of Theorem 10.1. For any hardware target T providing
-bit-exact integer arithmetic at the specified bit-widths and the
-specified lookup-table evaluation semantics, the output M(C) computed on
-T is bit-identical to that computed on any other conforming target. The
-choice of target affects throughput and latency but not the produced
-bytes.}
+\textbf{Theorem 10.6 (Hardware-target portability).} \emph{Let $M$
+satisfy the integer-arithmetic, lookup-table, and
+fixed-reduction-order conditions of Theorem 10.1. For any hardware
+target $T$ providing bit-exact integer arithmetic at the specified
+bit-widths and the specified lookup-table evaluation semantics, the
+output $M(C)$ computed on $T$ is bit-identical to that computed on
+any other conforming target. The choice of target affects throughput
+and latency but not the produced bytes.}
 
 \emph{\textbf{Proof.}} Direct corollary of Theorem 10.1, with the
 explicit observation that conformance is a property of the
@@ -2164,7 +2191,7 @@ platforms that support the table format. Fixed reduction order,
 specified by the model description, is honored by any sequential
 implementation and by any parallel implementation that uses a
 tree-reduction with the specified schedule. Composing these properties
-layer by layer through M yields bit-exact output. \hfill$\blacksquare$
+layer by layer through $M$ yields bit-exact output. \hfill$\blacksquare$
 
 Conforming hardware targets include: scalar CPU implementations on any
 architecture supporting the required integer bit-widths (x86-64, ARM64,
@@ -2181,46 +2208,50 @@ by Theorem 10.6 plus a conformance certification of each target.
 
 \emph{\textbf{Cache amortization}}
 
-A read-cache of size C placed between the driver and the OS page cache
-permits steady-state throughput exceeding the per-access bound of
-Theorem 10.5. For sequential reads over any region of size up to C, the
-amortized cost per byte is O(cost(M)): one predictor evaluation per
-byte, with no per-access warmup. For random reads with spatial locality
-smaller than C, the cache hit rate approaches one and the amortized cost
-per byte approaches O(memcpy) speed, dominated by main memory bandwidth.
-For uniformly random reads at distance larger than C, the amortized cost
-per byte equals the Theorem 10.5 bound divided by k, that is, O((K + k)
-* cost(M) / k), which approaches cost(M) as k grows. In typical
-deployments the operating-system page cache provides an effective cache
-of several gigabytes, absorbing read locality so that the worst-case
-Theorem 10.5 bound is the latency budget for cold reads only.
+A read-cache of size $C$ placed between the driver and the OS page
+cache permits steady-state throughput exceeding the per-access bound
+of Theorem 10.5. For sequential reads over any region of size up to
+$C$, the amortized cost per byte is $O(\mathrm{cost}(M))$: one
+predictor evaluation per byte, with no per-access warmup. For random
+reads with spatial locality smaller than $C$, the cache hit rate
+approaches one and the amortized cost per byte approaches
+$O(\mathrm{memcpy})$ speed, dominated by main memory bandwidth. For
+uniformly random reads at distance larger than $C$, the amortized
+cost per byte equals the Theorem 10.5 bound divided by $k$, that is,
+$O((K + k) \cdot \mathrm{cost}(M) / k)$, which approaches
+$\mathrm{cost}(M)$ as $k$ grows. In typical deployments the
+operating-system page cache provides an effective cache of several
+gigabytes, absorbing read locality so that the worst-case Theorem
+10.5 bound is the latency budget for cold reads only.
 
 \emph{\textbf{Read-write semantics}}
 
-RNR archives are read-only by construction: the predictor M and the
-sync-point structure assume a fixed source X. Three patterns support
-read-write deployments.
+RNR archives are read-only by construction: the predictor $M$ and the
+sync-point structure assume a fixed source $X$. Three patterns
+support read-write deployments.
 
 \begin{itemize}
 \item
   Copy-on-write overlay. The compressed archive is mounted as a
   read-only base; writes are directed to a separate writable layer
-  (Linux overlayfs, unionfs, AUFS). Reads consult the overlay first and
-  fall through to the base only on miss. This is the
+  (Linux overlayfs, unionfs, AUFS). Reads consult the overlay first
+  and fall through to the base only on miss. This is the
   squashfs-plus-overlayfs pattern that container runtimes (Docker,
   Podman, containerd) and live Linux distributions use today.
 \item
-  Region rewrite. A modification within sync-point region {[}P, P + K)
-  re-encodes only that region: re-runs the predictor on the modified
-  bytes starting from P, re-encodes the repair stream for the region,
-  and updates the seek index entry for the affected sync point. Cost:
-  O(K * cost(M)) per modification. Suitable for low-frequency writes on
-  archives that benefit from in-place mutation.
+  Region rewrite. A modification within sync-point region
+  $[P, P + K)$ re-encodes only that region: re-runs the predictor on
+  the modified bytes starting from $P$, re-encodes the repair stream
+  for the region, and updates the seek index entry for the affected
+  sync point. Cost: $O(K \cdot \mathrm{cost}(M))$ per modification.
+  Suitable for low-frequency writes on archives that benefit from
+  in-place mutation.
 \item
   Full re-encoding. Periodic offline compaction re-encodes the whole
   archive, merging accumulated overlay writes back into the base.
-  Standard practice for read-mostly snapshot stores; the compaction cost
-  is O(N * cost(M)) but is amortized over many writes.
+  Standard practice for read-mostly snapshot stores; the compaction
+  cost is $O(N \cdot \mathrm{cost}(M))$ but is amortized over many
+  writes.
 \end{itemize}
 
 For the disk-image use case named at the start of this section (compress
