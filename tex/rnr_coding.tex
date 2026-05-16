@@ -86,31 +86,32 @@ a worked numerical example. The main results are: paired achievability
 and converse bounds for Type-I matching the conditional source-coding
 limit; NP-hardness and inapproximability of optimal codeword-mapping
 selection in Type-I; a corrected positional-advantage theorem; a
-Theta(N) separation theorem for semi-non-factorized Type-II via a
+$\Theta(N)$ separation theorem for semi-non-factorized Type-II via a
 linear-code construction, generalized to any source via the
-multi-information identity TC(D\_N) and quantified for natural data by
-the manifold hypothesis; an optimal-support characterization for Type-II
-partition coding; a tight 2*epsilon approximate-oracle bound for
-Type-III-A mode selection with a matching lower bound; an
-information-theoretic invariance result for hierarchical decomposition
-in Type-III-B; bits-back integration into the
-framework\textquotesingle s code-length decomposition with exact KL
-accounting; NP-hardness and APX-hardness of joint
-dictionary-and-predictor learning in Type-III-C via reduction from the
-Smallest Grammar Problem; sufficient conditions for bit-exact decoder
-reproduction under both fixed and adaptive predictors via deterministic
-integer arithmetic, with the adaptive case relying on a class of
-compatible online optimizers drawn from the low-precision-training
-literature; and a random-access (seek-and-read) capability in time
-independent of archive size for W-bounded predictors, at a sync-point
-compression cost of approximately one percent, matching the seekable
+multi-information identity $\mathrm{TC}(D_N)$ and quantified for
+natural data by the manifold hypothesis; an optimal-support
+characterization for Type-II partition coding; a tight $2\varepsilon$
+approximate-oracle bound for Type-III-A mode selection with a
+matching lower bound; an information-theoretic invariance result for
+hierarchical decomposition in Type-III-B; bits-back integration into
+the framework's code-length decomposition with exact KL accounting;
+NP-hardness and APX-hardness of joint dictionary-and-predictor
+learning in Type-III-C via reduction from the Smallest Grammar
+Problem; sufficient conditions for bit-exact decoder reproduction
+under both fixed and adaptive predictors via deterministic integer
+arithmetic, with the adaptive case relying on a class of compatible
+online optimizers drawn from the low-precision-training literature;
+and a random-access (seek-and-read) capability in time independent of
+archive size for $W$-bounded predictors, at a sync-point compression
+cost of approximately one percent, matching the seekable
 functionality of dictionary-based formats while preserving the
-neural-ratio advantage and exceeding the capability of existing neural
-compressors which lack random access entirely. We do not claim universal
-dominance --- no lossless code can map every input of length n to a
-strictly shorter one --- and the framework is evaluated conditionally on
-data classes for which side information reduces residual uncertainty by
-more than the model and repair overhead costs.
+neural-ratio advantage and exceeding the capability of existing
+neural compressors which lack random access entirely. We do not claim
+universal dominance --- no lossless code can map every input of
+length $n$ to a strictly shorter one --- and the framework is
+evaluated conditionally on data classes for which side information
+reduces residual uncertainty by more than the model and repair
+overhead costs.
 
 \textbf{Keywords:} lossless compression, neural compression, side
 information, Slepian--Wolf coding, syndrome coding, positional coding,
@@ -223,82 +224,86 @@ This article makes the following contributions.
   (stream, partition, tensor) and the choice of repair encoding (mask,
   residual, rank, selector).
 \item
-  Concrete constructions for each of the five types: Type‑I with an
-  explicit Code12 systematic shortened‑Hamming‑like byte‑to‑12‑bit
-  mapping (Section 4); semi‑non‑factorized Type‑II positional coding
-  with disjoint‑partition and count constraints (Section 5); and
-  Type‑III‑A/B/C with entropy‑field, byte‑tensor, and hierarchical 32×32
-  token‑tensor constructions (Section 6).
+  Concrete constructions for each of the five types: Type-I with an
+  explicit Code12 systematic shortened-Hamming-like byte-to-12-bit
+  mapping (Section 4); semi-non-factorized Type-II positional coding
+  with disjoint-partition and count constraints (Section 5); and
+  Type-III-A/B/C with entropy-field, byte-tensor, and hierarchical
+  $32 \times 32$ token-tensor constructions (Section 6).
 \item
-  Achievability and converse bounds for Type-I (Theorems 4.1, 4.2): the
-  Type-I rate matches the conditional source-coding lower bound H(X
-  \textbar{} Y) to first order in N.
+  Achievability and converse bounds for Type-I (Theorems 4.1, 4.2):
+  the Type-I rate matches the conditional source-coding lower bound
+  $H(X \mid Y)$ to first order in $N$.
 \item
   Complete complexity classification for Type-I codeword selection:
-  optimal E\_12 is NP-hard via reduction from QAP (Theorem 4.3) and
-  inapproximable within any constant factor unless P = NP (Theorem 4.4).
+  optimal $E_{12}$ is NP-hard via reduction from QAP (Theorem 4.3)
+  and inapproximable within any constant factor unless $P = NP$
+  (Theorem 4.4).
 \item
-  A corrected positional‑advantage theorem (Theorem 5.3) with a
-  multinomial baseline and an explicit escape‑mode cost term, addressing
-  two errors in earlier drafts that overstated the Type‑II advantage.
+  A corrected positional-advantage theorem (Theorem 5.3) with a
+  multinomial baseline and an explicit escape-mode cost term,
+  addressing two errors in earlier drafts that overstated the
+  Type-II advantage.
 \item
-  A separation theorem (Theorem 5.4) for semi‑non‑factorized Type‑II via
-  a linear-code construction, generalized by Theorem 5.6
+  A separation theorem (Theorem 5.4) for semi-non-factorized Type-II
+  via a linear-code construction, generalized by Theorem 5.6
   (multi-information separation: the exact information-theoretic
-  quantity governing factorized-versus-joint coding) and quantified for
-  natural data by Remark 5.7 (manifold-hypothesis quantification with
-  empirical intrinsic-dimension estimates).
+  quantity governing factorized-versus-joint coding) and quantified
+  for natural data by Remark 5.7 (manifold-hypothesis quantification
+  with empirical intrinsic-dimension estimates).
 \item
-  An optimality characterization for Type-II support sets (Proposition
-  5.5): optimal S\_v is a prefix of positions sorted by Q\_v, and
-  support-set coding is at best equivalent to per-position arithmetic
-  coding under the same Q.
+  An optimality characterization for Type-II support sets
+  (Proposition 5.5): optimal $S_v$ is a prefix of positions sorted by
+  $Q_v$, and support-set coding is at best equivalent to per-position
+  arithmetic coding under the same $Q$.
 \item
-  An approximate‑oracle mode‑selection bound for Type‑III‑A (Theorem
-  6.1) and a tight matching lower bound (Theorem 6.2) showing the 2*eps
-  factor cannot be improved without additional assumptions on the
-  prediction error structure.
+  An approximate-oracle mode-selection bound for Type-III-A (Theorem
+  6.1) and a tight matching lower bound (Theorem 6.2) showing the
+  $2\varepsilon$ factor cannot be improved without additional
+  assumptions on the prediction error structure.
 \item
-  A mutual‑information characterization of the Type‑III‑B byte‑tensor
-  advantage (Theorem 6.3) and an invariance result (Theorem 6.4) showing
-  all rooted binary tree decompositions of the 256-byte alphabet achieve
-  the same information-theoretic rate.
+  A mutual-information characterization of the Type-III-B byte-tensor
+  advantage (Theorem 6.3) and an invariance result (Theorem 6.4)
+  showing all rooted binary tree decompositions of the 256-byte
+  alphabet achieve the same information-theoretic rate.
 \item
-  Complete characterization of Type-III-C: the MDL admission criterion
-  (Theorem 6.5), the bits-back integration with an exact KL-divergence
-  accounting (Theorem 6.6), NP-hardness of joint
-  dictionary-and-predictor learning (Theorem 6.7), and inapproximability
-  with an explicit constant transferred from the Smallest Grammar
-  Problem (Theorem 6.8).
+  Complete characterization of Type-III-C: the MDL admission
+  criterion (Theorem 6.5), the bits-back integration with an exact
+  KL-divergence accounting (Theorem 6.6), NP-hardness of joint
+  dictionary-and-predictor learning (Theorem 6.7), and
+  inapproximability with an explicit constant transferred from the
+  Smallest Grammar Problem (Theorem 6.8).
 \item
-  A no‑universal‑dominance result (Theorem 8.1) establishing the
-  framework's claim as conditional, and a verification‑discipline
-  theorem (Theorem 9.1) ruling out cross‑subblock error propagation in
-  autoregressive modes.
+  A no-universal-dominance result (Theorem 8.1) establishing the
+  framework's claim as conditional, and a verification-discipline
+  theorem (Theorem 9.1) ruling out cross-subblock error propagation
+  in autoregressive modes.
 \item
-  Sufficient conditions for bit-exact decoder reproduction under fixed
-  predictors (Theorem 10.1) and adaptive predictors (Theorem 10.2 with
-  Definition 10.1, the compatible-online-optimizer class), reducing
-  reproducibility from a software-engineering question to a conformance
-  specification matched by published low-precision-training methods.
+  Sufficient conditions for bit-exact decoder reproduction under
+  fixed predictors (Theorem 10.1) and adaptive predictors (Theorem
+  10.2 with Definition 10.1, the compatible-online-optimizer class),
+  reducing reproducibility from a software-engineering question to a
+  conformance specification matched by published
+  low-precision-training methods.
 \item
-  Random-access (seek-and-read) capability in O(K + k) time independent
-  of archive size (Theorem 10.3 with Definitions 10.2, 10.3 of W-bounded
-  predictors and sync points), at a sync-point compression cost of
-  approximately 1 percent for typical parameters. This functionality is
-  absent from existing neural compressors (NNCP, PixelCNN++, Bit-Swap)
-  and matches the seek capability of dictionary-based seekable formats
-  while preserving the neural ratio advantage. Theorem 10.4 covers
-  non-W-bounded predictors via state snapshots.
+  Random-access (seek-and-read) capability in $O(K + k)$ time
+  independent of archive size (Theorem 10.3 with Definitions 10.2,
+  10.3 of $W$-bounded predictors and sync points), at a sync-point
+  compression cost of approximately 1 percent for typical parameters.
+  This functionality is absent from existing neural compressors
+  (NNCP, PixelCNN++, Bit-Swap) and matches the seek capability of
+  dictionary-based seekable formats while preserving the neural ratio
+  advantage. Theorem 10.4 covers non-$W$-bounded predictors via state
+  snapshots.
 \item
-  Block-device and read-only filesystem deployment with hardware-target
-  portability (Theorems 10.5 and 10.6 in §10.8): an OS-level driver can
-  serve LBA-indexed read requests in time independent of archive size,
-  with the predictor running bit-exactly on any conforming hardware
-  target (CPU scalar, CPU SIMD including AVX-512, GPU integer Tensor
-  Cores, integer NPUs). This enables the squashfs-style
-  mounted-compressed-filesystem use case for neural compression, which
-  existing neural compressors cannot support.
+  Block-device and read-only filesystem deployment with
+  hardware-target portability (Theorems 10.5 and 10.6 in §10.8): an
+  OS-level driver can serve LBA-indexed read requests in time
+  independent of archive size, with the predictor running bit-exactly
+  on any conforming hardware target (CPU scalar, CPU SIMD including
+  AVX-512, GPU integer Tensor Cores, integer NPUs). This enables the
+  squashfs-style mounted-compressed-filesystem use case for neural
+  compression, which existing neural compressors cannot support.
 \item
   A runtime parameter-selection framework (Section 7.2) that subsumes
   input-dependent design choices (Code-k rate, alphabet size, support
@@ -2298,26 +2303,27 @@ drivers:
 \begin{itemize}
 \item
   Header parser. Reads the archive header into memory: predictor
-  weights, sync-point seek index, verification metadata, type metadata.
+  weights, sync-point seek index, verification metadata, type
+  metadata.
 \item
-  Predictor inference engine. Implements M on one or more hardware paths
-  (CPU scalar, CPU SIMD, GPU integer, NPU integer), each path conforming
-  to Theorem 10.6. The path is selected at driver load time based on
-  hardware availability.
+  Predictor inference engine. Implements $M$ on one or more hardware
+  paths (CPU scalar, CPU SIMD, GPU integer, NPU integer), each path
+  conforming to Theorem 10.6. The path is selected at driver load
+  time based on hardware availability.
 \item
-  Range-decode function. Given (N, k), looks up the latest sync point P
-  less than or equal to N in the seek index, decodes from P to N + k
-  using Theorem 10.3, returns bytes {[}N, N + k).
+  Range-decode function. Given $(N, k)$, looks up the latest sync
+  point $P \leq N$ in the seek index, decodes from $P$ to $N + k$
+  using Theorem 10.3, returns bytes $[N, N + k)$.
 \item
   Cache. LRU or ARC cache of recently decoded regions, with eviction
-  policy tuned to expected access pattern. Sits between the range-decode
-  function and the OS page cache.
+  policy tuned to expected access pattern. Sits between the
+  range-decode function and the OS page cache.
 \item
-  OS interface. Translates kernel-level block-device or filesystem read
-  requests into range-decode calls. Options include Linux FUSE for
-  user-space deployment, Linux NBD or device-mapper for kernel-level
-  deployment, the macOS FSKit interface, or a Windows file-system
-  minifilter driver.
+  OS interface. Translates kernel-level block-device or filesystem
+  read requests into range-decode calls. Options include Linux FUSE
+  for user-space deployment, Linux NBD or device-mapper for
+  kernel-level deployment, the macOS FSKit interface, or a Windows
+  file-system minifilter driver.
 \end{itemize}
 
 Every component except the predictor inference engine has direct
@@ -2344,58 +2350,59 @@ off by 10-30\% in either direction. Empirical validation against NNCP,
 PixelCNN++, LZMA at maximum preset, and zstd at maximum level on the
 corpora named below is the natural next step.
 
-\textbf{11.1 Type‑I, Code12 on text and source code}
+\textbf{11.1 Type-I, Code12 on text and source code}
 
-Type‑I with E12‑A on English text and source code is predicted to
-achieve 1.5 to 2.0 bits per byte before model amortization, competitive
-with LZMA at maximum preset (2.1 to 2.5 bits per byte) and behind NNCP
-(1.3 to 1.6 bits per byte on similar corpora). The gap to NNCP is
-expected to narrow as the Code12 mapping is learned (variant E12‑C)
-rather than fixed.
+Type-I with $E_{12}$-A on English text and source code is predicted
+to achieve 1.5 to 2.0 bits per byte before model amortization,
+competitive with LZMA at maximum preset (2.1 to 2.5 bits per byte)
+and behind NNCP (1.3 to 1.6 bits per byte on similar corpora). The
+gap to NNCP is expected to narrow as the Code12 mapping is learned
+(variant $E_{12}$-C) rather than fixed.
 
-\textbf{11.2 Type‑II on structured positional data}
+\textbf{11.2 Type-II on structured positional data}
 
-Type‑II on database pages, structured binary records, and instruction
+Type-II on database pages, structured binary records, and instruction
 streams is predicted to achieve coding rates 10 to 20\% below LZMA,
 because LZMA exploits string repetition that is weak in these classes
-while Type‑II exploits positional regularity. Against NNCP, the
-comparison depends on how well the byte‑level autoregressive model
+while Type-II exploits positional regularity. Against NNCP, the
+comparison depends on how well the byte-level autoregressive model
 captures positional structure; for data whose joint structure exceeds
-what a sequential model can express in moderate context, Type‑II is
+what a sequential model can express in moderate context, Type-II is
 predicted to dominate.
 
-\textbf{11.3 Type‑III‑A composition on heterogeneous archives}
+\textbf{11.3 Type-III-A composition on heterogeneous archives}
 
-Type‑III‑A scheduling across Type‑I, Type‑II, and raw fallback is
+Type-III-A scheduling across Type-I, Type-II, and raw fallback is
 predicted to dominate any single mode on archives with heterogeneous
 content (mixed text/binary, containers, database dumps with
-header/payload structure). The per‑mode prediction error eps\_t
-determines the closeness to the oracle: for well‑calibrated U, the
-composition is within a few percent of the per‑tile oracle best mode.
+header/payload structure). The per-mode prediction error
+$\varepsilon_t$ determines the closeness to the oracle: for
+well-calibrated $U$, the composition is within a few percent of the
+per-tile oracle best mode.
 
-\textbf{11.4 Type‑III‑B on ASCII text and instruction streams}
+\textbf{11.4 Type-III-B on ASCII text and instruction streams}
 
-Type‑III‑B is predicted to recover 0.3 to 0.7 bits per byte over
-independent nibble coding on ASCII text, in line with the I(H ; L
-\textbar{} C) estimates of Section 6.5. On structured numeric arrays
-(e.g., float32 columns), Type‑III‑B may recover larger gains if the
-byte‑level dependency is strong across the mantissa structure.
+Type-III-B is predicted to recover 0.3 to 0.7 bits per byte over
+independent nibble coding on ASCII text, in line with the
+$I(H ; L \mid C)$ estimates of Section 6.5. On structured numeric
+arrays (e.g., float32 columns), Type-III-B may recover larger gains
+if the byte-level dependency is strong across the mantissa structure.
 
-\textbf{11.5 Type‑III‑C on highly repetitive structured data}
+\textbf{11.5 Type-III-C on highly repetitive structured data}
 
-Type‑III‑C with a 32 x 32 token grid on JSON, XML, source code, and
-protocol streams is predicted to achieve coding rates competitive with
-the best dictionary‑based methods (zstd at maximum level, LZMA at
-maximum preset), with the advantage growing as the corpus size grows and
-the dictionary amortizes.
+Type-III-C with a $32 \times 32$ token grid on JSON, XML, source
+code, and protocol streams is predicted to achieve coding rates
+competitive with the best dictionary-based methods (zstd at maximum
+level, LZMA at maximum preset), with the advantage growing as the
+corpus size grows and the dictionary amortizes.
 
 \textbf{11.6 Negative controls}
 
 On random or encrypted data, all RNR types are predicted to revert to
 baseline plus overhead, since no side information reduces residual
-uncertainty. On already‑compressed data (gzip, xz, zstd output), RNR is
-predicted to be slightly worse than passthrough, since the residual
-entropy is high and the model cost is wasted.
+uncertainty. On already-compressed data (gzip, xz, zstd output), RNR
+is predicted to be slightly worse than passthrough, since the
+residual entropy is high and the model cost is wasted.
 
 \textbf{12. Related work}
 
@@ -2485,115 +2492,122 @@ point to the relevant theorems.
 
 \begin{itemize}
 \item
-  Type-I converse bound --- resolved by Theorem 4.2: the achievability
-  bound of Theorem 4.1 matches the conditional source-coding lower bound
-  H(X \textbar{} Y) to first order in N.
+  Type-I converse bound --- resolved by Theorem 4.2: the
+  achievability bound of Theorem 4.1 matches the conditional
+  source-coding lower bound $H(X \mid Y)$ to first order in $N$.
 \item
-  Computational complexity of optimal E\_12 --- resolved by Theorem 4.3
-  (NP-hardness via QAP) and Theorem 4.4 (inapproximability: no
-  polynomial-time constant-factor approximation exists unless P = NP).
+  Computational complexity of optimal $E_{12}$ --- resolved by
+  Theorem 4.3 (NP-hardness via QAP) and Theorem 4.4
+  (inapproximability: no polynomial-time constant-factor
+  approximation exists unless $P = NP$).
 \item
   Optimal candidate-support threshold for Type-II --- resolved by
-  Proposition 5.5: the optimal S\_v is a prefix of positions sorted by
-  Q\_v, and support-set coding is at best equivalent to per-position
-  arithmetic coding under the same Q (strictly more expensive unless Q
-  is binary).
+  Proposition 5.5: the optimal $S_v$ is a prefix of positions sorted
+  by $Q_v$, and support-set coding is at best equivalent to
+  per-position arithmetic coding under the same $Q$ (strictly more
+  expensive unless $Q$ is binary).
 \item
-  Joint structure on natural data and the Type-II separation regime ---
-  resolved by Theorem 5.6 (the multi-information TC(D\_N) is the exact
-  information-theoretic quantity governing factorized-versus-joint
-  separation) and quantified by Remark 5.7 (the manifold hypothesis
-  predicts TC = Theta(N) for natural data classes of low intrinsic
-  dimension, supported by empirical estimates of d for images, text, and
-  structured records).
+  Joint structure on natural data and the Type-II separation regime
+  --- resolved by Theorem 5.6 (the multi-information
+  $\mathrm{TC}(D_N)$ is the exact information-theoretic quantity
+  governing factorized-versus-joint separation) and quantified by
+  Remark 5.7 (the manifold hypothesis predicts
+  $\mathrm{TC} = \Theta(N)$ for natural data classes of low intrinsic
+  dimension, supported by empirical estimates of $d$ for images,
+  text, and structured records).
 \item
-  Tightness of the 2*eps mode-selection bound --- resolved by Theorem
-  6.2: the 2*eps factor in Theorem 6.1 cannot be improved without
-  additional assumptions on the prediction error structure.
+  Tightness of the $2\varepsilon$ mode-selection bound --- resolved
+  by Theorem 6.2: the $2\varepsilon$ factor in Theorem 6.1 cannot be
+  improved without additional assumptions on the prediction error
+  structure.
 \item
   Optimal hierarchical decomposition for Type-III-B --- resolved by
   Theorem 6.4: all rooted binary tree decompositions of the 256-byte
-  alphabet achieve the same information-theoretic rate H(B \textbar{}
-  C); the choice of tree affects only encoder/decoder complexity and
-  predictor calibration.
+  alphabet achieve the same information-theoretic rate
+  $H(B \mid C)$; the choice of tree affects only encoder/decoder
+  complexity and predictor calibration.
 \item
-  Bits-back integration into the L(R \textbar{} Y) decomposition ---
-  resolved by Theorem 6.6: the three-stream accounting yields rate H(X
-  \textbar{} Y) + KL(q \textbar\textbar{} P\_posterior) in expectation,
-  matching the Slepian-Wolf bound when q is exact.
+  Bits-back integration into the $L(R \mid Y)$ decomposition ---
+  resolved by Theorem 6.6: the three-stream accounting yields rate
+  $H(X \mid Y) + \mathrm{KL}(q \,\Vert\, P_{\text{posterior}})$ in
+  expectation, matching the Slepian-Wolf bound when $q$ is exact.
 \item
-  Computational complexity of joint dictionary-and-predictor learning
-  --- resolved by Theorem 6.7 (NP-hardness via SGP) and Theorem 6.8
-  (APX-hardness: an explicit inapproximability constant transferred from
-  the Charikar et al. SGP bound).
+  Computational complexity of joint dictionary-and-predictor
+  learning --- resolved by Theorem 6.7 (NP-hardness via SGP) and
+  Theorem 6.8 (APX-hardness: an explicit inapproximability constant
+  transferred from the Charikar et al. SGP bound).
 \item
-  Bit-exact decoder reproduction for fixed predictors --- resolved by
-  Theorem 10.1: a precision-and-determinism specification suffices for
-  cross-platform reproducibility, reducing the question to a conformance
-  test.
+  Bit-exact decoder reproduction for fixed predictors --- resolved
+  by Theorem 10.1: a precision-and-determinism specification
+  suffices for cross-platform reproducibility, reducing the question
+  to a conformance test.
 \item
   Bit-exact reproduction under adaptive predictors --- resolved by
-  Definition 10.1 (compatible online optimizer) and Theorem 10.2: online
-  adaptation via integer-arithmetic optimization is bit-exact across
-  implementations, with several published optimizers fitting the
-  compatible class.
+  Definition 10.1 (compatible online optimizer) and Theorem 10.2:
+  online adaptation via integer-arithmetic optimization is bit-exact
+  across implementations, with several published optimizers fitting
+  the compatible class.
 \item
   Random access (seek-and-read) into a compressed archive in time
   independent of archive size --- resolved by Definitions 10.2
-  (W-bounded predictor) and 10.3 (sync point) and Theorem 10.3 (random
-  access in O(K + k) time), with Theorem 10.4 covering non-W-bounded
-  predictors via state snapshots. This is the
-  framework\textquotesingle s deployment-grade distinguishing feature
-  relative to other neural compressors, which lack random-access support
+  ($W$-bounded predictor) and 10.3 (sync point) and Theorem 10.3
+  (random access in $O(K + k)$ time), with Theorem 10.4 covering
+  non-$W$-bounded predictors via state snapshots. This is the
+  framework's deployment-grade distinguishing feature relative to
+  other neural compressors, which lack random-access support
   entirely.
 \item
-  Block-device and read-only filesystem deployment with hardware-target
-  portability --- resolved by Theorem 10.5 (block-device interface: an
-  OS-level driver serves LBA-indexed read requests in time independent
-  of archive size) and Theorem 10.6 (hardware-target portability:
-  bit-exact predictor execution on CPU scalar, CPU SIMD, GPU integer
-  Tensor Cores, and integer NPUs follows from Theorem
-  10.1\textquotesingle s conformance specification). The copy-on-write
-  overlay pattern (§10.8) enables read-write semantics using the same
-  architecture as existing compressed-filesystem deployments.
+  Block-device and read-only filesystem deployment with
+  hardware-target portability --- resolved by Theorem 10.5
+  (block-device interface: an OS-level driver serves LBA-indexed
+  read requests in time independent of archive size) and Theorem
+  10.6 (hardware-target portability: bit-exact predictor execution
+  on CPU scalar, CPU SIMD, GPU integer Tensor Cores, and integer
+  NPUs follows from Theorem 10.1's conformance specification). The
+  copy-on-write overlay pattern (§10.8) enables read-write semantics
+  using the same architecture as existing compressed-filesystem
+  deployments.
 \end{itemize}
 
 \textbf{13.2 Remaining mathematical open problems}
 
-A small number of mathematical questions remain genuinely open after the
-present paper.
+A small number of mathematical questions remain genuinely open after
+the present paper.
 
 \begin{itemize}
 \item
   Construction of efficient enumerative encoders for specific
-  natural-data submanifolds. Theorem 5.6 establishes that the separation
-  between factorized and joint coding equals TC(D\_N), and Remark 5.7
-  predicts this is Theta(N) for low-dimensional natural-data manifolds.
-  Constructing an efficient (polynomial-time) membership oracle and rank
-  coder for the submanifold of a specific data class --- say, database
-  pages under a given schema, or valid x86-64 instruction streams --- is
-  open as a constructive question for each class. The existence of such
-  oracles follows from the theorem (the submanifold is enumerable), but
-  the polynomial-time construction is data-class-specific.
+  natural-data submanifolds. Theorem 5.6 establishes that the
+  separation between factorized and joint coding equals
+  $\mathrm{TC}(D_N)$, and Remark 5.7 predicts this is $\Theta(N)$
+  for low-dimensional natural-data manifolds. Constructing an
+  efficient (polynomial-time) membership oracle and rank coder for
+  the submanifold of a specific data class --- say, database pages
+  under a given schema, or valid x86-64 instruction streams --- is
+  open as a constructive question for each class. The existence of
+  such oracles follows from the theorem (the submanifold is
+  enumerable), but the polynomial-time construction is
+  data-class-specific.
 \item
   Tight inapproximability constants. Theorems 4.4 and 6.8 establish
-  inapproximability via reductions from QAP and SGP respectively. The
-  exact inapproximability constants --- the largest alpha and gamma for
-  which alpha-approximation and gamma-approximation are NP-hard ---
-  inherit the corresponding constants from QAP and SGP, which are
-  themselves only partially characterized. Improving the
-  inapproximability constants for the source problems would
-  automatically improve them for E\_12 and dictionary learning.
+  inapproximability via reductions from QAP and SGP respectively.
+  The exact inapproximability constants --- the largest $\alpha$
+  and $\gamma$ for which $\alpha$-approximation and
+  $\gamma$-approximation are NP-hard --- inherit the corresponding
+  constants from QAP and SGP, which are themselves only partially
+  characterized. Improving the inapproximability constants for the
+  source problems would automatically improve them for $E_{12}$ and
+  dictionary learning.
 \item
-  Practical compatible Adam variants with full convergence analysis.
-  Theorem 10.2 covers any optimizer satisfying Definition 10.1.
-  Integer-arithmetic Adam variants exist (Banner et al. 2018) but their
-  convergence behavior relative to floating-point Adam under the
-  specific compatibility constraints (deterministic integer
-  reciprocal-square-root, fixed update ordering) is incompletely
-  characterized. A specific compatible Adam variant with a convergence
-  guarantee matching the floating-point baseline, on standard problems,
-  is open.
+  Practical compatible Adam variants with full convergence
+  analysis. Theorem 10.2 covers any optimizer satisfying Definition
+  10.1. Integer-arithmetic Adam variants exist (Banner et al. 2018)
+  but their convergence behavior relative to floating-point Adam
+  under the specific compatibility constraints (deterministic
+  integer reciprocal-square-root, fixed update ordering) is
+  incompletely characterized. A specific compatible Adam variant
+  with a convergence guarantee matching the floating-point
+  baseline, on standard problems, is open.
 \end{itemize}
 
 \textbf{13.3 Out of scope: engineering deferrals}
