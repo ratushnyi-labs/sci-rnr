@@ -344,8 +344,10 @@ the conditional entropy.
 For a source X drawn from a distribution D, and a baseline compressor B,
 we say an RNR coder C is conditionally advantageous on D if
 
-\emph{E{[} L(C(X)) {]} \textless{} E{[} L(B(X)) {]}, X \textasciitilde{}
-D.} (2.1)
+\[
+\mathbb{E}[L(C(X))] < \mathbb{E}[L(B(X))], \quad X \sim D.
+\tag{2.1}
+\]
 
 \textbf{2.2 Side‑information coding}
 
@@ -395,7 +397,10 @@ The number of partitions of \{1, \ldots, N\} into 16 disjoint sets M\_0,
 \ldots, M\_15 with cardinalities k\_0, \ldots, k\_15 is the multinomial
 coefficient
 
-\emph{M(N; k\_0, \ldots, k\_15) = N! / (k\_0! k\_1! ⋯ k\_15!),} (2.2)
+\[
+M(N; k_0, \ldots, k_{15}) = \frac{N!}{k_0!\, k_1! \cdots k_{15}!},
+\tag{2.2}
+\]
 
 so such a partition is described in log\_2 M(N; k\_0, \ldots, k\_15)
 bits. The multinomial baseline is strictly tighter than the sum of
@@ -539,7 +544,10 @@ block.
 
 Every RNR coder has the same general code‑length decomposition:
 
-\emph{L\_RNR(X) = L(M) + L(R \textbar{} Y) + L(V) + L(Theta),} (3.1)
+\[
+L_{\text{RNR}}(X) = L(M) + L(R \mid Y) + L(V) + L(\Theta),
+\tag{3.1}
+\]
 
 where L(M) is the model description length (parameters, quantization
 tables, adapter weights as relevant), L(R \textbar{} Y) is the repair
@@ -547,8 +555,10 @@ stream length, L(V) is verification overhead, and L(Theta) is metadata
 overhead (sizes, mode flags, dictionary headers). The conditional
 advantage criterion is then
 
-\emph{E\_D {[} L(M) + L(R \textbar{} Y) + L(V) + L(Theta) {]}
-\textless{} E\_D {[} B(X) {]}.} (3.2)
+\[
+\mathbb{E}_D\!\left[L(M) + L(R \mid Y) + L(V) + L(\Theta)\right] < \mathbb{E}_D[B(X)].
+\tag{3.2}
+\]
 
 \textbf{3.4 Amortization of model cost}
 
@@ -636,8 +646,10 @@ class escape : store raw byte (8 bits) or raw codeword (12 bits)
 Let the class probabilities be p\_0, p\_1, p\_2, p\_cand, p\_esc summing
 to 1. The expected per‑position repair length is
 
-\emph{ell\_rep = p\_0 * 0 + p\_1 * log2(12) + p\_2 * log2(66) + p\_cand
-* (header + rank) + p\_esc * 8 + H(class) + eps,} (4.1)
+\[
+\ell_{\text{rep}} = p_0 \cdot 0 + p_1 \log_2(12) + p_2 \log_2(66) + p_{\text{cand}} \cdot (\text{header} + \text{rank}) + p_{\text{esc}} \cdot 8 + H(\text{class}) + \varepsilon,
+\tag{4.1}
+\]
 
 where H(class) is the entropy of the class label encoded with a small
 adaptive entropy coder, and eps is the entropy‑coder redundancy. When
@@ -654,8 +666,10 @@ distribution P\_E. Suppose the class entropy coder achieves expected
 length at most N * H(P\_E) + eps\_N. Then the expected Type‑I code
 length is bounded by}
 
-\emph{E{[} L\_I(X) {]} \textless= L(M\_I) + N * H(P\_E) + N * ell\_cond
-+ eps\_N + L(V) + L(Theta),} (4.2)
+\[
+\mathbb{E}[L_I(X)] \leq L(M_I) + N \cdot H(P_E) + N \cdot \ell_{\text{cond}} + \varepsilon_N + L(V) + L(\Theta),
+\tag{4.2}
+\]
 
 \emph{where ell\_cond denotes the expected conditional payload
 (within‑class rank or escape) per position. Consequently, Type‑I is
@@ -957,14 +971,18 @@ alpha\_v, plus (ii) an escape stream listing the alpha\_v positions of
 M\_v \textbackslash{} S\_v among the at most N positions not in S\_v.
 The total partition code length is at most}
 
-\emph{L\_RPi \textless= sum\_v {[} log\_2 C(s\_v, k\_v - alpha\_v) +
-log\_2 C(N - s\_v, alpha\_v) {]} + L(counts) + eps\_N.} (5.1)
+\[
+L_{R\Pi} \leq \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N - s_v}{\alpha_v}\right] + L(\text{counts}) + \varepsilon_N.
+\tag{5.1}
+\]
 
 \emph{Comparing against the multinomial baseline log\_2 M(N; k\_0, ...,
 k\_15) of Theorem 5.2, the positional gain is}
 
-\emph{G\_pos = log\_2 M(N; k\_0, ..., k\_15) - sum\_v {[} log\_2 C(s\_v,
-k\_v - alpha\_v) + log\_2 C(N - s\_v, alpha\_v) {]}.} (5.2)
+\[
+G_{\text{pos}} = \log_2 M(N; k_0, \ldots, k_{15}) - \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N - s_v}{\alpha_v}\right].
+\tag{5.2}
+\]
 
 \emph{Type‑II is conditionally advantageous when G\_pos exceeds
 L(M\_pos) + L(V) + L(Theta) + eps\_N plus the cost of describing the
@@ -1238,8 +1256,10 @@ tile t and m\_hat(t) = argmin\_m U\_m(t) be the model‑selected mode. If
 \textbar{} U\_m(t) - L\_m(t) \textbar{} \textless= eps\_t for every m,
 then}
 
-\emph{L\_\{m\_hat(t)\}(t) \textless= L\_\{m\_star(t)\}(t) + 2 * eps\_t.}
-(6.1)
+\[
+L_{\hat{m}(t)}(t) \leq L_{m^\star(t)}(t) + 2\varepsilon_t.
+\tag{6.1}
+\]
 
 \emph{\textbf{Proof.}} By the prediction error bound, L\_\{m\_hat\}(t)
 \textless= U\_\{m\_hat\}(t) + eps\_t. By the definition of m\_hat,
@@ -1311,8 +1331,10 @@ H(H \textbar{} C) + H(L \textbar{} C) per position, while joint byte
 coding pays H(H, L \textbar{} C). The advantage of byte coding over
 independent nibble coding is}
 
-\emph{Delta\_B = H(H \textbar{} C) + H(L \textbar{} C) - H(H, L
-\textbar{} C) = I(H ; L \textbar{} C),} (6.2)
+\[
+\Delta_B = H(H \mid C) + H(L \mid C) - H(H, L \mid C) = I(H ; L \mid C),
+\tag{6.2}
+\]
 
 \emph{the conditional mutual information between the high and low nibble
 given context. Type‑III‑B is conditionally advantageous over Type‑II at
@@ -1391,8 +1413,10 @@ the next theorem.
 token tau of byte length ell and corpus frequency f is admitted to D if
 its per‑corpus savings exceed its description cost:}
 
-\emph{f * {[} 8 * ell - code\_cost(tau) {]} \textgreater{}
-dictionary\_cost(tau) + parse\_overhead(tau),} (6.3)
+\[
+f \cdot [8\ell - \mathrm{code\_cost}(\tau)] > \mathrm{dictionary\_cost}(\tau) + \mathrm{parse\_overhead}(\tau),
+\tag{6.3}
+\]
 
 \emph{where code\_cost(tau) is the average bit length to encode an
 occurrence of tau under the predictor and entropy coder,
@@ -1436,8 +1460,10 @@ latent under the prior, the data under the conditional, and recover the
 auxiliary bits respectively. Its expectation under X \textasciitilde{} D
 and z \textasciitilde{} q satisfies}
 
-\emph{E{[} L(R \textbar{} Y) {]} = H(X \textbar{} Y) + KL( q(z
-\textbar{} X, Y) \textbar\textbar{} P(z \textbar{} X, Y) ).} (6.4)
+\[
+\mathbb{E}[L(R \mid Y)] = H(X \mid Y) + \mathrm{KL}\!\left(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y)\right).
+\tag{6.4}
+\]
 
 \emph{When q equals the true posterior, the KL term vanishes and the
 bits-back rate equals the conditional entropy H(X \textbar{} Y),
