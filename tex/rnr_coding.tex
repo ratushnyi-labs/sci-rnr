@@ -846,216 +846,229 @@ matrices.
 
 \textbf{5.2 Nibble partition representation}
 
-Without loss of generality, we present Type‑II at the nibble alphabet
-A\_16 = \{0, ..., 15\}. Larger alphabets (full bytes, byte pairs,
-learned tokens) generalize directly and are revisited in Section 6. Let
-X = (x\_1, ..., x\_N) with x\_i in A\_16. For each nibble value v,
-define the position set
+Without loss of generality, we present Type-II at the nibble alphabet
+$A_{16} = \{0, \ldots, 15\}$. Larger alphabets (full bytes, byte pairs,
+learned tokens) generalize directly and are revisited in Section 6.
+Let $X = (x_1, \ldots, x_N)$ with $x_i \in A_{16}$. For each nibble
+value $v$, define the position set
+\[
+M_v = \{\, i \in \{1, \ldots, N\} : x_i = v \,\}.
+\]
+The collection $\Pi(X) = (M_0, \ldots, M_{15})$ is a partition of
+$\{1, \ldots, N\}$: the $M_v$ are pairwise disjoint and their union is
+the full position set. The original sequence $X$ is recovered from
+$\Pi(X)$ by reading off the position memberships in order. Encoding
+$X$ is therefore equivalent to encoding $\Pi(X)$.
 
-\emph{M\_v = \{ i in \{1, ..., N\} : x\_i = v \}.}
+\textbf{5.3 Factorized and semi-non-factorized positional models}
 
-The collection Pi(X) = (M\_0, ..., M\_15) is a partition of \{1, ...,
-N\}: the M\_v are pairwise disjoint and their union is the full position
-set. The original sequence X is recovered from Pi(X) by reading off the
-position memberships in order. Encoding X is therefore equivalent to
-encoding Pi(X).
+A Type-II model predicts a probability field $Q \in [0,1]^{16 \times N}$
+with column normalization $\sum_v Q_v(i) = 1$. We distinguish two
+regimes that affect the framework's relationship to Type-I.
 
-\textbf{5.3 Factorized and semi‑non‑factorized positional models}
+In the factorized regime, $Q_v(i)$ is treated as if the position labels
+were independent across $i$: the joint probability assigned to a
+candidate sequence $(x_1, \ldots, x_N)$ is the product over $i$ of
+$Q_{x_i}(i)$. Under this regime, optimal entropy coding achieves
+length equal to $-\sum_i \log_2 Q_{x_i}(i)$, which is bit-equivalent
+to per-position arithmetic coding driven by the same $Q$. Type-II
+under a factorized model is therefore not operationally distinct from
+Type-I with a per-position predictor. We make this explicit in
+Lemma 5.1.
 
-A Type‑II model predicts a probability field Q in {[}0,1{]}\^{}(16 x N)
-with column normalization sum\_v Q\_v(i) = 1. We distinguish two regimes
-that affect the framework's relationship to Type‑I.
-
-In the factorized regime, Q\_v(i) is treated as if the position labels
-were independent across i: the joint probability assigned to a candidate
-sequence (x\_1, ..., x\_N) is the product over i of Q\_\{x\_i\}(i).
-Under this regime, optimal entropy coding achieves length equal to minus
-the sum over i of log\_2 Q\_\{x\_i\}(i), which is bit‑equivalent to
-per‑position arithmetic coding driven by the same Q. Type‑II under a
-factorized model is therefore not operationally distinct from Type‑I
-with a per‑position predictor. We make this explicit in Lemma 5.1.
-
-In the semi‑non‑factorized regime, the model additionally enforces
+In the semi-non-factorized regime, the model additionally enforces
 structural constraints that the factorized form violates. The minimal
-such constraints are: (a) the disjoint‑partition constraint that exactly
-one v has x\_i = v at each i; and (b) the count constraint that the
-partition cardinalities k\_v = \textbar M\_v\textbar{} are themselves
-modeled (either predicted, transmitted, or constrained by a learned
-distribution over count vectors). Under the semi‑non‑factorized regime,
-the joint distribution over partitions is not a product of per‑position
-categoricals, and the coding gain over the factorized regime can be
-substantial when the counts or the joint geometry are highly
-informative. Theorem 5.4 quantifies this separation.
+such constraints are: (a) the disjoint-partition constraint that
+exactly one $v$ has $x_i = v$ at each $i$; and (b) the count
+constraint that the partition cardinalities $k_v = |M_v|$ are
+themselves modeled (either predicted, transmitted, or constrained by a
+learned distribution over count vectors). Under the
+semi-non-factorized regime, the joint distribution over partitions is
+not a product of per-position categoricals, and the coding gain over
+the factorized regime can be substantial when the counts or the joint
+geometry are highly informative. Theorem 5.4 quantifies this
+separation.
 
 \textbf{5.4 Coding strategies for the partition residual}
 
-Given Q and possible knowledge of counts k\_v, the archive must store a
-residual R\_Pi sufficient to recover the exact partition. Several coding
-strategies are available.
-
+Given $Q$ and possible knowledge of counts $k_v$, the archive must
+store a residual $R_\Pi$ sufficient to recover the exact partition.
+Several coding strategies are available.
 \begin{itemize}
 \item
-  Per‑position arithmetic coding under Q: encode x\_i with probability
-  Q\_\{x\_i\}(i). Cost per position: minus log\_2 Q\_\{x\_i\}(i).
+  Per-position arithmetic coding under $Q$: encode $x_i$ with
+  probability $Q_{x_i}(i)$. Cost per position: $-\log_2 Q_{x_i}(i)$.
 \item
-  Per‑symbol enumerative coding given the counts: for each v in some
-  order, encode M\_v as a subset of the remaining positions by its rank
-  among C($N'$, k\_v) possibilities, where $N'$ is the number of positions
-  not yet assigned. The final mask is implicit.
+  Per-symbol enumerative coding given the counts: for each $v$ in
+  some order, encode $M_v$ as a subset of the remaining positions by
+  its rank among $\binom{N'}{k_v}$ possibilities, where $N'$ is the
+  number of positions not yet assigned. The final mask is implicit.
 \item
-  Per‑symbol enumerative coding given a predicted support S\_v
-  containing M\_v of size s\_v: encode M\_v by its rank among C(s\_v,
-  k\_v) possibilities, with an escape mode for positions in M\_v
-  \textbackslash{} S\_v.
+  Per-symbol enumerative coding given a predicted support $S_v$
+  containing $M_v$ of size $s_v$: encode $M_v$ by its rank among
+  $\binom{s_v}{k_v}$ possibilities, with an escape mode for positions
+  in $M_v \setminus S_v$.
 \item
   Joint enumerative coding under the multinomial: encode the partition
-  by its rank among the M(N; k\_0, ..., k\_15) valid partitions with the
-  given counts.
+  by its rank among the $M(N; k_0, \ldots, k_{15})$ valid partitions
+  with the given counts.
 \end{itemize}
 
 \textbf{5.5 The corrected positional gain theorem}
 
-Earlier drafts of this work used the per‑symbol enumerative baseline
-sum\_v log\_2 C(N, k\_v). This baseline overcounts because the 16 subset
-choices it sums over are not constrained to be disjoint: each position
-may be assigned to multiple v in the enumeration, so the count is larger
-than the true number of valid partitions. The correct baseline is the
-multinomial.
+Earlier drafts of this work used the per-symbol enumerative baseline
+$\sum_v \log_2 \binom{N}{k_v}$. This baseline overcounts because the
+16 subset choices it sums over are not constrained to be disjoint:
+each position may be assigned to multiple $v$ in the enumeration, so
+the count is larger than the true number of valid partitions. The
+correct baseline is the multinomial.
 
-\textbf{Lemma 5.1.} \emph{Under the factorized regime, per‑position
-arithmetic coding under Q and per‑position Type‑I arithmetic coding
-under the equivalent sequential conditional Q are bit‑equivalent: both
-produce code lengths within eps\_N of minus the sum over i of log\_2
-Q\_\{x\_i\}(i).}
+\textbf{Lemma 5.1.} \emph{Under the factorized regime, per-position
+arithmetic coding under $Q$ and per-position Type-I arithmetic coding
+under the equivalent sequential conditional $Q$ are bit-equivalent:
+both produce code lengths within $\varepsilon_N$ of
+$-\sum_i \log_2 Q_{x_i}(i)$.}
 
 \emph{\textbf{Proof.}} Both coders are arithmetic coders driven by the
-same per‑position probability vector Q\_*(i). Arithmetic coding
-redundancy is a constant overhead independent of which axis of the data
-the coder is sweeping. The two code lengths therefore agree up to
-eps\_N. \hfill$\blacksquare$
+same per-position probability vector $Q_*(i)$. Arithmetic coding
+redundancy is a constant overhead independent of which axis of the
+data the coder is sweeping. The two code lengths therefore agree up to
+$\varepsilon_N$. \hfill$\blacksquare$
 
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
-coding).} \emph{Let N be a block length, and let (k\_0, ..., k\_15) be
-the symbol counts with sum\_v k\_v = N. Without side information, the
-number of valid 16‑way disjoint partitions of \{1, ..., N\} with these
-counts is M(N; k\_0, ..., k\_15). The enumerative code length for the
-partition is therefore log\_2 M(N; k\_0, ..., k\_15) bits, plus the cost
-of describing the count vector itself.}
+coding).} \emph{Let $N$ be a block length, and let
+$(k_0, \ldots, k_{15})$ be the symbol counts with $\sum_v k_v = N$.
+Without side information, the number of valid 16-way disjoint
+partitions of $\{1, \ldots, N\}$ with these counts is
+$M(N; k_0, \ldots, k_{15})$. The enumerative code length for the
+partition is therefore $\log_2 M(N; k_0, \ldots, k_{15})$ bits, plus
+the cost of describing the count vector itself.}
 
-\emph{\textbf{Proof.}} A 16‑way partition of \{1, ..., N\} with
-cardinalities (k\_0, ..., k\_15) is in bijection with a length‑N
-labeling of the positions in which label v occurs k\_v times. The number
-of such labelings is the multinomial coefficient N! divided by the
-product over v of k\_v! by direct combinatorial counting. Enumerative
-coding describes the partition by its rank in this class. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} A 16-way partition of $\{1, \ldots, N\}$ with
+cardinalities $(k_0, \ldots, k_{15})$ is in bijection with a length-$N$
+labeling of the positions in which label $v$ occurs $k_v$ times. The
+number of such labelings is the multinomial coefficient $N!$ divided
+by the product over $v$ of $k_v!$ by direct combinatorial counting.
+Enumerative coding describes the partition by its rank in this class.
+\hfill$\blacksquare$
 
-\textbf{Theorem 5.3 (Type‑II support‑set advantage with escape).}
-\emph{Let Pi(X) = (M\_0, ..., M\_15) be the true partition with counts
-k\_v. Suppose for each v the predictor supplies a candidate support set
-S\_v of size s\_v, and let alpha\_v = \textbar{} M\_v \textbackslash{}
-S\_v \textbar{} be the number of true positions outside the predicted
-support. Encode each M\_v by (i) the rank of M\_v intersected with S\_v
-among the C(s\_v, k\_v - alpha\_v) subsets of S\_v of size k\_v -
-alpha\_v, plus (ii) an escape stream listing the alpha\_v positions of
-M\_v \textbackslash{} S\_v among the at most N positions not in S\_v.
-The total partition code length is at most}
+\textbf{Theorem 5.3 (Type-II support-set advantage with escape).}
+\emph{Let $\Pi(X) = (M_0, \ldots, M_{15})$ be the true partition with
+counts $k_v$. Suppose for each $v$ the predictor supplies a candidate
+support set $S_v$ of size $s_v$, and let
+$\alpha_v = |M_v \setminus S_v|$ be the number of true positions
+outside the predicted support. Encode each $M_v$ by (i) the rank of
+$M_v \cap S_v$ among the $\binom{s_v}{k_v - \alpha_v}$ subsets of
+$S_v$ of size $k_v - \alpha_v$, plus (ii) an escape stream listing
+the $\alpha_v$ positions of $M_v \setminus S_v$ among the at most $N$
+positions not in $S_v$. The total partition code length is at most}
 
 \[
 L_{R\Pi} \leq \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N - s_v}{\alpha_v}\right] + L(\text{counts}) + \varepsilon_N.
 \tag{5.1}
 \]
 
-\emph{Comparing against the multinomial baseline log\_2 M(N; k\_0, ...,
-k\_15) of Theorem 5.2, the positional gain is}
+\emph{Comparing against the multinomial baseline
+$\log_2 M(N; k_0, \ldots, k_{15})$ of Theorem 5.2, the positional
+gain is}
 
 \[
 G_{\text{pos}} = \log_2 M(N; k_0, \ldots, k_{15}) - \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N - s_v}{\alpha_v}\right].
 \tag{5.2}
 \]
 
-\emph{Type‑II is conditionally advantageous when G\_pos exceeds
-L(M\_pos) + L(V) + L(Theta) + eps\_N plus the cost of describing the
-count vector and any per‑symbol support headers.}
+\emph{Type-II is conditionally advantageous when $G_{\text{pos}}$
+exceeds $L(M_{\text{pos}}) + L(V) + L(\Theta) + \varepsilon_N$ plus
+the cost of describing the count vector and any per-symbol support
+headers.}
 
-\emph{\textbf{Proof.}} For each symbol v, M\_v decomposes as the
-disjoint union of M\_v intersected with S\_v (a subset of S\_v of size
-k\_v - alpha\_v) and M\_v \textbackslash{} S\_v (a subset of \{1, ...,
-N\} \textbackslash{} S\_v of size alpha\_v). The first component is
-encoded by its enumerative rank among C(s\_v, k\_v - alpha\_v) subsets;
-the second by its enumerative rank among the C(N - s\_v, alpha\_v)
-escape subsets. Summing the two log‑binomials across v gives the
-residual length. The advantage condition follows by subtracting this
-from the multinomial baseline and accounting for overhead. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} For each symbol $v$, $M_v$ decomposes as the
+disjoint union of $M_v \cap S_v$ (a subset of $S_v$ of size
+$k_v - \alpha_v$) and $M_v \setminus S_v$ (a subset of
+$\{1, \ldots, N\} \setminus S_v$ of size $\alpha_v$). The first
+component is encoded by its enumerative rank among
+$\binom{s_v}{k_v - \alpha_v}$ subsets; the second by its enumerative
+rank among the $\binom{N - s_v}{\alpha_v}$ escape subsets. Summing
+the two log-binomials across $v$ gives the residual length. The
+advantage condition follows by subtracting this from the multinomial
+baseline and accounting for overhead. \hfill$\blacksquare$
 
-Theorem 5.3 corrects two flaws in the earlier statement. First, it uses
-the multinomial coefficient as the baseline, which is the correct
+Theorem 5.3 corrects two flaws in the earlier statement. First, it
+uses the multinomial coefficient as the baseline, which is the correct
 entropy of an unconstrained partition with known counts; the looser
-sum\_v log\_2 C(N, k\_v) baseline overstated the gain by allowing
-inconsistent subset choices. Second, it admits the realistic case where
-M\_v is not entirely contained in S\_v by introducing the per‑symbol
-escape count alpha\_v, which carries its own enumerative cost. The bound
-is tight: when alpha\_v = 0 for all v, the second log‑binomial vanishes
-and the formula reduces to sum\_v log\_2 C(s\_v, k\_v), recovering the
-idealized oracle bound.
+$\sum_v \log_2 \binom{N}{k_v}$ baseline overstated the gain by
+allowing inconsistent subset choices. Second, it admits the realistic
+case where $M_v$ is not entirely contained in $S_v$ by introducing
+the per-symbol escape count $\alpha_v$, which carries its own
+enumerative cost. The bound is tight: when $\alpha_v = 0$ for all
+$v$, the second log-binomial vanishes and the formula reduces to
+$\sum_v \log_2 \binom{s_v}{k_v}$, recovering the idealized oracle
+bound.
 
-\textbf{5.6 Type‑II vs Type‑I: a separation theorem}
+\textbf{5.6 Type-II vs Type-I: a separation theorem}
 
-Lemma 5.1 shows that Type‑II under a factorized Q is operationally
-identical to per‑position Type‑I arithmetic coding. The natural question
-is whether semi‑non‑factorized Type‑II provides a genuine separation.
-The next theorem answers this in the affirmative for a concrete family
-of joint distributions.
+Lemma 5.1 shows that Type-II under a factorized $Q$ is operationally
+identical to per-position Type-I arithmetic coding. The natural
+question is whether semi-non-factorized Type-II provides a genuine
+separation. The next theorem answers this in the affirmative for a
+concrete family of joint distributions.
 
-\textbf{Theorem 5.4 (Type‑II semi‑non‑factorized separation).}
-\emph{There exists a family of distributions D\_N over length‑N nibble
-strings, and a positive constant c \textgreater{} 0, such that for every
-sufficiently large N the optimal factorized per‑position arithmetic
-coder driven by the true marginals Q\^{}marg\_v(i) = Pr\_\{X
-\textasciitilde{} D\_N\}(x\_i = v) has expected code length at least 4N
-bits, while a semi‑non‑factorized Type‑II coder that has access to a
-single bit per position of joint side information (membership in a
-structured set) achieves expected length at most (4 - c) N + O(log N)
-bits. The separation is therefore Theta(N).}
+\textbf{Theorem 5.4 (Type-II semi-non-factorized separation).}
+\emph{There exists a family of distributions $D_N$ over length-$N$
+nibble strings, and a positive constant $c > 0$, such that for every
+sufficiently large $N$ the optimal factorized per-position arithmetic
+coder driven by the true marginals
+$Q^{\text{marg}}_v(i) = \Pr_{X \sim D_N}(x_i = v)$ has expected code
+length at least $4N$ bits, while a semi-non-factorized Type-II coder
+that has access to a single bit per position of joint side information
+(membership in a structured set) achieves expected length at most
+$(4 - c)N + O(\log N)$ bits. The separation is therefore $\Theta(N)$.}
 
-\emph{\textbf{Proof.}} Fix a parameter c in (0, 4). Let G be a 3cN x 4N
-generator matrix over GF(2) of a linear code C\_N with the property
-that, for every codeword position j in \{1, ..., 4N\}, the j‑th
-coordinate is a non‑trivial GF(2)‑linear function of the 3cN message
-bits. Such generator matrices are abundant; a random matrix satisfies
-the property with probability 1 - O(2\^{}\{-cN\}). Let S\_N subset of
-\{0, ..., 15\}\^{}N be the image of all 2\^{}\{(4-c)N\} messages under
-G, with the 4N output bits parsed as N nibbles. By construction
-\textbar S\_N\textbar{} = 2\^{}\{(4-c)N\}. Define D\_N as the uniform
-distribution on S\_N. (i) Marginal uniformity: for any position i and
-value v in \{0, ..., 15\}, the four bits encoding v at position i are
-non-trivial linear functions of a uniformly random message, hence each
-of the 16 bit patterns occurs with probability exactly 1/16. Therefore
-Q\^{}marg\_v(i) = 1/16 for all i, v. (ii) Factorized lower bound: the
-cross‑entropy of any X \textasciitilde{} D\_N under the factorized model
-with Q\_v(i) = 1/16 is exactly N * log\_2 16 = 4N bits; this is also the
-optimal expected code length of an arithmetic coder driven by Q\^{}marg,
-up to the redundancy eps\_N. (iii) Joint upper bound: a
-semi‑non‑factorized coder that encodes membership in S\_N (one cN-bit
-message index per block) achieves length log\_2 \textbar S\_N\textbar{}
-+ eps\_N = (4 - c) N + eps\_N bits. (iv) Separation: subtracting, the
-gap is c N - eps\_N - O(log N), which is Theta(N). \hfill$\blacksquare$
+\emph{\textbf{Proof.}} Fix a parameter $c \in (0, 4)$. Let $G$ be a
+$3cN \times 4N$ generator matrix over $\mathrm{GF}(2)$ of a linear
+code $C_N$ with the property that, for every codeword position
+$j \in \{1, \ldots, 4N\}$, the $j$-th coordinate is a non-trivial
+$\mathrm{GF}(2)$-linear function of the $3cN$ message bits. Such
+generator matrices are abundant; a random matrix satisfies the
+property with probability $1 - O(2^{-cN})$. Let
+$S_N \subset \{0, \ldots, 15\}^N$ be the image of all $2^{(4-c)N}$
+messages under $G$, with the $4N$ output bits parsed as $N$ nibbles.
+By construction $|S_N| = 2^{(4-c)N}$. Define $D_N$ as the uniform
+distribution on $S_N$.
+(i)~Marginal uniformity: for any position $i$ and value
+$v \in \{0, \ldots, 15\}$, the four bits encoding $v$ at position $i$
+are non-trivial linear functions of a uniformly random message, hence
+each of the 16 bit patterns occurs with probability exactly $1/16$.
+Therefore $Q^{\text{marg}}_v(i) = 1/16$ for all $i, v$.
+(ii)~Factorized lower bound: the cross-entropy of any $X \sim D_N$
+under the factorized model with $Q_v(i) = 1/16$ is exactly
+$N \cdot \log_2 16 = 4N$ bits; this is also the optimal expected code
+length of an arithmetic coder driven by $Q^{\text{marg}}$, up to the
+redundancy $\varepsilon_N$.
+(iii)~Joint upper bound: a semi-non-factorized coder that encodes
+membership in $S_N$ (one $cN$-bit message index per block) achieves
+length $\log_2 |S_N| + \varepsilon_N = (4 - c)N + \varepsilon_N$ bits.
+(iv)~Separation: subtracting, the gap is
+$cN - \varepsilon_N - O(\log N)$, which is $\Theta(N)$.
+\hfill$\blacksquare$
 
-Theorem 5.4 establishes that semi‑non‑factorized Type‑II strictly
-separates from any factorized per‑position coder, including
+Theorem 5.4 establishes that semi-non-factorized Type-II strictly
+separates from any factorized per-position coder, including
 PixelCNN-style autoregressive predictors that produce one categorical
-distribution per position. The separation is Theta(N), not Theta(log N):
-joint structure beyond per‑position marginals can carry a constant
-fraction of a bit per position. The linear-code family used in the proof
-is a worst case for factorized models (marginals are exactly uniform)
-and a best case for joint coders (the joint distribution lives on a
-2\^{}\{(4-c)N\}-element set). Realistic data classes interpolate between
-these extremes; the practical regime in which Type‑II is advantageous is
-one where the data lives on a small, structurally describable subset of
-\{0, ..., 15\}\^{}N whose per-position marginals appear approximately
-uniform. Count constraints alone yield only a logarithmic separation
-(the Stirling correction), so richer joint structure --- geometric
-constraints, algebraic parities, sparsity patterns, sortedness --- is
-required to exhibit the Theta(N) regime.
+distribution per position. The separation is $\Theta(N)$, not
+$\Theta(\log N)$: joint structure beyond per-position marginals can
+carry a constant fraction of a bit per position. The linear-code
+family used in the proof is a worst case for factorized models
+(marginals are exactly uniform) and a best case for joint coders (the
+joint distribution lives on a $2^{(4-c)N}$-element set). Realistic
+data classes interpolate between these extremes; the practical regime
+in which Type-II is advantageous is one where the data lives on a
+small, structurally describable subset of $\{0, \ldots, 15\}^N$ whose
+per-position marginals appear approximately uniform. Count constraints
+alone yield only a logarithmic separation (the Stirling correction),
+so richer joint structure --- geometric constraints, algebraic
+parities, sparsity patterns, sortedness --- is required to exhibit the
+$\Theta(N)$ regime.
 
 The linear-code construction of Theorem 5.4 is one extreme of a more
 general phenomenon. The next result identifies the exact
@@ -1064,144 +1077,153 @@ factorized and joint coding for any source distribution, and the
 following remark connects this quantity to the manifold hypothesis from
 statistical learning theory and topological data analysis.
 
-\textbf{Theorem 5.6 (Multi-information separation).} \emph{Let D\_N be
-any distribution over A\_16\^{}N. Define the total correlation
-(multi-information) TC(D\_N) = sum\_\{i=1\}\^{}N H\_marg(X\_i) -
-H(D\_N), where H\_marg(X\_i) is the marginal entropy at position i under
-D\_N. The optimal factorized per-position arithmetic coder driven by
-these marginals achieves expected rate sum\_i H\_marg(X\_i) + eps\_N
-bits per block. Any coder that uses D\_N as joint side information
-achieves expected rate at least H(D\_N) + eps\_N bits per block, with
-the bound saturated by the enumerative coder over the typical set. The
-separation between factorized and joint coding is exactly TC(D\_N) +
-O(eps\_N).}
+\textbf{Theorem 5.6 (Multi-information separation).} \emph{Let $D_N$
+be any distribution over $A_{16}^N$. Define the total correlation
+(multi-information)
+$\mathrm{TC}(D_N) = \sum_{i=1}^N H_{\text{marg}}(X_i) - H(D_N)$, where
+$H_{\text{marg}}(X_i)$ is the marginal entropy at position $i$ under
+$D_N$. The optimal factorized per-position arithmetic coder driven by
+these marginals achieves expected rate
+$\sum_i H_{\text{marg}}(X_i) + \varepsilon_N$ bits per block. Any
+coder that uses $D_N$ as joint side information achieves expected
+rate at least $H(D_N) + \varepsilon_N$ bits per block, with the bound
+saturated by the enumerative coder over the typical set. The
+separation between factorized and joint coding is exactly
+$\mathrm{TC}(D_N) + O(\varepsilon_N)$.}
 
 \emph{\textbf{Proof.}} Both bounds are direct applications of
-Shannon\textquotesingle s noiseless source coding theorem (Shannon 1948;
-Cover and Thomas 2006, Theorem 5.4.1). The factorized coder, treating
-positions as independent under the marginals, achieves Shannon-optimal
-rate sum\_i H\_marg(X\_i) per block, with arithmetic-coding redundancy
-eps\_N. The joint coder, encoding X by its rank in the typical set under
-D\_N, achieves rate H(D\_N) + o(N) by the asymptotic equipartition
-property (Cover and Thomas 2006, Theorem 3.1.2), and no uniquely
-decodable code can do better by the converse. The difference of these
-rates is sum\_i H\_marg(X\_i) - H(D\_N), which is the total correlation
-TC(D\_N) by definition. Total correlation is non-negative, with equality
-iff positions are mutually independent under D\_N. \hfill$\blacksquare$
+Shannon's noiseless source coding theorem (Shannon 1948; Cover and
+Thomas 2006, Theorem 5.4.1). The factorized coder, treating positions
+as independent under the marginals, achieves Shannon-optimal rate
+$\sum_i H_{\text{marg}}(X_i)$ per block, with arithmetic-coding
+redundancy $\varepsilon_N$. The joint coder, encoding $X$ by its rank
+in the typical set under $D_N$, achieves rate $H(D_N) + o(N)$ by the
+asymptotic equipartition property (Cover and Thomas 2006, Theorem
+3.1.2), and no uniquely decodable code can do better by the converse.
+The difference of these rates is $\sum_i H_{\text{marg}}(X_i) -
+H(D_N)$, which is the total correlation $\mathrm{TC}(D_N)$ by
+definition. Total correlation is non-negative, with equality iff
+positions are mutually independent under $D_N$.
+\hfill$\blacksquare$
 
 Theorem 5.6 generalizes Theorem 5.4 from the uniform-marginal
-linear-code construction to arbitrary source distributions. The Theta(N)
-separation observed in Theorem 5.4 corresponds to TC = (4 - c)N for the
-linear-code family. For general D\_N, the magnitude of TC(D\_N)
-determines whether Type-II provides a constant-factor or vanishing
-improvement over factorized coding.
+linear-code construction to arbitrary source distributions. The
+$\Theta(N)$ separation observed in Theorem 5.4 corresponds to
+$\mathrm{TC} = (4 - c)N$ for the linear-code family. For general
+$D_N$, the magnitude of $\mathrm{TC}(D_N)$ determines whether Type-II
+provides a constant-factor or vanishing improvement over factorized
+coding.
 
 \textbf{Remark 5.7 (Manifold-hypothesis quantification of TC).} The
 manifold hypothesis from statistical learning theory and topological
-data analysis (Donoho 2000; Tenenbaum, de Silva, Langford 2000; Carlsson
-2009) states that high-dimensional natural data --- images, text, audio,
-structured records --- concentrates near a low-dimensional submanifold
-of the ambient space. Quantitatively, if D\_N\textquotesingle s typical
-realizations live on a manifold of intrinsic dimension d much smaller
-than N (measured via correlation dimension, the maximum-likelihood
-estimator of Levina and Bickel 2004, or persistent homology), the joint
-entropy is H(D\_N) = O(d log N) bits. With per-position marginals near
-uniform on A\_16, the multi-information is TC(D\_N) = 4N - O(d log N) =
-Theta(N). The manifold hypothesis therefore predicts that Theorem
-5.6\textquotesingle s separation is Theta(N) for any natural data class
-admitting a low-dimensional manifold representation. Empirical
-intrinsic-dimension estimates support this regime: natural images have d
-in the range 10\^{}2 to 10\^{}3 in pixel-space ambient dimension 10\^{}6
-(Carlsson, Ishkhanov, de Silva, Zomorodian 2008); database pages have d
-bounded by schema complexity, often in tens; instruction streams have d
-bounded by valid-program-graph dimensionality. The empirical question of
-which data classes admit a small d, and the operational question of how
+data analysis (Donoho 2000; Tenenbaum, de Silva, Langford 2000;
+Carlsson 2009) states that high-dimensional natural data --- images,
+text, audio, structured records --- concentrates near a
+low-dimensional submanifold of the ambient space. Quantitatively, if
+$D_N$'s typical realizations live on a manifold of intrinsic
+dimension $d \ll N$ (measured via correlation dimension, the
+maximum-likelihood estimator of Levina and Bickel 2004, or persistent
+homology), the joint entropy is $H(D_N) = O(d \log N)$ bits. With
+per-position marginals near uniform on $A_{16}$, the multi-information
+is $\mathrm{TC}(D_N) = 4N - O(d \log N) = \Theta(N)$. The manifold
+hypothesis therefore predicts that Theorem 5.6's separation is
+$\Theta(N)$ for any natural data class admitting a low-dimensional
+manifold representation. Empirical intrinsic-dimension estimates
+support this regime: natural images have $d$ in the range $10^2$ to
+$10^3$ in pixel-space ambient dimension $10^6$ (Carlsson, Ishkhanov,
+de Silva, Zomorodian 2008); database pages have $d$ bounded by schema
+complexity, often in tens; instruction streams have $d$ bounded by
+valid-program-graph dimensionality. The empirical question of which
+data classes admit a small $d$, and the operational question of how
 to construct efficient enumerative encoders for the corresponding
-subsets S\_N, are deferred to experimental work; the conditional
+subsets $S_N$, are deferred to experimental work; the conditional
 separation theorem itself is established by Theorem 5.6 plus the
 manifold-hypothesis premise.
 
 \textbf{5.7 Worked numerical example}
 
-Consider a block of N = 1024 nibbles with counts k\_v = 64 for v = 0,
-..., 15 (i.e., uniformly balanced). The multinomial baseline of Theorem
-5.2 evaluates to
-
-\emph{log\_2 {[} 1024! / (64!)\^{}16 {]} approx 4 * 1024 - (15/2) log\_2
-1024 + O(1) = 4096 - 75 + O(1) approx 4021 bits.}
-
-The plain per‑byte raw cost is 4 * 1024 = 4096 bits. A factorized
+Consider a block of $N = 1024$ nibbles with counts $k_v = 64$ for
+$v = 0, \ldots, 15$ (i.e., uniformly balanced). The multinomial
+baseline of Theorem 5.2 evaluates to
+\[
+\log_2 \!\left[\frac{1024!}{(64!)^{16}}\right] \approx 4 \cdot 1024 - \tfrac{15}{2} \log_2 1024 + O(1) = 4096 - 75 + O(1) \approx 4021 \text{ bits.}
+\]
+The plain per-byte raw cost is $4 \cdot 1024 = 4096$ bits. A factorized
 arithmetic coder under the uniform marginal pays approximately 4096
-bits. The multinomial coder saves 75 bits just from the count constraint
-alone.
+bits. The multinomial coder saves 75 bits just from the count
+constraint alone.
 
 Suppose a positional predictor narrows each symbol's candidate support
-to s\_v = 256 with no escapes, so alpha\_v = 0. The Type‑II residual
-cost is
-
-\emph{sum\_v log\_2 C(256, 64) = 16 * log\_2 C(256, 64) approx 16 *
-203.6 = 3258 bits,}
-
-for an apparent gain of 4021 - 3258 approx 763 bits over the multinomial
-baseline. Adding a model cost of, say, 200 bytes = 1600 bits amortized
-over m = 8 blocks gives 200 bits per block, leaving an effective gain of
-approximately 563 bits per block. This is a saving of roughly 70 bytes
-per 512‑byte equivalent block, a competitive figure on structured
-positional data. The estimate log\_2 C(256, 64) approx 203.6 uses
-Stirling: log\_2 C(N, k) = N * H(k/N) - (1/2) log\_2 (2 pi N p (1-p)) +
-O(1/N), which for N = 256, p = 1/4 gives 207.69 - 4.12 approx 203.57.
+to $s_v = 256$ with no escapes, so $\alpha_v = 0$. The Type-II
+residual cost is
+\[
+\sum_v \log_2 \binom{256}{64} = 16 \cdot \log_2 \binom{256}{64} \approx 16 \cdot 203.6 = 3258 \text{ bits,}
+\]
+for an apparent gain of $4021 - 3258 \approx 763$ bits over the
+multinomial baseline. Adding a model cost of, say, 200 bytes = 1600
+bits amortized over $m = 8$ blocks gives 200 bits per block, leaving an
+effective gain of approximately 563 bits per block. This is a saving
+of roughly 70 bytes per 512-byte equivalent block, a competitive
+figure on structured positional data. The estimate
+$\log_2 \binom{256}{64} \approx 203.6$ uses Stirling:
+$\log_2 \binom{N}{k} = N \cdot H(k/N) - \tfrac{1}{2} \log_2(2\pi N p(1-p)) + O(1/N)$,
+which for $N = 256, p = 1/4$ gives $207.69 - 4.12 \approx 203.57$.
 
 \textbf{5.8 Optimal support threshold and the arithmetic-coding limit}
 
 Theorem 5.3 bounds the Type-II partition residual under a candidate
-support S\_v of fixed size s\_v. The remaining design question is how to
-choose S\_v from the predictor\textquotesingle s probability field Q.
-The next result resolves this in two steps: (a) the optimal S\_v is a
-prefix of positions sorted by Q\_v(i), and (b) the support-set
+support $S_v$ of fixed size $s_v$. The remaining design question is
+how to choose $S_v$ from the predictor's probability field $Q$. The
+next result resolves this in two steps: (a) the optimal $S_v$ is a
+prefix of positions sorted by $Q_v(i)$, and (b) the support-set
 construction is at best equivalent to per-position arithmetic coding
-under Q.
+under $Q$.
 
-\textbf{Proposition 5.5 (Optimal support is a prefix; arithmetic coding is
-the limit).} \emph{Fix a symbol v and a predictor Q with positions
-sorted in decreasing order of Q\_v(i). Among all support sets S\_v of
-any size, the choice that minimizes the expected Theorem 5.3 residual
-cost is the top-s\_v* prefix, where s\_v* is determined by the
-marginal-balance condition d/ds\_v {[} log\_2 C(s\_v, k\_v -
-alpha\_v(s\_v)) + log\_2 C(N - s\_v, alpha\_v(s\_v)) {]} = 0. Moreover,
-the expected cost of the optimal support-set construction is at least
-the expected cost of per-position arithmetic coding driven by the same
-Q, with equality only in the degenerate limit where Q is binary (each
-Q\_v(i) in \{0, 1\}).}
+\textbf{Proposition 5.5 (Optimal support is a prefix; arithmetic
+coding is the limit).} \emph{Fix a symbol $v$ and a predictor $Q$
+with positions sorted in decreasing order of $Q_v(i)$. Among all
+support sets $S_v$ of any size, the choice that minimizes the
+expected Theorem 5.3 residual cost is the top-$s_v^\star$ prefix,
+where $s_v^\star$ is determined by the marginal-balance condition}
+\[
+\frac{\mathrm{d}}{\mathrm{d}s_v} \!\left[\log_2 \binom{s_v}{k_v - \alpha_v(s_v)} + \log_2 \binom{N - s_v}{\alpha_v(s_v)}\right] = 0.
+\]
+\emph{Moreover, the expected cost of the optimal support-set
+construction is at least the expected cost of per-position arithmetic
+coding driven by the same $Q$, with equality only in the degenerate
+limit where $Q$ is binary (each $Q_v(i) \in \{0, 1\}$).}
 
-\emph{\textbf{Proof.}} Part (a): suppose S\_v is not a top-Q\_v prefix.
-Then there exist positions i, j with i in S\_v, j not in S\_v, and
-Q\_v(j) \textgreater{} Q\_v(i). Swapping i and j in S\_v leaves
-\textbar S\_v\textbar{} = s\_v unchanged but increases the expected
-number of true-positives in S\_v (since j is more likely to be in M\_v
-than i under Q), which decreases the expected alpha\_v and therefore
-decreases the expected sum in Theorem 5.3 (both log\_2 C(s\_v, k\_v -
-alpha\_v) and log\_2 C(N - s\_v, alpha\_v) are monotone in alpha\_v).
-Iterating this swap argument terminates at the top-prefix configuration.
-Part (b): per-position arithmetic coding under Q achieves expected
-length -sum\_i log\_2 Q\_\{x\_i\}(i), which by Shannon\textquotesingle s
-source coding theorem is the conditional entropy H(X \textbar{} Q) and
-is minimal among coders driven by Q. The support-set construction
-encodes membership in S\_v (a hard binary decision) and then a rank
-within C(s\_v, k\_v - alpha\_v), discarding the soft probability
-information in Q. By the data-processing inequality applied to this
+\emph{\textbf{Proof.}} Part~(a): suppose $S_v$ is not a top-$Q_v$
+prefix. Then there exist positions $i, j$ with $i \in S_v$,
+$j \notin S_v$, and $Q_v(j) > Q_v(i)$. Swapping $i$ and $j$ in $S_v$
+leaves $|S_v| = s_v$ unchanged but increases the expected number of
+true-positives in $S_v$ (since $j$ is more likely to be in $M_v$ than
+$i$ under $Q$), which decreases the expected $\alpha_v$ and therefore
+decreases the expected sum in Theorem 5.3 (both
+$\log_2 \binom{s_v}{k_v - \alpha_v}$ and
+$\log_2 \binom{N - s_v}{\alpha_v}$ are monotone in $\alpha_v$).
+Iterating this swap argument terminates at the top-prefix
+configuration.
+Part~(b): per-position arithmetic coding under $Q$ achieves expected
+length $-\sum_i \log_2 Q_{x_i}(i)$, which by Shannon's source coding
+theorem is the conditional entropy $H(X \mid Q)$ and is minimal among
+coders driven by $Q$. The support-set construction encodes membership
+in $S_v$ (a hard binary decision) and then a rank within
+$\binom{s_v}{k_v - \alpha_v}$, discarding the soft probability
+information in $Q$. By the data-processing inequality applied to this
 discretization, the support-set cost is at least the arithmetic-coding
-cost, with equality only when Q is already binary (so no discretization
-loss occurs). \hfill$\blacksquare$
+cost, with equality only when $Q$ is already binary (so no
+discretization loss occurs). \hfill$\blacksquare$
 
 Proposition 5.5 has a practical consequence: for predictors producing
 real-valued probabilities, the support-set construction of Theorem 5.3
-is strictly suboptimal compared to arithmetic coding under Q. The
+is strictly suboptimal compared to arithmetic coding under $Q$. The
 support-set form is preferred only when (i) the predictor structurally
-produces hard candidate sets (e.g., beam search outputs without scores),
-(ii) the implementation cannot afford the per-position arithmetic-coder
-state, or (iii) a hardware/parallelism constraint favors rank coding
-over arithmetic streaming. In other cases, per-position arithmetic
-coding is the form to use.
+produces hard candidate sets (e.g., beam search outputs without
+scores), (ii) the implementation cannot afford the per-position
+arithmetic-coder state, or (iii) a hardware/parallelism constraint
+favors rank coding over arithmetic streaming. In other cases,
+per-position arithmetic coding is the form to use.
 
 \textbf{6. Type‑III: Tensor Entropy‑Field Coding}
 
