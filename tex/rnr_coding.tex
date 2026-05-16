@@ -134,6 +134,25 @@ classical baselines on certain corpora. These methods almost universally
 adopt the same operational question as classical coders --- predict the
 next symbol --- and replace the predictor with a neural network.
 
+A second obstruction blocks neural compressors from one of the largest
+practical deployment niches for lossless coding: archive and
+time-series storage engines inside database servers. Compressed
+read-only filesystems (squashfs, EROFS), columnar archive engines, and
+time-partitioned metric stores rely on \emph{random access} ---
+reading a byte at offset $N$ in constant time independent of archive
+size. Dictionary-based seekable formats (bgzip, zstd seekable) achieve
+this; existing neural compressors do not, because their autoregressive
+predictors require sequential decoding of all bytes $[0, N)$ before
+byte $N$ is available. The author's own engineering work on a
+MySQL-compatible server in Rust (with 20 storage engines, including a
+compressed-archive engine and a time-series engine for columnar
+metric data) exposed this gap concretely: classical compressors leave
+substantial entropy unexploited on structured columnar and binary
+data, while neural compressors offer better ratios at the price of
+$O(N)$ per-access latency, which is not viable for an archive engine.
+This practical pressure --- better ratios on structured data
+\emph{plus} random access --- motivated the present framework.
+
 This work proposes a different organizing question. Treat the neural
 model output as side information about the source, not as a candidate
 reconstruction. A neural generator alone cannot losslessly compress
