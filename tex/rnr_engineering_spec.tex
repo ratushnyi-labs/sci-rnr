@@ -150,11 +150,13 @@ the inference path MUST use integer arithmetic with bit-widths specified
 by the model description. No floating-point arithmetic is permitted in
 the inference path except as allowed in R-3.6.
 
-\textbf{R-3.2 (Overflow avoidance).} The accumulator bit-width MUST be
-at least ceil(log\_2(L * W\_max * I\_max)) + 1, where L is the maximum
-layer depth, W\_max is an upper bound on the L1 norm of any weight row,
-and I\_max is an upper bound on the magnitude of any layer input. The
-bounds W\_max and I\_max MUST be declared in the model description; an
+\textbf{R-3.2 (Overflow avoidance).} The accumulator bit-width MUST
+be at least
+$\lceil \log_2(L \cdot W_{\max} \cdot I_{\max}) \rceil + 1$, where
+$L$ is the maximum layer depth, $W_{\max}$ is an upper bound on the
+$L_1$ norm of any weight row, and $I_{\max}$ is an upper bound on
+the magnitude of any layer input. The bounds $W_{\max}$ and
+$I_{\max}$ MUST be declared in the model description; an
 implementation MAY verify them at model-load time.
 
 \textbf{R-3.3 (Non-linearities).} All non-linearity operations MUST be
@@ -464,64 +466,57 @@ non-linearity is named in the model description.
 
 \emph{\textbf{6.2.1 Sigmoid}}
 
-Sigmoid(x) = 1 / (1 + exp(-x)). The integer table is parameterized by an
-input scale s\_in and output scale s\_out: table{[}i{]} =
-round(sigmoid(i / s\_in) * s\_out). The model description specifies
-s\_in (default 256) and s\_out (default 65536).
+$\mathrm{Sigmoid}(x) = 1 / (1 + \exp(-x))$. The integer table is
+parameterized by an input scale $s_{\text{in}}$ and output scale
+$s_{\text{out}}$:
+$\mathrm{table}[i] = \mathrm{round}(\mathrm{sigmoid}(i / s_{\text{in}}) \cdot s_{\text{out}})$.
+The model description specifies $s_{\text{in}}$ (default 256) and
+$s_{\text{out}}$ (default 65536).
 
 \emph{\textbf{6.2.2 Tanh}}
 
-Tanh(x) = (exp(x) - exp(-x)) / (exp(x) + exp(-x)). Similar
-parameterization to sigmoid; default s\_in = 128, s\_out = 32768.
+$\tanh(x) = (\exp(x) - \exp(-x)) / (\exp(x) + \exp(-x))$. Similar
+parameterization to sigmoid; default $s_{\text{in}} = 128$,
+$s_{\text{out}} = 32768$.
 
 \emph{\textbf{6.2.3 GELU}}
 
-GELU(x) = x * Phi(x), where Phi is the standard normal CDF.
-Parameterized by s\_in (default 256) and s\_out (default 65536).
+$\mathrm{GELU}(x) = x \cdot \Phi(x)$, where $\Phi$ is the standard
+normal CDF. Parameterized by $s_{\text{in}}$ (default 256) and
+$s_{\text{out}}$ (default 65536).
 
 \emph{\textbf{6.2.4 ReLU}}
 
-ReLU(x) = max(0, x). MUST be implemented as max(0, x) directly, not as a
-table; this is a special case for efficiency.
+$\mathrm{ReLU}(x) = \max(0, x)$. MUST be implemented as
+$\max(0, x)$ directly, not as a table; this is a special case for
+efficiency.
 
 \emph{\textbf{6.2.5 Softmax}}
 
-Softmax requires special handling because it involves division and is
-not directly a table lookup. The decomposition is:
-
-\begin{quote}
-1. shift: x\textquotesingle{} = x - max(x) // numerical stability
-
-2. exp\_lookup: y\_i = exp\_table{[}x\textquotesingle\_i{]} // integer
-table
-
-3. sum: S = sum(y\_i) // ordered reduction
-
-4. division: z\_i = (y\_i * scale) / S // integer division
-\end{quote}
-
+Softmax requires special handling because it involves division and
+is not directly a table lookup. The decomposition is:
+\begin{enumerate}
+\item shift: $x' = x - \max(x)$ \quad (numerical stability)
+\item exp\_lookup: $y_i = \mathrm{exp\_table}[x'_i]$ \quad (integer table)
+\item sum: $S = \sum_i y_i$ \quad (ordered reduction)
+\item division: $z_i = (y_i \cdot \mathrm{scale}) / S$ \quad (integer division)
+\end{enumerate}
 Steps 2, 3, and 4 each follow R-3.3, R-3.4, and R-5.3.1 respectively.
 
 \emph{\textbf{6.2.6 Layer normalization}}
 
 Layer normalization requires integer reciprocal-square-root for the
 variance scaling. The decomposition is:
-
-\begin{quote}
-1. mean: mu = sum(x) / n // ordered reduction + division
-
-2. centered: c\_i = x\_i - mu
-
-3. variance: v = sum(c\_i\^{}2) / n // ordered reduction + division
-
-4. rsqrt\_lookup: r = rsqrt\_table{[}v + eps{]}
-
-5. scale: z\_i = c\_i * r * gamma + beta
-\end{quote}
-
-The rsqrt table covers the variance range observed in training, with eps
-added to avoid division by zero. eps and the rsqrt table parameters MUST
-be in the model description.
+\begin{enumerate}
+\item mean: $\mu = \sum_i x_i / n$ \quad (ordered reduction + division)
+\item centered: $c_i = x_i - \mu$
+\item variance: $v = \sum_i c_i^2 / n$ \quad (ordered reduction + division)
+\item rsqrt\_lookup: $r = \mathrm{rsqrt\_table}[v + \varepsilon]$
+\item scale: $z_i = c_i \cdot r \cdot \gamma + \beta$
+\end{enumerate}
+The rsqrt table covers the variance range observed in training, with
+$\varepsilon$ added to avoid division by zero. $\varepsilon$ and the
+rsqrt table parameters MUST be in the model description.
 
 \textbf{7. Adaptive predictor conformance (Theorem 10.2)}
 
@@ -531,37 +526,41 @@ optimizers are pre-certified compatible.
 
 \textbf{7.1 Integer SGD}
 
-\textbf{R-7.1.1 (Update rule).} The update is: param{[}i{]} -=
-shift\_right(grad{[}i{]} * learning\_rate, lr\_scale).
+\textbf{R-7.1.1 (Update rule).} The update is
+$\text{param}[i] \mathrel{-}= \mathrm{shift\_right}(\text{grad}[i] \cdot \mathrm{learning\_rate}, \mathrm{lr\_scale})$.
 
-\textbf{R-7.1.2 (Parameter ranges).} learning\_rate MUST be a
-non-negative integer. lr\_scale MUST be a non-negative integer
-specifying the right-shift after multiplication.
+\textbf{R-7.1.2 (Parameter ranges).} $\mathrm{learning\_rate}$ MUST
+be a non-negative integer. $\mathrm{lr\_scale}$ MUST be a
+non-negative integer specifying the right-shift after multiplication.
 
-\textbf{R-7.1.3 (Saturation).} If the update produces a value outside
-the parameter type range, the parameter MUST be clamped to the type
-range. The clamping behavior MUST match the CPU reference target.
+\textbf{R-7.1.3 (Saturation).} If the update produces a value
+outside the parameter type range, the parameter MUST be clamped to
+the type range. The clamping behavior MUST match the CPU reference
+target.
 
 \textbf{7.2 SignSGD}
 
-\textbf{R-7.2.1 (Update rule).} The update is: param{[}i{]} -=
-learning\_rate * sign(grad{[}i{]}), where sign returns -1, 0, or +1 for
-negative, zero, and positive gradient respectively.
+\textbf{R-7.2.1 (Update rule).} The update is
+$\text{param}[i] \mathrel{-}= \mathrm{learning\_rate} \cdot \mathrm{sign}(\text{grad}[i])$,
+where $\mathrm{sign}$ returns $-1, 0$, or $+1$ for negative, zero,
+and positive gradient respectively.
 
-\textbf{R-7.2.2 (Trivial conformance).} SignSGD is trivially compatible:
-the update function is integer-to-integer with no real-valued
-operations.
+\textbf{R-7.2.2 (Trivial conformance).} SignSGD is trivially
+compatible: the update function is integer-to-integer with no
+real-valued operations.
 
 \textbf{7.3 Integer Adam}
 
-\textbf{R-7.3.1 (State).} Adam state per parameter is (m, v) where m is
-the first moment and v is the second moment, both integer-valued.
+\textbf{R-7.3.1 (State).} Adam state per parameter is $(m, v)$ where
+$m$ is the first moment and $v$ is the second moment, both
+integer-valued.
 
-\textbf{R-7.3.2 (Update rule).} m\_new = (beta1 * m + (1 - beta1) *
-grad) (in integer arithmetic with explicit scaling); v\_new = (beta2 * v
-+ (1 - beta2) * grad\^{}2); param\_new = param - learning\_rate * m\_new
-* rsqrt\_table{[}v\_new + eps{]}. The rsqrt\_table is part of the model
-description.
+\textbf{R-7.3.2 (Update rule).}
+$m_{\text{new}} = \beta_1 \cdot m + (1 - \beta_1) \cdot \text{grad}$
+(in integer arithmetic with explicit scaling);
+$v_{\text{new}} = \beta_2 \cdot v + (1 - \beta_2) \cdot \text{grad}^2$;
+$\text{param}_{\text{new}} = \text{param} - \mathrm{learning\_rate} \cdot m_{\text{new}} \cdot \mathrm{rsqrt\_table}[v_{\text{new}} + \varepsilon]$.
+The $\mathrm{rsqrt\_table}$ is part of the model description.
 
 \textbf{R-7.3.3 (Reciprocal-square-root table).} The integer
 rsqrt\_table for Adam MUST cover the second-moment range observed in
@@ -608,9 +607,10 @@ bytes on any conforming implementation.
 sync-point records, sorted by byte\_offset ascending. The array length
 is encoded as a uint64 prefix to the array.
 
-\textbf{R-8.2.2 (Lookup).} Sync-point lookup for byte position N MUST
-use binary search to find the largest byte\_offset \textless= N. The
-lookup is O(log(index\_length)).
+\textbf{R-8.2.2 (Lookup).} Sync-point lookup for byte position $N$
+MUST use binary search to find the largest
+$\mathrm{byte\_offset} \leq N$. The lookup is
+$O(\log(\mathrm{index\_length}))$.
 
 \textbf{R-8.2.3 (Compression).} The seek index MAY be compressed with a
 separate dictionary-based compressor (e.g., zstd) for storage
@@ -619,46 +619,30 @@ efficiency. Decompressed form MUST match the canonical layout.
 \textbf{8.3 Range-decode function}
 
 The standardized range-decode API:
+\begin{verbatim}
+function range_decode(archive, N, k):
+    # archive: opened RNR archive handle
+    # N: byte offset in source
+    # k: number of bytes to decode
+    # returns: bytes [N, N+k) of the source
 
-\begin{quote}
-function range\_decode(archive, N, k):
+    P = binary_search(archive.seek_index, N)  # largest sync_point <= N
+    state = initialize_predictor_state(archive, P)
+    bit_offset = archive.seek_index[P].repair_bit_offset
+    output = bytearray(k)
 
-\# archive: opened RNR archive handle
+    for i in [P.byte_offset .. N + k):
+        Y_i = predictor(state, context_window)
+        repair_bits = read_bits(archive.repair_stream, bit_offset,
+                                length_for_position_i)
+        bit_offset += length_for_position_i
+        byte_i = decode_position(Y_i, repair_bits)
+        context_window.append(byte_i)
+        if i >= N and i < N + k:
+            output[i - N] = byte_i
 
-\# N: byte offset in source
-
-\# k: number of bytes to decode
-
-\# returns: bytes {[}N, N+k) of the source
-
-P = binary\_search(archive.seek\_index, N) \# largest sync\_point
-\textless= N
-
-state = initialize\_predictor\_state(archive, P)
-
-bit\_offset = archive.seek\_index{[}P{]}.repair\_bit\_offset
-
-output = bytearray(k)
-
-for i in {[}P.byte\_offset .. N + k):
-
-Y\_i = predictor(state, context\_window)
-
-repair\_bits = read\_bits(archive.repair\_stream, bit\_offset,
-length\_for\_position\_i)
-
-bit\_offset += length\_for\_position\_i
-
-byte\_i = decode\_position(Y\_i, repair\_bits)
-
-context\_window.append(byte\_i)
-
-if i \textgreater= N and i \textless{} N + k:
-
-output{[}i - N{]} = byte\_i
-
-return output
-\end{quote}
+    return output
+\end{verbatim}
 
 \textbf{9. Block-device driver specification (Theorem 10.5)}
 
@@ -666,54 +650,34 @@ return output
 
 The minimal API surface for a block-device driver wrapping an RNR
 archive:
-
-\begin{quote}
-function open(archive\_path) -\textgreater{} handle
-
+\begin{verbatim}
+function open(archive_path)                       -> handle
 function close(handle)
-
-function read(handle, byte\_offset, length, buffer) -\textgreater{}
-bytes\_read
-
-function get\_size(handle) -\textgreater{} archive\_logical\_size
-\end{quote}
-
+function read(handle, byte_offset, length, buffer) -> bytes_read
+function get_size(handle)                          -> archive_logical_size
+\end{verbatim}
 Optional extensions for filesystem use:
-
-\begin{quote}
-function readv(handle, iovecs) -\textgreater{} bytes\_read \#
-scatter-gather read
-
-function readahead(handle, byte\_offset, length) \# cache warmup hint
-
-function fstat(handle) -\textgreater{} archive\_metadata
-\end{quote}
+\begin{verbatim}
+function readv(handle, iovecs)              -> bytes_read    # scatter-gather read
+function readahead(handle, byte_offset, length)              # cache warmup hint
+function fstat(handle)                      -> archive_metadata
+\end{verbatim}
 
 \textbf{9.2 Implementation pseudocode}
+\begin{verbatim}
+function read(handle, byte_offset, length, buffer):
+    # Check cache first
+    cached = cache_lookup(byte_offset, length)
+    if cached:
+        copy(cached, buffer)
+        return length
 
-\begin{quote}
-function read(handle, byte\_offset, length, buffer):
-
-\# Check cache first
-
-cached = cache\_lookup(byte\_offset, length)
-
-if cached:
-
-copy(cached, buffer)
-
-return length
-
-\# Decode required range
-
-chunk = range\_decode(handle.archive, byte\_offset, length)
-
-cache\_insert(byte\_offset, chunk)
-
-copy(chunk, buffer)
-
-return length
-\end{quote}
+    # Decode required range
+    chunk = range_decode(handle.archive, byte_offset, length)
+    cache_insert(byte_offset, chunk)
+    copy(chunk, buffer)
+    return length
+\end{verbatim}
 
 \textbf{9.3 Cache architecture}
 
@@ -750,63 +714,44 @@ level of the implementation.
 \textbf{10.1 FUSE operations}
 
 Implement the following FUSE operations:
-
-\begin{quote}
-getattr(path) -\textgreater{} file metadata
-
-readdir(path) -\textgreater{} directory entries \# if archive is a
-filesystem image
-
-open(path, flags) -\textgreater{} file handle
-
-read(handle, offset, length, buffer) -\textgreater{} bytes\_read
-
-release(handle) -\textgreater{} void
-
-statfs(path) -\textgreater{} filesystem statistics
-\end{quote}
+\begin{verbatim}
+getattr(path)                          -> file metadata
+readdir(path)                          -> directory entries  # if filesystem image
+open(path, flags)                      -> file handle
+read(handle, offset, length, buffer)   -> bytes_read
+release(handle)                        -> void
+statfs(path)                           -> filesystem statistics
+\end{verbatim}
 
 \textbf{10.2 Mounting}
 
 Mount syntax for a single-file archive (e.g., disk image):
-
-\begin{quote}
-rnrfs -\/-archive=/path/to/image.rnr /mnt/target
-\end{quote}
-
+\begin{verbatim}
+rnrfs --archive=/path/to/image.rnr /mnt/target
+\end{verbatim}
 The mounted target presents the decompressed archive as a single
 read-only file:
-
-\begin{quote}
-/mnt/target/data \# the decompressed source
-\end{quote}
-
+\begin{verbatim}
+/mnt/target/data    # the decompressed source
+\end{verbatim}
 For ISO images that contain a filesystem (e.g., iso9660), wrap with a
 second mount:
-
-\begin{quote}
-rnrfs -\/-archive=/path/to/ubuntu.iso.rnr /mnt/rnr
-
+\begin{verbatim}
+rnrfs --archive=/path/to/ubuntu.iso.rnr /mnt/rnr
 mount -t iso9660 -o loop /mnt/rnr/data /mnt/iso
-\end{quote}
+\end{verbatim}
 
 \textbf{10.3 Write-through overlay}
 
 For read-write use, mount the RNR archive read-only and overlay with
 overlayfs:
-
-\begin{quote}
-rnrfs -\/-archive=/path/to/system.rnr /mnt/base
-
+\begin{verbatim}
+rnrfs --archive=/path/to/system.rnr /mnt/base
 mkdir /mnt/work /mnt/upper
-
-mount -t overlay overlay \textbackslash{}
-
--o lowerdir=/mnt/base,upperdir=/mnt/upper,workdir=/mnt/work
-\textbackslash{}
-
-/mnt/merged
-\end{quote}
+mount -t overlay overlay \
+  -o lowerdir=/mnt/base,upperdir=/mnt/upper,workdir=/mnt/work \
+  /mnt/merged
+\end{verbatim}
 
 Writes go to /mnt/upper (a normal directory on a writable filesystem);
 reads consult /mnt/upper first and fall through to /mnt/base on miss.
@@ -837,13 +782,14 @@ supported.
 
 \textbf{11.1 Per-sync-point hashes (recommended for archive-style use)}
 
-\textbf{R-11.1.1 (Hash per sync point).} Each sync
-point\textquotesingle s seek-index entry MAY include a hash of the bytes
-{[}P, P+K) of the source, computed with SHA-256 truncated to 64 bits.
-The random-access reader verifies the hash after decoding the region.
+\textbf{R-11.1.1 (Hash per sync point).} Each sync point's
+seek-index entry MAY include a hash of the bytes $[P, P+K)$ of the
+source, computed with SHA-256 truncated to 64 bits. The
+random-access reader verifies the hash after decoding the region.
 
-\textbf{R-11.1.2 (Overhead).} Adds 8 bytes per sync point. For K = 64
-KiB and N = 1 GiB, this is N/K * 8 = 128 KiB or about 0.01\% overhead.
+\textbf{R-11.1.2 (Overhead).} Adds 8 bytes per sync point. For
+$K = 64$ KiB and $N = 1$ GiB, this is $N/K \cdot 8 = 128$ KiB or
+about 0.01\% overhead.
 
 \textbf{11.2 Merkle tree (recommended for content-addressable storage)}
 
@@ -852,15 +798,15 @@ source bytes with leaves at sync-point granularity. Each internal node
 is SHA-256 of its two children. The root is stored in the archive
 header.
 
-\textbf{R-11.2.2 (Random access verification).} A reader that performs
-random access at position N obtains the Merkle path from the leaf
-containing N up to the root (a logarithmic number of hashes). The reader
-verifies the path against the stored root.
+\textbf{R-11.2.2 (Random access verification).} A reader that
+performs random access at position $N$ obtains the Merkle path from
+the leaf containing $N$ up to the root (a logarithmic number of
+hashes). The reader verifies the path against the stored root.
 
-\textbf{R-11.2.3 (Overhead).} Adds 32 bytes per sync point plus the tree
-storage. For N = 1 GiB and K = 64 KiB, the tree has approximately 32 KiB
-sync points and total tree storage is approximately 2 MiB, or 0.2\%
-overhead.
+\textbf{R-11.2.3 (Overhead).} Adds 32 bytes per sync point plus the
+tree storage. For $N = 1$ GiB and $K = 64$ KiB, the tree has
+approximately 32 KiB sync points and total tree storage is
+approximately 2 MiB, or 0.2\% overhead.
 
 \textbf{11.3 Unverified random access (for trusted archives)}
 
@@ -919,46 +865,21 @@ run.
 \textbf{12.3 CI/CD integration}
 
 A reference CI pipeline runs the conformance suite on every commit:
+\begin{verbatim}
+build_matrix:
+  - target: cpu-scalar         runner: linux-x86_64
+  - target: avx512             runner: linux-x86_64-avx512
+  - target: neon               runner: linux-arm64
+  - target: nvidia-tensor-core runner: linux-x86_64-nvidia
+  - target: amd-mfma           runner: linux-x86_64-amd-gpu
+  - target: apple-ane          runner: macos-arm64-m2
+  - target: edge-tpu           runner: linux-coral-dev-board
 
-\begin{quote}
-build\_matrix:
-
-- target: cpu-scalar
-
-runner: linux-x86\_64
-
-- target: avx512
-
-runner: linux-x86\_64-avx512
-
-- target: neon
-
-runner: linux-arm64
-
-- target: nvidia-tensor-core
-
-runner: linux-x86\_64-nvidia
-
-- target: amd-mfma
-
-runner: linux-x86\_64-amd-gpu
-
-- target: apple-ane
-
-runner: macos-arm64-m2
-
-- target: edge-tpu
-
-runner: linux-coral-dev-board
-
-for each target in build\_matrix:
-
-run conformance suite on target
-
-diff target output against reference manifest
-
-fail if any byte differs
-\end{quote}
+for each target in build_matrix:
+    run conformance suite on target
+    diff target output against reference manifest
+    fail if any byte differs
+\end{verbatim}
 
 \textbf{13. Versioning and compatibility}
 
@@ -969,21 +890,22 @@ semantic versioning. MAJOR version changes break archive compatibility;
 MINOR version changes are backward-compatible (new readers can read old
 archives); PATCH version changes are bidirectional-compatible.
 
-\textbf{R-13.2 (Forward compatibility).} An implementation supporting
-format version X.Y MUST read archives with version X.Z for any Z
-\textless= Y. It MAY refuse to read archives with version X.Z for Z
-\textgreater{} Y, but if it does read them, MUST honor all features it
-understands and reject features it does not.
+\textbf{R-13.2 (Forward compatibility).} An implementation
+supporting format version $X.Y$ MUST read archives with version
+$X.Z$ for any $Z \leq Y$. It MAY refuse to read archives with
+version $X.Z$ for $Z > Y$, but if it does read them, MUST honor all
+features it understands and reject features it does not.
 
 \textbf{R-13.3 (Predictor compatibility).} A predictor model is
 identified by a hash of its model description. Archives include the
-predictor hash; readers MUST verify the hash before decoding. Mismatched
-hashes MUST cause a hard failure with a clear error message.
+predictor hash; readers MUST verify the hash before decoding.
+Mismatched hashes MUST cause a hard failure with a clear error
+message.
 
 \textbf{R-13.4 (Migration).} Tooling MUST be provided to migrate
-archives from version X.Y to X.Y+1 if the format change affects
-representation. Migration tools MUST be lossless and reversible where
-possible.
+archives from version $X.Y$ to $X.Y+1$ if the format change affects
+representation. Migration tools MUST be lossless and reversible
+where possible.
 
 \textbf{14. Traceability to the main paper}
 
@@ -995,14 +917,16 @@ use this to verify that the specification covers every relevant theorem.
 implementation (separately specified in encoder spec, out of scope
 here).
 
-\textbf{Theorem 4.3, 4.4 (E\_12 NP-hard, inapproximable)} → Heuristic
-E\_12 selection in encoder; spec does not require optimal E\_12.
+\textbf{Theorem 4.3, 4.4 ($E_{12}$ NP-hard, inapproximable)} →
+Heuristic $E_{12}$ selection in encoder; spec does not require
+optimal $E_{12}$.
 
 \textbf{Lemma 5.1, Theorems 5.2--5.4, Proposition 5.5, Theorem 5.6 (Type-II)} → Type-II implementation
 (separately specified in encoder spec).
 
-\textbf{Theorems 6.1, 6.2 (Type-III-A mode selection, tight 2*eps
-bound)} → Mode-selection logic in encoder (separately specified).
+\textbf{Theorems 6.1, 6.2 (Type-III-A mode selection, tight
+$2\varepsilon$ bound)} → Mode-selection logic in encoder
+(separately specified).
 
 \textbf{Theorems 6.3, 6.4 (Type-III-B mutual-information and
 decomposition invariance)} → Byte tensor coding (encoder spec).
