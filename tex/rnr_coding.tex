@@ -329,142 +329,132 @@ work.
 
 \textbf{2.1 The lossless compression problem}
 
-A lossless compressor is an injective map C from a source alphabet
-(here, finite‑length binary strings or byte sequences) to binary
-codewords, together with a decoder D such that D(C(X)) = X for every X.
-Injectivity is necessary: if two distinct sources $X \neq X'$ mapped to the
-same codeword, the decoder could not recover both.
+A lossless compressor is an injective map $C$ from a source alphabet
+(here, finite-length binary strings or byte sequences) to binary
+codewords, together with a decoder $D$ such that $D(C(X)) = X$ for
+every $X$. Injectivity is necessary: if two distinct sources
+$X \neq X'$ mapped to the same codeword, the decoder could not recover
+both.
 
-Throughout the paper, we write L(·) for the bit length of a binary
-description, and adopt the convention that 0 · log 0 = 0. For a random
-variable X over a finite alphabet, H(X) denotes the Shannon entropy of X
-in bits. Given a side‑information variable Y, H(X \textbar{} Y) denotes
-the conditional entropy.
+Throughout the paper, we write $L(\cdot)$ for the bit length of a
+binary description, and adopt the convention that
+$0 \cdot \log 0 = 0$. For a random variable $X$ over a finite
+alphabet, $H(X)$ denotes the Shannon entropy of $X$ in bits. Given a
+side-information variable $Y$, $H(X \mid Y)$ denotes the conditional
+entropy.
 
-For a source X drawn from a distribution D, and a baseline compressor B,
-we say an RNR coder C is conditionally advantageous on D if
-
+For a source $X$ drawn from a distribution $D$, and a baseline
+compressor $B$, we say an RNR coder $C$ is conditionally advantageous
+on $D$ if
 \[
 \mathbb{E}[L(C(X))] < \mathbb{E}[L(B(X))], \quad X \sim D.
 \tag{2.1}
 \]
 
-\textbf{2.2 Side‑information coding}
+\textbf{2.2 Side-information coding}
 
 The classical theorem of Slepian and Wolf states that for jointly
-distributed sources X and Y, X can be encoded at rate arbitrarily close
-to H(X \textbar{} Y) when Y is available losslessly at the decoder, even
-when the encoder does not see Y. This is the foundational result for our
-use of model output as decoder‑side information.
+distributed sources $X$ and $Y$, $X$ can be encoded at rate
+arbitrarily close to $H(X \mid Y)$ when $Y$ is available losslessly
+at the decoder, even when the encoder does not see $Y$. This is the
+foundational result for our use of model output as decoder-side
+information.
 
 Our setting differs from the classical Slepian--Wolf setting in three
-ways. First, we consider a single sender, not two correlated sources at
-different physical locations. Second, the side information Y is not a
-separately observed correlated random variable but the deterministic
-output of a public model M applied to a public context C: Y = M(C).
-Third, this side information is available to both encoder and decoder,
-so the encoder can exploit it directly; we therefore are concerned with
-achievability of H(X \textbar{} M(C)), not with the more subtle
-Slepian--Wolf binning constructions required when the encoder lacks Y.
+ways. First, we consider a single sender, not two correlated sources
+at different physical locations. Second, the side information $Y$ is
+not a separately observed correlated random variable but the
+deterministic output of a public model $M$ applied to a public
+context $C$: $Y = M(C)$. Third, this side information is available to
+both encoder and decoder, so the encoder can exploit it directly; we
+therefore are concerned with achievability of $H(X \mid M(C))$, not
+with the more subtle Slepian--Wolf binning constructions required
+when the encoder lacks $Y$.
 
-We use the term ``side information'' in this broader sense throughout:
-any deterministic, decoder‑reproducible function of public state that
-constrains the conditional distribution of X.
+We use the term ``side information'' in this broader sense
+throughout: any deterministic, decoder-reproducible function of
+public state that constrains the conditional distribution of $X$.
 
 \textbf{2.3 Entropy coding}
 
 We assume the availability of an entropy coder --- arithmetic coding
 (Witten, Neal, Cleary 1987; Rissanen and Langdon 1979) or asymmetric
 numeral systems (Duda 2009) --- that, given an explicit probability
-model Q over a sequence of symbols, achieves a code length within a
-fixed constant (typically less than two bits per stream, for arithmetic
-coding) of the cross‑entropy of the true source under Q. We denote this
-overhead by eps\_n and assume eps\_n / n → 0 as the block length n
-grows.
+model $Q$ over a sequence of symbols, achieves a code length within a
+fixed constant (typically less than two bits per stream, for
+arithmetic coding) of the cross-entropy of the true source under $Q$.
+We denote this overhead by $\varepsilon_n$ and assume
+$\varepsilon_n / n \to 0$ as the block length $n$ grows.
 
 \textbf{2.4 Enumerative coding}
 
-Cover's enumerative source coding (Cover 1973) describes a sequence or
-set drawn from a known finite class by its rank among the elements of
-that class. The cost is the binary logarithm of the class size, plus a
-constant for rank coding. Two enumerative formulas are used repeatedly
-in this paper.
+Cover's enumerative source coding (Cover 1973) describes a sequence
+or set drawn from a known finite class by its rank among the elements
+of that class. The cost is the binary logarithm of the class size,
+plus a constant for rank coding. Two enumerative formulas are used
+repeatedly in this paper.
 
-The number of subsets of size k drawn from \{1, \ldots, N\} is C(N, k),
-so a subset is described in log\_2 C(N, k) bits.
+The number of subsets of size $k$ drawn from $\{1, \ldots, N\}$ is
+$\binom{N}{k}$, so a subset is described in $\log_2 \binom{N}{k}$
+bits.
 
-The number of partitions of \{1, \ldots, N\} into 16 disjoint sets M\_0,
-\ldots, M\_15 with cardinalities k\_0, \ldots, k\_15 is the multinomial
-coefficient
+The number of partitions of $\{1, \ldots, N\}$ into 16 disjoint sets
+$M_0, \ldots, M_{15}$ with cardinalities $k_0, \ldots, k_{15}$ is the
+multinomial coefficient
 
 \[
 M(N; k_0, \ldots, k_{15}) = \frac{N!}{k_0!\, k_1! \cdots k_{15}!},
 \tag{2.2}
 \]
 
-so such a partition is described in log\_2 M(N; k\_0, \ldots, k\_15)
-bits. The multinomial baseline is strictly tighter than the sum of
-log\_2 C(N, k\_v) over v, which corresponds to encoding 16 independent
-subsets without enforcing disjointness, and therefore overcounts.
+so such a partition is described in
+$\log_2 M(N; k_0, \ldots, k_{15})$ bits. The multinomial baseline is
+strictly tighter than $\sum_v \log_2 \binom{N}{k_v}$, which
+corresponds to encoding 16 independent subsets without enforcing
+disjointness, and therefore overcounts.
 
 \textbf{2.5 Minimum Description Length}
 
-Rissanen's Minimum Description Length principle (Rissanen 1978) states
-that a model M is preferred over a baseline for data X if L(M) + L(X
-\textbar{} M) \textless{} L\_base(X), where L\_base is the baseline
-length. RNR adopts MDL as its admission criterion at every level: a
-Type‑I model is admitted only if its parameter description plus the
-conditional repair length beats the baseline; a Type‑III‑C token is
-admitted only if its dictionary cost plus per‑occurrence cost beats raw
-literal coding.
+Rissanen's Minimum Description Length principle (Rissanen 1978)
+states that a model $M$ is preferred over a baseline for data $X$ if
+$L(M) + L(X \mid M) < L_{\text{base}}(X)$, where $L_{\text{base}}$ is
+the baseline length. RNR adopts MDL as its admission criterion at
+every level: a Type-I model is admitted only if its parameter
+description plus the conditional repair length beats the baseline; a
+Type-III-C token is admitted only if its dictionary cost plus
+per-occurrence cost beats raw literal coding.
 
-\textbf{2.6 Bits‑back coding}
+\textbf{2.6 Bits-back coding}
 
-Bits‑back coding (Hinton and van Camp 1993; Frey 1997; Townsend, Bird,
-Barber 2019) is a technique for losslessly compressing data under a
-latent‑variable model. The encoder uses an auxiliary bit string to
-sample a latent z, encodes (z, x) with the joint prior, and the decoder
-recovers the latent and extracts the auxiliary bits, paying only the
-marginal H(X) in expectation. Bits‑back is the appropriate tool for
-Type‑III‑C when tokens are continuous or stochastic latents; we discuss
-this connection in Section 6.4.
+Bits-back coding (Hinton and van Camp 1993; Frey 1997; Townsend,
+Bird, Barber 2019) is a technique for losslessly compressing data
+under a latent-variable model. The encoder uses an auxiliary bit
+string to sample a latent $z$, encodes $(z, x)$ with the joint prior,
+and the decoder recovers the latent and extracts the auxiliary bits,
+paying only the marginal $H(X)$ in expectation. Bits-back is the
+appropriate tool for Type-III-C when tokens are continuous or
+stochastic latents; we discuss this connection in Section 6.4.
 
 \textbf{2.7 Notation summary}
 
 We adopt the following notation throughout.
-
-\begin{quote}
-X original source block (sequence of bytes, nibbles, or symbols)
-
-Y decoder-reproducible side information: Y = M(C)
-
-M deterministic predictor; M\_I, M\_pos, M\_1, M\_2 for type-specific
-predictors
-
-C public context (seed, verified previous subblock, metadata)
-
-Q predicted probability field (vector, matrix, or tensor)
-
-U second-order predicted uncertainty / entropy / repair-cost field
-
-T invertible representation transform; Z = T(X)
-
-R repair / residual / rank / selector stream
-
-V verification overhead (hash, checksum)
-
-Theta metadata overhead (sizes, mode flags, quantization tables)
-
-B baseline compressor (LZMA, zstd, NNCP, ...)
-
-eps\_n entropy-coder redundancy over n symbols
-
-Pi(X) positional partition of X into symbol-class position sets
-
-H(.) Shannon entropy in bits
-
-I(.;.\textbar.) conditional mutual information
-\end{quote}
+\begin{description}
+\item[$X$] original source block (sequence of bytes, nibbles, or symbols)
+\item[$Y$] decoder-reproducible side information: $Y = M(C)$
+\item[$M$] deterministic predictor; $M_I, M_{\text{pos}}, M_1, M_2$ for type-specific predictors
+\item[$C$] public context (seed, verified previous subblock, metadata)
+\item[$Q$] predicted probability field (vector, matrix, or tensor)
+\item[$U$] second-order predicted uncertainty / entropy / repair-cost field
+\item[$T$] invertible representation transform; $Z = T(X)$
+\item[$R$] repair / residual / rank / selector stream
+\item[$V$] verification overhead (hash, checksum)
+\item[$\Theta$] metadata overhead (sizes, mode flags, quantization tables)
+\item[$B$] baseline compressor (LZMA, zstd, NNCP, $\ldots$)
+\item[$\varepsilon_n$] entropy-coder redundancy over $n$ symbols
+\item[$\Pi(X)$] positional partition of $X$ into symbol-class position sets
+\item[$H(\cdot)$] Shannon entropy in bits
+\item[$I(\cdot\,;\cdot \mid \cdot)$] conditional mutual information
+\end{description}
 
 \textbf{3. The RNR framework}
 
@@ -502,59 +492,60 @@ encoding is a design choice within each type.
 \textbf{3.2 The five RNR types}
 
 \textbf{Definition 3.1 (RNR Type-I).} An RNR Type-I coder predicts a
-one‑dimensional damaged stream Y = M\_I(C) and stores a repair stream
-R\_I such that the decoder recovers X = DecRepair(Y, R\_I) exactly,
-subject to a verification check H\_v(X) = H\_v(X\_hat). The canonical
-instance is Code12, in which each source byte is mapped to a 12‑bit
-codeword and the predicted error mask is entropy‑coded by Hamming‑weight
-class.
+one-dimensional damaged stream $Y = M_I(C)$ and stores a repair
+stream $R_I$ such that the decoder recovers
+$X = \mathrm{DecRepair}(Y, R_I)$ exactly, subject to a verification
+check $H_v(X) = H_v(\hat{X})$. The canonical instance is Code12, in
+which each source byte is mapped to a 12-bit codeword and the
+predicted error mask is entropy-coded by Hamming-weight class.
 
-\textbf{Definition 3.2 (RNR Type-II).} An RNR Type-II coder predicts a
-positional probability field Q\_v(i), v in \{0,...,15\}, i in
-\{1,...,N\}, that respects the disjoint‑partition and exact‑count
-constraints of a valid 16‑way partition of \{1,...,N\}. The archive
-stores a partition residual R\_Pi that, combined with Q, recovers the
-exact partition Pi(X) and therefore the source X.
+\textbf{Definition 3.2 (RNR Type-II).} An RNR Type-II coder predicts
+a positional probability field $Q_v(i)$,
+$v \in \{0, \ldots, 15\}$, $i \in \{1, \ldots, N\}$, that respects the
+disjoint-partition and exact-count constraints of a valid 16-way
+partition of $\{1, \ldots, N\}$. The archive stores a partition
+residual $R_\Pi$ that, combined with $Q$, recovers the exact
+partition $\Pi(X)$ and therefore the source $X$.
 
 \textbf{Definition 3.3 (RNR Type-III-A).} An RNR Type-III-A coder
-predicts an entropy field U\_m(t) over tiles t and coding modes m,
-selects per‑tile modes m\_hat(t) = argmin\_m U\_m(t), and encodes each
+predicts an entropy field $U_m(t)$ over tiles $t$ and coding modes
+$m$, selects per-tile modes
+$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$, and encodes each
 tile with the selected mode. The selection is deterministic and
-decoder‑reproducible; the archive stores only the per‑tile residual
-streams. Override flags may be stored when the encoder departs from the
-predicted argmin.
+decoder-reproducible; the archive stores only the per-tile residual
+streams. Override flags may be stored when the encoder departs from
+the predicted argmin.
 
 \textbf{Definition 3.4 (RNR Type-III-B).} An RNR Type-III-B coder
-predicts a byte tensor Q\_\{h,l\}(i) approximating Pr(h\_i = h, l\_i = l
-\textbar{} C) over high‑nibble h and low‑nibble l of byte i, and encodes
-the byte sequence either via direct 256‑class partition coding or via a
-hierarchical scheme that first encodes the high‑nibble partition and
-then the low‑nibble partition conditional on the high nibble.
+predicts a byte tensor $Q_{h,l}(i)$ approximating
+$\Pr(h_i = h, l_i = l \mid C)$ over high-nibble $h$ and low-nibble $l$
+of byte $i$, and encodes the byte sequence either via direct 256-class
+partition coding or via a hierarchical scheme that first encodes the
+high-nibble partition and then the low-nibble partition conditional
+on the high nibble.
 
 \textbf{Definition 3.5 (RNR Type-III-C).} An RNR Type-III-C coder is
-parameterized by a learned token dictionary D = \{tau\_0, ...,
-tau\_\{K-1\}\} with K = a * b (typically 32 x 32 = 1024 or 64 x 64 =
-4096) hierarchically indexed as token\_id = a * family + variant. The
-model predicts Q(k, i, s) approximating Pr(tau\_k begins at position i
-at scale s \textbar{} C). The archive stores a tokenization residual
-R\_C sufficient to reconstruct the exact token‑interval cover of the
-block.
+parameterized by a learned token dictionary
+$D = \{\tau_0, \ldots, \tau_{K-1}\}$ with $K = a \cdot b$ (typically
+$32 \times 32 = 1024$ or $64 \times 64 = 4096$) hierarchically indexed
+as $\text{token\_id} = a \cdot \text{family} + \text{variant}$. The
+model predicts $Q(k, i, s)$ approximating
+$\Pr(\tau_k \text{ begins at position } i \text{ at scale } s \mid C)$.
+The archive stores a tokenization residual $R_C$ sufficient to
+reconstruct the exact token-interval cover of the block.
 
 \textbf{3.3 The repair length decomposition}
 
-Every RNR coder has the same general code‑length decomposition:
-
+Every RNR coder has the same general code-length decomposition:
 \[
 L_{\text{RNR}}(X) = L(M) + L(R \mid Y) + L(V) + L(\Theta),
 \tag{3.1}
 \]
-
-where L(M) is the model description length (parameters, quantization
-tables, adapter weights as relevant), L(R \textbar{} Y) is the repair
-stream length, L(V) is verification overhead, and L(Theta) is metadata
-overhead (sizes, mode flags, dictionary headers). The conditional
-advantage criterion is then
-
+where $L(M)$ is the model description length (parameters,
+quantization tables, adapter weights as relevant), $L(R \mid Y)$ is
+the repair stream length, $L(V)$ is verification overhead, and
+$L(\Theta)$ is metadata overhead (sizes, mode flags, dictionary
+headers). The conditional advantage criterion is then
 \[
 \mathbb{E}_D\!\left[L(M) + L(R \mid Y) + L(V) + L(\Theta)\right] < \mathbb{E}_D[B(X)].
 \tag{3.2}
@@ -562,35 +553,38 @@ advantage criterion is then
 
 \textbf{3.4 Amortization of model cost}
 
-L(M) is paid once and amortized across all blocks encoded by the same
-model. For a single‑block archive, L(M) dominates and the framework
-loses unless M is extremely small. For an archive of m blocks of average
-size n, the effective per‑block model cost is L(M) / m, and the
-criterion (3.2) becomes more permissive in m. Throughout, we assume the
-amortized regime; Section 10 discusses the single‑block case explicitly.
+$L(M)$ is paid once and amortized across all blocks encoded by the
+same model. For a single-block archive, $L(M)$ dominates and the
+framework loses unless $M$ is extremely small. For an archive of $m$
+blocks of average size $n$, the effective per-block model cost is
+$L(M)/m$, and the criterion (3.2) becomes more permissive in $m$.
+Throughout, we assume the amortized regime; Section 10 discusses the
+single-block case explicitly.
 
-\textbf{4. Type‑I: Stream Repair Coding}
+\textbf{4. Type-I: Stream Repair Coding}
 
 \textbf{4.1 Definition and operational form}
 
-Type‑I is the one‑dimensional form. The source X = (x\_1, ..., x\_N) is
-a stream of bytes or symbols. The model produces a predicted stream Y =
-M\_I(C) of the same length, considered as a damaged version of X. The
-encoder, knowing both X and Y, computes a repair R\_I = EncRepair(X, Y),
-and the decoder recovers X\_hat = DecRepair(Y, R\_I). The reconstruction
-is accepted only if a verification function H\_v agrees, H\_v(X\_hat) =
-H\_v(X).
+Type-I is the one-dimensional form. The source
+$X = (x_1, \ldots, x_N)$ is a stream of bytes or symbols. The model
+produces a predicted stream $Y = M_I(C)$ of the same length,
+considered as a damaged version of $X$. The encoder, knowing both
+$X$ and $Y$, computes a repair $R_I = \mathrm{EncRepair}(X, Y)$, and
+the decoder recovers $\hat{X} = \mathrm{DecRepair}(Y, R_I)$. The
+reconstruction is accepted only if a verification function $H_v$
+agrees, $H_v(\hat{X}) = H_v(X)$.
 
 \textbf{4.2 The Code12 construction}
 
-In the Code12 variant of Type‑I, each source byte b in \{0, ..., 255\}
-is mapped through an injective function E\_12 : \{0, ..., 255\} →
-\{0,1\}\^{}12 to a 12‑bit codeword c = E\_12(b). The model predicts a
-codeword c\_hat\_i = M\_I(C, i) for each position. The raw error mask is
-e\_i = c\_i XOR c\_hat\_i. The motivation is that, with a well‑chosen
-E\_12, the error‑mask distribution concentrates on low Hamming weights
-when the model is approximately correct, and Hamming weight is cheap to
-entropy‑code.
+In the Code12 variant of Type-I, each source byte
+$b \in \{0, \ldots, 255\}$ is mapped through an injective function
+$E_{12} : \{0, \ldots, 255\} \to \{0,1\}^{12}$ to a 12-bit codeword
+$c = E_{12}(b)$. The model predicts a codeword $\hat{c}_i = M_I(C, i)$
+for each position. The raw error mask is
+$e_i = c_i \oplus \hat{c}_i$. The motivation is that, with a
+well-chosen $E_{12}$, the error-mask distribution concentrates on
+low Hamming weights when the model is approximately correct, and
+Hamming weight is cheap to entropy-code.
 
 We specify $E_{12}$ as a shortened-Hamming-like systematic mapping. Let
 the source byte bits be $(b_0, \ldots, b_7)$. Use 1-based codeword
