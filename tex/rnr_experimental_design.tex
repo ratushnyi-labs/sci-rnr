@@ -1,0 +1,913 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\textbf{RNR Coding --- Experimental Design Companion}
+
+\emph{Empirical validation plan for the framework paper, v0.7}
+
+Pavlo Ratushnyi --- May 2026
+
+\textbf{1. Purpose and scope}
+
+This document specifies the experimental program required to convert the
+theoretical claims of RNR Coding v0.5 into empirically verified
+statements. The main paper is theory-only by design: every quantitative
+prediction in its §11 is labeled as a conjecture, every theorem is
+conditional on stated assumptions, and Remark 5.7 invokes the manifold
+hypothesis without verifying it on specific data. This companion
+document fills the gap by stating exactly what must be measured, on what
+data, with what baselines, under what statistical methodology, and how
+the results should be reported to falsify or confirm each theoretical
+claim.
+
+The document covers three classes of empirical work: (a) coding-rate
+measurements that test each Type\textquotesingle s predicted advantage
+against baselines; (b) information-theoretic measurements (total
+correlation TC(D\_N) and intrinsic dimension d) that test whether
+specific natural data classes satisfy the conditions of Theorem 5.6 and
+Remark 5.7; and (c) cross-platform reproducibility tests that verify
+Theorems 10.1 and 10.2 hold for a specific reference implementation.
+
+Scope deliberately excluded: privacy auditing (a separate effort with
+its own threat model), end-user benchmarking (a deployment concern), and
+large-scale model training (the framework assumes a small distilled
+predictor; training methodology is upstream of this evaluation).
+
+\textbf{1.1 Relation to the main paper}
+
+This document does not modify any claim in the main paper. The main
+paper\textquotesingle s §13.3 explicitly marks empirical validation as
+out of scope; this document is the artifact that §13.3 points to.
+Results from executing this plan would normally be published as a
+separate experimental paper, jointly authored or independently. Both
+documents stand alone.
+
+\textbf{2. Hypotheses to test}
+
+Each numbered hypothesis below corresponds to one or more theorems in
+the main paper. Hypotheses are stated in falsifiable form with explicit
+measurement procedures. The relationship to theory is given as either
+confirming (the theorem holds; the experiment is checking that
+conditions are realistic) or quantifying (the theorem\textquotesingle s
+effect size on real data).
+
+\textbf{2.1 Type-I rate (Theorems 4.1, 4.2)}
+
+\textbf{H1 {[}quantifying{]}:} On English-language text and source code
+corpora, an RNR Type-I coder with the Code12 E12-A mapping and a small
+(5--20 MB amortized) byte-level transformer predictor achieves coding
+rate 1.5--2.0 bits per byte, competitive with LZMA at maximum preset
+(2.1--2.5 bpb) and behind NNCP (1.3--1.6 bpb). The gap to NNCP narrows
+under E12-C (learned mapping).
+
+\emph{Falsification:} if Type-I rate exceeds 2.5 bpb on enwik9 (worse
+than LZMA), or if Type-I rate exceeds NNCP rate by more than 0.5 bpb
+after E12-C optimization, the conjecture in §11 is falsified for this
+regime.
+
+\textbf{2.2 Type-II separation on structured data (Theorems 5.3, 5.4,
+5.6)}
+
+\textbf{H2 {[}quantifying{]}:} On database pages, structured binary
+records (Protocol Buffers, MessagePack, Apache Parquet), and instruction
+streams (x86-64, RISC-V), an RNR Type-II coder with semi-non-factorized
+positional model achieves coding rate 10--20\% below LZMA at maximum
+preset.
+
+\textbf{H3 {[}confirming{]}:} For each of the data classes in H2, the
+measured total correlation TC(D\_N) is Theta(N), i.e., remains at least
+10\% of N as N grows over the range 1 KiB to 16 KiB.
+
+\emph{Falsification:} if measured TC(D\_N) decays as o(N) for any of the
+data classes, then Theorem 5.6\textquotesingle s separation regime does
+not apply and Type-II provides only logarithmic-scale gains. If Type-II
+rate equals or exceeds LZMA on database pages, the separation regime is
+not realized at the predictor size tested.
+
+\textbf{2.3 Manifold-hypothesis quantification (Remark 5.7)}
+
+\textbf{H4 {[}confirming{]}:} For each natural-data class in H2 and H6,
+the estimated intrinsic dimension d, computed via the Levina-Bickel
+maximum-likelihood estimator on byte-level embedding vectors at multiple
+ambient dimensions, lies in the regime d much less than ambient
+dimension N.
+
+\emph{Falsification:} if d is comparable to N (within a factor of 2) for
+any tested natural-data class, the manifold-hypothesis quantification in
+Remark 5.7 does not apply to that class, and TC(D\_N) is not predicted
+to be Theta(N) for it. The conditional theorem still holds; only the
+empirical applicability is in question.
+
+\textbf{2.4 Type-III-A mode-selection effectiveness (Theorems 6.1, 6.4)}
+
+\textbf{H5 {[}quantifying{]}:} On heterogeneous archives (mixed
+text/binary, container files, database dumps with header and payload),
+an RNR Type-III-A scheduler with calibrated U\_m(t) achieves rate within
+5\% of the per-tile oracle best mode. The per-mode prediction error
+eps\_t averages below 0.1 bits per position.
+
+\emph{Falsification:} if the scheduler\textquotesingle s rate exceeds
+the per-tile oracle by more than 20\% on heterogeneous data, the
+predictor for U is undercalibrated and the 2*eps bound is not approached
+in practice.
+
+\textbf{2.5 Type-III-B mutual-information advantage (Theorem 6.2)}
+
+\textbf{H6 {[}quantifying{]}:} Measured I(H ; L \textbar{} C) on ASCII
+text falls in 0.3--0.7 bits per byte; on x86-64 instruction streams,
+0.4--0.9 bits per byte; on float32 numeric arrays (scientific data),
+1.0--2.0 bits per byte.
+
+\emph{Falsification:} if I(H ; L \textbar{} C) is below 0.1 bits per
+byte on any of these classes, the Type-III-B advantage over Type-II at
+nibble alphabet is negligible and not worth the additional model cost.
+
+\textbf{2.6 Type-III-C with bits-back (Theorem 6.6)}
+
+\textbf{H7 {[}confirming{]}:} An RNR Type-III-C coder with bits-back ANS
+over a small VAE-style latent predictor achieves rate within 2\% of H(X
+\textbar{} Y) on natural image data, matching the bits-back identity.
+The empirical KL(q \textbar\textbar{} P\_posterior) gap is bounded by
+the variational training loss.
+
+\emph{Falsification:} if the measured rate exceeds H(X \textbar{} Y) +
+5\% on image data, the bits-back accounting in Theorem 6.6 has
+implementation defects or the variational posterior q is poorly fit. The
+theorem is unaffected.
+
+\textbf{2.7 Reproducibility (Theorems 10.1, 10.2)}
+
+\textbf{H8 {[}confirming{]}:} A reference RNR implementation built to
+Definition 10.1 produces byte-identical archive outputs across (a)
+x86-64 Linux with stock libc, (b) ARM64 Linux on Apple Silicon, (c)
+RISC-V QEMU emulation, (d) Windows x86-64 with MSVC runtime, on a
+100-block test corpus.
+
+\emph{Falsification:} if any platform produces a byte-divergent archive
+on any test block, the reference implementation does not meet Theorem
+10.1\textquotesingle s conditions and must be fixed. The theorem is
+unaffected.
+
+\textbf{H9 {[}confirming{]}:} Online adaptation via a compatible
+integer-arithmetic optimizer (integer SGD, signSGD, or integer Adam per
+Definition 10.1) produces byte-identical archives across the same four
+platforms as H8, after 1000 adaptation steps.
+
+\textbf{2.8 Random access scaling (Theorems 10.3, 10.4)}
+
+\textbf{H10 {[}confirming{]}:} For RNR archives built with a W-bounded
+transformer predictor (W = 4 KiB) and sync points placed every K = 64
+KiB, wall-clock time for random access to k = 1 KiB at any position N
+satisfies: (a) T(N, k) is independent of N within measurement noise,
+across archive sizes spanning 100 MiB to 100 GiB; (b) T(N, k) lies in
+the range 20 to 200 milliseconds on commodity hardware; (c) ratio
+overhead from sync points relative to a no-sync RNR baseline is below 2
+percent for K = 64 KiB and below 5 percent for K = 4 KiB.
+
+\textbf{H11 {[}quantifying{]}:} For the LSTM-based RNR variant
+(non-W-bounded, requiring state snapshots), random-access time T(N, k)
+is 3 to 10 times higher than the W-bounded transformer variant at
+matched K, due to state-snapshot deserialization and predictor
+warm-start cost. Seek index size grows by approximately L(state) per
+sync point.
+
+\emph{Falsification:} if T(N, k) grows monotonically with N for the
+W-bounded variant, the bounded-context assumption is not realized in the
+implementation, or sync points are ineffective. If sync-point ratio
+overhead exceeds 10 percent at K = 64 KiB, the per-sync-point
+cold-context cost is larger than predicted, requiring reconsideration of
+W or K.
+
+\emph{Comparison baselines:} T(N, k) for sequential decoding of NNCP at
+the same archive sizes (expected: O(N) scaling, hours for 1 GiB); T(N,
+k) for bgzip and zstd seekable mode at matched block sizes (expected:
+comparable to RNR W-bounded). The kill-feature claim of §10.7 stands or
+falls on this comparison.
+
+\textbf{2.9 Mounted-filesystem performance (Theorem 10.5)}
+
+\textbf{H12 {[}confirming{]}:} A FUSE-based driver wrapping an RNR
+archive of a typical Linux distribution ISO (5 to 20 GiB) supports
+standard filesystem operations (open, read, stat, readdir) with
+per-operation latency within 3 times the latency of the same operations
+on a squashfs-compressed version of the same ISO. Sequential read
+throughput of large files is within 2 times the squashfs throughput on
+the same hardware. Compression ratio is at least 1.5 times better than
+squashfs+zstd on the same ISO.
+
+\textbf{H13 {[}confirming{]}:} Random 4 KiB reads issued via the mounted
+filesystem at uniformly random offsets show 95th-percentile latency
+below 100 milliseconds on CPU SIMD path, below 5 milliseconds on GPU
+path, and below 1 millisecond on NPU path, for a small distilled
+byte-level transformer predictor (10 to 50 million int8 parameters).
+
+\emph{Falsification:} if mounted-filesystem latency exceeds 5 times
+squashfs latency on any tested platform, the inference cost dominates
+and the deployment is not interactive. If compression ratio is not
+improved versus squashfs+zstd, RNR offers no deployment-time benefit
+over the existing alternative.
+
+\textbf{2.10 Hardware-target portability (Theorem 10.6)}
+
+\textbf{H14 {[}confirming{]}:} A reference RNR predictor implementation,
+ported to each of (a) x86-64 scalar CPU, (b) AVX-512 SIMD CPU, (c)
+NVIDIA GPU using int8 Tensor Cores, (d) AMD GPU using matrix
+accelerators, (e) Apple Neural Engine, (f) Google Edge TPU (if
+accessible), produces byte-identical predictor output on a fixed
+1000-input test set. Cross-target byte-identity rate is 100 percent.
+
+\emph{Falsification:} any divergent output between two conforming
+targets falsifies the hardware-target portability claim and indicates
+that Theorem 10.6\textquotesingle s conformance specification is
+incomplete for the diverging path. The fix is to identify the specific
+integer-arithmetic or lookup-table behavior that diverges and either (i)
+revise the conformance specification to require it explicitly, or (ii)
+exclude the diverging target from the conforming-target set.
+
+\textbf{3. Corpus selection}
+
+The corpus is chosen to exercise each Type on its target regime, with
+explicit negative controls. All corpora are public or publicly
+reproducible to support independent verification.
+
+\textbf{3.1 Text and source code}
+
+\begin{itemize}
+\item
+  enwik9 (first 10\^{}9 bytes of English Wikipedia, standard Hutter
+  Prize corpus). Tests Type-I and Type-III-B on ASCII text.
+\item
+  Linux kernel source tarball (latest LTS release, .tar without
+  compression). Tests Type-I and Type-III-C on source code with
+  structural repetition.
+\item
+  CommonCrawl HTML subset (10 GB, fixed snapshot hash). Tests Type-III-C
+  with JSON/HTML token dictionaries.
+\end{itemize}
+
+\textbf{3.2 Structured binary}
+
+\begin{itemize}
+\item
+  PostgreSQL pg\_dump output from a real schema (10 GB, anonymized or
+  synthetic). Tests Type-II positional regularity.
+\item
+  Protocol Buffers serialized messages from a public schema (e.g.,
+  TensorFlow saved-model files). Tests Type-III-C structural-marker
+  tokens.
+\item
+  Apache Parquet column files. Tests Type-II on columnar layouts.
+\end{itemize}
+
+\textbf{3.3 Image and numeric data}
+
+\begin{itemize}
+\item
+  CIFAR-10 raw uncompressed pixel data (50000 32x32 images, 150 MB).
+  Tests Type-III-B and Type-III-C with bits-back on small images.
+\item
+  ImageNet validation set raw RGB (50000 images at original resolution).
+  Tests Type-III-C with bits-back at scale.
+\item
+  Bayer-mosaic DSLR raw files (sample dataset of 1000 NEF or DNG files,
+  public mirror). Tests Type-II on positional sensor structure.
+\item
+  HDF5 scientific arrays (sample subset of CERN or LSST public data).
+  Tests Type-III-B on float32 numeric columns.
+\end{itemize}
+
+\textbf{3.4 Heterogeneous and negative controls}
+
+\begin{itemize}
+\item
+  Linux distribution ISO (one specific release, archived for
+  reproducibility). Tests Type-III-A heterogeneous scheduling.
+\item
+  64 MB of /dev/urandom output (negative control: incompressible).
+\item
+  32 MB of AES-CTR encrypted text (negative control: appears random).
+\item
+  128 MB of zstd-precompressed text (negative control: high-entropy
+  residual).
+\end{itemize}
+
+All corpora are versioned by SHA-256 hash; experimental scripts
+reference corpora by hash, not filename, to ensure long-term
+reproducibility.
+
+\textbf{4. Baseline implementations}
+
+Every measurement compares the RNR variant against multiple baselines
+drawn from classical, dictionary-based, and neural lossless compressors.
+Baselines are pinned to specific releases.
+
+\textbf{4.1 Classical and dictionary-based}
+
+\begin{itemize}
+\item
+  gzip 1.10+ at level 9 (low baseline).
+\item
+  bzip2 1.0.8 at default settings (block-sorting baseline).
+\item
+  xz/LZMA 5.4+ at preset -9e (extreme preset, current ceiling for
+  general-purpose dictionary compression).
+\item
+  zstd 1.5+ at level 22 (high-throughput modern baseline).
+\item
+  zpaq 7.15 at -m5 (long-range context mixing baseline).
+\end{itemize}
+
+\textbf{4.2 Context-mixing and neural}
+
+\begin{itemize}
+\item
+  Cmix v19+ (current state-of-the-art among non-neural context-mixing
+  coders).
+\item
+  NNCP latest release (Bellard, current state-of-the-art neural
+  byte-level coder).
+\item
+  PixelCNN++ reference implementation (Salimans et al. 2017 release) on
+  image corpora only.
+\item
+  Bit-Swap reference implementation (Kingma et al. 2019) on image
+  corpora only.
+\item
+  IDF++ reference implementation (van den Berg et al. 2021) on image and
+  numeric corpora.
+\end{itemize}
+
+\textbf{4.3 RNR implementations under test}
+
+Six RNR variants are evaluated, plus their Type-III-A composition:
+
+\begin{itemize}
+\item
+  RNR-I-A: Type-I with Code12 E12-A (shortened Hamming) mapping.
+\item
+  RNR-I-C: Type-I with E12-C (learned mapping, trained per corpus).
+\item
+  RNR-II: Type-II semi-non-factorized positional coder.
+\item
+  RNR-III-B: Type-III-B byte tensor coder.
+\item
+  RNR-III-C-D: Type-III-C with discrete BPE-style dictionary (1024
+  tokens, 32x32 grid).
+\item
+  RNR-III-C-V: Type-III-C with continuous latents via bits-back ANS over
+  a VAE-style model.
+\item
+  RNR-Composed: Type-III-A scheduler over the above six.
+\end{itemize}
+
+All RNR variants share the same underlying byte-level transformer
+predictor (8--16 MB amortized), with type-specific output heads. This
+isolates the effect of the representation choice from the effect of
+predictor capacity.
+
+\textbf{5. Metrics}
+
+\textbf{5.1 Primary: coding rate}
+
+Bits per byte, measured as (codeword size in bits) / (uncompressed size
+in bytes), reported separately for each (coder, corpus) pair. Report
+includes:
+
+\begin{itemize}
+\item
+  Total bits per byte (full archive).
+\item
+  Amortized rate excluding L(M) (relevant for large archives where model
+  cost vanishes).
+\item
+  Per-block rate distribution: minimum, 25th percentile, median, 75th
+  percentile, maximum.
+\end{itemize}
+
+\textbf{5.2 Secondary: computational cost}
+
+\begin{itemize}
+\item
+  Compression wall-clock time per MiB of input.
+\item
+  Compression peak resident memory (RSS).
+\item
+  Decompression wall-clock time per MiB of output.
+\item
+  Decompression peak resident memory (RSS).
+\item
+  CPU utilization (single-core; parallel speedup reported separately if
+  multi-threaded).
+\end{itemize}
+
+\textbf{5.3 Information-theoretic measurements}
+
+Independent of compression rate, several information-theoretic
+quantities are estimated to test the conditions of Theorem 5.6 and
+Remark 5.7:
+
+\begin{itemize}
+\item
+  Total correlation TC(D\_N) via the Cmix entropy estimator at multiple
+  block lengths N in \{256, 512, 1024, 2048, 4096, 8192, 16384\}.
+  Estimated as (sum of marginal entropies measured from histograms)
+  minus (Cmix-estimated joint entropy).
+\item
+  Intrinsic dimension d via the Levina-Bickel maximum-likelihood
+  estimator with k in \{5, 10, 20, 50\} nearest neighbors, computed on
+  byte n-gram embedding spaces (n in \{2, 4, 8, 16\}). Report d as a
+  function of (k, n).
+\item
+  Conditional mutual information I(H ; L \textbar{} C) for Type-III-B,
+  estimated via the empirical joint and marginal distributions of (high
+  nibble, low nibble) conditioned on a sliding-window context.
+\item
+  Per-mode prediction error eps\_t for Type-III-A, computed as the
+  empirical maximum over modes of \textbar U\_m(t) - L\_m(t)\textbar{}
+  over a sample of tiles.
+\end{itemize}
+
+\textbf{5.4 Reproducibility metrics}
+
+\begin{itemize}
+\item
+  Byte-identity rate across (platform\_i, platform\_j) pairs for each
+  test block, reported as (number of byte-identical archives) / (total
+  archives).
+\item
+  Earliest divergent byte offset on first divergence, if any, for
+  diagnostic purposes.
+\item
+  Floating-point fallback count: any tile that, under the Theorem 10.1
+  specification, would have required floating-point arithmetic, is
+  logged separately.
+\end{itemize}
+
+\textbf{5.5 Random-access metrics}
+
+\begin{itemize}
+\item
+  Random-access wall-clock time T(N, k) for k in \{1 KiB, 4 KiB, 16 KiB,
+  64 KiB\} and N sampled uniformly over the archive, with at least 1000
+  samples per (archive size, k) pair. Report mean, median, 95th
+  percentile.
+\item
+  Random-access throughput: number of independent random-access reads
+  per second under serial query load.
+\item
+  Sync-point overhead: ratio cost as (archive size with sync points) /
+  (archive size without sync points) - 1, reported at K in \{4 KiB, 16
+  KiB, 64 KiB, 256 KiB, 1 MiB\}.
+\item
+  Seek index size as a fraction of total archive size, with W-bounded
+  versus non-W-bounded predictor variants separately reported.
+\end{itemize}
+
+\textbf{6. Statistical methodology}
+
+\textbf{6.1 Sampling and runs}
+
+For each (coder, corpus) pair, run the experiment 5 times with distinct
+deterministic seeds, controlling for any non-determinism in baseline
+coders (e.g., adaptive context mixing initialization). Report mean and
+95\% confidence interval via bootstrap with 10000 resamples.
+
+For randomized corpora (CommonCrawl subset, image samples), use
+deterministic seeds for subset selection; verify subset hashes match
+across runs.
+
+\textbf{6.2 Effect-size reporting}
+
+For comparisons between RNR variants and baselines, report:
+
+\begin{itemize}
+\item
+  Mean rate difference in bits per byte (RNR minus baseline; negative is
+  better).
+\item
+  Relative improvement as a percentage of the baseline rate.
+\item
+  95\% confidence interval on the difference, via paired bootstrap on
+  per-block rates.
+\item
+  Cohen\textquotesingle s d effect size where applicable (block-level
+  comparisons).
+\end{itemize}
+
+\textbf{6.3 Pre-registration}
+
+To avoid p-hacking and result-cherry-picking, the experimental
+hypothesis list (Section 2), the corpus list (Section 3), the metric
+list (Section 5), and the analysis procedure (this section) are
+committed in a pre-registration document with a publication timestamp,
+prior to any experimental run. Pre-registration follows the protocol of
+the OSF Registries or equivalent open-science platform.
+
+\textbf{6.4 Multiple-comparisons correction}
+
+With 9 hypotheses and multiple coder/corpus pairs each, the
+per-comparison alpha of 0.05 would inflate the family-wise error rate
+substantially. Apply Holm-Bonferroni correction across all
+primary-hypothesis tests. Secondary analyses (effect sizes, exploratory
+measurements) report uncorrected confidence intervals with a clear label
+distinguishing them from primary hypothesis tests.
+
+\textbf{7. Reporting template}
+
+Each experiment is reported in a uniform template for downstream
+meta-analysis. The template is:
+
+\begin{quote}
+Experiment ID: \textless slug, e.g.,
+\textquotesingle h2-pgdump-rnr-ii\textquotesingle\textgreater{}
+
+Hypothesis: \textless H1..H9 from Section 2\textgreater{}
+
+Corpus: \textless slug + SHA-256 hash\textgreater{}
+
+Coder: \textless RNR variant or baseline name + version\textgreater{}
+
+Hardware: \textless CPU, RAM, OS\textgreater{}
+
+Software: \textless library versions, RNR git commit hash\textgreater{}
+
+Pre-registration ID: \textless OSF URL or equivalent\textgreater{}
+
+Runs: 5
+
+Result table:
+
+Rate (bpb): mean +/- 95\% CI
+
+Time (s/MiB): mean +/- 95\% CI
+
+Memory (MiB): mean +/- 95\% CI
+
+Comparison to \textless baseline name\textgreater:
+
+Delta rate: \textless value\textgreater{} bpb
+(\textless percentage\textgreater\%)
+
+Bootstrap 95\% CI on delta: {[}\textless low\textgreater,
+\textless high\textgreater{]}
+
+Cohen\textquotesingle s d (block-level): \textless value\textgreater{}
+
+Hypothesis verdict: \textless confirmed / falsified /
+inconclusive\textgreater{}
+
+Notes: \textless implementation details, anomalies,
+caveats\textgreater{}
+\end{quote}
+
+\textbf{8. Cross-platform reproducibility test (H8, H9)}
+
+Theorems 10.1 and 10.2 reduce reproducibility to a conformance
+specification. This section operationalizes the conformance test.
+
+\textbf{8.1 Test corpus}
+
+100 test blocks of varying size and content, drawn from the corpora in
+Section 3. Each block is 1--16 KiB. The set is fixed by SHA-256 hashes
+published with the test suite. The selection covers all RNR Types and at
+least 10 blocks per Type.
+
+\textbf{8.2 Test platforms}
+
+\begin{itemize}
+\item
+  x86-64 Linux: Ubuntu 24.04 LTS, glibc 2.39, no AVX-512 (forced via
+  taskset to a core without it).
+\item
+  x86-64 Linux with AVX-512 enabled (separate run, same OS).
+\item
+  ARM64 Linux: Apple Silicon under Asahi Linux, native code.
+\item
+  ARM64 macOS: Apple Silicon, native code, system clang/libc.
+\item
+  RISC-V via QEMU emulation (Ubuntu RISC-V image), no native hardware
+  acceleration.
+\item
+  Windows x86-64 with MSVC runtime.
+\end{itemize}
+
+\textbf{8.3 Test procedure}
+
+For each test block X and each RNR variant, on each platform:
+
+\begin{quote}
+1. Run encoder on X with deterministic seed; emit archive A.
+
+2. Compute SHA-256(A).
+
+3. Cross-tabulate SHA-256 values across platforms.
+
+4. For all pairs (platform\_i, platform\_j), record byte-identity =
+(hash\_i == hash\_j).
+
+5. Run decoder on each A on each platform; emit X\_hat.
+
+6. Verify X\_hat == X on every (encoder\_platform, decoder\_platform)
+pair.
+\end{quote}
+
+Pass criterion: for every test block, all 6 platforms produce the same
+archive hash, and every cross-decoded result equals the original. Fail
+criterion: any byte difference. A single failure invalidates the
+conformance claim for that RNR variant on that platform pair and
+triggers diagnostic investigation (Section 8.4).
+
+\textbf{8.4 Diagnostic procedure on failure}
+
+If a platform pair produces divergent archives:
+
+\begin{itemize}
+\item
+  Identify the earliest divergent byte in the archive.
+\item
+  Trace back to the encoder stage that produced it: predictor output,
+  repair encoding, or metadata.
+\item
+  If predictor output diverges, check Theorem 10.1 conditions: integer
+  bit-width, non-linearity table determinism, reduction order. Identify
+  which condition is violated.
+\item
+  If repair encoding diverges, check entropy-coder state initialization
+  and update order.
+\item
+  Publish the failure as an issue against the reference implementation,
+  with the divergent input and the proposed fix.
+\end{itemize}
+
+\textbf{9. Intrinsic-dimension estimation procedure (H4)}
+
+Remark 5.7 connects Theorem 5.6\textquotesingle s separation to
+natural-data intrinsic dimension. This section operationalizes the
+estimation.
+
+\textbf{9.1 Embedding choice}
+
+Intrinsic dimension is estimated in an embedding space, not raw byte
+space, because raw bytes are unstructured. For each corpus, compute byte
+n-gram embeddings at n in \{2, 4, 8, 16\}. Each block becomes a vector
+of counts over a vocabulary of distinct n-grams observed in that corpus.
+Vocabulary is capped at 65536 by frequency.
+
+Alternative embedding: use the byte-level transformer\textquotesingle s
+penultimate-layer hidden state at each position, averaged over the
+block. This requires running the RNR predictor in inference mode, which
+is acceptable since the predictor is already part of the framework.
+
+\textbf{9.2 Estimator}
+
+Apply the Levina-Bickel maximum-likelihood estimator (Levina-Bickel
+2004) with k nearest neighbors. For each sample point x\_i and each of
+its k nearest neighbors x\_\{i,1\}, ..., x\_\{i,k\} (by Euclidean
+distance in the embedding space):
+
+\begin{quote}
+T\_k(x\_i) = distance to k-th nearest neighbor
+
+d\_hat(x\_i, k) = (k - 1) / sum\_\{j=1..k-1\} log(T\_k(x\_i) /
+T\_j(x\_i))
+
+d\_hat(k) = mean over all sample points of d\_hat(x\_i, k)
+\end{quote}
+
+Report d\_hat for k in \{5, 10, 20, 50\} and stable across these k
+values. If d\_hat varies substantially across k, the corpus does not
+exhibit a clean low-dimensional manifold structure.
+
+\textbf{9.3 Validation against alternative estimators}
+
+Cross-check with at least one alternative:
+
+\begin{itemize}
+\item
+  Correlation dimension via the Grassberger-Procaccia algorithm.
+\item
+  Persistent homology dimension via the persistent-homology approach
+  (Bubenik 2015 or similar).
+\item
+  Two-NN dimension estimator (Facco et al. 2017).
+\end{itemize}
+
+Report agreement or disagreement among estimators. Strong disagreement
+(factor of 2 or more) indicates the corpus may not admit a manifold
+description; in that case Remark 5.7\textquotesingle s quantification of
+TC does not transfer cleanly to that corpus.
+
+\textbf{10. Suggested execution order}
+
+The experimental program has dependencies: reproducibility tests must
+pass before rate comparisons are meaningful, intrinsic-dimension
+estimates must precede the H3/H4 analysis, etc. The suggested order is:
+
+\emph{\textbf{Phase 1: implementation and reproducibility (weeks 1--3)}}
+
+\begin{itemize}
+\item
+  Build reference implementations of all RNR variants meeting Theorem
+  10.1 conditions.
+\item
+  Run H8 conformance test. Iterate until all platforms produce
+  byte-identical archives.
+\item
+  Build adaptive-mode variants with compatible optimizers and run H9.
+\end{itemize}
+
+\emph{\textbf{Phase 2: information-theoretic measurements (weeks 4--6)}}
+
+\begin{itemize}
+\item
+  Estimate TC(D\_N) and intrinsic dimension d for each corpus (H3, H4).
+\item
+  Publish the estimates as a standalone artifact (pre-registration
+  permits early publication of corpus characterization).
+\item
+  Estimate I(H ; L \textbar{} C) for H6.
+\end{itemize}
+
+\emph{\textbf{Phase 3: rate measurements (weeks 7--12)}}
+
+\begin{itemize}
+\item
+  Run all coder/corpus pairs at fixed predictor capacity. Apply the
+  reporting template from Section 7.
+\item
+  H1 on text and code corpora.
+\item
+  H2 on structured binary corpora.
+\item
+  H5 on heterogeneous corpora (after composition implementation is
+  complete).
+\item
+  H6 cross-checks (rate gain in Type-III-B against measured I(H ; L
+  \textbar{} C)).
+\item
+  H7 on image corpora (bits-back over VAE).
+\item
+  H10 and H11 random-access scaling tests, run after H1 through H7
+  confirm baseline encoder correctness. Cover at least three archive
+  sizes (100 MiB, 10 GiB, 100 GiB) with 1000 random-access samples each.
+\end{itemize}
+
+\emph{\textbf{Phase 4: analysis and reporting (weeks 13--15)}}
+
+\begin{itemize}
+\item
+  Apply Holm-Bonferroni correction across all primary hypothesis tests.
+\item
+  Compile per-hypothesis verdicts and aggregate effect sizes.
+\item
+  Draft companion experimental paper for publication, with all data and
+  code released as open artifacts.
+\end{itemize}
+
+Total estimated duration: 15 weeks for one researcher, less with
+parallelism on implementation. The reproducibility tests in Phase 1 are
+the riskiest stage; they may take longer if conformance issues are
+subtle. Phases 2 and 3 run mostly automated once implementations are
+stable.
+
+\textbf{11. Risks and contingencies}
+
+Anticipated risks and contingency plans:
+
+\begin{itemize}
+\item
+  Reproducibility may fail on RISC-V or Windows due to subtle
+  integer-arithmetic differences (e.g., division rounding modes, shift
+  behavior). Contingency: replace the failing operations with portable
+  alternatives explicitly listed in the model description; if not
+  feasible, restrict the conformance claim to a subset of platforms and
+  document this in the failure analysis.
+\item
+  Predictor training may not converge under integer-arithmetic
+  constraints. Contingency: train in floating point, then quantize to
+  integer; verify post-quantization that the model still satisfies
+  Theorem 10.1 conditions. Accept some predictor quality loss in
+  exchange for reproducibility.
+\item
+  Manifold-hypothesis estimators may give inconsistent intrinsic
+  dimensions on certain corpora. Contingency: report the disagreement
+  honestly and label the corresponding corpus as outside Remark
+  5.7\textquotesingle s predicted regime. The
+  framework\textquotesingle s conditional theorems are unaffected; only
+  the empirical applicability for that corpus is in question.
+\item
+  Bits-back implementation may have variational-training instabilities
+  (typical for VAE-style training). Contingency: use a published
+  Bit-Swap or HiLLoC reference implementation as the RNR-III-C-V
+  baseline rather than training from scratch; this measures the
+  framework integration, not the variational fit.
+\item
+  Predictor cost L(M) may dominate rate at small block sizes, masking
+  the structural advantages of each Type. Contingency: report rates
+  separately at multiple total-archive sizes (10 MB, 100 MB, 1 GB) so
+  amortization is visible.
+\end{itemize}
+
+\textbf{12. Open artifacts}
+
+To support independent verification, the experimental program commits to
+publishing:
+
+\begin{itemize}
+\item
+  All RNR reference implementations under a permissive license.
+\item
+  Pre-registration document with hypothesis list and analysis plan,
+  timestamped before any run.
+\item
+  Corpus manifests with SHA-256 hashes and provenance URLs.
+\item
+  All raw measurement outputs (per-block rates, timings, memory
+  profiles) in a machine-readable format.
+\item
+  Statistical analysis scripts used to produce the reported confidence
+  intervals.
+\item
+  Final paper drafts, including any negative or inconclusive results,
+  even those that falsify framework hypotheses.
+\end{itemize}
+
+Failed-hypothesis publication is a hard commitment: a result that
+falsifies H1, H2, H5, H6, or H7 is published with the same rigor as a
+confirming result. The framework\textquotesingle s theorems are
+unaffected by such falsification; what they show is which conjectures
+about practical realization do not hold. This information is more
+valuable than another confirming paper because it identifies where the
+framework\textquotesingle s predictions diverge from natural-data
+reality.
+
+\textbf{13. Closing}
+
+This document is an executable scaffolding, not a research result.
+Following it produces measurements that resolve every empirical
+conjecture made by the main RNR Coding paper. The combination of
+pre-registration, open artifacts, and explicit falsification criteria
+makes the resulting experimental paper falsifiable by independent
+replication. Whatever the outcome, the framework\textquotesingle s
+theoretical content (the 17 numbered results in v0.5) is unchanged; the
+empirical paper says only how well the framework\textquotesingle s
+conditional predictions match natural-data reality.
+
+Two ways to read this document. As a research plan: it tells you what to
+build, what to measure, and what to publish, in what order. As a
+defense: it shows a reviewer that the main paper\textquotesingle s
+empirical conjectures are accompanied by a concrete falsification
+procedure, which is the only honest way to handle theory-only papers
+that make quantitative predictions about real data.
+
+\end{document}

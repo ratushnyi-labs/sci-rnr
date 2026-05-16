@@ -1,0 +1,1068 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\textbf{RNR Coding --- Reference Implementation Conformance
+Specification}
+
+\emph{Engineering companion to the framework paper, v0.7}
+
+Pavlo Ratushnyi --- May 2026
+
+\textbf{1. Purpose and scope}
+
+This document specifies the conformance requirements for a reference
+implementation of RNR Coding. It operationalizes Theorems 10.1, 10.2,
+10.3, 10.5, and 10.6 of the main paper into a software-engineering
+specification that can be implemented, tested, and certified across the
+hardware targets named in §10.6.
+
+The specification is RFC-style: requirements use the MUST/SHOULD/MAY
+language of RFC 2119. A conforming implementation MUST satisfy every
+MUST-level requirement on every selected hardware target. SHOULD-level
+requirements may be omitted with documented rationale; MAY-level
+requirements are at implementer discretion.
+
+\textbf{1.1 In scope}
+
+\begin{itemize}
+\item
+  The integer-arithmetic specification under which Theorem
+  10.1\textquotesingle s bit-exact reproduction holds.
+\item
+  Non-linearity lookup table format and serialization.
+\item
+  Per-hardware-target conformance specifications (CPU scalar, CPU SIMD
+  including AVX-512 and NEON, GPU integer paths, NPU paths including
+  Apple Neural Engine, Google Edge TPU, Qualcomm Hexagon, AWS
+  Inferentia).
+\item
+  Sync-point and seek-index binary formats supporting Theorem 10.3
+  random access.
+\item
+  Block-device driver architecture supporting Theorem 10.5
+  mounted-filesystem deployment.
+\item
+  Conformance test suite with explicit acceptance criteria.
+\end{itemize}
+
+\textbf{1.2 Out of scope}
+
+\begin{itemize}
+\item
+  Predictor training. This specification accepts a trained predictor as
+  input; how the predictor is trained is upstream.
+\item
+  Specific predictor architectures. The specification is
+  architecture-neutral within the constraints of §3.
+\item
+  Storage encryption and content addressing. These are deployment-layer
+  concerns and not part of the codec.
+\item
+  Network distribution protocols and authentication. Deployment-layer.
+\end{itemize}
+
+\textbf{1.3 Relation to the main paper}
+
+The main paper proves the mathematical results; this document specifies
+how to instantiate them in code. No new theorems are introduced. Every
+requirement in this document is traceable to a theorem in the main
+paper; the traceability matrix is given in §14.
+
+\textbf{2. Terminology}
+
+\textbf{MUST, REQUIRED.} An absolute requirement. A conforming
+implementation MUST satisfy this.
+
+\textbf{SHOULD, RECOMMENDED.} Valid implementations may omit this with
+documented rationale, but the recommended path produces better
+reliability or interoperability.
+
+\textbf{MAY, OPTIONAL.} Implementer discretion. The implementation is
+conforming whether or not the option is taken.
+
+\textbf{Reference target.} The CPU scalar implementation (§4.1) is the
+canonical reference. All other targets MUST produce output bit-identical
+to the reference for any input.
+
+\textbf{Conforming target.} A hardware target whose implementation
+satisfies all MUST-level requirements applicable to that target class
+and passes the conformance test suite of §12.
+
+\textbf{3. Predictor inference engine: universal requirements}
+
+Per Theorem 10.1 of the main paper, every conforming predictor inference
+engine MUST satisfy the following requirements. These are universal
+across hardware targets and apply before any target-specific
+specialization.
+
+\textbf{R-3.1 (Integer arithmetic).} All intermediate computations in
+the inference path MUST use integer arithmetic with bit-widths specified
+by the model description. No floating-point arithmetic is permitted in
+the inference path except as allowed in R-3.6.
+
+\textbf{R-3.2 (Overflow avoidance).} The accumulator bit-width MUST be
+at least ceil(log\_2(L * W\_max * I\_max)) + 1, where L is the maximum
+layer depth, W\_max is an upper bound on the L1 norm of any weight row,
+and I\_max is an upper bound on the magnitude of any layer input. The
+bounds W\_max and I\_max MUST be declared in the model description; an
+implementation MAY verify them at model-load time.
+
+\textbf{R-3.3 (Non-linearities).} All non-linearity operations MUST be
+implemented as deterministic integer-to-integer lookup tables specified
+in the model description per §6. Approximations computed at runtime
+(e.g., Taylor series, polynomial fits) are forbidden.
+
+\textbf{R-3.4 (Reduction order).} All reduction operations (sums in
+matrix-vector products, softmax denominators, normalization aggregates)
+MUST follow the order specified by the model description. The order is
+encoded as a tree shape; implementations MUST honor that tree shape
+exactly. Platform-default reduction orders (GPU atomic reductions,
+randomized parallel reductions, OpenMP reduce with default schedule) are
+forbidden.
+
+\textbf{R-3.5 (Determinism).} All operations in the inference path MUST
+be deterministic. No randomness is permitted, including random
+initialization, dropout, or stochastic rounding. If the predictor
+architecture requires randomness for training, the training-mode
+randomness MUST be disabled at inference time.
+
+\textbf{R-3.6 (Initialization).} Floating-point arithmetic MAY be used
+during model description parsing (loading weights from a model file) but
+MUST produce only integer outputs that are subsequently used by
+R-3.1-conforming operations. No floating-point value computed at parse
+time may flow into the inference path.
+
+\textbf{R-3.7 (Layer ordering).} Layer execution order MUST follow the
+topological order specified by the model description. Implementations
+MAY parallelize within a layer but MUST NOT reorder layer-level
+dependencies.
+
+\textbf{R-3.8 (No fused-multiply-add unless specified).} FMA
+instructions (FMA3, FMA4) on floating-point operands are forbidden.
+Integer FMA-equivalents (VPDPWSSD, VPDPBUSD, MFMA-int, Tensor Core
+int8/int4 paths) are allowed where the integer arithmetic semantics are
+bit-equivalent to scalar integer multiply-add.
+
+\textbf{4. Hardware-target specifications}
+
+A conforming implementation MUST target at least one of the hardware
+paths below. Each path MUST satisfy R-3.1 through R-3.8 in addition to
+its target-specific requirements. Cross-target byte-identity is required
+by Theorem 10.6 and verified by the conformance suite of §12.
+
+\textbf{4.1 CPU scalar reference target}
+
+The CPU scalar target is the canonical reference. All other targets MUST
+produce bit-identical output to this target on the conformance test
+vectors of §12.
+
+\textbf{R-4.1.1 (Default types).} Weights are int8 (signed, range -128
+to 127). Activations are int32 (signed). Accumulators are int64
+(signed). The model description MAY override per-layer.
+
+\textbf{R-4.1.2 (Multiplication).} Weight-activation multiplication is
+int32 * int8 -\textgreater{} int64 with explicit sign extension. The C99
+expression is: (int64\_t)(int32\_t)activation *
+(int64\_t)(int8\_t)weight.
+
+\textbf{R-4.1.3 (Accumulation).} Sequential left-to-right accumulation
+in int64. The compiler MUST NOT reorder additions; implementations MUST
+use explicit accumulator variables, not standard library reductions
+whose ordering is implementation-defined.
+
+\textbf{R-4.1.4 (Output scaling).} After accumulation, the int64
+accumulator is shifted right by the layer\textquotesingle s output-scale
+parameter (specified in the model description) and clamped to the
+activation type range. The shift is arithmetic (sign-extending).
+
+\textbf{R-4.1.5 (Lookup tables).} Non-linearity tables are stored as
+flat int32 arrays. The index is the (clamped) input value; the value is
+the (signed) output. Bounds checking MUST be present in debug builds and
+SHOULD be present in release builds (modern branch predictors make the
+check nearly free).
+
+\textbf{4.2 CPU SIMD targets}
+
+\emph{\textbf{4.2.1 AVX2}}
+
+\textbf{R-4.2.1.1 (Vector width).} 256-bit vectors holding 8 lanes of
+int32 or 32 lanes of int8.
+
+\textbf{R-4.2.1.2 (Multiply-accumulate).} MUST use \_mm256\_madd\_epi16
+for int16*int16-\textgreater int32 fused multiply-add. If AVX-VNNI is
+available, MAY use \_mm256\_dpwssd\_avx\_epi32 for int8 dot products.
+
+\textbf{R-4.2.1.3 (Horizontal reduction).} MUST be implemented as a
+sequence of \_mm256\_hadd\_epi32 (or shuffles plus adds) following the
+tree shape specified by the model description. Implementations MUST NOT
+use \_mm256\_reduce\_add\_epi32 unless the
+implementation\textquotesingle s reduction tree is documented and
+matches the model description.
+
+\emph{\textbf{4.2.2 AVX-512}}
+
+\textbf{R-4.2.2.1 (Vector width).} 512-bit vectors holding 16 lanes of
+int32 or 64 lanes of int8.
+
+\textbf{R-4.2.2.2 (VNNI instructions).} MUST use VPDPBUSD for
+int8*int8-\textgreater int32 and VPDPWSSD for
+int16*int16-\textgreater int32 when these instructions are available
+(Cascade Lake and later for VNNI; Ice Lake and later for IFMA).
+
+\textbf{R-4.2.2.3 (Mask registers).} Predication via opmask registers
+(k1-k7) is permitted. Operations using opmask MUST produce the same
+output as scalar operations on the corresponding lanes.
+
+\emph{\textbf{4.2.3 ARM NEON}}
+
+\textbf{R-4.2.3.1 (Vector width).} 128-bit vectors holding 4 lanes of
+int32 or 16 lanes of int8.
+
+\textbf{R-4.2.3.2 (Multiply-accumulate).} MUST use VMLAL (int16
+multiply, int32 accumulate) or SDOT (int8 dot product when
+ARMv8.2-DotProd is available).
+
+\textbf{R-4.2.3.3 (Horizontal reduction).} MUST use VADDV with
+sequential ordering or explicit tree reductions matching the model
+description.
+
+\emph{\textbf{4.2.4 RISC-V Vector}}
+
+\textbf{R-4.2.4.1 (Vector configuration).} VL and LMUL MUST be
+configured deterministically per layer; the configuration MUST be
+specified in the model description. Auto-vectorization that selects VL
+based on hardware preferences is forbidden in the conforming path.
+
+\textbf{R-4.2.4.2 (Integer instructions).} MUST use vmul.vv / vredsum.vs
+for multiply-reduce sequences. The reduction follows
+RVV\textquotesingle s specified left-fold ordering.
+
+\textbf{4.3 GPU integer paths}
+
+\emph{\textbf{4.3.1 NVIDIA Tensor Core path}}
+
+\textbf{R-4.3.1.1 (Deterministic mode).} cuBLASLt MUST be in
+deterministic mode (CUBLASLT\_DETERMINISTIC\_MODE = 1). cuDNN MUST be
+configured with the deterministic algorithm hint
+(cudnnSetDeterministic). Algorithm selection MUST be pinned in the model
+description.
+
+\textbf{R-4.3.1.2 (Tensor Core paths).} Integer multiply-accumulate MUST
+use Tensor Core int8 (HMMA.16816.S8) or int4 (HMMA.16832.S4) MMA
+instructions on Turing or later. Mixed-precision (int8 * fp16) Tensor
+Core paths are forbidden.
+
+\textbf{R-4.3.1.3 (Reduction tree).} Tensor Core MMA produces partial
+sums per warp; the cross-warp reduction MUST follow the tree specified
+by the model description, implemented via shared memory and
+\_\_syncwarp(). Atomic reductions are forbidden.
+
+\textbf{R-4.3.1.4 (Kernel scheduling).} The kernel launch configuration
+(grid size, block size, shared memory) MUST be derived deterministically
+from the model description. Library auto-tuners MUST be disabled.
+
+\emph{\textbf{4.3.2 AMD CDNA matrix path}}
+
+\textbf{R-4.3.2.1 (MFMA instructions).} Integer matrix
+multiply-accumulate MUST use V\_MFMA\_I32\_xxx instructions.
+Mixed-precision MFMA paths are forbidden.
+
+\textbf{R-4.3.2.2 (rocBLAS configuration).} rocBLAS MUST be in
+deterministic mode. Algorithm selection MUST be pinned in the model
+description.
+
+\textbf{R-4.3.2.3 (Cross-CU reduction).} Reductions across compute units
+MUST follow the model description\textquotesingle s tree. Atomic
+reductions are forbidden.
+
+\textbf{4.4 NPU paths}
+
+\emph{\textbf{4.4.1 Apple Neural Engine (ANE)}}
+
+\textbf{R-4.4.1.1 (Core ML integer path).} MUST use the int8 inference
+subset of Core ML 8.0 or later, with quantized model format (mlpackage
+with quantized weights). Float16 paths are forbidden.
+
+\textbf{R-4.4.1.2 (Reduction order).} ANE\textquotesingle s reduction
+order is vendor-fixed. Conformance requires verifying that
+ANE\textquotesingle s reduction matches the CPU scalar reference for the
+specific model architecture; if it does not, the model description MUST
+specify an alternative reduction order achievable on ANE, or ANE MUST be
+excluded from the conforming targets for that model.
+
+\textbf{R-4.4.1.3 (Precision verification).} The conformance test of §12
+MUST be run on ANE before certification. Test vectors of at least 10,000
+inputs MUST produce byte-identical predictor output to the CPU
+reference.
+
+\emph{\textbf{4.4.2 Google Edge TPU}}
+
+\textbf{R-4.4.2.1 (TensorFlow Lite micro path).} MUST use the TensorFlow
+Lite quantized model format with int8 weights and int8 activations.
+Per-tensor or per-channel quantization MUST match the model description.
+
+\textbf{R-4.4.2.2 (Reduction).} Edge TPU\textquotesingle s reduction
+order is fixed and known to be deterministic across firmware versions
+documented in the model description\textquotesingle s compatibility
+manifest.
+
+\emph{\textbf{4.4.3 Qualcomm Hexagon NPU}}
+
+\textbf{R-4.4.3.1 (HVX integer path).} MUST use Hexagon Vector eXtension
+(HVX) integer instructions with explicit accumulator typing. The Hexagon
+NN library MUST be configured in deterministic mode.
+
+\textbf{R-4.4.3.2 (HMX support).} If the target supports Hexagon Matrix
+eXtension (HMX), MUST use HMX int8 path with pinned tile sizes.
+
+\emph{\textbf{4.4.4 AWS Inferentia}}
+
+\textbf{R-4.4.4.1 (Neuron SDK).} MUST use the AWS Neuron SDK 2.0 or
+later, with int8 quantization. The Neuron compiler MUST be invoked with
+deterministic flags.
+
+\textbf{R-4.4.4.2 (Tensor partitioning).} Tensor partitioning across
+NeuronCores MUST be pinned in the model description. Auto-partitioning
+is forbidden in the conforming path.
+
+\emph{\textbf{4.4.5 Common NPU requirement}}
+
+\textbf{R-4.4.5 (Cross-target verification).} Each NPU target MUST pass
+the conformance test suite of §12 on a fixed 10,000-input test vector
+before being certified as conforming. The test vector MUST include all
+non-linearity types used by the predictor architecture.
+
+\textbf{5. Integer-arithmetic specification}
+
+\textbf{5.1 Bit-widths}
+
+\textbf{R-5.1.1 (Defaults).} Default weight bit-width is int8 (signed,
+range {[}-128, 127{]}). Default activation bit-width is int32. Default
+accumulator bit-width is int64. Default lookup-table value bit-width is
+int32.
+
+\textbf{R-5.1.2 (Model overrides).} The model description MAY override
+defaults per-layer. Common overrides: int4 weights for high compression
+at slightly reduced accuracy; int16 activations for higher dynamic
+range.
+
+\textbf{5.2 Overflow behavior}
+
+\textbf{R-5.2.1 (Defined behavior).} Implementations MUST NOT rely on
+undefined-behavior wraparound. All signed integer arithmetic MUST be in
+well-defined two\textquotesingle s-complement representation; on
+platforms where the C compiler may interpret signed overflow as
+undefined behavior, the implementation MUST either use unsigned
+arithmetic with explicit sign conversion, or compile with -fwrapv (gcc)
+or equivalent.
+
+\textbf{R-5.2.2 (No saturation by default).} Arithmetic operations MUST
+NOT saturate unless explicitly specified per-layer in the model
+description. Saturation is a layer property, not a hardware property.
+
+\textbf{5.3 Division and shift}
+
+\textbf{R-5.3.1 (Division).} Signed integer division MUST follow C99
+truncation-toward-zero semantics. Floor division (Python-style) is
+forbidden in the conforming path.
+
+\textbf{R-5.3.2 (Modulo).} Signed integer modulo MUST follow C99 (sign
+of the result matches the dividend). Mathematical modulo (always
+non-negative) is forbidden.
+
+\textbf{R-5.3.3 (Shift).} Arithmetic shift right MUST be sign-extending.
+The shift amount MUST be in {[}0, bit\_width - 1{]}; out-of-range shifts
+are forbidden and MUST be caught at model-load time.
+
+\textbf{5.4 Reduction order}
+
+\textbf{R-5.4.1 (Specification).} The model description MUST specify
+reduction order as one of: (a) sequential-left, (b) sequential-right, or
+(c) tree with explicit tree shape (an array of pair-merge indices).
+
+\textbf{R-5.4.2 (Implementation).} Implementations MUST produce
+identical results to the specified reduction order. Hardware that cannot
+directly produce the order MUST emulate it (e.g., by sequential
+left-fold on a single SIMD lane).
+
+\textbf{6. Non-linearity lookup table specification}
+
+All non-linearity operations are integer-to-integer lookup tables
+specified in the model description. The lookup table format is canonical
+across hardware targets.
+
+\textbf{6.1 Table format}
+
+\textbf{R-6.1.1 (Layout).} Each table is a contiguous array of int32
+values. The array is indexed by the (clamped) input value, offset to be
+non-negative.
+
+\textbf{R-6.1.2 (Header).} Each table is preceded by a 16-byte header:
+4-byte magic \textquotesingle RNRT\textquotesingle, 4-byte version,
+4-byte input range minimum, 4-byte input range maximum. The array length
+is (max - min + 1).
+
+\textbf{R-6.1.3 (Clamping).} Inputs outside {[}min, max{]} MUST be
+clamped to the range before lookup. Clamping is symmetric: values below
+min clamp to min, values above max clamp to max.
+
+\textbf{6.2 Common non-linearities}
+
+The following non-linearities have canonical specifications. Conforming
+implementations MUST use these specifications when the corresponding
+non-linearity is named in the model description.
+
+\emph{\textbf{6.2.1 Sigmoid}}
+
+Sigmoid(x) = 1 / (1 + exp(-x)). The integer table is parameterized by an
+input scale s\_in and output scale s\_out: table{[}i{]} =
+round(sigmoid(i / s\_in) * s\_out). The model description specifies
+s\_in (default 256) and s\_out (default 65536).
+
+\emph{\textbf{6.2.2 Tanh}}
+
+Tanh(x) = (exp(x) - exp(-x)) / (exp(x) + exp(-x)). Similar
+parameterization to sigmoid; default s\_in = 128, s\_out = 32768.
+
+\emph{\textbf{6.2.3 GELU}}
+
+GELU(x) = x * Phi(x), where Phi is the standard normal CDF.
+Parameterized by s\_in (default 256) and s\_out (default 65536).
+
+\emph{\textbf{6.2.4 ReLU}}
+
+ReLU(x) = max(0, x). MUST be implemented as max(0, x) directly, not as a
+table; this is a special case for efficiency.
+
+\emph{\textbf{6.2.5 Softmax}}
+
+Softmax requires special handling because it involves division and is
+not directly a table lookup. The decomposition is:
+
+\begin{quote}
+1. shift: x\textquotesingle{} = x - max(x) // numerical stability
+
+2. exp\_lookup: y\_i = exp\_table{[}x\textquotesingle\_i{]} // integer
+table
+
+3. sum: S = sum(y\_i) // ordered reduction
+
+4. division: z\_i = (y\_i * scale) / S // integer division
+\end{quote}
+
+Steps 2, 3, and 4 each follow R-3.3, R-3.4, and R-5.3.1 respectively.
+
+\emph{\textbf{6.2.6 Layer normalization}}
+
+Layer normalization requires integer reciprocal-square-root for the
+variance scaling. The decomposition is:
+
+\begin{quote}
+1. mean: mu = sum(x) / n // ordered reduction + division
+
+2. centered: c\_i = x\_i - mu
+
+3. variance: v = sum(c\_i\^{}2) / n // ordered reduction + division
+
+4. rsqrt\_lookup: r = rsqrt\_table{[}v + eps{]}
+
+5. scale: z\_i = c\_i * r * gamma + beta
+\end{quote}
+
+The rsqrt table covers the variance range observed in training, with eps
+added to avoid division by zero. eps and the rsqrt table parameters MUST
+be in the model description.
+
+\textbf{7. Adaptive predictor conformance (Theorem 10.2)}
+
+Implementations supporting online adaptation MUST use a compatible
+online optimizer per Definition 10.1 of the main paper. The following
+optimizers are pre-certified compatible.
+
+\textbf{7.1 Integer SGD}
+
+\textbf{R-7.1.1 (Update rule).} The update is: param{[}i{]} -=
+shift\_right(grad{[}i{]} * learning\_rate, lr\_scale).
+
+\textbf{R-7.1.2 (Parameter ranges).} learning\_rate MUST be a
+non-negative integer. lr\_scale MUST be a non-negative integer
+specifying the right-shift after multiplication.
+
+\textbf{R-7.1.3 (Saturation).} If the update produces a value outside
+the parameter type range, the parameter MUST be clamped to the type
+range. The clamping behavior MUST match the CPU reference target.
+
+\textbf{7.2 SignSGD}
+
+\textbf{R-7.2.1 (Update rule).} The update is: param{[}i{]} -=
+learning\_rate * sign(grad{[}i{]}), where sign returns -1, 0, or +1 for
+negative, zero, and positive gradient respectively.
+
+\textbf{R-7.2.2 (Trivial conformance).} SignSGD is trivially compatible:
+the update function is integer-to-integer with no real-valued
+operations.
+
+\textbf{7.3 Integer Adam}
+
+\textbf{R-7.3.1 (State).} Adam state per parameter is (m, v) where m is
+the first moment and v is the second moment, both integer-valued.
+
+\textbf{R-7.3.2 (Update rule).} m\_new = (beta1 * m + (1 - beta1) *
+grad) (in integer arithmetic with explicit scaling); v\_new = (beta2 * v
++ (1 - beta2) * grad\^{}2); param\_new = param - learning\_rate * m\_new
+* rsqrt\_table{[}v\_new + eps{]}. The rsqrt\_table is part of the model
+description.
+
+\textbf{R-7.3.3 (Reciprocal-square-root table).} The integer
+rsqrt\_table for Adam MUST cover the second-moment range observed in
+training. The table format follows §6.1.
+
+\textbf{7.4 Gradient computation}
+
+\textbf{R-7.4.1 (Integer backpropagation).} Backpropagation through the
+inference graph MUST satisfy R-3.1 through R-3.8 (the same
+integer-arithmetic constraints as forward inference).
+
+\textbf{R-7.4.2 (Loss function).} The loss function used for adaptation
+MUST be specified in the model description and MUST be implementable as
+an integer-to-integer operation given integer model outputs.
+
+\textbf{7.5 Adaptation schedule}
+
+\textbf{R-7.5.1 (Subblock order).} The order in which verified subblocks
+are used for adaptation MUST be specified in the model description.
+Data-dependent ordering is forbidden.
+
+\textbf{R-7.5.2 (Adaptation frequency).} The model description MUST
+specify how often adaptation occurs (e.g., every K-th subblock). Encoder
+and decoder MUST adapt at the same positions.
+
+\textbf{8. Random-access conformance (Theorem 10.3)}
+
+\textbf{8.1 Sync-point format}
+
+\textbf{R-8.1.1 (Per-sync-point record).} Each sync point is a record:
+(byte\_offset\_uint64, repair\_bit\_offset\_uint64,
+snapshot\_length\_uint32, snapshot\_bytes\_variable). For W-bounded
+predictors, snapshot\_length is 0 and snapshot\_bytes is empty.
+
+\textbf{R-8.1.2 (Snapshot serialization).} For non-W-bounded predictors,
+the snapshot is the predictor\textquotesingle s full internal state,
+serialized in the order specified by the model description. The
+serialization MUST be canonical: identical state produces identical
+bytes on any conforming implementation.
+
+\textbf{8.2 Seek-index format}
+
+\textbf{R-8.2.1 (Index structure).} The seek index is a sorted array of
+sync-point records, sorted by byte\_offset ascending. The array length
+is encoded as a uint64 prefix to the array.
+
+\textbf{R-8.2.2 (Lookup).} Sync-point lookup for byte position N MUST
+use binary search to find the largest byte\_offset \textless= N. The
+lookup is O(log(index\_length)).
+
+\textbf{R-8.2.3 (Compression).} The seek index MAY be compressed with a
+separate dictionary-based compressor (e.g., zstd) for storage
+efficiency. Decompressed form MUST match the canonical layout.
+
+\textbf{8.3 Range-decode function}
+
+The standardized range-decode API:
+
+\begin{quote}
+function range\_decode(archive, N, k):
+
+\# archive: opened RNR archive handle
+
+\# N: byte offset in source
+
+\# k: number of bytes to decode
+
+\# returns: bytes {[}N, N+k) of the source
+
+P = binary\_search(archive.seek\_index, N) \# largest sync\_point
+\textless= N
+
+state = initialize\_predictor\_state(archive, P)
+
+bit\_offset = archive.seek\_index{[}P{]}.repair\_bit\_offset
+
+output = bytearray(k)
+
+for i in {[}P.byte\_offset .. N + k):
+
+Y\_i = predictor(state, context\_window)
+
+repair\_bits = read\_bits(archive.repair\_stream, bit\_offset,
+length\_for\_position\_i)
+
+bit\_offset += length\_for\_position\_i
+
+byte\_i = decode\_position(Y\_i, repair\_bits)
+
+context\_window.append(byte\_i)
+
+if i \textgreater= N and i \textless{} N + k:
+
+output{[}i - N{]} = byte\_i
+
+return output
+\end{quote}
+
+\textbf{9. Block-device driver specification (Theorem 10.5)}
+
+\textbf{9.1 Driver API}
+
+The minimal API surface for a block-device driver wrapping an RNR
+archive:
+
+\begin{quote}
+function open(archive\_path) -\textgreater{} handle
+
+function close(handle)
+
+function read(handle, byte\_offset, length, buffer) -\textgreater{}
+bytes\_read
+
+function get\_size(handle) -\textgreater{} archive\_logical\_size
+\end{quote}
+
+Optional extensions for filesystem use:
+
+\begin{quote}
+function readv(handle, iovecs) -\textgreater{} bytes\_read \#
+scatter-gather read
+
+function readahead(handle, byte\_offset, length) \# cache warmup hint
+
+function fstat(handle) -\textgreater{} archive\_metadata
+\end{quote}
+
+\textbf{9.2 Implementation pseudocode}
+
+\begin{quote}
+function read(handle, byte\_offset, length, buffer):
+
+\# Check cache first
+
+cached = cache\_lookup(byte\_offset, length)
+
+if cached:
+
+copy(cached, buffer)
+
+return length
+
+\# Decode required range
+
+chunk = range\_decode(handle.archive, byte\_offset, length)
+
+cache\_insert(byte\_offset, chunk)
+
+copy(chunk, buffer)
+
+return length
+\end{quote}
+
+\textbf{9.3 Cache architecture}
+
+\textbf{R-9.3.1 (Cache organization).} The cache SHOULD be organized as
+fixed-size pages (e.g., 64 KiB) aligned to sync-point boundaries. This
+allows page-granular eviction and reuse.
+
+\textbf{R-9.3.2 (Eviction policy).} Either LRU (simple, predictable) or
+ARC (adaptive, better for mixed workloads) is acceptable. The choice
+MUST be configurable by the deployment.
+
+\textbf{R-9.3.3 (Concurrency).} The cache MUST be thread-safe. Multiple
+concurrent reads MUST not corrupt cache state.
+
+\textbf{9.4 Concurrency}
+
+\textbf{R-9.4.1 (Read parallelism).} Multiple read() calls on the same
+handle MUST be safely concurrent. The driver MAY serialize predictor
+inference internally (since most inference engines are single-threaded),
+but the driver-level API MUST appear parallel to the caller.
+
+\textbf{R-9.4.2 (Inference engine sharing).} If multiple predictor
+instances are available (e.g., one per GPU), the driver MAY load-balance
+across them. Load balancing MUST be deterministic (e.g., round-robin) to
+preserve byte-exact reproducibility.
+
+\textbf{10. Linux FUSE reference architecture}
+
+A reference implementation using FUSE (Filesystem in Userspace) is the
+recommended first deployment. FUSE allows the driver to run as an
+unprivileged user-space process, which is appropriate for the maturity
+level of the implementation.
+
+\textbf{10.1 FUSE operations}
+
+Implement the following FUSE operations:
+
+\begin{quote}
+getattr(path) -\textgreater{} file metadata
+
+readdir(path) -\textgreater{} directory entries \# if archive is a
+filesystem image
+
+open(path, flags) -\textgreater{} file handle
+
+read(handle, offset, length, buffer) -\textgreater{} bytes\_read
+
+release(handle) -\textgreater{} void
+
+statfs(path) -\textgreater{} filesystem statistics
+\end{quote}
+
+\textbf{10.2 Mounting}
+
+Mount syntax for a single-file archive (e.g., disk image):
+
+\begin{quote}
+rnrfs -\/-archive=/path/to/image.rnr /mnt/target
+\end{quote}
+
+The mounted target presents the decompressed archive as a single
+read-only file:
+
+\begin{quote}
+/mnt/target/data \# the decompressed source
+\end{quote}
+
+For ISO images that contain a filesystem (e.g., iso9660), wrap with a
+second mount:
+
+\begin{quote}
+rnrfs -\/-archive=/path/to/ubuntu.iso.rnr /mnt/rnr
+
+mount -t iso9660 -o loop /mnt/rnr/data /mnt/iso
+\end{quote}
+
+\textbf{10.3 Write-through overlay}
+
+For read-write use, mount the RNR archive read-only and overlay with
+overlayfs:
+
+\begin{quote}
+rnrfs -\/-archive=/path/to/system.rnr /mnt/base
+
+mkdir /mnt/work /mnt/upper
+
+mount -t overlay overlay \textbackslash{}
+
+-o lowerdir=/mnt/base,upperdir=/mnt/upper,workdir=/mnt/work
+\textbackslash{}
+
+/mnt/merged
+\end{quote}
+
+Writes go to /mnt/upper (a normal directory on a writable filesystem);
+reads consult /mnt/upper first and fall through to /mnt/base on miss.
+This is the standard container-image overlay pattern.
+
+\textbf{10.4 Performance tuning}
+
+\begin{itemize}
+\item
+  Set FUSE max\_read parameter to a multiple of the sync-point spacing
+  (e.g., 256 KiB for K = 64 KiB) to allow batched reads.
+\item
+  Enable writeback caching only if the overlay layer is
+  filesystem-backed; the RNR layer itself is read-only.
+\item
+  Pin the predictor inference engine to a specific NUMA node on
+  multi-socket systems to reduce memory latency.
+\item
+  On Apple Silicon, use the ANE path (via Core ML) rather than CPU; the
+  latency difference is approximately 100x.
+\end{itemize}
+
+\textbf{11. Verification under random access}
+
+Theorem 9.1 of the main paper covers chained-hash verification under
+sequential decoding. For random access, three verification modes are
+supported.
+
+\textbf{11.1 Per-sync-point hashes (recommended for archive-style use)}
+
+\textbf{R-11.1.1 (Hash per sync point).} Each sync
+point\textquotesingle s seek-index entry MAY include a hash of the bytes
+{[}P, P+K) of the source, computed with SHA-256 truncated to 64 bits.
+The random-access reader verifies the hash after decoding the region.
+
+\textbf{R-11.1.2 (Overhead).} Adds 8 bytes per sync point. For K = 64
+KiB and N = 1 GiB, this is N/K * 8 = 128 KiB or about 0.01\% overhead.
+
+\textbf{11.2 Merkle tree (recommended for content-addressable storage)}
+
+\textbf{R-11.2.1 (Tree structure).} Build a binary Merkle tree over the
+source bytes with leaves at sync-point granularity. Each internal node
+is SHA-256 of its two children. The root is stored in the archive
+header.
+
+\textbf{R-11.2.2 (Random access verification).} A reader that performs
+random access at position N obtains the Merkle path from the leaf
+containing N up to the root (a logarithmic number of hashes). The reader
+verifies the path against the stored root.
+
+\textbf{R-11.2.3 (Overhead).} Adds 32 bytes per sync point plus the tree
+storage. For N = 1 GiB and K = 64 KiB, the tree has approximately 32 KiB
+sync points and total tree storage is approximately 2 MiB, or 0.2\%
+overhead.
+
+\textbf{11.3 Unverified random access (for trusted archives)}
+
+\textbf{R-11.3.1 (Trust boundary).} If the archive is content-addressed
+at a higher layer (e.g., the archive itself is named by a hash known to
+the reader), per-access verification may be omitted. Implementations
+MUST clearly document when this mode is in use; archives without
+verification metadata MUST be marked as
+\textquotesingle trusted-only\textquotesingle{} in the archive header.
+
+\textbf{12. Conformance test suite}
+
+A conforming implementation MUST pass the conformance test suite
+specified below. Implementations that fail any test are not conforming
+on the failing target.
+
+\textbf{12.1 Test vectors}
+
+\textbf{R-12.1.1 (Predictor test vector).} The test suite includes a
+fixed set of 10,000 input vectors covering the expected input
+distribution of the predictor. For each input, the expected output of M
+is precomputed by the CPU reference target and stored in a manifest
+file.
+
+\textbf{R-12.1.2 (Test sources).} The test suite includes 100 source
+blocks of varying size (1 KiB to 16 MiB) and content (text, binary,
+image, mixed). Each block has its expected RNR archive precomputed.
+
+\textbf{R-12.1.3 (Test archives).} The test suite includes 10 prebuilt
+RNR archives of varying size (10 MiB to 1 GiB) for random-access
+testing. Each archive has 1000 (offset, length) query pairs with
+expected output bytes.
+
+\textbf{12.2 Acceptance criteria}
+
+\textbf{R-12.2.1 (Predictor byte-identity).} For all 10,000 inputs, the
+target\textquotesingle s predictor output MUST be byte-identical to the
+reference target\textquotesingle s output.
+
+\textbf{R-12.2.2 (Encode-decode round-trip).} For all 100 source blocks,
+encoding with the target and decoding with the target MUST recover the
+original block exactly.
+
+\textbf{R-12.2.3 (Cross-target byte-identity).} For all 100 source
+blocks, encoding on the target MUST produce a byte-identical archive to
+encoding on the reference target.
+
+\textbf{R-12.2.4 (Random access correctness).} For all 1000
+random-access queries on the 10 test archives, the returned bytes MUST
+match the expected output.
+
+\textbf{R-12.2.5 (Reproducibility under repetition).} Running the same
+test 5 times on the same target MUST produce byte-identical results each
+run.
+
+\textbf{12.3 CI/CD integration}
+
+A reference CI pipeline runs the conformance suite on every commit:
+
+\begin{quote}
+build\_matrix:
+
+- target: cpu-scalar
+
+runner: linux-x86\_64
+
+- target: avx512
+
+runner: linux-x86\_64-avx512
+
+- target: neon
+
+runner: linux-arm64
+
+- target: nvidia-tensor-core
+
+runner: linux-x86\_64-nvidia
+
+- target: amd-mfma
+
+runner: linux-x86\_64-amd-gpu
+
+- target: apple-ane
+
+runner: macos-arm64-m2
+
+- target: edge-tpu
+
+runner: linux-coral-dev-board
+
+for each target in build\_matrix:
+
+run conformance suite on target
+
+diff target output against reference manifest
+
+fail if any byte differs
+\end{quote}
+
+\textbf{13. Versioning and compatibility}
+
+RNR archives carry a format version in the header. Compatibility rules:
+
+\textbf{R-13.1 (Semantic versioning).} The archive format follows
+semantic versioning. MAJOR version changes break archive compatibility;
+MINOR version changes are backward-compatible (new readers can read old
+archives); PATCH version changes are bidirectional-compatible.
+
+\textbf{R-13.2 (Forward compatibility).} An implementation supporting
+format version X.Y MUST read archives with version X.Z for any Z
+\textless= Y. It MAY refuse to read archives with version X.Z for Z
+\textgreater{} Y, but if it does read them, MUST honor all features it
+understands and reject features it does not.
+
+\textbf{R-13.3 (Predictor compatibility).} A predictor model is
+identified by a hash of its model description. Archives include the
+predictor hash; readers MUST verify the hash before decoding. Mismatched
+hashes MUST cause a hard failure with a clear error message.
+
+\textbf{R-13.4 (Migration).} Tooling MUST be provided to migrate
+archives from version X.Y to X.Y+1 if the format change affects
+representation. Migration tools MUST be lossless and reversible where
+possible.
+
+\textbf{14. Traceability to the main paper}
+
+This section provides the explicit traceability matrix from main-paper
+theorems to specification requirements. Reviewers and implementers can
+use this to verify that the specification covers every relevant theorem.
+
+\textbf{Theorem 4.1, 4.2 (Type-I achievability and converse)} → Type-I
+implementation (separately specified in encoder spec, out of scope
+here).
+
+\textbf{Theorem 4.3, 4.4 (E\_12 NP-hard, inapproximable)} → Heuristic
+E\_12 selection in encoder; spec does not require optimal E\_12.
+
+\textbf{Lemma 5.1, Theorems 5.2-5.6 (Type-II)} → Type-II implementation
+(separately specified in encoder spec).
+
+\textbf{Theorems 6.1, 6.4 (Type-III-A mode selection, tight 2*eps
+bound)} → Mode-selection logic in encoder (separately specified).
+
+\textbf{Theorems 6.2, 6.5 (Type-III-B mutual-information and
+decomposition invariance)} → Byte tensor coding (encoder spec).
+
+\textbf{Theorems 6.3, 6.6, 6.7, 6.8 (Type-III-C MDL, bits-back, NP-hard,
+APX-hard)} → Token tensor coding (encoder spec).
+
+\textbf{Theorem 8.1 (no universal dominance)} → Acknowledged in archive
+header (fallback-mode flag).
+
+\textbf{Theorem 9.1 (verification)} → Implemented via per-sync-point
+hashes (§11.1) or Merkle tree (§11.2).
+
+\textbf{Theorem 10.1 (bit-exact forward pass)} → §3 (universal
+requirements R-3.1 through R-3.8), §4 (per-target paths), §5 (integer
+arithmetic), §6 (lookup tables).
+
+\textbf{Definition 10.1, Theorem 10.2 (compatible online optimizer)} →
+§7 (adaptive predictor conformance).
+
+\textbf{Definition 10.2, 10.3, Theorem 10.3 (random access)} → §8
+(random-access conformance with sync-point and seek-index formats).
+
+\textbf{Theorem 10.4 (random access for non-W-bounded predictors)} →
+§8.1.2 (state snapshot serialization).
+
+\textbf{Theorem 10.5 (block-device interface)} → §9 (block-device driver
+specification).
+
+\textbf{Theorem 10.6 (hardware-target portability)} → §4 (per-target
+conformance specifications), §12 (cross-target byte-identity test).
+
+\textbf{15. Closing}
+
+This specification is the executable analogue of the theoretical paper.
+Following it produces a reference implementation that satisfies every
+theorem proven in the main paper, on every named hardware target. The
+conformance test suite of §12 verifies the implementation; the
+cross-target byte-identity criterion ensures portability.
+
+The specification is deliberately RFC-style: numbered requirements with
+explicit MUST/SHOULD/MAY language, traceability to the underlying
+theorems, and a versioning policy. This is the format that allows
+independent implementations to verify each other and that supports
+long-term archive readability.
+
+Three closing observations. First, every requirement here is traceable
+to a theorem in the main paper; no specification choices are arbitrary.
+Second, the per-target sections (§4.1 through §4.4) absorb all
+hardware-specific complexity, leaving the rest of the specification
+target-neutral. Third, the conformance test suite of §12 is the line
+between \textquotesingle has been built\textquotesingle{} and
+\textquotesingle has been certified\textquotesingle; until an
+implementation passes the suite, the deployment claim of §10.8 of the
+main paper does not hold for that implementation.
+
+Implementing this specification is engineering work. The mathematical
+content is finished. What remains is the disciplined translation of
+theorems into code, the verification that the code matches the
+specification, and the long-term maintenance of the conformance suite as
+hardware targets evolve.
+
+\end{document}

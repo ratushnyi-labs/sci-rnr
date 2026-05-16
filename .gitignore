@@ -1,1 +1,15 @@
 .DS_Store
+
+# LaTeX build artifacts
+build/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz
+tex/*.pdf
+
+# Local analysis scratch
+.analysis/

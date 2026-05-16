@@ -1,0 +1,66 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  pdf:
+    name: build PDFs
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        doc:
+          - rnr_coding
+          - rnr_summary
+          - rnr_engineering_spec
+          - rnr_experimental_design
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: compile ${{ matrix.doc }}.tex with lualatex
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: tex/${{ matrix.doc }}.tex
+          latexmk_use_lualatex: true
+          latexmk_shell_escape: false
+          args: -interaction=nonstopmode -halt-on-error -file-line-error
+          work_in_root_file_dir: false
+          extra_system_packages: ""
+
+      - name: upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.doc }}-pdf
+          path: tex/${{ matrix.doc }}.pdf
+          if-no-files-found: error
+
+  docx:
+    name: build DOCX
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+
+      - name: convert .tex to .docx
+        run: |
+          mkdir -p build/docx
+          for f in tex/*.tex; do
+            name=$(basename "$f" .tex)
+            pandoc "$f" -o "build/docx/${name}.docx"
+          done
+
+      - name: upload DOCX artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docx-bundle
+          path: build/docx/*.docx
+          if-no-files-found: error

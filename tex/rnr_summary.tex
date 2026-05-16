@@ -1,0 +1,749 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\textbf{RNR Coding --- Summary of Formal Results}
+
+\emph{Companion to main paper, v0.7}
+
+Pavlo Ratushnyi --- May 2026
+
+\textbf{Purpose}
+
+This document collects all formal results of the RNR Coding framework in
+one place, with a one-line statement, a one-line proof sketch, and a
+one-line interpretation per result. Use it for talk preparation, defense
+rehearsal, or as a quick-reference card when answering reviewer
+questions. Section numbers refer to the main paper.
+
+\textbf{Notation reminder}
+
+\begin{quote}
+X: source block. Y = M(C): decoder-reproducible side information from
+public context C. Q: predicted probability field. U: predicted
+uncertainty/repair-cost field. R: repair stream. L(·): bit length. H(·):
+Shannon entropy. TC: total correlation (multi-information). eps\_n:
+entropy-coder redundancy.
+\end{quote}
+
+\textbf{Section 4 --- Type-I: Stream Repair Coding}
+
+\textbf{Theorem 4.1 (Type-I achievability) --- {[}achievability{]}}
+
+\begin{quote}
+\emph{Statement.} E{[}L\_I(X){]} \textless= L(M\_I) + N * H(P\_E) + N *
+ell\_cond + eps\_N + L(V) + L(Theta), where P\_E is the empirical Code12
+error-mask class distribution.
+
+\emph{Proof.} Direct composition of class entropy (Shannon-coding bound
+on the mask classes), within-class payload cost, and constant overheads.
+
+\emph{Why it matters.} Establishes that Type-I attains conditional
+source-coding rate plus O(1) overhead, modulo the entropy-coder
+redundancy. Cite when claiming Type-I is asymptotically competitive.
+\end{quote}
+
+\textbf{Theorem 4.2 (Type-I converse) --- {[}lower bound{]}}
+
+\begin{quote}
+\emph{Statement.} E{[}L(C(X) \textbar{} Y){]} \textgreater= H(X
+\textbar{} Y) for any uniquely decodable code with deterministic decoder
+reproducing Y.
+
+\emph{Proof.} Shannon\textquotesingle s noiseless source coding applied
+to the conditional distribution P(X \textbar{} Y).
+
+\emph{Why it matters.} Pairs with Theorem 4.1: the achievability bound
+is order-optimal. No coder using only Y can do better than H(X
+\textbar{} Y). When pressed on "could you do better than this rate?" the
+answer is: no, by this converse.
+\end{quote}
+
+\textbf{Theorem 4.3 (Optimal E\_12 NP-hard) --- {[}complexity{]}}
+
+\begin{quote}
+\emph{Statement.} Choosing E\_12 to minimize expected Hamming weight of
+c XOR c\_hat under a given confusion matrix F is NP-hard in
+\textbar F\textbar.
+
+\emph{Proof.} Reduction from QAP: F becomes the flow matrix, Hamming
+distance on \{0,1\}\^{}12 becomes the distance matrix. QAP is NP-hard
+(Sahni-Gonzalez 1976).
+
+\emph{Why it matters.} Justifies using approximation algorithms in
+practice (gradient relaxation, simulated annealing). Rules out hope for
+a general-purpose polynomial-time exact solver.
+\end{quote}
+
+\textbf{Theorem 4.4 (E\_12 inapproximability) --- {[}strong
+complexity{]}}
+
+\begin{quote}
+\emph{Statement.} For any constant alpha \textgreater{} 1, no
+polynomial-time alpha-approximation for optimal E\_12 exists unless P =
+NP.
+
+\emph{Proof.} The QAP reduction in 4.3 is gap-preserving; Sahni-Gonzalez
+established no constant-factor PTAS for QAP unless P = NP.
+Inapproximability transfers.
+
+\emph{Why it matters.} Strengthens 4.3: even loose approximations are
+intractable. Defends the empirical, heuristic-based choice of E\_12
+variants in any practical implementation.
+\end{quote}
+
+\textbf{Section 5 --- Type-II: Positional Symbol Coding}
+
+\textbf{Lemma 5.1 (factorized equivalence) --- {[}equivalence{]}}
+
+\begin{quote}
+\emph{Statement.} Under the factorized regime, per-position arithmetic
+coding under Q and per-position Type-I arithmetic coding under the
+equivalent sequential conditional Q are bit-equivalent.
+
+\emph{Proof.} Both coders are arithmetic coders driven by the same
+probability vector at each position; redundancy is the constant eps\_N.
+
+\emph{Why it matters.} Shows that factorized Type-II is not
+operationally distinct from Type-I. The interesting Type-II case is
+non-factorized, which Theorem 5.4 then exhibits.
+\end{quote}
+
+\textbf{Theorem 5.2 (multinomial baseline) --- {[}combinatorial
+bound{]}}
+
+\begin{quote}
+\emph{Statement.} The number of valid 16-way partitions of \{1,...,N\}
+with given counts is the multinomial M(N; k\_0,...,k\_15); enumerative
+coding describes a partition in log\_2 M bits.
+
+\emph{Proof.} Combinatorial counting: partitions correspond bijectively
+to multiset labelings.
+
+\emph{Why it matters.} The correct baseline for positional coding.
+Earlier drafts used a looser sum-of-binomials baseline that overstated
+gains; this is the v0.3 correction.
+\end{quote}
+
+\textbf{Theorem 5.3 (support-set advantage with escape) ---
+{[}achievability{]}}
+
+\begin{quote}
+\emph{Statement.} If the predictor supplies candidate supports S\_v with
+alpha\_v escapes, the partition cost is at most sum\_v {[}log\_2 C(s\_v,
+k\_v - alpha\_v) + log\_2 C(N - s\_v, alpha\_v){]} + L(counts) + eps\_N.
+
+\emph{Proof.} Decompose M\_v as the disjoint union M\_v intersect S\_v
+plus M\_v minus S\_v; encode each by enumerative rank.
+
+\emph{Why it matters.} Quantifies the gain from predicted support
+information with explicit escape cost. Lets a reviewer see exactly what
+the predictor must achieve for Type-II to win.
+\end{quote}
+
+\textbf{Theorem 5.4 (semi-non-factorized separation, linear-code form)
+--- {[}separation{]}}
+
+\begin{quote}
+\emph{Statement.} There exists a distribution D\_N over A\_16\^{}N
+(uniform marginals, image of a 4N-to-(4-c)N linear code) such that any
+factorized arithmetic coder pays \textgreater= 4N bits while a
+semi-non-factorized Type-II coder achieves (4-c)N + O(log N) bits.
+Separation is Theta(N).
+
+\emph{Proof.} Linear-code construction over GF(2): generator matrix with
+non-trivial bits at every position yields exactly uniform marginals;
+membership in the codeword set fits in (4-c)N bits.
+
+\emph{Why it matters.} Settles whether semi-non-factorized Type-II
+genuinely beats Type-I: yes, by Theta(N) bits in the worst case.
+Strongest separation result in the paper.
+\end{quote}
+
+\textbf{Proposition 5.5 (optimal support is a Q-prefix; arithmetic
+coding is the limit) --- {[}optimization{]}}
+
+\begin{quote}
+\emph{Statement.} The optimal S\_v is the top-s\_v* prefix of positions
+sorted by Q\_v(i); support-set coding is strictly more expensive than
+per-position arithmetic coding under the same Q, unless Q is binary.
+
+\emph{Proof.} Swap argument for the prefix structure; data-processing
+inequality for the arithmetic-coding lower bound.
+
+\emph{Why it matters.} Resolves the support-threshold design question.
+For real-valued Q, use arithmetic coding directly; reserve support
+coding for hard-candidate-set predictors.
+\end{quote}
+
+\textbf{Theorem 5.6 (multi-information separation, general source) ---
+{[}separation, general{]}}
+
+\begin{quote}
+\emph{Statement.} For any source D\_N, factorized-vs-joint separation
+equals the total correlation TC(D\_N) = sum\_i H\_marg(X\_i) - H(D\_N).
+
+\emph{Proof.} Both rates are Shannon-optimal for their respective
+coders; their difference is TC by definition.
+
+\emph{Why it matters.} Generalizes 5.4 from the linear-code construction
+to arbitrary sources. The right unifying object for understanding when
+Type-II wins is total correlation.
+\end{quote}
+
+\textbf{Remark 5.7 (manifold-hypothesis quantification of TC) ---
+{[}conditional quantitative claim{]}}
+
+\begin{quote}
+\emph{Statement.} Under the manifold hypothesis (natural data has
+intrinsic dimension d much less than ambient N), TC(D\_N) = Theta(N) -
+O(d log N), supported by published intrinsic-dimension estimates for
+images, text, and structured records.
+
+\emph{Proof.} Combination of Theorem 5.6 with empirical
+intrinsic-dimension results from Carlsson et al., Levina-Bickel,
+Tenenbaum et al.
+
+\emph{Why it matters.} Bridges the conditional theorem to natural data.
+Use when a reviewer asks why the framework is relevant beyond contrived
+families.
+\end{quote}
+
+\textbf{Section 6 --- Type-III: Tensor Entropy-Field Coding}
+
+\textbf{Theorem 6.1 (approximate-oracle mode selection) --- {[}upper
+bound{]}}
+
+\begin{quote}
+\emph{Statement.} If \textbar U\_m(t) - L\_m(t)\textbar{} \textless=
+eps\_t for all m, then L\_\{m\_hat(t)\}(t) \textless=
+L\_\{m\_star(t)\}(t) + 2*eps\_t, where m\_hat is the predicted argmin
+and m\_star the oracle argmin.
+
+\emph{Proof.} Three triangle-inequality steps over the prediction error
+bound and the definition of argmin.
+
+\emph{Why it matters.} Defends Type-III-A composition: a calibrated U
+lets the framework approach oracle mode selection. The 2*eps factor is
+the key constant.
+\end{quote}
+
+\textbf{Theorem 6.4 (2*eps bound is tight) --- {[}matching lower
+bound{]}}
+
+\begin{quote}
+\emph{Statement.} For any eps \textgreater{} 0 and delta \textgreater{}
+0, an adversarial two-mode configuration achieves L\_\{m\_hat\}
+\textgreater= L\_\{m\_star\} + 2*eps - delta.
+
+\emph{Proof.} Construct L\_1 = delta/2, L\_2 = 2*eps - delta/2, U\_1 =
+delta/2 + eps, U\_2 = eps - delta/2; the argmin selects the inferior
+mode by exactly 2*eps - delta.
+
+\emph{Why it matters.} Pairs with 6.1: the 2*eps factor cannot be
+improved without additional assumptions on the
+predictor\textquotesingle s error structure.
+\end{quote}
+
+\textbf{Theorem 6.2 (byte-tensor mutual information advantage) ---
+{[}achievability{]}}
+
+\begin{quote}
+\emph{Statement.} Byte-tensor coding\textquotesingle s advantage over
+independent nibble coding equals I(H ; L \textbar{} C), the conditional
+mutual information between high and low nibbles given context.
+
+\emph{Proof.} Chain rule of entropy: H(H,L\textbar C) = H(H\textbar C) +
+H(L\textbar H,C); difference from independent coding is exactly
+I(H;L\textbar C).
+
+\emph{Why it matters.} Quantifies exactly when Type-III-B wins. Use when
+a reviewer asks: "what does joint byte modeling actually buy you?"
+\end{quote}
+
+\textbf{Theorem 6.5 (hierarchical decomposition is invariant) ---
+{[}invariance{]}}
+
+\begin{quote}
+\emph{Statement.} Any rooted binary tree decomposition of the 256-byte
+alphabet, used as the order of conditional encoding, achieves expected
+length H(B\textbar C). The tree shape does not affect the rate.
+
+\emph{Proof.} Chain rule of entropy is path-independent: reordering
+conditional entropies along any spanning tree gives the same sum
+H(B\textbar C).
+
+\emph{Why it matters.} The choice between high-low, low-high, or
+arbitrary tree decompositions is a calibration question, not a rate
+question. Information-theoretically free.
+\end{quote}
+
+\textbf{Theorem 6.3 (MDL token admission) --- {[}optimization
+criterion{]}}
+
+\begin{quote}
+\emph{Statement.} Token tau is admitted to the dictionary iff f *
+{[}8*ell - code\_cost(tau){]} \textgreater{} dictionary\_cost(tau) +
+parse\_overhead(tau).
+
+\emph{Proof.} Net code-length change from adding tau is the LHS minus
+RHS; tau saves bits iff this is positive.
+
+\emph{Why it matters.} Standard MDL admission rule, placed in the
+framework to make explicit that not every byte pattern earns dictionary
+status.
+\end{quote}
+
+\textbf{Theorem 6.6 (bits-back integration) --- {[}equivalence with KL
+accounting{]}}
+
+\begin{quote}
+\emph{Statement.} Under bits-back ANS, the Type-III-C repair length L(R
+\textbar{} Y) = L\_prior(z\textbar Y) + L\_cond(X\textbar z,Y) -
+L\_aux(z) satisfies E{[}L(R\textbar Y){]} = H(X\textbar Y) + KL(q
+\textbar\textbar{} P\_posterior).
+
+\emph{Proof.} Three-stream accounting: encode latent z under prior, data
+under conditional, recover auxiliary bits used to sample z under q;
+expectation reduces via joint factorization to marginal H(X\textbar Y)
+plus posterior KL.
+
+\emph{Why it matters.} Fits bits-back coding into the framework with no
+overclaim. When q matches the posterior, rate equals the Slepian-Wolf
+bound. Cites BB-ANS and Bit-Swap.
+\end{quote}
+
+\textbf{Theorem 6.7 (joint dictionary + predictor NP-hard) ---
+{[}complexity{]}}
+
+\begin{quote}
+\emph{Statement.} Joint dictionary-and-predictor learning is NP-hard,
+even when M is fixed to the trivial constant predictor.
+
+\emph{Proof.} Reduction from the Smallest Grammar Problem (Charikar et
+al. 2005): each grammar non-terminal corresponds to a dictionary token;
+MDL admission corresponds to grammar-rule selection.
+
+\emph{Why it matters.} Defends the heuristic nature of practical
+dictionary learning (BPE, MDL-greedy). Optimal learning is not
+achievable in polynomial time.
+\end{quote}
+
+\textbf{Theorem 6.8 (joint dictionary inapproximable) --- {[}strong
+complexity{]}}
+
+\begin{quote}
+\emph{Statement.} Joint dictionary-and-predictor learning is APX-hard.
+An explicit inapproximability constant gamma \textgreater{} 1 follows
+from the Charikar et al. SGP bound.
+
+\emph{Proof.} The SGP reduction in 6.7 is gap-preserving; Charikar et
+al. proved SGP has an explicit APX-hardness constant.
+
+\emph{Why it matters.} Strengthens 6.7: even constant-factor
+approximation is hard. Pairs with 4.4 to give the framework a complete
+complexity classification of its two NP-hard problems.
+\end{quote}
+
+\textbf{Sections 7--10 --- Composition, hardness, verification,
+reproducibility}
+
+\textbf{Theorem 7.1 (composition correctness) --- {[}construction{]}}
+
+\begin{quote}
+\emph{Statement.} The Type-III-A composition with mode set M and
+deterministic m\_hat = argmin\_m U\_m(t) produces a uniquely decodable
+codeword for X.
+
+\emph{Proof.} Each step in the decoding pipeline (metadata read, U
+reconstruction, m\_hat recovery, per-tile repair decoding) is uniquely
+determined.
+
+\emph{Why it matters.} Establishes that the framework\textquotesingle s
+hierarchical composition is well-formed. No ambiguity in the decoding
+pipeline.
+\end{quote}
+
+\textbf{Theorem 8.1 (no universal dominance) --- {[}impossibility{]}}
+
+\begin{quote}
+\emph{Statement.} No injective map from \{0,1\}\^{}n to binary strings
+of length less than n assigns every length-n input a strictly shorter
+codeword.
+
+\emph{Proof.} Pigeonhole: 2\^{}n inputs, only 2\^{}n - 1 shorter binary
+strings exist.
+
+\emph{Why it matters.} Standard. Included to fix the honest claim: RNR
+is conditionally, not universally, advantageous.
+\end{quote}
+
+\textbf{Theorem 9.1 (no cross-subblock error propagation) --- {[}safety
+guarantee{]}}
+
+\begin{quote}
+\emph{Statement.} If verification H\_v is a cryptographic hash, the
+probability that an incorrect decoded subblock is used to update the
+next-block context is at most the collision probability delta.
+
+\emph{Proof.} Context-update rule is conditional on hash match; mismatch
+with delta-collision-resistant hash is delta-rare.
+
+\emph{Why it matters.} Defends autoregressive correctness. With a 64-bit
+truncated SHA-256, delta is approximately 2\^{}-64; cross-block error
+propagation is operationally impossible.
+\end{quote}
+
+\textbf{Theorem 10.1 (bit-exact forward pass) --- {[}reproducibility{]}}
+
+\begin{quote}
+\emph{Statement.} Under (i) integer arithmetic with sufficient
+bit-width, (ii) deterministic non-linearity tables, (iii) fixed
+reduction order, M(C) is bit-identical across any pair of conforming
+implementations.
+
+\emph{Proof.} Integer arithmetic has no platform variance; deterministic
+tables and fixed order eliminate associativity and selection issues;
+induction on layer depth completes the proof.
+
+\emph{Why it matters.} Reduces the reproducibility question to a
+conformance specification. Required for any deployable lossless RNR
+codec.
+\end{quote}
+
+\textbf{Definition 10.1 (compatible online optimizer) ---
+{[}definition{]}}
+
+\begin{quote}
+\emph{Statement.} An online optimizer is compatible if its state is
+integer-valued, its update is a deterministic integer-to-integer
+function, and any non-integer operations are replaced by deterministic
+integer approximations.
+
+\emph{Proof.} Direct definition specifying integer-state,
+integer-update, and integer-approximation requirements.
+
+\emph{Why it matters.} Names the class of optimizers that admit
+bit-exact reproduction. Published examples: integer SGD, signSGD,
+integer Adam.
+\end{quote}
+
+\textbf{Theorem 10.2 (bit-exact adaptive predictors) ---
+{[}reproducibility, adaptive{]}}
+
+\begin{quote}
+\emph{Statement.} If M satisfies Theorem 10.1 and adaptation uses a
+compatible online optimizer with deterministic integer backpropagation
+and pinned subblock order, then the encoder and
+decoder\textquotesingle s parameter states are bit-identical at every
+adaptation step.
+
+\emph{Proof.} Induction on adaptation step: bit-identical state plus
+bit-identical gradient plus deterministic integer-to-integer update
+yields bit-identical next state. Verified subblocks (Theorem 9.1) ensure
+inputs match.
+
+\emph{Why it matters.} Extends 10.1 to online-adaptive predictors. With
+published low-precision-training methods, online adaptation is
+theoretically reproducible; the engineering work is to pick a specific
+compatible optimizer.
+\end{quote}
+
+\textbf{Definition 10.2 (W-bounded predictor) --- {[}definition{]}}
+
+\begin{quote}
+\emph{Statement.} M is W-bounded if M(C\_i) depends only on the previous
+W bytes of public context.
+
+\emph{Proof.} Architectural condition: satisfied by transformers with
+fixed context window, n-gram and finite-state models, any feedforward
+predictor with bounded receptive field. Not satisfied by RNNs, LSTMs, or
+state-space models.
+
+\emph{Why it matters.} Enables the random-access theorem. The
+bounded-context property is what makes seek-and-read work in time
+independent of archive size.
+\end{quote}
+
+\textbf{Definition 10.3 (Sync point) --- {[}definition{]}}
+
+\begin{quote}
+\emph{Statement.} A position P where the predictor\textquotesingle s
+context is reset to a known initial value, with the encoder maintaining
+a seek index from sync point identifier to bit offset in R.
+
+\emph{Proof.} Construction: encoder inserts sync points every K
+positions and writes a per-sync index in the archive footer.
+
+\emph{Why it matters.} The seek-and-read mechanism. Sync-point spacing K
+trades off random-access speed against the cold-context compression
+cost.
+\end{quote}
+
+\textbf{Theorem 10.3 (random access in O(K + k) time) ---
+{[}seek-and-read{]}}
+
+\begin{quote}
+\emph{Statement.} For W-bounded M with sync points every K positions,
+random access to k bytes at any position N requires O(K + k) predictor
+evaluations, independent of N.
+
+\emph{Proof.} Binary-search the seek index for the nearest sync point P;
+decode forward from P to N + k; output the requested bytes. Cost:
+O(log(N/K)) seek plus K + k decode operations.
+
+\emph{Why it matters.} The kill feature relative to other neural
+compressors. NNCP, PixelCNN++, and Bit-Swap require O(N) time per
+access; RNR achieves O(K + k) at less than 1\% ratio overhead. Matches
+bgzip and zstd seekable for speed while preserving neural ratio.
+\end{quote}
+
+\textbf{Theorem 10.4 (random access for non-W-bounded predictors) ---
+{[}seek-and-read, general{]}}
+
+\begin{quote}
+\emph{Statement.} For non-W-bounded M (RNN, LSTM, state-space), random
+access requires storing M\textquotesingle s full internal state at each
+sync point. Cost remains O((K + k) * cost(M)) per access; seek index
+grows by L(state) bits per sync point.
+
+\emph{Proof.} Augment each sync point with a serialized state snapshot;
+deserialize on seek; decode forward as in Theorem 10.3.
+
+\emph{Why it matters.} Quantifies the deployment penalty of using
+recurrent predictors. For LSTM with d = 1024, snapshots add roughly 3\%
+to the seek index; for state-space models, can double the index size.
+Motivates the W-bounded design choice for deployable codecs.
+\end{quote}
+
+\textbf{Theorem 10.5 (block-device interface) --- {[}deployment{]}}
+
+\begin{quote}
+\emph{Statement.} An OS-level block-device driver mapping LBA-indexed
+reads to RNR random-access calls serves any read request in O((K + k) *
+cost(M)) time and O(K + k) working memory, independent of archive size
+N.
+
+\emph{Proof.} Direct corollary of Theorem 10.3 in driver terms:
+translate (LBA, k) to (byte\_position, k) and call the range-decode
+function. No per-archive scaling.
+
+\emph{Why it matters.} Enables the squashfs / EROFS / btrfs-with-zstd
+deployment pattern with a neural compressor in the base layer. Existing
+neural compressors cannot serve this use case at all.
+\end{quote}
+
+\textbf{Theorem 10.6 (hardware-target portability) --- {[}deployment,
+portability{]}}
+
+\begin{quote}
+\emph{Statement.} Any hardware target T providing bit-exact integer
+arithmetic at the specified bit-widths and lookup-table evaluation
+produces bit-identical output to any other conforming target. Choice of
+T affects throughput and latency but not the produced bytes.
+
+\emph{Proof.} Direct corollary of Theorem 10.1 applied to specific
+hardware classes. Integer arithmetic is associative and commutative on
+any platform implementing two\textquotesingle s-complement integers,
+which is universal.
+
+\emph{Why it matters.} Conforming targets include CPU scalar on any ISA,
+CPU SIMD (AVX2, AVX-512, NEON, RVV), GPU integer Tensor Cores (NVIDIA
+Turing+, AMD CDNA), integer NPUs (Apple ANE, Google Edge TPU, Qualcomm
+Hexagon, AWS Inferentia). Encode on server GPU, decode on phone NPU,
+byte-identity guaranteed.
+\end{quote}
+
+\textbf{Quick triage: reviewer challenges → answer}
+
+\emph{For each common reviewer challenge, the relevant theorem or remark
+to cite. Memorize this table for defense.}
+
+\begin{quote}
+\textbf{Q:} \emph{``Why do you think Type-I is competitive at all?''}
+
+\textbf{A:} Theorem 4.1 (achievability), Theorem 4.2 (matching
+converse).
+
+\textbf{Q:} \emph{``Could a better algorithm find a better Code12?''}
+
+\textbf{A:} Theorems 4.3 and 4.4: optimal selection is NP-hard and
+inapproximable.
+
+\textbf{Q:} \emph{``Your earlier draft inflated the Type-II gain.''}
+
+\textbf{A:} Theorem 5.3 (corrected) uses multinomial baseline and
+explicit escape cost.
+
+\textbf{Q:} \emph{``Does Type-II actually do anything Type-I cannot?''}
+
+\textbf{A:} Theorem 5.4 (linear-code separation, Theta(N)).
+
+\textbf{Q:} \emph{``For what data classes is your separation actually
+realized?''}
+
+\textbf{A:} Theorem 5.6 (TC is the exact quantity); Remark 5.7 (manifold
+hypothesis predicts TC = Theta(N) for natural data).
+
+\textbf{Q:} \emph{``Doesn't arithmetic coding under Q dominate your
+support-set scheme?''}
+
+\textbf{A:} Proposition 5.5: yes, and we say so explicitly. Support-set
+is for hard-candidate-set predictors only.
+
+\textbf{Q:} \emph{``Why 2*eps and not 1*eps?''}
+
+\textbf{A:} Theorem 6.4: 2*eps is tight via a constructive adversarial
+example.
+
+\textbf{Q:} \emph{``Why use byte-tensor instead of separate nibble
+coders?''}
+
+\textbf{A:} Theorem 6.2: the gain equals I(H;L\textbar C), which is
+sizable for ASCII text, opcode streams, and pixel data.
+
+\textbf{Q:} \emph{``Is the choice of decomposition tree material?''}
+
+\textbf{A:} Theorem 6.5: no, all rooted binary tree decompositions
+achieve H(B\textbar C); it\textquotesingle s a calibration question, not
+a rate question.
+
+\textbf{Q:} \emph{``Why can\textquotesingle t BPE just be optimized
+further?''}
+
+\textbf{A:} Theorems 6.7 and 6.8: dictionary learning is NP-hard and
+APX-hard via SGP.
+
+\textbf{Q:} \emph{``Bits-back is not really a special case of your
+framework.''}
+
+\textbf{A:} Theorem 6.6: it is, with exact KL accounting in the rate
+decomposition.
+
+\textbf{Q:} \emph{``Your framework can\textquotesingle t be deployed
+because floating-point isn\textquotesingle t reproducible.''}
+
+\textbf{A:} Theorems 10.1 and 10.2: a precision-and-determinism
+specification suffices for both fixed and adaptive predictors; published
+optimizers fit Definition 10.1.
+
+\textbf{Q:} \emph{``Can I seek into a compressed archive without
+decoding everything?''}
+
+\textbf{A:} Theorem 10.3: yes, in O(K + k) time independent of archive
+size, for W-bounded predictors (Definition 10.2) with sync points
+(Definition 10.3). Compression cost approximately 1 percent. NNCP and
+PixelCNN-class systems cannot do this. Theorem 10.4 covers
+RNN/LSTM/state-space variants via state snapshots.
+
+\textbf{Q:} \emph{``Can I mount a compressed disk image as a filesystem
+and use it like a real drive?''}
+
+\textbf{A:} Theorem 10.5: yes. An OS-level driver serves block-device
+read requests in time independent of archive size. Use the
+squashfs+overlayfs pattern: read-only RNR base, copy-on-write writable
+layer. The driver architecture is identical to existing compressed
+filesystems except the predictor replaces the dictionary decompressor.
+
+\textbf{Q:} \emph{``Can I run the decoder on a GPU / NPU / AVX-only CPU
+and get the same bytes?''}
+
+\textbf{A:} Theorem 10.6: yes. Bit-exact integer arithmetic and lookup
+tables conform on any target supporting them, which is universal across
+CPU scalar, CPU SIMD (AVX2, AVX-512, NEON), GPU integer Tensor Cores,
+and integer NPUs (Apple ANE, Edge TPU, Hexagon, Inferentia). Choice of
+target affects latency but not output.
+
+\textbf{Q:} \emph{``What about cross-subblock errors corrupting the
+context?''}
+
+\textbf{A:} Theorem 9.1: cryptographic-hash verification gates context
+updates; propagation is delta-rare.
+
+\textbf{Q:} \emph{``You're claiming universal dominance over LZMA.''}
+
+\textbf{A:} Theorem 8.1: we explicitly disclaim universal dominance and
+only assert conditional advantage.
+\end{quote}
+
+\textbf{Honest qualifications to keep ready}
+
+\begin{quote}
+• Theorem 4.4\textquotesingle s reduction relies on QAP
+inapproximability and an isometric Hamming-embedding argument; a fully
+self-contained proof would expand the embedding step.
+
+• Theorem 5.6 is unconditional; Remark 5.7\textquotesingle s
+quantification depends on the manifold hypothesis being operationalized
+for the specific data class. Empirical intrinsic-dimension estimation is
+out of scope (§13.3).
+
+• Theorem 6.4 is tight in worst case; typical-case behavior is much
+better. The 2*eps factor is conservative.
+
+• Theorem 6.8 inherits an APX-hardness constant from SGP; the exact
+constant is small and may not be practically meaningful, only
+complexity-theoretically.
+
+• Theorem 10.1 assumes the model description specifies the reduction
+order. This is a constraint on the spec, not a deep mathematical
+assumption.
+
+• Theorem 10.2 covers any compatible optimizer; whether a specific
+compatible Adam variant converges as well as floating-point Adam on
+standard benchmarks is an empirical question (open in §13.2).
+
+• The framework is a math paper. It does not contain empirical results.
+Numbers in §11 of the main paper are explicitly labeled as conjectures.
+\end{quote}
+
+\end{document}
