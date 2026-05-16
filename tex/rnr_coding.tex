@@ -86,9 +86,9 @@ a worked numerical example. The main results are: paired achievability
 and converse bounds for Type-I matching the conditional source-coding
 limit; NP-hardness and inapproximability of optimal codeword-mapping
 selection in Type-I; a corrected positional-advantage theorem; a
-$\Theta(N)$ separation theorem for semi-non-factorized Type-II via a
+Theta(N) separation theorem for semi-non-factorized Type-II via a
 linear-code construction, generalized to any source via the
-multi-information identity TC($D_{N}$) and quantified for natural data by
+multi-information identity TC(D\_N) and quantified for natural data by
 the manifold hypothesis; an optimal-support characterization for Type-II
 partition coding; a tight 2*epsilon approximate-oracle bound for
 Type-III-A mode selection with a matching lower bound; an
@@ -235,7 +235,7 @@ This article makes the following contributions.
   \textbar{} Y) to first order in N.
 \item
   Complete complexity classification for Type-I codeword selection:
-  optimal $E_{12}$ is NP-hard via reduction from QAP (Theorem 4.3) and
+  optimal E\_12 is NP-hard via reduction from QAP (Theorem 4.3) and
   inapproximable within any constant factor unless P = NP (Theorem 4.4).
 \item
   A corrected positional‑advantage theorem (Theorem 5.3) with a
@@ -250,12 +250,12 @@ This article makes the following contributions.
   empirical intrinsic-dimension estimates).
 \item
   An optimality characterization for Type-II support sets (Proposition
-  5.5): optimal $S_{v}$ is a prefix of positions sorted by $Q_{v}$, and
+  5.5): optimal S\_v is a prefix of positions sorted by Q\_v, and
   support-set coding is at best equivalent to per-position arithmetic
   coding under the same Q.
 \item
   An approximate‑oracle mode‑selection bound for Type‑III‑A (Theorem
-  6.1) and a tight matching lower bound (Theorem 6.2) showing the 2*$\varepsilon$
+  6.1) and a tight matching lower bound (Theorem 6.2) showing the 2*eps
   factor cannot be improved without additional assumptions on the
   prediction error structure.
 \item
@@ -282,7 +282,7 @@ This article makes the following contributions.
   reproducibility from a software-engineering question to a conformance
   specification matched by published low-precision-training methods.
 \item
-  Random-access (seek-and-read) capability in $O(K + k)$ time independent
+  Random-access (seek-and-read) capability in O(K + k) time independent
   of archive size (Theorem 10.3 with Definitions 10.2, 10.3 of W-bounded
   predictors and sync points), at a sync-point compression cost of
   approximately 1 percent for typical parameters. This functionality is
@@ -338,7 +338,7 @@ same codeword, the decoder could not recover both.
 Throughout the paper, we write L(·) for the bit length of a binary
 description, and adopt the convention that 0 · log 0 = 0. For a random
 variable X over a finite alphabet, H(X) denotes the Shannon entropy of X
-in bits. Given a side‑information variable Y, $H(X \mid Y)$ denotes
+in bits. Given a side‑information variable Y, H(X \textbar{} Y) denotes
 the conditional entropy.
 
 For a source X drawn from a distribution D, and a baseline compressor B,
@@ -353,7 +353,7 @@ we say an RNR coder C is conditionally advantageous on D if
 
 The classical theorem of Slepian and Wolf states that for jointly
 distributed sources X and Y, X can be encoded at rate arbitrarily close
-to $H(X \mid Y)$ when Y is available losslessly at the decoder, even
+to H(X \textbar{} Y) when Y is available losslessly at the decoder, even
 when the encoder does not see Y. This is the foundational result for our
 use of model output as decoder‑side information.
 
@@ -379,7 +379,7 @@ numeral systems (Duda 2009) --- that, given an explicit probability
 model Q over a sequence of symbols, achieves a code length within a
 fixed constant (typically less than two bits per stream, for arithmetic
 coding) of the cross‑entropy of the true source under Q. We denote this
-overhead by $\varepsilon_{n}$ and assume $\varepsilon_{n}$ / n → 0 as the block length n
+overhead by eps\_n and assume eps\_n / n → 0 as the block length n
 grows.
 
 \textbf{2.4 Enumerative coding}
@@ -391,10 +391,10 @@ constant for rank coding. Two enumerative formulas are used repeatedly
 in this paper.
 
 The number of subsets of size k drawn from \{1, \ldots, N\} is C(N, k),
-so a subset is described in $\log_2$ C(N, k) bits.
+so a subset is described in log\_2 C(N, k) bits.
 
-The number of partitions of \{1, \ldots, N\} into 16 disjoint sets $M_{0}$,
-\ldots, $M_{15}$ with cardinalities $k_{0}$, \ldots, $k_{15}$ is the multinomial
+The number of partitions of \{1, \ldots, N\} into 16 disjoint sets M\_0,
+\ldots, M\_15 with cardinalities k\_0, \ldots, k\_15 is the multinomial
 coefficient
 
 \[
@@ -402,9 +402,9 @@ M(N; k_0, \ldots, k_{15}) = \frac{N!}{k_0!\, k_1! \cdots k_{15}!},
 \tag{2.2}
 \]
 
-so such a partition is described in $\log_2$ M(N; $k_{0}$, \ldots, $k_{15}$)
+so such a partition is described in log\_2 M(N; k\_0, \ldots, k\_15)
 bits. The multinomial baseline is strictly tighter than the sum of
-$\log_2$ C(N, $k_{v}$) over v, which corresponds to encoding 16 independent
+log\_2 C(N, k\_v) over v, which corresponds to encoding 16 independent
 subsets without enforcing disjointness, and therefore overcounts.
 
 \textbf{2.5 Minimum Description Length}
@@ -438,7 +438,7 @@ X original source block (sequence of bytes, nibbles, or symbols)
 
 Y decoder-reproducible side information: Y = M(C)
 
-M deterministic predictor; $M_{I}$, M\_pos, $M_{1}$, $M_{2}$ for type-specific
+M deterministic predictor; M\_I, M\_pos, M\_1, M\_2 for type-specific
 predictors
 
 C public context (seed, verified previous subblock, metadata)
@@ -457,7 +457,7 @@ Theta metadata overhead (sizes, mode flags, quantization tables)
 
 B baseline compressor (LZMA, zstd, NNCP, ...)
 
-$\varepsilon_{n}$ entropy-coder redundancy over n symbols
+eps\_n entropy-coder redundancy over n symbols
 
 Pi(X) positional partition of X into symbol-class position sets
 
@@ -502,42 +502,42 @@ encoding is a design choice within each type.
 \textbf{3.2 The five RNR types}
 
 \textbf{Definition 3.1 (RNR Type-I).} An RNR Type-I coder predicts a
-one‑dimensional damaged stream Y = $M_{I}$(C) and stores a repair stream
-$R_{I}$ such that the decoder recovers X = DecRepair(Y, $R_{I}$) exactly,
-subject to a verification check $H_{v}$(X) = $H_{v}$($\hat{X}$). The canonical
+one‑dimensional damaged stream Y = M\_I(C) and stores a repair stream
+R\_I such that the decoder recovers X = DecRepair(Y, R\_I) exactly,
+subject to a verification check H\_v(X) = H\_v(X\_hat). The canonical
 instance is Code12, in which each source byte is mapped to a 12‑bit
 codeword and the predicted error mask is entropy‑coded by Hamming‑weight
 class.
 
 \textbf{Definition 3.2 (RNR Type-II).} An RNR Type-II coder predicts a
-positional probability field $Q_{v}$(i), v in \{0,...,15\}, i in
+positional probability field Q\_v(i), v in \{0,...,15\}, i in
 \{1,...,N\}, that respects the disjoint‑partition and exact‑count
 constraints of a valid 16‑way partition of \{1,...,N\}. The archive
 stores a partition residual R\_Pi that, combined with Q, recovers the
 exact partition Pi(X) and therefore the source X.
 
 \textbf{Definition 3.3 (RNR Type-III-A).} An RNR Type-III-A coder
-predicts an entropy field $U_{m}$(t) over tiles t and coding modes m,
-selects per‑tile modes $\hat{m}$(t) = argmin\_m $U_{m}$(t), and encodes each
+predicts an entropy field U\_m(t) over tiles t and coding modes m,
+selects per‑tile modes m\_hat(t) = argmin\_m U\_m(t), and encodes each
 tile with the selected mode. The selection is deterministic and
 decoder‑reproducible; the archive stores only the per‑tile residual
 streams. Override flags may be stored when the encoder departs from the
 predicted argmin.
 
 \textbf{Definition 3.4 (RNR Type-III-B).} An RNR Type-III-B coder
-predicts a byte tensor Q\_\{h,l\}(i) approximating Pr($h_{i}$ = h, $l_{i}$ = l
+predicts a byte tensor Q\_\{h,l\}(i) approximating Pr(h\_i = h, l\_i = l
 \textbar{} C) over high‑nibble h and low‑nibble l of byte i, and encodes
 the byte sequence either via direct 256‑class partition coding or via a
 hierarchical scheme that first encodes the high‑nibble partition and
 then the low‑nibble partition conditional on the high nibble.
 
 \textbf{Definition 3.5 (RNR Type-III-C).} An RNR Type-III-C coder is
-parameterized by a learned token dictionary D = \{$\tau_{0}$, ...,
+parameterized by a learned token dictionary D = \{tau\_0, ...,
 tau\_\{K-1\}\} with K = a * b (typically 32 x 32 = 1024 or 64 x 64 =
 4096) hierarchically indexed as token\_id = a * family + variant. The
-model predicts Q(k, i, s) approximating Pr($\tau_{k}$ begins at position i
+model predicts Q(k, i, s) approximating Pr(tau\_k begins at position i
 at scale s \textbar{} C). The archive stores a tokenization residual
-$R_{C}$ sufficient to reconstruct the exact token‑interval cover of the
+R\_C sufficient to reconstruct the exact token‑interval cover of the
 block.
 
 \textbf{3.3 The repair length decomposition}
@@ -573,28 +573,28 @@ amortized regime; Section 10 discusses the single‑block case explicitly.
 
 \textbf{4.1 Definition and operational form}
 
-Type‑I is the one‑dimensional form. The source X = ($x_{1}$, ..., x\_N) is
+Type‑I is the one‑dimensional form. The source X = (x\_1, ..., x\_N) is
 a stream of bytes or symbols. The model produces a predicted stream Y =
-$M_{I}$(C) of the same length, considered as a damaged version of X. The
-encoder, knowing both X and Y, computes a repair $R_{I}$ = EncRepair(X, Y),
-and the decoder recovers $\hat{X}$ = DecRepair(Y, $R_{I}$). The reconstruction
-is accepted only if a verification function $H_{v}$ agrees, $H_{v}$($\hat{X}$) =
-$H_{v}$(X).
+M\_I(C) of the same length, considered as a damaged version of X. The
+encoder, knowing both X and Y, computes a repair R\_I = EncRepair(X, Y),
+and the decoder recovers X\_hat = DecRepair(Y, R\_I). The reconstruction
+is accepted only if a verification function H\_v agrees, H\_v(X\_hat) =
+H\_v(X).
 
 \textbf{4.2 The Code12 construction}
 
 In the Code12 variant of Type‑I, each source byte b in \{0, ..., 255\}
-is mapped through an injective function $E_{12}$ : \{0, ..., 255\} →
-\{0,1\}\^{}12 to a 12‑bit codeword c = $E_{12}$(b). The model predicts a
-codeword $\hat{c}$\_i = $M_{I}$(C, i) for each position. The raw error mask is
-$e_{i}$ = $c_{i}$ XOR $\hat{c}$\_i. The motivation is that, with a well‑chosen
-$E_{12}$, the error‑mask distribution concentrates on low Hamming weights
+is mapped through an injective function E\_12 : \{0, ..., 255\} →
+\{0,1\}\^{}12 to a 12‑bit codeword c = E\_12(b). The model predicts a
+codeword c\_hat\_i = M\_I(C, i) for each position. The raw error mask is
+e\_i = c\_i XOR c\_hat\_i. The motivation is that, with a well‑chosen
+E\_12, the error‑mask distribution concentrates on low Hamming weights
 when the model is approximately correct, and Hamming weight is cheap to
 entropy‑code.
 
-We specify $E_{12}$ as a shortened‑Hamming‑like systematic mapping. Let the
-source byte bits be ($b_{0}$, ..., $b_{7}$). Use 1‑based codeword positions
-$c_{1}$, ..., $c_{12}$ and place data bits at non‑parity positions:
+We specify E\_12 as a shortened‑Hamming‑like systematic mapping. Let the
+source byte bits be (b\_0, ..., b\_7). Use 1‑based codeword positions
+c\_1, ..., c\_12 and place data bits at non‑parity positions:
 
 \begin{quote}
 c3 = b0 c5 = b1 c6 = b2 c7 = b3
@@ -602,7 +602,7 @@ c3 = b0 c5 = b1 c6 = b2 c7 = b3
 c9 = b4 c10 = b5 c11 = b6 c12 = b7
 \end{quote}
 
-The parity positions $c_{1}$, $c_{2}$, $c_{4}$, $c_{8}$ are computed by even parity
+The parity positions c\_1, c\_2, c\_4, c\_8 are computed by even parity
 over selected data positions:
 
 \begin{quote}
@@ -615,17 +615,17 @@ c4 = c5 XOR c6 XOR c7 XOR c12
 c8 = c9 XOR c10 XOR c11 XOR c12
 \end{quote}
 
-This construction is reversible because the data bits $b_{0}$, ..., $b_{7}$
+This construction is reversible because the data bits b\_0, ..., b\_7
 appear directly in c. We use it for two reasons: first, single‑bit and
 many two‑bit codeword errors decode to small Hamming‑weight masks, which
 are cheap; second, the parity structure means random predictor noise
 distributes errors over both data and parity positions, rather than
-concentrating in the data bits. We discuss alternative $E_{12}$ mappings
+concentrating in the data bits. We discuss alternative E\_12 mappings
 (Gray‑ordered, learned, bucketed with candidate lists) in Section 4.6.
 
 \textbf{4.3 Repair stream encoding}
 
-The simplest repair symbol at position i is the error mask $e_{i}$ in
+The simplest repair symbol at position i is the error mask e\_i in
 \{0,1\}\^{}12 itself, of which there are 2\^{}12 = 4096 possibilities.
 To avoid paying 12 bits per position regardless of prediction quality,
 we encode by Hamming‑weight class:
@@ -643,7 +643,7 @@ class candidate-k : correct codeword is k-th in predicted candidate list
 class escape : store raw byte (8 bits) or raw codeword (12 bits)
 \end{quote}
 
-Let the class probabilities be $p_{0}$, $p_{1}$, $p_{2}$, p\_cand, p\_esc summing
+Let the class probabilities be p\_0, p\_1, p\_2, p\_cand, p\_esc summing
 to 1. The expected per‑position repair length is
 
 \[
@@ -652,18 +652,18 @@ to 1. The expected per‑position repair length is
 \]
 
 where H(class) is the entropy of the class label encoded with a small
-adaptive entropy coder, and $\varepsilon$ is the entropy‑coder redundancy. When
-$p_{0}$ dominates, the dominant cost is H(class) plus a tiny contribution
+adaptive entropy coder, and eps is the entropy‑coder redundancy. When
+p\_0 dominates, the dominant cost is H(class) plus a tiny contribution
 from the other classes; ell\_rep can fall well below 1 bit per byte if
 the model is good.
 
 \textbf{4.4 Achievability bound}
 
 \textbf{Theorem 4.1 (Type‑I achievability).} \emph{Let X be a source
-block of N bytes, Y = $M_{I}$(C) be the predicted Code12 stream, and E =
-($e_{1}$, ..., e\_N) be the error‑mask sequence with empirical class
-distribution $P_{E}$. Suppose the class entropy coder achieves expected
-length at most N * H($P_{E}$) + $\varepsilon_{N}$. Then the expected Type‑I code
+block of N bytes, Y = M\_I(C) be the predicted Code12 stream, and E =
+(e\_1, ..., e\_N) be the error‑mask sequence with empirical class
+distribution P\_E. Suppose the class entropy coder achieves expected
+length at most N * H(P\_E) + eps\_N. Then the expected Type‑I code
 length is bounded by}
 
 \[
@@ -675,27 +675,27 @@ length is bounded by}
 (within‑class rank or escape) per position. Consequently, Type‑I is
 conditionally advantageous on a distribution D if the right‑hand side,
 in expectation under D, is smaller than the expected baseline length
-$E_{D}${[} B(X) {]}.}
+E\_D{[} B(X) {]}.}
 
 \emph{\textbf{Proof.}} The Type‑I code is the concatenation of the model
 description, the class stream, the within‑class payloads, the
 verification block, and the metadata block. By the entropy‑coder
-hypothesis, the class stream has expected length at most N * H($P_{E}$) +
-$\varepsilon_{N}$. The within‑class payload is a separate stream whose expected
+hypothesis, the class stream has expected length at most N * H(P\_E) +
+eps\_N. The within‑class payload is a separate stream whose expected
 length, summed across positions, is N * ell\_cond by definition. Adding
-the constant overheads L($M_{I}$), L(V), L(Theta) gives the bound. Taking
-expectation under D and comparing to $E_{D}${[} B(X) {]} yields the
+the constant overheads L(M\_I), L(V), L(Theta) gives the bound. Taking
+expectation under D and comparing to E\_D{[} B(X) {]} yields the
 advantage condition. \textbf{∎}
 
 \textbf{Theorem 4.2 (Type‑I converse).} \emph{Let X \textasciitilde{} D
-be a source over length‑N byte blocks and Y = $M_{I}$(C) be
+be a source over length‑N byte blocks and Y = M\_I(C) be
 decoder-reproducible side information. For any uniquely decodable
 lossless code for X whose decoder uses no information about X beyond the
 codeword and Y, the expected code length satisfies E{[}L(X \textbar{}
-Y){]} $\geq$ $H(X \mid Y)$. The Type‑I achievability of
+Y){]} \textgreater= H(X \textbar{} Y). The Type‑I achievability of
 Theorem 4.1 therefore matches the conditional source-coding lower bound
-to first order: the gap is L($M_{I}$) + L(V) + L(Theta) + $\varepsilon_{N}$, which is
-$O(1)$ in N.}
+to first order: the gap is L(M\_I) + L(V) + L(Theta) + eps\_N, which is
+O(1) in N.}
 
 \emph{\textbf{Proof.}} This is Shannon\textquotesingle s noiseless
 source coding theorem applied to the conditional distribution P(X
@@ -703,32 +703,32 @@ source coding theorem applied to the conditional distribution P(X
 function of public context C, the encoder needs only convey enough
 information for the decoder to disambiguate X within its conditional
 support given Y. The minimum expected length of any uniquely decodable
-code for X given Y is the conditional entropy $H(X \mid Y)$ (Cover
-and Thomas 2006, Theorem 5.4.1). The Type-I coder achieves N * H($P_{E}$) +
-N * ell\_cond + $\varepsilon_{N}$ for the repair stream; by construction the
+code for X given Y is the conditional entropy H(X \textbar{} Y) (Cover
+and Thomas 2006, Theorem 5.4.1). The Type-I coder achieves N * H(P\_E) +
+N * ell\_cond + eps\_N for the repair stream; by construction the
 class-and-payload decomposition is a particular factorization of the
-conditional distribution of X given Y, so N * H($P_{E}$) + N * ell\_cond =
-$H(X \mid Y)$ when the predictor is matched to the data. The
-remaining L($M_{I}$) + L(V) + L(Theta) terms are $O(1)$ constants independent
+conditional distribution of X given Y, so N * H(P\_E) + N * ell\_cond =
+H(X \textbar{} Y) when the predictor is matched to the data. The
+remaining L(M\_I) + L(V) + L(Theta) terms are O(1) constants independent
 of N. \textbf{∎}
 
 \textbf{4.5 Reduction to NNCP}
 
 Consider the degenerate Code12 mapping in which c is simply the byte b
 zero‑padded to 12 bits, and the model predicts a probability
-distribution $Q_{i}$ over the next byte rather than a single damaged
+distribution Q\_i over the next byte rather than a single damaged
 codeword. Then the optimal Code12 repair is to discard the predicted
-codeword and encode each position via arithmetic coding under $Q_{i}$,
+codeword and encode each position via arithmetic coding under Q\_i,
 achieving expected per‑position cost equal to the categorical
-cross‑entropy plus $\varepsilon$/N. This recovers NNCP exactly. Type‑I therefore
-generalizes NNCP by allowing (a) non‑trivial $E_{12}$ mappings whose error
+cross‑entropy plus eps/N. This recovers NNCP exactly. Type‑I therefore
+generalizes NNCP by allowing (a) non‑trivial E\_12 mappings whose error
 distribution is more concentrated than a flat softmax, and (b)
 class‑based entropy coding that can be cheaper than arithmetic coding
 for sharply peaked predictors.
 
-\textbf{4.6 Variants of $E_{12}$}
+\textbf{4.6 Variants of E\_12}
 
-Four $E_{12}$ variants are worth comparing empirically.
+Four E\_12 variants are worth comparing empirically.
 
 \begin{itemize}
 \item
@@ -740,7 +740,7 @@ Four $E_{12}$ variants are worth comparing empirically.
   small numerical perturbations of the true byte.
 \item
   E12‑C: learned mapping in which the byte‑to‑codeword assignment is
-  optimized to minimize the expected Hamming weight of c XOR $\hat{c}$ over
+  optimized to minimize the expected Hamming weight of c XOR c\_hat over
   a training corpus and predictor.
 \item
   E12‑D: bucketed mapping in which bytes that the predictor frequently
@@ -752,11 +752,11 @@ Among these, only E12-A and E12-B admit closed-form construction. E12-C
 and E12-D are learned, and we now show that finding the optimum is
 computationally intractable.
 
-\textbf{Theorem 4.3 (Optimal $E_{12}$ mapping is NP-hard).} \emph{Given a
+\textbf{Theorem 4.3 (Optimal E\_12 mapping is NP-hard).} \emph{Given a
 predictor confusion matrix F where F\_\{ij\} = Pr(model predicts
 codeword for byte j \textbar{} true byte is i), the problem of choosing
-a byte-to-codeword mapping $E_{12}$ : \{0, ..., 255\} -\textgreater{}
-\{0,1\}\^{}12 minimizing the expected Hamming weight of c XOR $\hat{c}$ is
+a byte-to-codeword mapping E\_12 : \{0, ..., 255\} -\textgreater{}
+\{0,1\}\^{}12 minimizing the expected Hamming weight of c XOR c\_hat is
 NP-hard in the description size of F.}
 
 \emph{\textbf{Proof.}} Reduce from the Quadratic Assignment Problem
@@ -773,35 +773,35 @@ isometric subspaces for m large enough). For our problem, set n = 256,
 take any 256-element subset S of \{0,1\}\^{}12, set F\textquotesingle{}
 = F (the predictor confusion matrix), and D\textquotesingle{} to the
 restriction of Hamming distance to S. The expected Hamming weight under
-$E_{12}$ = pi is sum\_\{i,j\} F\_\{ij\} * Hamming($E_{12}$(i), $E_{12}$(j)) =
+E\_12 = pi is sum\_\{i,j\} F\_\{ij\} * Hamming(E\_12(i), E\_12(j)) =
 sum\_\{i,j\} F\textquotesingle\_\{ij\} *
 D\textquotesingle\_\{pi(i)pi(j)\}, which is exactly the QAP objective.
-Polynomial-time optimization of $E_{12}$ would solve QAP in polynomial
+Polynomial-time optimization of E\_12 would solve QAP in polynomial
 time, contradiction. \textbf{∎}
 
 Consequently, E12-C and E12-D must be obtained by approximation
 algorithms. Standard relaxations include gradient descent on a
-continuous relaxation of the assignment (interpreting $E_{12}$ as a
+continuous relaxation of the assignment (interpreting E\_12 as a
 stochastic mapping with simplex constraints), simulated annealing, and
 tabu search. These approximations carry no constant-factor guarantee for
 general F but perform well empirically on natural predictor confusion
 matrices, which are typically sparse and structured.
 
-\textbf{Theorem 4.4 (Inapproximability of optimal $E_{12}$).} \emph{For any
-constant $\alpha$ \textgreater{} 1, no polynomial-time algorithm
-approximates the optimal $E_{12}$ mapping within ratio $\alpha$ unless P = NP.
+\textbf{Theorem 4.4 (Inapproximability of optimal E\_12).} \emph{For any
+constant alpha \textgreater{} 1, no polynomial-time algorithm
+approximates the optimal E\_12 mapping within ratio alpha unless P = NP.
 Equivalently, the problem admits no polynomial-time approximation
 scheme.}
 
 \emph{\textbf{Proof.}} The reduction from QAP in Theorem 4.3 is
-gap-preserving: a polynomial-time $\alpha$-approximation for $E_{12}$
+gap-preserving: a polynomial-time alpha-approximation for E\_12
 selection on the constructed instance would yield a polynomial-time
-$\alpha$-approximation for the original QAP instance via the same
+alpha-approximation for the original QAP instance via the same
 byte-to-codeword correspondence, since the objective values match
 exactly under the isometric Hamming embedding. Sahni and Gonzalez (1976)
 established that QAP admits no constant-factor polynomial-time
 approximation unless P = NP. The inapproximability therefore transfers
-to $E_{12}$ selection. \textbf{∎}
+to E\_12 selection. \textbf{∎}
 
 Theorem 4.4 is a strengthening of Theorem 4.3: even arbitrarily loose
 approximation is intractable. This justifies the empirical,
@@ -812,14 +812,14 @@ approximation guarantees.
 \textbf{4.7 Worked numerical example}
 
 Consider a block of N = 4096 bytes drawn from a source where the Code12
-predictor achieves the following empirical class distribution: $p_{0}$ =
-0.60 (no error), $p_{1}$ = 0.25 (one‑bit flip), $p_{2}$ = 0.10 (two‑bit
+predictor achieves the following empirical class distribution: p\_0 =
+0.60 (no error), p\_1 = 0.25 (one‑bit flip), p\_2 = 0.10 (two‑bit
 pattern), p\_cand = 0.04 (within candidate list of size 4), p\_esc =
 0.01 (escape to raw byte).
 
 The class entropy is
 
-\emph{H($P_{E}$) = - 0.60 log2 0.60 - 0.25 log2 0.25 - 0.10 log2 0.10 -
+\emph{H(P\_E) = - 0.60 log2 0.60 - 0.25 log2 0.25 - 0.10 log2 0.10 -
 0.04 log2 0.04 - 0.01 log2 0.01 approx 1.527 bits.}
 
 The expected within‑class payload per position is
@@ -833,7 +833,7 @@ Per‑position total is therefore 1.527 + 1.660 approx 3.19 bits, or 3.19
 metadata gives 1681 bytes plus the amortized model cost. For comparison,
 a 4096‑byte block at 8 bits per byte raw is 4096 bytes; LZMA on
 structured text typically achieves 1500--2000 bytes. The Type‑I coder is
-competitive whenever the amortized L($M_{I}$) per block is below
+competitive whenever the amortized L(M\_I) per block is below
 approximately 100--300 bytes, which is achievable for a small distilled
 byte‑level predictor.
 
@@ -858,15 +858,15 @@ matrices.
 \textbf{5.2 Nibble partition representation}
 
 Without loss of generality, we present Type‑II at the nibble alphabet
-$A_{16}$ = \{0, ..., 15\}. Larger alphabets (full bytes, byte pairs,
+A\_16 = \{0, ..., 15\}. Larger alphabets (full bytes, byte pairs,
 learned tokens) generalize directly and are revisited in Section 6. Let
-X = ($x_{1}$, ..., x\_N) with $x_{i}$ in $A_{16}$. For each nibble value v,
+X = (x\_1, ..., x\_N) with x\_i in A\_16. For each nibble value v,
 define the position set
 
-\emph{$M_{v}$ = \{ i in \{1, ..., N\} : $x_{i}$ = v \}.}
+\emph{M\_v = \{ i in \{1, ..., N\} : x\_i = v \}.}
 
-The collection Pi(X) = ($M_{0}$, ..., $M_{15}$) is a partition of \{1, ...,
-N\}: the $M_{v}$ are pairwise disjoint and their union is the full position
+The collection Pi(X) = (M\_0, ..., M\_15) is a partition of \{1, ...,
+N\}: the M\_v are pairwise disjoint and their union is the full position
 set. The original sequence X is recovered from Pi(X) by reading off the
 position memberships in order. Encoding X is therefore equivalent to
 encoding Pi(X).
@@ -874,14 +874,14 @@ encoding Pi(X).
 \textbf{5.3 Factorized and semi‑non‑factorized positional models}
 
 A Type‑II model predicts a probability field Q in {[}0,1{]}\^{}(16 x N)
-with column normalization sum\_v $Q_{v}$(i) = 1. We distinguish two regimes
+with column normalization sum\_v Q\_v(i) = 1. We distinguish two regimes
 that affect the framework's relationship to Type‑I.
 
-In the factorized regime, $Q_{v}$(i) is treated as if the position labels
+In the factorized regime, Q\_v(i) is treated as if the position labels
 were independent across i: the joint probability assigned to a candidate
-sequence ($x_{1}$, ..., x\_N) is the product over i of Q\_\{x\_i\}(i).
+sequence (x\_1, ..., x\_N) is the product over i of Q\_\{x\_i\}(i).
 Under this regime, optimal entropy coding achieves length equal to minus
-the sum over i of $\log_2$ Q\_\{x\_i\}(i), which is bit‑equivalent to
+the sum over i of log\_2 Q\_\{x\_i\}(i), which is bit‑equivalent to
 per‑position arithmetic coding driven by the same Q. Type‑II under a
 factorized model is therefore not operationally distinct from Type‑I
 with a per‑position predictor. We make this explicit in Lemma 5.1.
@@ -889,8 +889,8 @@ with a per‑position predictor. We make this explicit in Lemma 5.1.
 In the semi‑non‑factorized regime, the model additionally enforces
 structural constraints that the factorized form violates. The minimal
 such constraints are: (a) the disjoint‑partition constraint that exactly
-one v has $x_{i}$ = v at each i; and (b) the count constraint that the
-partition cardinalities $k_{v}$ = \textbar M\_v\textbar{} are themselves
+one v has x\_i = v at each i; and (b) the count constraint that the
+partition cardinalities k\_v = \textbar M\_v\textbar{} are themselves
 modeled (either predicted, transmitted, or constrained by a learned
 distribution over count vectors). Under the semi‑non‑factorized regime,
 the joint distribution over partitions is not a product of per‑position
@@ -900,34 +900,34 @@ informative. Theorem 5.4 quantifies this separation.
 
 \textbf{5.4 Coding strategies for the partition residual}
 
-Given Q and possible knowledge of counts $k_{v}$, the archive must store a
+Given Q and possible knowledge of counts k\_v, the archive must store a
 residual R\_Pi sufficient to recover the exact partition. Several coding
 strategies are available.
 
 \begin{itemize}
 \item
-  Per‑position arithmetic coding under Q: encode $x_{i}$ with probability
-  Q\_\{x\_i\}(i). Cost per position: minus $\log_2$ Q\_\{x\_i\}(i).
+  Per‑position arithmetic coding under Q: encode x\_i with probability
+  Q\_\{x\_i\}(i). Cost per position: minus log\_2 Q\_\{x\_i\}(i).
 \item
   Per‑symbol enumerative coding given the counts: for each v in some
-  order, encode $M_{v}$ as a subset of the remaining positions by its rank
-  among C(N′, $k_{v}$) possibilities, where N′ is the number of positions
+  order, encode M\_v as a subset of the remaining positions by its rank
+  among C(N′, k\_v) possibilities, where N′ is the number of positions
   not yet assigned. The final mask is implicit.
 \item
-  Per‑symbol enumerative coding given a predicted support $S_{v}$
-  containing $M_{v}$ of size $s_{v}$: encode $M_{v}$ by its rank among C($s_{v}$,
-  $k_{v}$) possibilities, with an escape mode for positions in $M_{v}$
-  \textbackslash{} $S_{v}$.
+  Per‑symbol enumerative coding given a predicted support S\_v
+  containing M\_v of size s\_v: encode M\_v by its rank among C(s\_v,
+  k\_v) possibilities, with an escape mode for positions in M\_v
+  \textbackslash{} S\_v.
 \item
   Joint enumerative coding under the multinomial: encode the partition
-  by its rank among the M(N; $k_{0}$, ..., $k_{15}$) valid partitions with the
+  by its rank among the M(N; k\_0, ..., k\_15) valid partitions with the
   given counts.
 \end{itemize}
 
 \textbf{5.5 The corrected positional gain theorem}
 
 Earlier drafts of this work used the per‑symbol enumerative baseline
-sum\_v $\log_2$ C(N, $k_{v}$). This baseline overcounts because the 16 subset
+sum\_v log\_2 C(N, k\_v). This baseline overcounts because the 16 subset
 choices it sums over are not constrained to be disjoint: each position
 may be assigned to multiple v in the enumeration, so the count is larger
 than the true number of valid partitions. The correct baseline is the
@@ -936,39 +936,39 @@ multinomial.
 \textbf{Lemma 5.1.} \emph{Under the factorized regime, per‑position
 arithmetic coding under Q and per‑position Type‑I arithmetic coding
 under the equivalent sequential conditional Q are bit‑equivalent: both
-produce code lengths within $\varepsilon_{N}$ of minus the sum over i of $\log_2$
+produce code lengths within eps\_N of minus the sum over i of log\_2
 Q\_\{x\_i\}(i).}
 
 \emph{\textbf{Proof.}} Both coders are arithmetic coders driven by the
 same per‑position probability vector Q\_*(i). Arithmetic coding
 redundancy is a constant overhead independent of which axis of the data
 the coder is sweeping. The two code lengths therefore agree up to
-$\varepsilon_{N}$. \textbf{∎}
+eps\_N. \textbf{∎}
 
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
-coding).} \emph{Let N be a block length, and let ($k_{0}$, ..., $k_{15}$) be
-the symbol counts with sum\_v $k_{v}$ = N. Without side information, the
+coding).} \emph{Let N be a block length, and let (k\_0, ..., k\_15) be
+the symbol counts with sum\_v k\_v = N. Without side information, the
 number of valid 16‑way disjoint partitions of \{1, ..., N\} with these
-counts is M(N; $k_{0}$, ..., $k_{15}$). The enumerative code length for the
-partition is therefore $\log_2$ M(N; $k_{0}$, ..., $k_{15}$) bits, plus the cost
+counts is M(N; k\_0, ..., k\_15). The enumerative code length for the
+partition is therefore log\_2 M(N; k\_0, ..., k\_15) bits, plus the cost
 of describing the count vector itself.}
 
 \emph{\textbf{Proof.}} A 16‑way partition of \{1, ..., N\} with
-cardinalities ($k_{0}$, ..., $k_{15}$) is in bijection with a length‑N
-labeling of the positions in which label v occurs $k_{v}$ times. The number
+cardinalities (k\_0, ..., k\_15) is in bijection with a length‑N
+labeling of the positions in which label v occurs k\_v times. The number
 of such labelings is the multinomial coefficient N! divided by the
-product over v of $k_{v}$! by direct combinatorial counting. Enumerative
+product over v of k\_v! by direct combinatorial counting. Enumerative
 coding describes the partition by its rank in this class. \textbf{∎}
 
 \textbf{Theorem 5.3 (Type‑II support‑set advantage with escape).}
-\emph{Let Pi(X) = ($M_{0}$, ..., $M_{15}$) be the true partition with counts
-$k_{v}$. Suppose for each v the predictor supplies a candidate support set
-$S_{v}$ of size $s_{v}$, and let $\alpha_{v}$ = \textbar{} $M_{v}$ \textbackslash{}
-$S_{v}$ \textbar{} be the number of true positions outside the predicted
-support. Encode each $M_{v}$ by (i) the rank of $M_{v}$ intersected with $S_{v}$
-among the C($s_{v}$, $k_{v}$ - $\alpha_{v}$) subsets of $S_{v}$ of size $k_{v}$ -
-$\alpha_{v}$, plus (ii) an escape stream listing the $\alpha_{v}$ positions of
-$M_{v}$ \textbackslash{} $S_{v}$ among the at most N positions not in $S_{v}$.
+\emph{Let Pi(X) = (M\_0, ..., M\_15) be the true partition with counts
+k\_v. Suppose for each v the predictor supplies a candidate support set
+S\_v of size s\_v, and let alpha\_v = \textbar{} M\_v \textbackslash{}
+S\_v \textbar{} be the number of true positions outside the predicted
+support. Encode each M\_v by (i) the rank of M\_v intersected with S\_v
+among the C(s\_v, k\_v - alpha\_v) subsets of S\_v of size k\_v -
+alpha\_v, plus (ii) an escape stream listing the alpha\_v positions of
+M\_v \textbackslash{} S\_v among the at most N positions not in S\_v.
 The total partition code length is at most}
 
 \[
@@ -976,8 +976,8 @@ L_{R\Pi} \leq \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N 
 \tag{5.1}
 \]
 
-\emph{Comparing against the multinomial baseline $\log_2$ M(N; $k_{0}$, ...,
-$k_{15}$) of Theorem 5.2, the positional gain is}
+\emph{Comparing against the multinomial baseline log\_2 M(N; k\_0, ...,
+k\_15) of Theorem 5.2, the positional gain is}
 
 \[
 G_{\text{pos}} = \log_2 M(N; k_0, \ldots, k_{15}) - \sum_v \left[\log_2 \binom{s_v}{k_v - \alpha_v} + \log_2 \binom{N - s_v}{\alpha_v}\right].
@@ -985,15 +985,15 @@ G_{\text{pos}} = \log_2 M(N; k_0, \ldots, k_{15}) - \sum_v \left[\log_2 \binom{s
 \]
 
 \emph{Type‑II is conditionally advantageous when G\_pos exceeds
-L(M\_pos) + L(V) + L(Theta) + $\varepsilon_{N}$ plus the cost of describing the
+L(M\_pos) + L(V) + L(Theta) + eps\_N plus the cost of describing the
 count vector and any per‑symbol support headers.}
 
-\emph{\textbf{Proof.}} For each symbol v, $M_{v}$ decomposes as the
-disjoint union of $M_{v}$ intersected with $S_{v}$ (a subset of $S_{v}$ of size
-$k_{v}$ - $\alpha_{v}$) and $M_{v}$ \textbackslash{} $S_{v}$ (a subset of \{1, ...,
-N\} \textbackslash{} $S_{v}$ of size $\alpha_{v}$). The first component is
-encoded by its enumerative rank among C($s_{v}$, $k_{v}$ - $\alpha_{v}$) subsets;
-the second by its enumerative rank among the C(N - $s_{v}$, $\alpha_{v}$)
+\emph{\textbf{Proof.}} For each symbol v, M\_v decomposes as the
+disjoint union of M\_v intersected with S\_v (a subset of S\_v of size
+k\_v - alpha\_v) and M\_v \textbackslash{} S\_v (a subset of \{1, ...,
+N\} \textbackslash{} S\_v of size alpha\_v). The first component is
+encoded by its enumerative rank among C(s\_v, k\_v - alpha\_v) subsets;
+the second by its enumerative rank among the C(N - s\_v, alpha\_v)
 escape subsets. Summing the two log‑binomials across v gives the
 residual length. The advantage condition follows by subtracting this
 from the multinomial baseline and accounting for overhead. \textbf{∎}
@@ -1001,12 +1001,12 @@ from the multinomial baseline and accounting for overhead. \textbf{∎}
 Theorem 5.3 corrects two flaws in the earlier statement. First, it uses
 the multinomial coefficient as the baseline, which is the correct
 entropy of an unconstrained partition with known counts; the looser
-sum\_v $\log_2$ C(N, $k_{v}$) baseline overstated the gain by allowing
+sum\_v log\_2 C(N, k\_v) baseline overstated the gain by allowing
 inconsistent subset choices. Second, it admits the realistic case where
-$M_{v}$ is not entirely contained in $S_{v}$ by introducing the per‑symbol
-escape count $\alpha_{v}$, which carries its own enumerative cost. The bound
-is tight: when $\alpha_{v}$ = 0 for all v, the second log‑binomial vanishes
-and the formula reduces to sum\_v $\log_2$ C($s_{v}$, $k_{v}$), recovering the
+M\_v is not entirely contained in S\_v by introducing the per‑symbol
+escape count alpha\_v, which carries its own enumerative cost. The bound
+is tight: when alpha\_v = 0 for all v, the second log‑binomial vanishes
+and the formula reduces to sum\_v log\_2 C(s\_v, k\_v), recovering the
 idealized oracle bound.
 
 \textbf{5.6 Type‑II vs Type‑I: a separation theorem}
@@ -1018,43 +1018,43 @@ The next theorem answers this in the affirmative for a concrete family
 of joint distributions.
 
 \textbf{Theorem 5.4 (Type‑II semi‑non‑factorized separation).}
-\emph{There exists a family of distributions $D_{N}$ over length‑N nibble
+\emph{There exists a family of distributions D\_N over length‑N nibble
 strings, and a positive constant c \textgreater{} 0, such that for every
 sufficiently large N the optimal factorized per‑position arithmetic
 coder driven by the true marginals Q\^{}marg\_v(i) = Pr\_\{X
-\textasciitilde{} D\_N\}($x_{i}$ = v) has expected code length at least 4N
+\textasciitilde{} D\_N\}(x\_i = v) has expected code length at least 4N
 bits, while a semi‑non‑factorized Type‑II coder that has access to a
 single bit per position of joint side information (membership in a
-structured set) achieves expected length at most (4 - c) N + $O(log N)$
-bits. The separation is therefore $\Theta(N)$.}
+structured set) achieves expected length at most (4 - c) N + O(log N)
+bits. The separation is therefore Theta(N).}
 
 \emph{\textbf{Proof.}} Fix a parameter c in (0, 4). Let G be a 3cN x 4N
-generator matrix over GF(2) of a linear code $C_{N}$ with the property
+generator matrix over GF(2) of a linear code C\_N with the property
 that, for every codeword position j in \{1, ..., 4N\}, the j‑th
 coordinate is a non‑trivial GF(2)‑linear function of the 3cN message
 bits. Such generator matrices are abundant; a random matrix satisfies
-the property with probability 1 - O(2\^{}\{-cN\}). Let $S_{N}$ subset of
+the property with probability 1 - O(2\^{}\{-cN\}). Let S\_N subset of
 \{0, ..., 15\}\^{}N be the image of all 2\^{}\{(4-c)N\} messages under
 G, with the 4N output bits parsed as N nibbles. By construction
-\textbar S\_N\textbar{} = 2\^{}\{(4-c)N\}. Define $D_{N}$ as the uniform
-distribution on $S_{N}$. (i) Marginal uniformity: for any position i and
+\textbar S\_N\textbar{} = 2\^{}\{(4-c)N\}. Define D\_N as the uniform
+distribution on S\_N. (i) Marginal uniformity: for any position i and
 value v in \{0, ..., 15\}, the four bits encoding v at position i are
 non-trivial linear functions of a uniformly random message, hence each
 of the 16 bit patterns occurs with probability exactly 1/16. Therefore
 Q\^{}marg\_v(i) = 1/16 for all i, v. (ii) Factorized lower bound: the
-cross‑entropy of any X \textasciitilde{} $D_{N}$ under the factorized model
-with $Q_{v}$(i) = 1/16 is exactly N * $\log_2$ 16 = 4N bits; this is also the
+cross‑entropy of any X \textasciitilde{} D\_N under the factorized model
+with Q\_v(i) = 1/16 is exactly N * log\_2 16 = 4N bits; this is also the
 optimal expected code length of an arithmetic coder driven by Q\^{}marg,
-up to the redundancy $\varepsilon_{N}$. (iii) Joint upper bound: a
-semi‑non‑factorized coder that encodes membership in $S_{N}$ (one cN-bit
-message index per block) achieves length $\log_2$ \textbar S\_N\textbar{}
-+ $\varepsilon_{N}$ = (4 - c) N + $\varepsilon_{N}$ bits. (iv) Separation: subtracting, the
-gap is c N - $\varepsilon_{N}$ - $O(log N)$, which is $\Theta(N)$. ∎ \textbf{∎}
+up to the redundancy eps\_N. (iii) Joint upper bound: a
+semi‑non‑factorized coder that encodes membership in S\_N (one cN-bit
+message index per block) achieves length log\_2 \textbar S\_N\textbar{}
++ eps\_N = (4 - c) N + eps\_N bits. (iv) Separation: subtracting, the
+gap is c N - eps\_N - O(log N), which is Theta(N). ∎ \textbf{∎}
 
 Theorem 5.4 establishes that semi‑non‑factorized Type‑II strictly
 separates from any factorized per‑position coder, including
 PixelCNN-style autoregressive predictors that produce one categorical
-distribution per position. The separation is $\Theta(N)$, not $\Theta(log N)$:
+distribution per position. The separation is Theta(N), not Theta(log N):
 joint structure beyond per‑position marginals can carry a constant
 fraction of a bit per position. The linear-code family used in the proof
 is a worst case for factorized models (marginals are exactly uniform)
@@ -1066,7 +1066,7 @@ one where the data lives on a small, structurally describable subset of
 uniform. Count constraints alone yield only a logarithmic separation
 (the Stirling correction), so richer joint structure --- geometric
 constraints, algebraic parities, sparsity patterns, sortedness --- is
-required to exhibit the $\Theta(N)$ regime.
+required to exhibit the Theta(N) regime.
 
 The linear-code construction of Theorem 5.4 is one extreme of a more
 general phenomenon. The next result identifies the exact
@@ -1075,35 +1075,35 @@ factorized and joint coding for any source distribution, and the
 following remark connects this quantity to the manifold hypothesis from
 statistical learning theory and topological data analysis.
 
-\textbf{Theorem 5.6 (Multi-information separation).} \emph{Let $D_{N}$ be
-any distribution over $A_{16}$\^{}N. Define the total correlation
-(multi-information) TC($D_{N}$) = sum\_\{i=1\}\^{}N H\_marg($X_{i}$) -
-H($D_{N}$), where H\_marg($X_{i}$) is the marginal entropy at position i under
-$D_{N}$. The optimal factorized per-position arithmetic coder driven by
-these marginals achieves expected rate sum\_i H\_marg($X_{i}$) + $\varepsilon_{N}$
-bits per block. Any coder that uses $D_{N}$ as joint side information
-achieves expected rate at least H($D_{N}$) + $\varepsilon_{N}$ bits per block, with
+\textbf{Theorem 5.6 (Multi-information separation).} \emph{Let D\_N be
+any distribution over A\_16\^{}N. Define the total correlation
+(multi-information) TC(D\_N) = sum\_\{i=1\}\^{}N H\_marg(X\_i) -
+H(D\_N), where H\_marg(X\_i) is the marginal entropy at position i under
+D\_N. The optimal factorized per-position arithmetic coder driven by
+these marginals achieves expected rate sum\_i H\_marg(X\_i) + eps\_N
+bits per block. Any coder that uses D\_N as joint side information
+achieves expected rate at least H(D\_N) + eps\_N bits per block, with
 the bound saturated by the enumerative coder over the typical set. The
-separation between factorized and joint coding is exactly TC($D_{N}$) +
-O($\varepsilon_{N}$).}
+separation between factorized and joint coding is exactly TC(D\_N) +
+O(eps\_N).}
 
 \emph{\textbf{Proof.}} Both bounds are direct applications of
 Shannon\textquotesingle s noiseless source coding theorem (Shannon 1948;
 Cover and Thomas 2006, Theorem 5.4.1). The factorized coder, treating
 positions as independent under the marginals, achieves Shannon-optimal
-rate sum\_i H\_marg($X_{i}$) per block, with arithmetic-coding redundancy
-$\varepsilon_{N}$. The joint coder, encoding X by its rank in the typical set under
-$D_{N}$, achieves rate H($D_{N}$) + o(N) by the asymptotic equipartition
+rate sum\_i H\_marg(X\_i) per block, with arithmetic-coding redundancy
+eps\_N. The joint coder, encoding X by its rank in the typical set under
+D\_N, achieves rate H(D\_N) + o(N) by the asymptotic equipartition
 property (Cover and Thomas 2006, Theorem 3.1.2), and no uniquely
 decodable code can do better by the converse. The difference of these
-rates is sum\_i H\_marg($X_{i}$) - H($D_{N}$), which is the total correlation
-TC($D_{N}$) by definition. Total correlation is non-negative, with equality
-iff positions are mutually independent under $D_{N}$. \textbf{∎}
+rates is sum\_i H\_marg(X\_i) - H(D\_N), which is the total correlation
+TC(D\_N) by definition. Total correlation is non-negative, with equality
+iff positions are mutually independent under D\_N. \textbf{∎}
 
 Theorem 5.6 generalizes Theorem 5.4 from the uniform-marginal
-linear-code construction to arbitrary source distributions. The $\Theta(N)$
+linear-code construction to arbitrary source distributions. The Theta(N)
 separation observed in Theorem 5.4 corresponds to TC = (4 - c)N for the
-linear-code family. For general $D_{N}$, the magnitude of TC($D_{N}$)
+linear-code family. For general D\_N, the magnitude of TC(D\_N)
 determines whether Type-II provides a constant-factor or vanishing
 improvement over factorized coding.
 
@@ -1116,10 +1116,10 @@ of the ambient space. Quantitatively, if D\_N\textquotesingle s typical
 realizations live on a manifold of intrinsic dimension d much smaller
 than N (measured via correlation dimension, the maximum-likelihood
 estimator of Levina and Bickel 2004, or persistent homology), the joint
-entropy is H($D_{N}$) = $O(d log N)$ bits. With per-position marginals near
-uniform on $A_{16}$, the multi-information is TC($D_{N}$) = 4N - $O(d log N)$ =
-$\Theta(N)$. The manifold hypothesis therefore predicts that Theorem
-5.6\textquotesingle s separation is $\Theta(N)$ for any natural data class
+entropy is H(D\_N) = O(d log N) bits. With per-position marginals near
+uniform on A\_16, the multi-information is TC(D\_N) = 4N - O(d log N) =
+Theta(N). The manifold hypothesis therefore predicts that Theorem
+5.6\textquotesingle s separation is Theta(N) for any natural data class
 admitting a low-dimensional manifold representation. Empirical
 intrinsic-dimension estimates support this regime: natural images have d
 in the range 10\^{}2 to 10\^{}3 in pixel-space ambient dimension 10\^{}6
@@ -1128,18 +1128,18 @@ bounded by schema complexity, often in tens; instruction streams have d
 bounded by valid-program-graph dimensionality. The empirical question of
 which data classes admit a small d, and the operational question of how
 to construct efficient enumerative encoders for the corresponding
-subsets $S_{N}$, are deferred to experimental work; the conditional
+subsets S\_N, are deferred to experimental work; the conditional
 separation theorem itself is established by Theorem 5.6 plus the
 manifold-hypothesis premise.
 
 \textbf{5.7 Worked numerical example}
 
-Consider a block of N = 1024 nibbles with counts $k_{v}$ = 64 for v = 0,
+Consider a block of N = 1024 nibbles with counts k\_v = 64 for v = 0,
 ..., 15 (i.e., uniformly balanced). The multinomial baseline of Theorem
 5.2 evaluates to
 
-\emph{$\log_2$ {[} 1024! / (64!)\^{}16 {]} approx 4 * 1024 - (15/2) $\log_2$
-1024 + $O(1)$ = 4096 - 75 + $O(1)$ approx 4021 bits.}
+\emph{log\_2 {[} 1024! / (64!)\^{}16 {]} approx 4 * 1024 - (15/2) log\_2
+1024 + O(1) = 4096 - 75 + O(1) approx 4021 bits.}
 
 The plain per‑byte raw cost is 4 * 1024 = 4096 bits. A factorized
 arithmetic coder under the uniform marginal pays approximately 4096
@@ -1147,10 +1147,10 @@ bits. The multinomial coder saves 75 bits just from the count constraint
 alone.
 
 Suppose a positional predictor narrows each symbol's candidate support
-to $s_{v}$ = 256 with no escapes, so $\alpha_{v}$ = 0. The Type‑II residual
+to s\_v = 256 with no escapes, so alpha\_v = 0. The Type‑II residual
 cost is
 
-\emph{sum\_v $\log_2$ C(256, 64) = 16 * $\log_2$ C(256, 64) approx 16 *
+\emph{sum\_v log\_2 C(256, 64) = 16 * log\_2 C(256, 64) approx 16 *
 203.6 = 3258 bits,}
 
 for an apparent gain of 4021 - 3258 approx 763 bits over the multinomial
@@ -1158,47 +1158,47 @@ baseline. Adding a model cost of, say, 200 bytes = 1600 bits amortized
 over m = 8 blocks gives 200 bits per block, leaving an effective gain of
 approximately 563 bits per block. This is a saving of roughly 70 bytes
 per 512‑byte equivalent block, a competitive figure on structured
-positional data. The estimate $\log_2$ C(256, 64) approx 203.6 uses
-Stirling: $\log_2$ C(N, k) = N * H(k/N) - (1/2) $\log_2$ (2 pi N p (1-p)) +
-$O(1/N)$, which for N = 256, p = 1/4 gives 207.69 - 4.12 approx 203.57.
+positional data. The estimate log\_2 C(256, 64) approx 203.6 uses
+Stirling: log\_2 C(N, k) = N * H(k/N) - (1/2) log\_2 (2 pi N p (1-p)) +
+O(1/N), which for N = 256, p = 1/4 gives 207.69 - 4.12 approx 203.57.
 
 \textbf{5.8 Optimal support threshold and the arithmetic-coding limit}
 
 Theorem 5.3 bounds the Type-II partition residual under a candidate
-support $S_{v}$ of fixed size $s_{v}$. The remaining design question is how to
-choose $S_{v}$ from the predictor\textquotesingle s probability field Q.
-The next result resolves this in two steps: (a) the optimal $S_{v}$ is a
-prefix of positions sorted by $Q_{v}$(i), and (b) the support-set
+support S\_v of fixed size s\_v. The remaining design question is how to
+choose S\_v from the predictor\textquotesingle s probability field Q.
+The next result resolves this in two steps: (a) the optimal S\_v is a
+prefix of positions sorted by Q\_v(i), and (b) the support-set
 construction is at best equivalent to per-position arithmetic coding
 under Q.
 
 \textbf{Proposition 5.5 (Optimal support is a prefix; arithmetic coding is
 the limit).} \emph{Fix a symbol v and a predictor Q with positions
-sorted in decreasing order of $Q_{v}$(i). Among all support sets $S_{v}$ of
+sorted in decreasing order of Q\_v(i). Among all support sets S\_v of
 any size, the choice that minimizes the expected Theorem 5.3 residual
-cost is the top-$s_{v}$* prefix, where $s_{v}$* is determined by the
-marginal-balance condition d/ds\_v {[} $\log_2$ C($s_{v}$, $k_{v}$ -
-$\alpha_{v}$($s_{v}$)) + $\log_2$ C(N - $s_{v}$, $\alpha_{v}$($s_{v}$)) {]} = 0. Moreover,
+cost is the top-s\_v* prefix, where s\_v* is determined by the
+marginal-balance condition d/ds\_v {[} log\_2 C(s\_v, k\_v -
+alpha\_v(s\_v)) + log\_2 C(N - s\_v, alpha\_v(s\_v)) {]} = 0. Moreover,
 the expected cost of the optimal support-set construction is at least
 the expected cost of per-position arithmetic coding driven by the same
 Q, with equality only in the degenerate limit where Q is binary (each
-$Q_{v}$(i) in \{0, 1\}).}
+Q\_v(i) in \{0, 1\}).}
 
-\emph{\textbf{Proof.}} Part (a): suppose $S_{v}$ is not a top-$Q_{v}$ prefix.
-Then there exist positions i, j with i in $S_{v}$, j not in $S_{v}$, and
-$Q_{v}$(j) \textgreater{} $Q_{v}$(i). Swapping i and j in $S_{v}$ leaves
-\textbar S\_v\textbar{} = $s_{v}$ unchanged but increases the expected
-number of true-positives in $S_{v}$ (since j is more likely to be in $M_{v}$
-than i under Q), which decreases the expected $\alpha_{v}$ and therefore
-decreases the expected sum in Theorem 5.3 (both $\log_2$ C($s_{v}$, $k_{v}$ -
-$\alpha_{v}$) and $\log_2$ C(N - $s_{v}$, $\alpha_{v}$) are monotone in $\alpha_{v}$).
+\emph{\textbf{Proof.}} Part (a): suppose S\_v is not a top-Q\_v prefix.
+Then there exist positions i, j with i in S\_v, j not in S\_v, and
+Q\_v(j) \textgreater{} Q\_v(i). Swapping i and j in S\_v leaves
+\textbar S\_v\textbar{} = s\_v unchanged but increases the expected
+number of true-positives in S\_v (since j is more likely to be in M\_v
+than i under Q), which decreases the expected alpha\_v and therefore
+decreases the expected sum in Theorem 5.3 (both log\_2 C(s\_v, k\_v -
+alpha\_v) and log\_2 C(N - s\_v, alpha\_v) are monotone in alpha\_v).
 Iterating this swap argument terminates at the top-prefix configuration.
 Part (b): per-position arithmetic coding under Q achieves expected
-length -sum\_i $\log_2$ Q\_\{x\_i\}(i), which by Shannon\textquotesingle s
-source coding theorem is the conditional entropy $H(X \mid Q)$ and
+length -sum\_i log\_2 Q\_\{x\_i\}(i), which by Shannon\textquotesingle s
+source coding theorem is the conditional entropy H(X \textbar{} Q) and
 is minimal among coders driven by Q. The support-set construction
-encodes membership in $S_{v}$ (a hard binary decision) and then a rank
-within C($s_{v}$, $k_{v}$ - $\alpha_{v}$), discarding the soft probability
+encodes membership in S\_v (a hard binary decision) and then a rank
+within C(s\_v, k\_v - alpha\_v), discarding the soft probability
 information in Q. By the data-processing inequality applied to this
 discretization, the support-set cost is at least the arithmetic-coding
 cost, with equality only when Q is already binary (so no discretization
@@ -1235,25 +1235,25 @@ token‑interval cover under a hierarchically indexed learned dictionary.
 
 \textbf{6.2 Type‑III‑A: entropy‑field meta‑prediction}
 
-Type‑III‑A predicts a per‑tile, per‑mode coding‑cost field $U_{m}$(t),
+Type‑III‑A predicts a per‑tile, per‑mode coding‑cost field U\_m(t),
 where t indexes a tile of the block (a fixed‑size window of 64, 128,
 256, or 512 positions) and m in M indexes a coding mode (Type‑I,
 Type‑II, Type‑III‑B, Type‑III‑C, raw escape). The deterministic selector
-chooses $\hat{m}$(t) = argmin\_m $U_{m}$(t), and each tile is encoded with the
+chooses m\_hat(t) = argmin\_m U\_m(t), and each tile is encoded with the
 selected mode. Because U is a function of decoder‑reproducible state, no
 per‑tile mode flag needs to be stored, except when the encoder departs
 from the predicted argmin.
 
-Let $L_{m}$(t) denote the actual code length when tile t is encoded with
-mode m, and $U_{m}$(t) the predicted value. Define the per‑mode prediction
-error $\varepsilon_{t}$ = max\_m \textbar{} $U_{m}$(t) - $L_{m}$(t) \textbar. The next
+Let L\_m(t) denote the actual code length when tile t is encoded with
+mode m, and U\_m(t) the predicted value. Define the per‑mode prediction
+error eps\_t = max\_m \textbar{} U\_m(t) - L\_m(t) \textbar. The next
 theorem bounds the gap between the cost of the model‑selected mode and
 the cost of the oracle‑best mode.
 
 \textbf{Theorem 6.1 (Approximate‑oracle mode selection (Type‑III‑A)).}
-\emph{Let $m^\star$(t) = argmin\_m $L_{m}$(t) be the oracle best mode for
-tile t and $\hat{m}$(t) = argmin\_m $U_{m}$(t) be the model‑selected mode. If
-\textbar{} $U_{m}$(t) - $L_{m}$(t) \textbar{} $\leq$ $\varepsilon_{t}$ for every m,
+\emph{Let m\_star(t) = argmin\_m L\_m(t) be the oracle best mode for
+tile t and m\_hat(t) = argmin\_m U\_m(t) be the model‑selected mode. If
+\textbar{} U\_m(t) - L\_m(t) \textbar{} \textless= eps\_t for every m,
 then}
 
 \[
@@ -1261,43 +1261,43 @@ L_{\hat{m}(t)}(t) \leq L_{m^\star(t)}(t) + 2\varepsilon_t.
 \tag{6.1}
 \]
 
-\emph{\textbf{Proof.}} By the prediction error bound, L\_\{$\hat{m}$\}(t)
-$\leq$ U\_\{$\hat{m}$\}(t) + $\varepsilon_{t}$. By the definition of $\hat{m}$,
-U\_\{$\hat{m}$\}(t) $\leq$ U\_\{$m^\star$\}(t). By the prediction error
-bound applied to $m^\star$, U\_\{$m^\star$\}(t) $\leq$ L\_\{$m^\star$\}(t)
-+ $\varepsilon_{t}$. Chaining: L\_\{$\hat{m}$\}(t) $\leq$ L\_\{$m^\star$\}(t) + 2 *
-$\varepsilon_{t}$. \textbf{∎}
+\emph{\textbf{Proof.}} By the prediction error bound, L\_\{m\_hat\}(t)
+\textless= U\_\{m\_hat\}(t) + eps\_t. By the definition of m\_hat,
+U\_\{m\_hat\}(t) \textless= U\_\{m\_star\}(t). By the prediction error
+bound applied to m\_star, U\_\{m\_star\}(t) \textless= L\_\{m\_star\}(t)
++ eps\_t. Chaining: L\_\{m\_hat\}(t) \textless= L\_\{m\_star\}(t) + 2 *
+eps\_t. \textbf{∎}
 
-The 2*$\varepsilon$ factor is tight. The theorem says: a Type‑III‑A coder loses at
+The 2*eps factor is tight. The theorem says: a Type‑III‑A coder loses at
 most twice the per‑mode prediction error relative to an omniscient mode
 selector. When the predictor is accurate on per‑mode cost (small
-$\varepsilon_{t}$), the loss vanishes. This is the formal justification for
+eps\_t), the loss vanishes. This is the formal justification for
 predicting prediction cost.
 
 A useful corollary is that Type‑III‑A composes with any set of
 underlying coders without loss: adding a new mode m′ to M can only
-decrease the oracle cost, and the 2*$\varepsilon$ bound continues to hold provided
+decrease the oracle cost, and the 2*eps bound continues to hold provided
 the predictor is calibrated on m′. This gives Type‑III‑A its role as the
 top‑level scheduler in any RNR composition.
 
-\textbf{Theorem 6.2 (Tightness of the 2*$\varepsilon$ bound).} \emph{For every $\varepsilon$
-\textgreater{} 0 and every $\delta$ \textgreater{} 0, there exist a tile, a
-mode set M of size 2, true costs $L_{m}$(t), and predictions $U_{m}$(t) with
-max\_m \textbar{} $U_{m}$(t) - $L_{m}$(t) \textbar{} $\leq$ $\varepsilon$ such that
-the model-selected mode $\hat{m}$ satisfies L\_\{$\hat{m}$\}(t) $\geq$
-L\_\{$m^\star$\}(t) + 2 * $\varepsilon$ - $\delta$.}
+\textbf{Theorem 6.2 (Tightness of the 2*eps bound).} \emph{For every eps
+\textgreater{} 0 and every delta \textgreater{} 0, there exist a tile, a
+mode set M of size 2, true costs L\_m(t), and predictions U\_m(t) with
+max\_m \textbar{} U\_m(t) - L\_m(t) \textbar{} \textless= eps such that
+the model-selected mode m\_hat satisfies L\_\{m\_hat\}(t) \textgreater=
+L\_\{m\_star\}(t) + 2 * eps - delta.}
 
-\emph{\textbf{Proof.}} Set $L_{1}$ = $\delta$/2 and $L_{2}$ = 2 * $\varepsilon$ - $\delta$/2,
-so $m^\star$ = 1 and L\_\{$m^\star$\} = $\delta$/2. Set $U_{1}$ = $\delta$/2 + $\varepsilon$
-(overestimate by $\varepsilon$) and $U_{2}$ = $\varepsilon$ - $\delta$/2 (underestimate by $\varepsilon$).
-Then \textbar{} $U_{1}$ - $L_{1}$ \textbar{} = $\varepsilon$ and \textbar{} $U_{2}$ - $L_{2}$
-\textbar{} = $\varepsilon$, both within bound. Since $U_{2}$ = $\varepsilon$ - $\delta$/2
-\textless{} $\varepsilon$ + $\delta$/2 = $U_{1}$, the argmin selects $\hat{m}$ = 2.
-Therefore L\_\{$\hat{m}$\} - L\_\{$m^\star$\} = (2 * $\varepsilon$ - $\delta$/2) - $\delta$/2
-= 2 * $\varepsilon$ - $\delta$. As $\delta$ tends to zero, the gap approaches 2 * $\varepsilon$.
+\emph{\textbf{Proof.}} Set L\_1 = delta/2 and L\_2 = 2 * eps - delta/2,
+so m\_star = 1 and L\_\{m\_star\} = delta/2. Set U\_1 = delta/2 + eps
+(overestimate by eps) and U\_2 = eps - delta/2 (underestimate by eps).
+Then \textbar{} U\_1 - L\_1 \textbar{} = eps and \textbar{} U\_2 - L\_2
+\textbar{} = eps, both within bound. Since U\_2 = eps - delta/2
+\textless{} eps + delta/2 = U\_1, the argmin selects m\_hat = 2.
+Therefore L\_\{m\_hat\} - L\_\{m\_star\} = (2 * eps - delta/2) - delta/2
+= 2 * eps - delta. As delta tends to zero, the gap approaches 2 * eps.
 \textbf{∎}
 
-Theorem 6.2 shows that the 2*$\varepsilon$ factor in Theorem 6.1 cannot be
+Theorem 6.2 shows that the 2*eps factor in Theorem 6.1 cannot be
 improved without additional assumptions on the
 predictor\textquotesingle s error structure (for example, one-sided
 errors, calibrated quantile bounds, or bounded total variation between U
@@ -1308,27 +1308,27 @@ typical case but the worst-case factor is exactly 2.
 
 Type‑III‑B extends Type‑II from nibble to byte alphabets by jointly
 modeling the high and low nibbles of each byte. Write byte b = 16h + l
-with h, l in $A_{16}$. The model predicts a 16 x 16 x N tensor
-Q\_\{h,l\}(i) approximating Pr($h_{i}$ = h, $l_{i}$ = l \textbar{} C),
+with h, l in A\_16. The model predicts a 16 x 16 x N tensor
+Q\_\{h,l\}(i) approximating Pr(h\_i = h, l\_i = l \textbar{} C),
 normalized so the double sum over h and l of Q\_\{h,l\}(i) equals 1 for
 every i. The construction is exactly Type‑II with a 256‑symbol alphabet
 but with the alphabet structure exposed.
 
 Two coding strategies are available. Direct partition coding treats the
-alphabet as 256 flat classes and applies Theorem 5.3 with $A_{256}$.
+alphabet as 256 flat classes and applies Theorem 5.3 with A\_256.
 Hierarchical coding decomposes the byte partition along the high‑nibble
-axis: first encode the high‑nibble partition M\^{}$H_{h}$ = \{ i : $h_{i}$ = h
+axis: first encode the high‑nibble partition M\^{}H\_h = \{ i : h\_i = h
 \}, then for each h encode the low‑nibble conditional partition
-M\^{}\{L\textbar H=h\}\_l = \{ i in M\^{}$H_{h}$ : $l_{i}$ = l \}. The
+M\^{}\{L\textbar H=h\}\_l = \{ i in M\^{}H\_h : l\_i = l \}. The
 hierarchical scheme is preferred when the predictor decomposes naturally
-as Q\_\{h,l\}(i) = Q\^{}$H_{h}$(i) * Q\^{}\{L\textbar H\}\_l(i, h).
+as Q\_\{h,l\}(i) = Q\^{}H\_h(i) * Q\^{}\{L\textbar H\}\_l(i, h).
 
 \textbf{Theorem 6.3 (Type‑III‑B mutual‑information advantage).}
 \emph{Let H, L, and C denote the random variables corresponding to the
 high nibble, low nibble, and public context at a fixed position. Under
 an ideal entropy coder, independent nibble coding pays expected length
-$H(H \mid C)$ + $H(L \mid C)$ per position, while joint byte
-coding pays $H(H, L \mid C)$. The advantage of byte coding over
+H(H \textbar{} C) + H(L \textbar{} C) per position, while joint byte
+coding pays H(H, L \textbar{} C). The advantage of byte coding over
 independent nibble coding is}
 
 \[
@@ -1338,17 +1338,17 @@ independent nibble coding is}
 
 \emph{the conditional mutual information between the high and low nibble
 given context. Type‑III‑B is conditionally advantageous over Type‑II at
-the nibble alphabet whenever $I(H ; L \mid C)$ exceeds the
+the nibble alphabet whenever I(H ; L \textbar{} C) exceeds the
 additional model and metadata cost of byte‑tensor prediction.}
 
 \emph{\textbf{Proof.}} By the chain rule of entropy, H(H, L \textbar{}
-C) = $H(H \mid C)$ + $H(L \mid H, C)$. Subtracting from H(H
-\textbar{} C) + $H(L \mid C)$ gives $H(L \mid C)$ - H(L
-\textbar{} H, C), which by definition is $I(H ; L \mid C)$. Both
-terms are non‑negative, so Delta\_B $\geq$ 0, with equality iff L
+C) = H(H \textbar{} C) + H(L \textbar{} H, C). Subtracting from H(H
+\textbar{} C) + H(L \textbar{} C) gives H(L \textbar{} C) - H(L
+\textbar{} H, C), which by definition is I(H ; L \textbar{} C). Both
+terms are non‑negative, so Delta\_B \textgreater= 0, with equality iff L
 is conditionally independent of H given C. \textbf{∎}
 
-The mutual information $I(H ; L \mid C)$ is large for many practical
+The mutual information I(H ; L \textbar{} C) is large for many practical
 data classes. ASCII text concentrates on high nibbles 2 through 7 with
 structured low‑nibble distributions per high nibble; opcode streams
 restrict low nibbles depending on the high nibble; pixel data has
@@ -1362,17 +1362,17 @@ tree whose leaves are the 256 byte values, defining a sequence of nested
 binary partitions of the alphabet. Encoding a byte b under T by
 traversing root-to-leaf and encoding the binary decision at each node
 with the corresponding conditional probability achieves expected length
-$H(B \mid C)$. The expected cost is independent of the tree shape T;
-it depends only on the joint distribution $P(B \mid C)$.}
+H(B \textbar{} C). The expected cost is independent of the tree shape T;
+it depends only on the joint distribution P(B \textbar{} C).}
 
 \emph{\textbf{Proof.}} By the chain rule of entropy, for any sequence of
-random variables $Z_{1}$, ..., $Z_{L}$ that together determine B, H(B
-\textbar{} C) = H($Z_{1}$ \textbar{} C) + H($Z_{2}$ \textbar{} $Z_{1}$, C) + ...
-+ H($Z_{L}$ \textbar{} $Z_{1}$, ..., Z\_\{L-1\}, C). The tree T defines a
-particular such sequence: $Z_{l}$ is the binary decision at depth l on the
+random variables Z\_1, ..., Z\_L that together determine B, H(B
+\textbar{} C) = H(Z\_1 \textbar{} C) + H(Z\_2 \textbar{} Z\_1, C) + ...
++ H(Z\_L \textbar{} Z\_1, ..., Z\_\{L-1\}, C). The tree T defines a
+particular such sequence: Z\_l is the binary decision at depth l on the
 path to B\textquotesingle s leaf. By the chain rule, the sum of
-conditional entropies equals $H(B \mid C)$ regardless of which
-decisions are encoded first. Different trees $T_{1}$ and $T_{2}$ simply
+conditional entropies equals H(B \textbar{} C) regardless of which
+decisions are encoded first. Different trees T\_1 and T\_2 simply
 reorder the conditional entropies, and reordering does not change their
 sum. \textbf{∎}
 
@@ -1383,17 +1383,17 @@ code length. The optimal tree for a specific practical entropy coder is
 the one whose binary decisions are best predicted by the available Q;
 this is a calibration question, not a coding-rate question. In
 particular, the canonical high-low decomposition is optimal when the
-predictor factorizes naturally as Q\_\{h,l\}(i) = Q\^{}$H_{h}$(i) *
+predictor factorizes naturally as Q\_\{h,l\}(i) = Q\^{}H\_h(i) *
 Q\^{}\{L\textbar H\}\_l(i, h), which is typical for transformer
 predictors trained on byte streams.
 
 \textbf{6.4 Type‑III‑C: token tensor coding}
 
 Type‑III‑C generalizes Type‑III‑B from the byte alphabet to a learned
-token dictionary D = \{$\tau_{0}$, ..., tau\_\{K-1\}\}. Tokens may be single
+token dictionary D = \{tau\_0, ..., tau\_\{K-1\}\}. Tokens may be single
 bytes, byte pairs, longer byte fragments, or structural markers. The
 model predicts a position‑and‑scale tensor Q(k, i, s) approximating
-Pr($\tau_{k}$ begins at position i at scale s \textbar{} C), where s is a
+Pr(tau\_k begins at position i at scale s \textbar{} C), where s is a
 length or scale class.
 
 The dictionary is structured hierarchically as a grid of K = a * b
@@ -1410,7 +1410,7 @@ to D is governed by the standard MDL token gain criterion, formalized in
 the next theorem.
 
 \textbf{Theorem 6.5 (Type‑III‑C MDL token admission).} \emph{A candidate
-token $\tau$ of byte length ell and corpus frequency f is admitted to D if
+token tau of byte length ell and corpus frequency f is admitted to D if
 its per‑corpus savings exceed its description cost:}
 
 \[
@@ -1418,19 +1418,19 @@ f \cdot [8\ell - \mathrm{code\_cost}(\tau)] > \mathrm{dictionary\_cost}(\tau) + 
 \tag{6.3}
 \]
 
-\emph{where code\_cost($\tau$) is the average bit length to encode an
-occurrence of $\tau$ under the predictor and entropy coder,
-dictionary\_cost($\tau$) is the bit length to describe $\tau$ in the
-dictionary header, and parse\_overhead($\tau$) accounts for any additional
-boundary or interval bookkeeping introduced by including $\tau$.}
+\emph{where code\_cost(tau) is the average bit length to encode an
+occurrence of tau under the predictor and entropy coder,
+dictionary\_cost(tau) is the bit length to describe tau in the
+dictionary header, and parse\_overhead(tau) accounts for any additional
+boundary or interval bookkeeping introduced by including tau.}
 
-\emph{\textbf{Proof.}} Without $\tau$ in D, each occurrence of the byte
+\emph{\textbf{Proof.}} Without tau in D, each occurrence of the byte
 pattern is coded as raw literals at 8 * ell bits, with no contribution
-to the dictionary. With $\tau$ in D, each occurrence is coded at
-code\_cost($\tau$) bits and the dictionary pays dictionary\_cost($\tau$) once
-plus parse\_overhead($\tau$) per use. Across f occurrences, the net change
+to the dictionary. With tau in D, each occurrence is coded at
+code\_cost(tau) bits and the dictionary pays dictionary\_cost(tau) once
+plus parse\_overhead(tau) per use. Across f occurrences, the net change
 in total code length is the right‑hand side of (6.3) minus the left‑hand
-side; $\tau$ reduces the total length iff the left‑hand side dominates.
+side; tau reduces the total length iff the left‑hand side dominates.
 \textbf{∎}
 
 The token MDL criterion is the standard dictionary‑learning admission
@@ -1466,28 +1466,28 @@ and z \textasciitilde{} q satisfies}
 \]
 
 \emph{When q equals the true posterior, the KL term vanishes and the
-bits-back rate equals the conditional entropy $H(X \mid Y)$,
+bits-back rate equals the conditional entropy H(X \textbar{} Y),
 matching the Slepian-Wolf lower bound. Type-III-C with continuous
 latents is therefore a strict generalization of Type-III-C with a
 discrete dictionary, with the dictionary case as the degenerate limit q
--\textgreater{} Dirac-$\delta$ at the nearest discrete token.}
+-\textgreater{} Dirac-delta at the nearest discrete token.}
 
 \emph{\textbf{Proof.}} The three-stream bits-back coder transmits
-$\log_2$(1 / P(z \textbar{} Y)) bits for the latent under the prior,
-$\log_2$(1 / P(X \textbar{} z, Y)) bits for the data under the
-conditional, and recovers $\log_2$(1 / q(z \textbar{} X, Y)) bits from the
-auxiliary stream (used to sample z). Net code length: -$\log_2$ P(z
-\textbar{} Y) - $\log_2$ P(X \textbar{} z, Y) + $\log_2$ q(z \textbar{} X,
-Y) = -$\log_2$ P(X, z \textbar{} Y) + $\log_2$ q(z \textbar{} X, Y) =
--$\log_2$ $P(X \mid Y)$ + $\log_2$ {[} q(z \textbar{} X, Y) / P(z
+log\_2(1 / P(z \textbar{} Y)) bits for the latent under the prior,
+log\_2(1 / P(X \textbar{} z, Y)) bits for the data under the
+conditional, and recovers log\_2(1 / q(z \textbar{} X, Y)) bits from the
+auxiliary stream (used to sample z). Net code length: -log\_2 P(z
+\textbar{} Y) - log\_2 P(X \textbar{} z, Y) + log\_2 q(z \textbar{} X,
+Y) = -log\_2 P(X, z \textbar{} Y) + log\_2 q(z \textbar{} X, Y) =
+-log\_2 P(X \textbar{} Y) + log\_2 {[} q(z \textbar{} X, Y) / P(z
 \textbar{} X, Y) {]}, using the joint factorization P(X, z \textbar{} Y)
-= $P(X \mid Y)$ * P(z \textbar{} X, Y). Taking expectation under q(z
-\textbar{} X, Y) conditional on X: E{[}net \textbar{} X{]} = -$\log_2$ P(X
+= P(X \textbar{} Y) * P(z \textbar{} X, Y). Taking expectation under q(z
+\textbar{} X, Y) conditional on X: E{[}net \textbar{} X{]} = -log\_2 P(X
 \textbar{} Y) + KL(q(z \textbar{} X, Y) \textbar\textbar{} P(z
 \textbar{} X, Y)). Taking expectation under X \textasciitilde{} D:
-E{[}net{]} = $H(X \mid Y)$ + E\_\{X \textasciitilde{} D\}{[} KL(q(z
+E{[}net{]} = H(X \textbar{} Y) + E\_\{X \textasciitilde{} D\}{[} KL(q(z
 \textbar{} X, Y) \textbar\textbar{} P(z \textbar{} X, Y)) {]}. When q
-equals the posterior, KL is zero and the rate is $H(X \mid Y)$.
+equals the posterior, KL is zero and the rate is H(X \textbar{} Y).
 \textbf{∎}
 
 \textbf{Theorem 6.7 (Joint dictionary and predictor learning is
@@ -1503,9 +1503,9 @@ grammar of minimum total description size that generates only s; SGP is
 NP-hard and APX-hard. Given an SGP instance s, construct a Type-III-C
 instance with corpus X = s and a trivial constant predictor M that
 assigns uniform probability over the dictionary at every position (so
-L(M) = $O(1)$ is fixed). Under this construction, the optimal dictionary D
+L(M) = O(1) is fixed). Under this construction, the optimal dictionary D
 corresponds bijectively to a smallest grammar for s: each non-terminal
-in the grammar becomes a token, dictionary\_cost($\tau$) corresponds to the
+in the grammar becomes a token, dictionary\_cost(tau) corresponds to the
 rule description length for the corresponding non-terminal, and the MDL
 admission criterion of Theorem 6.5 selects exactly the rules of an
 MDL-optimal grammar. A polynomial-time solver for the Type-III-C
@@ -1523,15 +1523,15 @@ sacrifice optimality for tractability.
 
 \textbf{Theorem 6.8 (Inapproximability of joint dictionary-and-predictor
 learning).} \emph{Joint dictionary-and-predictor learning for Type-III-C
-is APX-hard. There exists an explicit constant $\gamma$ \textgreater{} 1
+is APX-hard. There exists an explicit constant gamma \textgreater{} 1
 such that no polynomial-time algorithm achieves approximation ratio
-better than $\gamma$ for the total code length, unless P = NP. The bound
+better than gamma for the total code length, unless P = NP. The bound
 holds even with M restricted to the trivial constant predictor.}
 
 \emph{\textbf{Proof.}} The reduction from the Smallest Grammar Problem
 (SGP) constructed in Theorem 6.7 is gap-preserving: a polynomial-time
-$\gamma$-approximation for joint dictionary learning on the constructed
-instance would yield a polynomial-time $\gamma$-approximation for SGP via
+gamma-approximation for joint dictionary learning on the constructed
+instance would yield a polynomial-time gamma-approximation for SGP via
 the same correspondence between non-terminals and dictionary entries.
 Charikar, Lehman, Liu, Panigrahy, Prabhakaran, Sahai and Shelat (2005)
 established that SGP is APX-hard with an explicit inapproximability
@@ -1549,8 +1549,8 @@ approximation gap unless P = NP.
 \textbf{6.5 Worked numerical example for Type‑III‑B}
 
 Consider an ASCII‑text block where the empirical marginal entropies are
-$H(H \mid C)$ = 2.4 bits and $H(L \mid C)$ = 2.9 bits per byte,
-while the joint entropy is $H(H, L \mid C)$ = 4.7 bits. Independent
+H(H \textbar{} C) = 2.4 bits and H(L \textbar{} C) = 2.9 bits per byte,
+while the joint entropy is H(H, L \textbar{} C) = 4.7 bits. Independent
 nibble coding pays 2.4 + 2.9 = 5.3 bits per byte; joint byte coding pays
 4.7 bits per byte. The mutual‑information advantage is Delta\_B = 5.3 -
 4.7 = 0.6 bits per byte, or 0.075 bytes per byte (about 7.5\% saving)
@@ -1570,20 +1570,20 @@ mode.
 \textbf{Theorem 7.1 (Composition correctness).} \emph{Let M be a finite
 set of RNR mode coders, each producing a uniquely decodable repair
 stream conditional on its mode flag. The Type‑III‑A composition with
-mode set M, deterministic mode selection $\hat{m}$(t) = argmin\_m $U_{m}$(t),
+mode set M, deterministic mode selection m\_hat(t) = argmin\_m U\_m(t),
 and a uniquely decodable mode‑flag stream produces a uniquely decodable
 codeword for X.}
 
 \emph{\textbf{Proof.}} The decoder reads the metadata, reconstructs
-U\_*(t) deterministically from public state, recovers $\hat{m}$(t) by the
+U\_*(t) deterministically from public state, recovers m\_hat(t) by the
 same argmin, reads the per‑tile repair stream, and applies the decoder
-of mode $\hat{m}$(t) to recover the tile. Each step is uniquely determined;
+of mode m\_hat(t) to recover the tile. Each step is uniquely determined;
 the concatenation is therefore an injection from X to codewords.
 \textbf{∎}
 
 Composition also implies a strict no‑regret guarantee for the framework
 as a whole: by including every coder in M, the Type‑III‑A composition is
-at worst within 2 * max\_t $\varepsilon_{t}$ of the best single coder per tile, and
+at worst within 2 * max\_t eps\_t of the best single coder per tile, and
 strictly better than any single coder on heterogeneous data where the
 per‑tile best mode varies.
 
@@ -1591,7 +1591,7 @@ per‑tile best mode varies.
 
 Several parameters in the framework are input-dependent: the codeword
 rate k in Type-I (Code-k), the alphabet size K in Type-II, the support
-threshold $\tau_{v}$ in Proposition 5.5, the tile size in Type-III-A, the
+threshold tau\_v in Proposition 5.5, the tile size in Type-III-A, the
 dictionary size in Type-III-C, and others. No single setting is optimal
 across all inputs; the right approach is input probing at encode time,
 where the encoder scans the block, estimates the relevant structural
@@ -1604,7 +1604,7 @@ parameter value defines a distinct coder, and the Type-III-A scheduler
 chooses among them by predicted cost. The composition theorem (Theorem
 7.1) and the approximate-oracle bound (Theorem 6.1) both extend to
 parameterized modes without change, with the per-mode prediction error
-$\varepsilon_{t}$ now defined over the cross product of (mode, parameter) pairs.
+eps\_t now defined over the cross product of (mode, parameter) pairs.
 The cost is the metadata overhead of encoding the parameter choice,
 typically O(log K\_params) bits per tile or per block, which is
 negligible against the per-mode repair stream.
@@ -1654,31 +1654,31 @@ consequences. We discipline this by requiring that the decoder update
 its context only after verifying the candidate decoded subblock against
 a stored hash.
 
-Let X = ($X_{1}$, ..., $X_{m}$) be partitioned into verified subblocks, with
-stored verification values $v_{i}$ = $H_{v}$($X_{i}$). The decoder produces
-$\hat{X}$\_i, checks $H_{v}$($\hat{X}$\_i) = $v_{i}$, and only on success uses
-$\hat{X}$\_i to update C for subblock i + 1. The following theorem rules
+Let X = (X\_1, ..., X\_m) be partitioned into verified subblocks, with
+stored verification values v\_i = H\_v(X\_i). The decoder produces
+X\_hat\_i, checks H\_v(X\_hat\_i) = v\_i, and only on success uses
+X\_hat\_i to update C for subblock i + 1. The following theorem rules
 out cross‑subblock error propagation.
 
 \textbf{Theorem 9.1 (No cross‑subblock error propagation).}
-\emph{Suppose $H_{v}$ is a cryptographic hash with negligible collision
-probability $\delta$ on the considered set of candidate subblocks. Then the
-probability that an incorrect $\hat{X}$\_i is used to update the context
-for subblock i + 1 is at most $\delta$.}
+\emph{Suppose H\_v is a cryptographic hash with negligible collision
+probability delta on the considered set of candidate subblocks. Then the
+probability that an incorrect X\_hat\_i is used to update the context
+for subblock i + 1 is at most delta.}
 
 \emph{\textbf{Proof.}} The context update rule is conditional on
-$H_{v}$($\hat{X}$\_i) = $v_{i}$. If $\hat{X}$\_i is not equal to $X_{i}$, then
-$H_{v}$($\hat{X}$\_i) = $v_{i}$ can occur only as a hash collision with the
-unique stored $v_{i}$. Under the cryptographic hash assumption, this
-happens with probability at most $\delta$ per candidate. The bound holds by
-union over the considered candidates if $\delta$ is interpreted
+H\_v(X\_hat\_i) = v\_i. If X\_hat\_i is not equal to X\_i, then
+H\_v(X\_hat\_i) = v\_i can occur only as a hash collision with the
+unique stored v\_i. Under the cryptographic hash assumption, this
+happens with probability at most delta per candidate. The bound holds by
+union over the considered candidates if delta is interpreted
 accordingly. \textbf{∎}
 
-The theorem is stated for cryptographic $H_{v}$ because non‑cryptographic
+The theorem is stated for cryptographic H\_v because non‑cryptographic
 hashes (CRCs, simple checksums) admit structured collisions that an
 adversarial or simply unlucky predictor may produce. In practice we
 recommend a truncated SHA‑256 per verified subblock. A 64‑bit truncation
-gives $\delta$ approximately 2\^{}\{-64\}, which is operationally
+gives delta approximately 2\^{}\{-64\}, which is operationally
 negligible and costs 8 bytes per subblock; a full SHA‑256 costs 32
 bytes.
 
@@ -1762,8 +1762,8 @@ bit-exact across any pair of conforming implementations.
 inference).} \emph{Let M be an inference graph with L layers, where each
 layer is implemented as an integer matrix-vector product followed by a
 non-linearity. Suppose: (i) all weights and inputs are integers; (ii)
-all intermediate accumulators use bit-width b satisfying b $\geq$
-ceil($\log_2$(L * W\_max * I\_max)) + 1, where W\_max is an upper bound on
+all intermediate accumulators use bit-width b satisfying b \textgreater=
+ceil(log\_2(L * W\_max * I\_max)) + 1, where W\_max is an upper bound on
 the L1 norm of any weight row and I\_max is an upper bound on the
 magnitude of any layer input; (iii) all non-linearities are
 deterministic integer-to-integer mappings (e.g., piecewise-constant
@@ -1785,10 +1785,10 @@ table to the same input produce the same output. By induction on layer
 depth, the output of layer l is identical across implementations, hence
 the final M(C) is identical. \textbf{∎}
 
-The bit-width condition b $\geq$ ceil($\log_2$(L * W\_max *
+The bit-width condition b \textgreater= ceil(log\_2(L * W\_max *
 I\_max)) + 1 is the precision required to avoid overflow in the worst
-case; in practice, b = 32 is sufficient for any L $\leq$ 64, W\_max
-$\leq$ 2\^{}16, I\_max $\leq$ 2\^{}16, which covers all
+case; in practice, b = 32 is sufficient for any L \textless= 64, W\_max
+\textless= 2\^{}16, I\_max \textless= 2\^{}16, which covers all
 practical predictor sizes. The non-linearity table requirement excludes
 any function involving real-valued division, square root, or
 transcendentals; sigmoid, tanh, GELU, and softmax must be replaced by
@@ -1821,10 +1821,10 @@ low-precision-training literature.
 
 \textbf{Definition 10.1 (Compatible online optimizer).} An online
 optimizer Opt is compatible with bit-exact reproduction if: (a) its
-state at step t, denoted $S_{t}$ (parameters, momentum, accumulators, and
+state at step t, denoted S\_t (parameters, momentum, accumulators, and
 any auxiliary buffers), is a tuple of fixed-bit-width integers; (b) its
-update function S\_\{t+1\} = Opt($S_{t}$, $g_{t}$) takes the current state and
-a fixed-bit-width integer gradient $g_{t}$ and produces the new state via a
+update function S\_\{t+1\} = Opt(S\_t, g\_t) takes the current state and
+a fixed-bit-width integer gradient g\_t and produces the new state via a
 deterministic computation using only integer arithmetic, lookup tables,
 and seeded pseudorandom number generation; (c) any operation that would
 otherwise require real-valued computation (division, square root,
@@ -1859,19 +1859,19 @@ resulting predictor outputs are bit-identical.}
 
 \emph{\textbf{Proof.}} Induction on the adaptation step t. Base case (t
 = 0): the initial parameter state is part of L(M) and is bit-identical
-by construction. Induction step (t -\textgreater{} t+1): assume $S_{t}$ is
-bit-identical between encoder and decoder. The subblock $X_{t}$ used for
+by construction. Induction step (t -\textgreater{} t+1): assume S\_t is
+bit-identical between encoder and decoder. The subblock X\_t used for
 adaptation is verified by Theorem 9.1 to be the same on both sides. The
-gradient $g_{t}$ = grad(L($X_{t}$; $S_{t}$)) is computed by deterministic integer
+gradient g\_t = grad(L(X\_t; S\_t)) is computed by deterministic integer
 backpropagation. Integer backpropagation through a forward pass
 satisfying Theorem 10.1\textquotesingle s conditions is itself
 deterministic (each backward operation is an integer matrix-vector
 product with a fixed reduction order, followed by an integer-to-integer
-derivative-of-non-linearity table). Therefore $g_{t}$ is bit-identical on
-both sides. The update S\_\{t+1\} = Opt($S_{t}$, $g_{t}$) applies the
+derivative-of-non-linearity table). Therefore g\_t is bit-identical on
+both sides. The update S\_\{t+1\} = Opt(S\_t, g\_t) applies the
 deterministic integer-to-integer function from Definition 10.1 to
 bit-identical inputs, producing bit-identical outputs. By induction,
-$S_{t}$ is bit-identical for all t. By Theorem 10.1 applied to each $S_{t}$,
+S\_t is bit-identical for all t. By Theorem 10.1 applied to each S\_t,
 the predictor output is bit-identical at every adaptation step.
 \textbf{∎}
 
@@ -1898,8 +1898,8 @@ common. The RNR framework supports random access in time independent of
 N, provided the predictor has bounded context. We make this precise.
 
 \textbf{Definition 10.2 (W-bounded predictor).} A predictor M is
-W-bounded if its output $Y_{i}$ = M($C_{i}$) at position i depends only on the
-previous W bytes of public context: $Y_{i}$ = M(X\_\{i-W\}, ...,
+W-bounded if its output Y\_i = M(C\_i) at position i depends only on the
+previous W bytes of public context: Y\_i = M(X\_\{i-W\}, ...,
 X\_\{i-1\}) when C is built incrementally from decoded subblocks. The
 bound W is a structural property of M\textquotesingle s architecture,
 not a tunable parameter at inference time.
@@ -1917,7 +1917,7 @@ is reset to a known initial value Q\_init independent of bytes {[}0, P).
 The encoder inserts sync points at fixed intervals K and includes a seek
 index in the archive mapping each sync point identifier to its bit
 offset in R and byte offset in X. The seek index has size at most
-ceil(N/K) * ceil($\log_2$ L(R)) bits.
+ceil(N/K) * ceil(log\_2 L(R)) bits.
 
 Each sync point forfeits some compression efficiency because the
 predictor restarts cold and cannot exploit the prior W bytes of context.
@@ -1925,7 +1925,7 @@ For a W-bounded predictor, the per-sync-point cost is bounded by W *
 (cold-context rate minus asymptotic rate), typically a few hundred
 bytes. The total compression cost of sync points is O((N/K) * W) bytes.
 
-\textbf{Theorem 10.3 (Random access in time $O(K + k)$).} \emph{Let X be
+\textbf{Theorem 10.3 (Random access in time O(K + k)).} \emph{Let X be
 compressed under RNR with a W-bounded predictor M satisfying Theorem
 10.1 and with sync points placed every K positions. Random access to k
 consecutive bytes starting at any position N requires: (i) O(log(N/K))
@@ -1936,13 +1936,13 @@ predictor evaluations and entropy-coder updates. Total work is O((K + k)
 * cost(M)), independent of N.}
 
 \emph{\textbf{Proof.}} Binary-search the seek index for the largest sync
-point P with P $\leq$ N; the index has at most ceil(N/K) entries,
+point P with P \textless= N; the index has at most ceil(N/K) entries,
 giving O(log(N/K)) seek cost. By Definition 10.3, decoding from
 R\textquotesingle s bit offset at P proceeds with predictor state
 initialized to Q\_init. Decode forward one position at a time: at each
-position i in \{P, P+1, ..., N+k-1\}, compute $Y_{i}$ = M($C_{i}$) where $C_{i}$
+position i in \{P, P+1, ..., N+k-1\}, compute Y\_i = M(C\_i) where C\_i
 is the context built from previously decoded positions {[}P, i). By the
-W-bounded property (Definition 10.2), $Y_{i}$ depends only on bytes {[}i-W,
+W-bounded property (Definition 10.2), Y\_i depends only on bytes {[}i-W,
 i), which are all available within the decoded prefix once i exceeds P +
 W. The first W positions after P may have shortened context (positions
 {[}P, P+W) see fewer than W bytes), which the encoder accommodates by
@@ -1951,7 +1951,7 @@ exactly the cold-context cost analyzed before. Continue decoding until
 position N + k; output bytes {[}N, N+k). By Theorem 10.1, all predictor
 evaluations are deterministic and bit-identical to a full decoding from
 position 0, so the output matches the original X on {[}N, N+k). Total
-decoded positions: N + k - P $\leq$ K + k since P \textgreater{} N -
+decoded positions: N + k - P \textless= K + k since P \textgreater{} N -
 K. \textbf{∎}
 
 Theorem 10.3 establishes that random access in RNR archives runs in time
@@ -1975,12 +1975,12 @@ entry with M\textquotesingle s full internal state at position P,
 serialized as a fixed-bit-width integer tuple as required by Theorem
 10.1. The state snapshot adds L(state) bits per sync point, multiplying
 the index size by (1 + L(state) / log L(R)). To random-access bytes
-{[}N, N+k), locate the latest sync point P $\leq$ N, deserialize the
+{[}N, N+k), locate the latest sync point P \textless= N, deserialize the
 stored state into the decoder\textquotesingle s predictor instance, and
 decode forward as in Theorem 10.3. The decoded output is bit-identical
 by Theorem 10.1 applied to the restored state. \textbf{∎}
 
-For LSTM predictors with d-dimensional state, L(state) is $O(d * b)$ bits
+For LSTM predictors with d-dimensional state, L(state) is O(d * b) bits
 where b is the per-component bit-width. For modern state-space models
 with structured state-transition matrices, L(state) can be O(d\^{}2).
 With d = 1024 and b = 16, an LSTM state snapshot is 16 Kbits = 2 KiB;
@@ -2003,9 +2003,9 @@ Three trade-offs govern random-access design in RNR archives.
   (balanced), K = 1 MiB (compression-favored).
 \item
   Type-II semi-non-factorized coding. Theorem 5.4\textquotesingle s
-  $\Theta(N)$ separation requires joint structure across all N positions of
+  Theta(N) separation requires joint structure across all N positions of
   a block. Inserting sync points every K positions partitions the block
-  into independent K-length subblocks, recovering only $\Theta(K)$
+  into independent K-length subblocks, recovering only Theta(K)
   separation per subblock. For K = 64 KiB and N = 1 GiB, the
   per-subblock advantage is preserved but the cross-subblock joint
   structure is forfeited. Type-I, Type-III-B, and Type-III-C are not
@@ -2017,7 +2017,7 @@ Three trade-offs govern random-access design in RNR archives.
   reader cannot verify bytes {[}0, N) it never decoded. Three solutions
   exist: (a) per-sync-point hashes that allow local verification,
   costing O((N/K) * \textbar hash\textbar) bits; (b) a Merkle tree over
-  the repair stream allowing verified random access with $O(log N)$ hash
+  the repair stream allowing verified random access with O(log N) hash
   overhead per read; (c) explicitly unverified random access for
   trusted-source archives. The Merkle-tree option is standard in
   content-addressable storage and is the recommended default for archive
@@ -2031,24 +2031,24 @@ Standard random-access lossless compressors:
 \begin{itemize}
 \item
   bgzip (block-gzip): independent gzip blocks, ratio cost approximately
-  3 to 7 percent versus monolithic gzip, random access in $O(K + k)$ time.
+  3 to 7 percent versus monolithic gzip, random access in O(K + k) time.
   Widely used in bioinformatics for indexed FASTA and BAM files.
 \item
   zstd seekable mode: independent zstd frames with a footer index, ratio
   cost approximately 2 to 10 percent versus monolithic zstd, random
-  access in $O(K + k)$ time.
+  access in O(K + k) time.
 \item
   LZMA seekable wrappers (ad hoc xz multi-stream archives): ratio cost
-  approximately 5 to 15 percent, random access in $O(K + k)$ time.
+  approximately 5 to 15 percent, random access in O(K + k) time.
 \end{itemize}
 
 Existing neural lossless compressors (NNCP, PixelCNN++, Bit-Swap,
 IDF++): no random access. To extract byte N, the decoder must process
-bytes {[}0, N) sequentially; cost is $O(N)$ predictor evaluations. For a 1
+bytes {[}0, N) sequentially; cost is O(N) predictor evaluations. For a 1
 GiB archive this is hours of wall-clock time per access.
 
 RNR with a W-bounded transformer predictor and sync points every K
-positions: random access in $O(K + k)$ predictor evaluations independent
+positions: random access in O(K + k) predictor evaluations independent
 of N, at a compression cost of O((N/K) * W) bytes. For K = 64 KiB and W
 = 4 KiB on a 1 GiB archive, this is approximately 1 percent ratio
 overhead for sync points, comparable to bgzip and zstd seekable while
@@ -2074,7 +2074,7 @@ demand without ever decompressing the whole archive. This is the
 deployment pattern of squashfs, EROFS, btrfs with zstd compression, and
 Apple Disk Images: read-only compressed system images mounted by the
 kernel and served to user-space applications transparently. Existing
-neural compressors cannot serve this use case because their $O(N)$
+neural compressors cannot serve this use case because their O(N)
 sequential decoding requirement makes any access to byte N cost the same
 as decompressing all preceding bytes; for archive sizes typical of disk
 images (gigabytes to terabytes), this is prohibitive. RNR removes this
@@ -2085,14 +2085,14 @@ compressed under RNR with a W-bounded predictor M satisfying Theorem
 10.1 and sync points placed every K positions. A block-device driver
 that maps logical-block-address-indexed read requests (LBA L, length k
 bytes) to RNR random-access calls can serve any read request in time
-O((K + k) * cost(M)) and working memory $O(K + k)$, independent of the
+O((K + k) * cost(M)) and working memory O(K + k), independent of the
 archive size N.}
 
 \emph{\textbf{Proof.}} Each LBA-indexed read request (L, k) corresponds
 to a byte-range request on the underlying source X starting at byte
 position N = L * sector\_size and continuing for k bytes. By Theorem
 10.3, RNR random access to k bytes at position N runs in O((K + k) *
-cost(M)) time and requires $O(K + k)$ bytes of working memory (the warmup
+cost(M)) time and requires O(K + k) bytes of working memory (the warmup
 buffer for K positions plus the output buffer for k positions). The
 translation from (LBA, k) to (N, k) is a constant-time arithmetic
 operation. The total cost per read request is therefore O((K + k) *
@@ -2157,7 +2157,7 @@ Theorem 10.5. For sequential reads over any region of size up to C, the
 amortized cost per byte is O(cost(M)): one predictor evaluation per
 byte, with no per-access warmup. For random reads with spatial locality
 smaller than C, the cache hit rate approaches one and the amortized cost
-per byte approaches $O(memcpy)$ speed, dominated by main memory bandwidth.
+per byte approaches O(memcpy) speed, dominated by main memory bandwidth.
 For uniformly random reads at distance larger than C, the amortized cost
 per byte equals the Theorem 10.5 bound divided by k, that is, O((K + k)
 * cost(M) / k), which approaches cost(M) as k grows. In typical
@@ -2213,15 +2213,15 @@ Compressed read-only filesystems are widely deployed:
   image layers.
 \item
   EROFS (Linux): lz4, lzma, or deflate in 4 to 64 KiB blocks. Typical
-  ratio 1.5 to 2.5 times. Random-access cost $O(K + k)$. Used by Android
+  ratio 1.5 to 2.5 times. Random-access cost O(K + k). Used by Android
   system partitions and Huawei storage products.
 \item
   btrfs with zstd (Linux): zstd compression in 4 to 128 KiB extents.
-  Typical ratio 1.5 to 2 times. Random-access cost $O(K + k)$.
+  Typical ratio 1.5 to 2 times. Random-access cost O(K + k).
 \item
   APFS compressed files (macOS) and NTFS compressed files (Windows):
   LZ4-class compression at fixed sector boundaries. Typical ratio 1.2 to
-  1.8 times. Random-access cost $O(sector size)$.
+  1.8 times. Random-access cost O(sector size).
 \end{itemize}
 
 RNR with a well-fitted transformer predictor achieves three to six times
@@ -2314,7 +2314,7 @@ predicted to dominate.
 Type‑III‑A scheduling across Type‑I, Type‑II, and raw fallback is
 predicted to dominate any single mode on archives with heterogeneous
 content (mixed text/binary, containers, database dumps with
-header/payload structure). The per‑mode prediction error $\varepsilon_{t}$
+header/payload structure). The per‑mode prediction error eps\_t
 determines the closeness to the oracle: for well‑calibrated U, the
 composition is within a few percent of the per‑tile oracle best mode.
 
@@ -2360,7 +2360,7 @@ distributed coding problem.
 Pradhan and Ramchandran (2003) introduced DISCUS for compression with
 side information using channel codes. Liveris, Xiong, and Georghiades
 (2002) used LDPC codes for similar purposes. Type‑I with a structured
-$E_{12}$ mapping is in the same spirit: the predictor produces a corrupted
+E\_12 mapping is in the same spirit: the predictor produces a corrupted
 version of a channel code, and the repair stream is essentially syndrome
 information.
 
@@ -2432,28 +2432,28 @@ point to the relevant theorems.
 \item
   Type-I converse bound --- resolved by Theorem 4.2: the achievability
   bound of Theorem 4.1 matches the conditional source-coding lower bound
-  $H(X \mid Y)$ to first order in N.
+  H(X \textbar{} Y) to first order in N.
 \item
-  Computational complexity of optimal $E_{12}$ --- resolved by Theorem 4.3
+  Computational complexity of optimal E\_12 --- resolved by Theorem 4.3
   (NP-hardness via QAP) and Theorem 4.4 (inapproximability: no
   polynomial-time constant-factor approximation exists unless P = NP).
 \item
   Optimal candidate-support threshold for Type-II --- resolved by
-  Proposition 5.5: the optimal $S_{v}$ is a prefix of positions sorted by
-  $Q_{v}$, and support-set coding is at best equivalent to per-position
+  Proposition 5.5: the optimal S\_v is a prefix of positions sorted by
+  Q\_v, and support-set coding is at best equivalent to per-position
   arithmetic coding under the same Q (strictly more expensive unless Q
   is binary).
 \item
   Joint structure on natural data and the Type-II separation regime ---
-  resolved by Theorem 5.6 (the multi-information TC($D_{N}$) is the exact
+  resolved by Theorem 5.6 (the multi-information TC(D\_N) is the exact
   information-theoretic quantity governing factorized-versus-joint
   separation) and quantified by Remark 5.7 (the manifold hypothesis
-  predicts TC = $\Theta(N)$ for natural data classes of low intrinsic
+  predicts TC = Theta(N) for natural data classes of low intrinsic
   dimension, supported by empirical estimates of d for images, text, and
   structured records).
 \item
-  Tightness of the 2*$\varepsilon$ mode-selection bound --- resolved by Theorem
-  6.2: the 2*$\varepsilon$ factor in Theorem 6.1 cannot be improved without
+  Tightness of the 2*eps mode-selection bound --- resolved by Theorem
+  6.2: the 2*eps factor in Theorem 6.1 cannot be improved without
   additional assumptions on the prediction error structure.
 \item
   Optimal hierarchical decomposition for Type-III-B --- resolved by
@@ -2486,7 +2486,7 @@ point to the relevant theorems.
   Random access (seek-and-read) into a compressed archive in time
   independent of archive size --- resolved by Definitions 10.2
   (W-bounded predictor) and 10.3 (sync point) and Theorem 10.3 (random
-  access in $O(K + k)$ time), with Theorem 10.4 covering non-W-bounded
+  access in O(K + k) time), with Theorem 10.4 covering non-W-bounded
   predictors via state snapshots. This is the
   framework\textquotesingle s deployment-grade distinguishing feature
   relative to other neural compressors, which lack random-access support
@@ -2512,8 +2512,8 @@ present paper.
 \item
   Construction of efficient enumerative encoders for specific
   natural-data submanifolds. Theorem 5.6 establishes that the separation
-  between factorized and joint coding equals TC($D_{N}$), and Remark 5.7
-  predicts this is $\Theta(N)$ for low-dimensional natural-data manifolds.
+  between factorized and joint coding equals TC(D\_N), and Remark 5.7
+  predicts this is Theta(N) for low-dimensional natural-data manifolds.
   Constructing an efficient (polynomial-time) membership oracle and rank
   coder for the submanifold of a specific data class --- say, database
   pages under a given schema, or valid x86-64 instruction streams --- is
@@ -2523,12 +2523,12 @@ present paper.
 \item
   Tight inapproximability constants. Theorems 4.4 and 6.8 establish
   inapproximability via reductions from QAP and SGP respectively. The
-  exact inapproximability constants --- the largest $\alpha$ and $\gamma$ for
-  which $\alpha$-approximation and $\gamma$-approximation are NP-hard ---
+  exact inapproximability constants --- the largest alpha and gamma for
+  which alpha-approximation and gamma-approximation are NP-hard ---
   inherit the corresponding constants from QAP and SGP, which are
   themselves only partially characterized. Improving the
   inapproximability constants for the source problems would
-  automatically improve them for $E_{12}$ and dictionary learning.
+  automatically improve them for E\_12 and dictionary learning.
 \item
   Practical compatible Adam variants with full convergence analysis.
   Theorem 10.2 covers any optimizer satisfying Definition 10.1.

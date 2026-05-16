@@ -71,7 +71,7 @@ questions. Section numbers refer to the main paper.
 X: source block. Y = M(C): decoder-reproducible side information from
 public context C. Q: predicted probability field. U: predicted
 uncertainty/repair-cost field. R: repair stream. L(·): bit length. H(·):
-Shannon entropy. TC: total correlation (multi-information). $\varepsilon_{n}$:
+Shannon entropy. TC: total correlation (multi-information). eps\_n:
 entropy-coder redundancy.
 \end{quote}
 
@@ -80,27 +80,27 @@ entropy-coder redundancy.
 \textbf{Theorem 4.1 (Type-I achievability) --- {[}achievability{]}}
 
 \begin{quote}
-\emph{Statement.} E{[}$L_{I}$(X){]} $\leq$ L($M_{I}$) + N * H($P_{E}$) + N *
-ell\_cond + $\varepsilon_{N}$ + L(V) + L(Theta), where $P_{E}$ is the empirical Code12
+\emph{Statement.} E{[}L\_I(X){]} \textless= L(M\_I) + N * H(P\_E) + N *
+ell\_cond + eps\_N + L(V) + L(Theta), where P\_E is the empirical Code12
 error-mask class distribution.
 
 \emph{Proof.} Direct composition of class entropy (Shannon-coding bound
 on the mask classes), within-class payload cost, and constant overheads.
 
 \emph{Why it matters.} Establishes that Type-I attains conditional
-source-coding rate plus $O(1)$ overhead, modulo the entropy-coder
+source-coding rate plus O(1) overhead, modulo the entropy-coder
 redundancy. Cite when claiming Type-I is asymptotically competitive.
 \end{quote}
 
 \textbf{Theorem 4.2 (Type-I converse) --- {[}lower bound{]}}
 
 \begin{quote}
-\emph{Statement.} E{[}L(C(X) \textbar{} Y){]} $\geq$ H(X
+\emph{Statement.} E{[}L(C(X) \textbar{} Y){]} \textgreater= H(X
 \textbar{} Y) for any uniquely decodable code with deterministic decoder
 reproducing Y.
 
 \emph{Proof.} Shannon\textquotesingle s noiseless source coding applied
-to the conditional distribution $P(X \mid Y)$.
+to the conditional distribution P(X \textbar{} Y).
 
 \emph{Why it matters.} Pairs with Theorem 4.1: the achievability bound
 is order-optimal. No coder using only Y can do better than H(X
@@ -108,11 +108,11 @@ is order-optimal. No coder using only Y can do better than H(X
 answer is: no, by this converse.
 \end{quote}
 
-\textbf{Theorem 4.3 (Optimal $E_{12}$ NP-hard) --- {[}complexity{]}}
+\textbf{Theorem 4.3 (Optimal E\_12 NP-hard) --- {[}complexity{]}}
 
 \begin{quote}
-\emph{Statement.} Choosing $E_{12}$ to minimize expected Hamming weight of
-c XOR $\hat{c}$ under a given confusion matrix F is NP-hard in
+\emph{Statement.} Choosing E\_12 to minimize expected Hamming weight of
+c XOR c\_hat under a given confusion matrix F is NP-hard in
 \textbar F\textbar.
 
 \emph{Proof.} Reduction from QAP: F becomes the flow matrix, Hamming
@@ -124,12 +124,12 @@ practice (gradient relaxation, simulated annealing). Rules out hope for
 a general-purpose polynomial-time exact solver.
 \end{quote}
 
-\textbf{Theorem 4.4 ($E_{12}$ inapproximability) --- {[}strong
+\textbf{Theorem 4.4 (E\_12 inapproximability) --- {[}strong
 complexity{]}}
 
 \begin{quote}
-\emph{Statement.} For any constant $\alpha$ \textgreater{} 1, no
-polynomial-time $\alpha$-approximation for optimal $E_{12}$ exists unless P =
+\emph{Statement.} For any constant alpha \textgreater{} 1, no
+polynomial-time alpha-approximation for optimal E\_12 exists unless P =
 NP.
 
 \emph{Proof.} The QAP reduction in 4.3 is gap-preserving; Sahni-Gonzalez
@@ -137,7 +137,7 @@ established no constant-factor PTAS for QAP unless P = NP.
 Inapproximability transfers.
 
 \emph{Why it matters.} Strengthens 4.3: even loose approximations are
-intractable. Defends the empirical, heuristic-based choice of $E_{12}$
+intractable. Defends the empirical, heuristic-based choice of E\_12
 variants in any practical implementation.
 \end{quote}
 
@@ -151,7 +151,7 @@ coding under Q and per-position Type-I arithmetic coding under the
 equivalent sequential conditional Q are bit-equivalent.
 
 \emph{Proof.} Both coders are arithmetic coders driven by the same
-probability vector at each position; redundancy is the constant $\varepsilon_{N}$.
+probability vector at each position; redundancy is the constant eps\_N.
 
 \emph{Why it matters.} Shows that factorized Type-II is not
 operationally distinct from Type-I. The interesting Type-II case is
@@ -163,8 +163,8 @@ bound{]}}
 
 \begin{quote}
 \emph{Statement.} The number of valid 16-way partitions of \{1,...,N\}
-with given counts is the multinomial M(N; $k_{0}$,...,$k_{15}$); enumerative
-coding describes a partition in $\log_2$ M bits.
+with given counts is the multinomial M(N; k\_0,...,k\_15); enumerative
+coding describes a partition in log\_2 M bits.
 
 \emph{Proof.} Combinatorial counting: partitions correspond bijectively
 to multiset labelings.
@@ -178,12 +178,12 @@ gains; this is the v0.3 correction.
 {[}achievability{]}}
 
 \begin{quote}
-\emph{Statement.} If the predictor supplies candidate supports $S_{v}$ with
-$\alpha_{v}$ escapes, the partition cost is at most sum\_v {[}$\log_2$ C($s_{v}$,
-$k_{v}$ - $\alpha_{v}$) + $\log_2$ C(N - $s_{v}$, $\alpha_{v}$){]} + L(counts) + $\varepsilon_{N}$.
+\emph{Statement.} If the predictor supplies candidate supports S\_v with
+alpha\_v escapes, the partition cost is at most sum\_v {[}log\_2 C(s\_v,
+k\_v - alpha\_v) + log\_2 C(N - s\_v, alpha\_v){]} + L(counts) + eps\_N.
 
-\emph{Proof.} Decompose $M_{v}$ as the disjoint union $M_{v}$ intersect $S_{v}$
-plus $M_{v}$ minus $S_{v}$; encode each by enumerative rank.
+\emph{Proof.} Decompose M\_v as the disjoint union M\_v intersect S\_v
+plus M\_v minus S\_v; encode each by enumerative rank.
 
 \emph{Why it matters.} Quantifies the gain from predicted support
 information with explicit escape cost. Lets a reviewer see exactly what
@@ -194,18 +194,18 @@ the predictor must achieve for Type-II to win.
 --- {[}separation{]}}
 
 \begin{quote}
-\emph{Statement.} There exists a distribution $D_{N}$ over $A_{16}$\^{}N
+\emph{Statement.} There exists a distribution D\_N over A\_16\^{}N
 (uniform marginals, image of a 4N-to-(4-c)N linear code) such that any
-factorized arithmetic coder pays $\geq$ 4N bits while a
-semi-non-factorized Type-II coder achieves (4-c)N + $O(log N)$ bits.
-Separation is $\Theta(N)$.
+factorized arithmetic coder pays \textgreater= 4N bits while a
+semi-non-factorized Type-II coder achieves (4-c)N + O(log N) bits.
+Separation is Theta(N).
 
 \emph{Proof.} Linear-code construction over GF(2): generator matrix with
 non-trivial bits at every position yields exactly uniform marginals;
 membership in the codeword set fits in (4-c)N bits.
 
 \emph{Why it matters.} Settles whether semi-non-factorized Type-II
-genuinely beats Type-I: yes, by $\Theta(N)$ bits in the worst case.
+genuinely beats Type-I: yes, by Theta(N) bits in the worst case.
 Strongest separation result in the paper.
 \end{quote}
 
@@ -213,8 +213,8 @@ Strongest separation result in the paper.
 coding is the limit) --- {[}optimization{]}}
 
 \begin{quote}
-\emph{Statement.} The optimal $S_{v}$ is the top-$s_{v}$* prefix of positions
-sorted by $Q_{v}$(i); support-set coding is strictly more expensive than
+\emph{Statement.} The optimal S\_v is the top-s\_v* prefix of positions
+sorted by Q\_v(i); support-set coding is strictly more expensive than
 per-position arithmetic coding under the same Q, unless Q is binary.
 
 \emph{Proof.} Swap argument for the prefix structure; data-processing
@@ -229,8 +229,8 @@ coding for hard-candidate-set predictors.
 {[}separation, general{]}}
 
 \begin{quote}
-\emph{Statement.} For any source $D_{N}$, factorized-vs-joint separation
-equals the total correlation TC($D_{N}$) = sum\_i H\_marg($X_{i}$) - H($D_{N}$).
+\emph{Statement.} For any source D\_N, factorized-vs-joint separation
+equals the total correlation TC(D\_N) = sum\_i H\_marg(X\_i) - H(D\_N).
 
 \emph{Proof.} Both rates are Shannon-optimal for their respective
 coders; their difference is TC by definition.
@@ -245,8 +245,8 @@ Type-II wins is total correlation.
 
 \begin{quote}
 \emph{Statement.} Under the manifold hypothesis (natural data has
-intrinsic dimension d much less than ambient N), TC($D_{N}$) = $\Theta(N)$ -
-$O(d log N)$, supported by published intrinsic-dimension estimates for
+intrinsic dimension d much less than ambient N), TC(D\_N) = Theta(N) -
+O(d log N), supported by published intrinsic-dimension estimates for
 images, text, and structured records.
 
 \emph{Proof.} Combination of Theorem 5.6 with empirical
@@ -264,32 +264,32 @@ families.
 bound{]}}
 
 \begin{quote}
-\emph{Statement.} If \textbar $U_{m}$(t) - $L_{m}$(t)\textbar{} $\leq$
-$\varepsilon_{t}$ for all m, then L\_\{$\hat{m}$(t)\}(t) $\leq$
-L\_\{$m^\star$(t)\}(t) + 2*$\varepsilon_{t}$, where $\hat{m}$ is the predicted argmin
-and $m^\star$ the oracle argmin.
+\emph{Statement.} If \textbar U\_m(t) - L\_m(t)\textbar{} \textless=
+eps\_t for all m, then L\_\{m\_hat(t)\}(t) \textless=
+L\_\{m\_star(t)\}(t) + 2*eps\_t, where m\_hat is the predicted argmin
+and m\_star the oracle argmin.
 
 \emph{Proof.} Three triangle-inequality steps over the prediction error
 bound and the definition of argmin.
 
 \emph{Why it matters.} Defends Type-III-A composition: a calibrated U
-lets the framework approach oracle mode selection. The 2*$\varepsilon$ factor is
+lets the framework approach oracle mode selection. The 2*eps factor is
 the key constant.
 \end{quote}
 
-\textbf{Theorem 6.2 (2*$\varepsilon$ bound is tight) --- {[}matching lower
+\textbf{Theorem 6.2 (2*eps bound is tight) --- {[}matching lower
 bound{]}}
 
 \begin{quote}
-\emph{Statement.} For any $\varepsilon$ \textgreater{} 0 and $\delta$ \textgreater{}
-0, an adversarial two-mode configuration achieves L\_\{$\hat{m}$\}
-$\geq$ L\_\{$m^\star$\} + 2*$\varepsilon$ - $\delta$.
+\emph{Statement.} For any eps \textgreater{} 0 and delta \textgreater{}
+0, an adversarial two-mode configuration achieves L\_\{m\_hat\}
+\textgreater= L\_\{m\_star\} + 2*eps - delta.
 
-\emph{Proof.} Construct $L_{1}$ = $\delta$/2, $L_{2}$ = 2*$\varepsilon$ - $\delta$/2, $U_{1}$ =
-$\delta$/2 + $\varepsilon$, $U_{2}$ = $\varepsilon$ - $\delta$/2; the argmin selects the inferior
-mode by exactly 2*$\varepsilon$ - $\delta$.
+\emph{Proof.} Construct L\_1 = delta/2, L\_2 = 2*eps - delta/2, U\_1 =
+delta/2 + eps, U\_2 = eps - delta/2; the argmin selects the inferior
+mode by exactly 2*eps - delta.
 
-\emph{Why it matters.} Pairs with 6.1: the 2*$\varepsilon$ factor cannot be
+\emph{Why it matters.} Pairs with 6.1: the 2*eps factor cannot be
 improved without additional assumptions on the
 predictor\textquotesingle s error structure.
 \end{quote}
@@ -299,7 +299,7 @@ predictor\textquotesingle s error structure.
 
 \begin{quote}
 \emph{Statement.} Byte-tensor coding\textquotesingle s advantage over
-independent nibble coding equals $I(H ; L \mid C)$, the conditional
+independent nibble coding equals I(H ; L \textbar{} C), the conditional
 mutual information between high and low nibbles given context.
 
 \emph{Proof.} Chain rule of entropy: H(H,L\textbar C) = H(H\textbar C) +
@@ -331,12 +331,12 @@ question. Information-theoretically free.
 criterion{]}}
 
 \begin{quote}
-\emph{Statement.} Token $\tau$ is admitted to the dictionary iff f *
-{[}8*ell - code\_cost($\tau$){]} \textgreater{} dictionary\_cost($\tau$) +
-parse\_overhead($\tau$).
+\emph{Statement.} Token tau is admitted to the dictionary iff f *
+{[}8*ell - code\_cost(tau){]} \textgreater{} dictionary\_cost(tau) +
+parse\_overhead(tau).
 
-\emph{Proof.} Net code-length change from adding $\tau$ is the LHS minus
-RHS; $\tau$ saves bits iff this is positive.
+\emph{Proof.} Net code-length change from adding tau is the LHS minus
+RHS; tau saves bits iff this is positive.
 
 \emph{Why it matters.} Standard MDL admission rule, placed in the
 framework to make explicit that not every byte pattern earns dictionary
@@ -383,7 +383,7 @@ complexity{]}}
 
 \begin{quote}
 \emph{Statement.} Joint dictionary-and-predictor learning is APX-hard.
-An explicit inapproximability constant $\gamma$ \textgreater{} 1 follows
+An explicit inapproximability constant gamma \textgreater{} 1 follows
 from the Charikar et al. SGP bound.
 
 \emph{Proof.} The SGP reduction in 6.7 is gap-preserving; Charikar et
@@ -401,11 +401,11 @@ reproducibility}
 
 \begin{quote}
 \emph{Statement.} The Type-III-A composition with mode set M and
-deterministic $\hat{m}$ = argmin\_m $U_{m}$(t) produces a uniquely decodable
+deterministic m\_hat = argmin\_m U\_m(t) produces a uniquely decodable
 codeword for X.
 
 \emph{Proof.} Each step in the decoding pipeline (metadata read, U
-reconstruction, $\hat{m}$ recovery, per-tile repair decoding) is uniquely
+reconstruction, m\_hat recovery, per-tile repair decoding) is uniquely
 determined.
 
 \emph{Why it matters.} Establishes that the framework\textquotesingle s
@@ -431,15 +431,15 @@ is conditionally, not universally, advantageous.
 guarantee{]}}
 
 \begin{quote}
-\emph{Statement.} If verification $H_{v}$ is a cryptographic hash, the
+\emph{Statement.} If verification H\_v is a cryptographic hash, the
 probability that an incorrect decoded subblock is used to update the
-next-block context is at most the collision probability $\delta$.
+next-block context is at most the collision probability delta.
 
 \emph{Proof.} Context-update rule is conditional on hash match; mismatch
-with $\delta$-collision-resistant hash is $\delta$-rare.
+with delta-collision-resistant hash is delta-rare.
 
 \emph{Why it matters.} Defends autoregressive correctness. With a 64-bit
-truncated SHA-256, $\delta$ is approximately 2\^{}-64; cross-block error
+truncated SHA-256, delta is approximately 2\^{}-64; cross-block error
 propagation is operationally impossible.
 \end{quote}
 
@@ -501,7 +501,7 @@ compatible optimizer.
 \textbf{Definition 10.2 (W-bounded predictor) --- {[}definition{]}}
 
 \begin{quote}
-\emph{Statement.} M is W-bounded if M($C_{i}$) depends only on the previous
+\emph{Statement.} M is W-bounded if M(C\_i) depends only on the previous
 W bytes of public context.
 
 \emph{Proof.} Architectural condition: satisfied by transformers with
@@ -529,12 +529,12 @@ trades off random-access speed against the cold-context compression
 cost.
 \end{quote}
 
-\textbf{Theorem 10.3 (random access in $O(K + k)$ time) ---
+\textbf{Theorem 10.3 (random access in O(K + k) time) ---
 {[}seek-and-read{]}}
 
 \begin{quote}
 \emph{Statement.} For W-bounded M with sync points every K positions,
-random access to k bytes at any position N requires $O(K + k)$ predictor
+random access to k bytes at any position N requires O(K + k) predictor
 evaluations, independent of N.
 
 \emph{Proof.} Binary-search the seek index for the nearest sync point P;
@@ -542,8 +542,8 @@ decode forward from P to N + k; output the requested bytes. Cost:
 O(log(N/K)) seek plus K + k decode operations.
 
 \emph{Why it matters.} The kill feature relative to other neural
-compressors. NNCP, PixelCNN++, and Bit-Swap require $O(N)$ time per
-access; RNR achieves $O(K + k)$ at less than 1\% ratio overhead. Matches
+compressors. NNCP, PixelCNN++, and Bit-Swap require O(N) time per
+access; RNR achieves O(K + k) at less than 1\% ratio overhead. Matches
 bgzip and zstd seekable for speed while preserving neural ratio.
 \end{quote}
 
@@ -570,7 +570,7 @@ Motivates the W-bounded design choice for deployable codecs.
 \begin{quote}
 \emph{Statement.} An OS-level block-device driver mapping LBA-indexed
 reads to RNR random-access calls serves any read request in O((K + k) *
-cost(M)) time and $O(K + k)$ working memory, independent of archive size
+cost(M)) time and O(K + k) working memory, independent of archive size
 N.
 
 \emph{Proof.} Direct corollary of Theorem 10.3 in driver terms:
@@ -626,13 +626,13 @@ explicit escape cost.
 
 \textbf{Q:} \emph{``Does Type-II actually do anything Type-I cannot?''}
 
-\textbf{A:} Theorem 5.4 (linear-code separation, $\Theta(N)$).
+\textbf{A:} Theorem 5.4 (linear-code separation, Theta(N)).
 
 \textbf{Q:} \emph{``For what data classes is your separation actually
 realized?''}
 
 \textbf{A:} Theorem 5.6 (TC is the exact quantity); Remark 5.7 (manifold
-hypothesis predicts TC = $\Theta(N)$ for natural data).
+hypothesis predicts TC = Theta(N) for natural data).
 
 \textbf{Q:} \emph{``Doesn't arithmetic coding under Q dominate your
 support-set scheme?''}
@@ -640,9 +640,9 @@ support-set scheme?''}
 \textbf{A:} Proposition 5.5: yes, and we say so explicitly. Support-set
 is for hard-candidate-set predictors only.
 
-\textbf{Q:} \emph{``Why 2*$\varepsilon$ and not 1*$\varepsilon$?''}
+\textbf{Q:} \emph{``Why 2*eps and not 1*eps?''}
 
-\textbf{A:} Theorem 6.2: 2*$\varepsilon$ is tight via a constructive adversarial
+\textbf{A:} Theorem 6.2: 2*eps is tight via a constructive adversarial
 example.
 
 \textbf{Q:} \emph{``Why use byte-tensor instead of separate nibble
@@ -679,7 +679,7 @@ optimizers fit Definition 10.1.
 \textbf{Q:} \emph{``Can I seek into a compressed archive without
 decoding everything?''}
 
-\textbf{A:} Theorem 10.3: yes, in $O(K + k)$ time independent of archive
+\textbf{A:} Theorem 10.3: yes, in O(K + k) time independent of archive
 size, for W-bounded predictors (Definition 10.2) with sync points
 (Definition 10.3). Compression cost approximately 1 percent. NNCP and
 PixelCNN-class systems cannot do this. Theorem 10.4 covers
@@ -707,7 +707,7 @@ target affects latency but not output.
 context?''}
 
 \textbf{A:} Theorem 9.1: cryptographic-hash verification gates context
-updates; propagation is $\delta$-rare.
+updates; propagation is delta-rare.
 
 \textbf{Q:} \emph{``You're claiming universal dominance over LZMA.''}
 
@@ -728,7 +728,7 @@ for the specific data class. Empirical intrinsic-dimension estimation is
 out of scope (§13.3).
 
 • Theorem 6.2 is tight in worst case; typical-case behavior is much
-better. The 2*$\varepsilon$ factor is conservative.
+better. The 2*eps factor is conservative.
 
 • Theorem 6.8 inherits an APX-hardness constant from SGP; the exact
 constant is small and may not be practically meaningful, only

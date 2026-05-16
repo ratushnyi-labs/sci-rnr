@@ -151,7 +151,7 @@ by the model description. No floating-point arithmetic is permitted in
 the inference path except as allowed in R-3.6.
 
 \textbf{R-3.2 (Overflow avoidance).} The accumulator bit-width MUST be
-at least ceil($\log_2$(L * W\_max * I\_max)) + 1, where L is the maximum
+at least ceil(log\_2(L * W\_max * I\_max)) + 1, where L is the maximum
 layer depth, W\_max is an upper bound on the L1 norm of any weight row,
 and I\_max is an upper bound on the magnitude of any layer input. The
 bounds W\_max and I\_max MUST be declared in the model description; an
@@ -492,12 +492,12 @@ not directly a table lookup. The decomposition is:
 \begin{quote}
 1. shift: x\textquotesingle{} = x - max(x) // numerical stability
 
-2. exp\_lookup: $y_{i}$ = exp\_table{[}x\textquotesingle\_i{]} // integer
+2. exp\_lookup: y\_i = exp\_table{[}x\textquotesingle\_i{]} // integer
 table
 
-3. sum: S = sum($y_{i}$) // ordered reduction
+3. sum: S = sum(y\_i) // ordered reduction
 
-4. division: $z_{i}$ = ($y_{i}$ * scale) / S // integer division
+4. division: z\_i = (y\_i * scale) / S // integer division
 \end{quote}
 
 Steps 2, 3, and 4 each follow R-3.3, R-3.4, and R-5.3.1 respectively.
@@ -508,19 +508,19 @@ Layer normalization requires integer reciprocal-square-root for the
 variance scaling. The decomposition is:
 
 \begin{quote}
-1. mean: $\mu$ = sum(x) / n // ordered reduction + division
+1. mean: mu = sum(x) / n // ordered reduction + division
 
-2. centered: $c_{i}$ = $x_{i}$ - $\mu$
+2. centered: c\_i = x\_i - mu
 
 3. variance: v = sum(c\_i\^{}2) / n // ordered reduction + division
 
-4. rsqrt\_lookup: r = rsqrt\_table{[}v + $\varepsilon${]}
+4. rsqrt\_lookup: r = rsqrt\_table{[}v + eps{]}
 
-5. scale: $z_{i}$ = $c_{i}$ * r * $\gamma$ + $\beta$
+5. scale: z\_i = c\_i * r * gamma + beta
 \end{quote}
 
-The rsqrt table covers the variance range observed in training, with $\varepsilon$
-added to avoid division by zero. $\varepsilon$ and the rsqrt table parameters MUST
+The rsqrt table covers the variance range observed in training, with eps
+added to avoid division by zero. eps and the rsqrt table parameters MUST
 be in the model description.
 
 \textbf{7. Adaptive predictor conformance (Theorem 10.2)}
@@ -557,10 +557,10 @@ operations.
 \textbf{R-7.3.1 (State).} Adam state per parameter is (m, v) where m is
 the first moment and v is the second moment, both integer-valued.
 
-\textbf{R-7.3.2 (Update rule).} m\_new = ($\beta$1 * m + (1 - $\beta$1) *
-grad) (in integer arithmetic with explicit scaling); v\_new = ($\beta$2 * v
-+ (1 - $\beta$2) * grad\^{}2); param\_new = param - learning\_rate * m\_new
-* rsqrt\_table{[}v\_new + $\varepsilon${]}. The rsqrt\_table is part of the model
+\textbf{R-7.3.2 (Update rule).} m\_new = (beta1 * m + (1 - beta1) *
+grad) (in integer arithmetic with explicit scaling); v\_new = (beta2 * v
++ (1 - beta2) * grad\^{}2); param\_new = param - learning\_rate * m\_new
+* rsqrt\_table{[}v\_new + eps{]}. The rsqrt\_table is part of the model
 description.
 
 \textbf{R-7.3.3 (Reciprocal-square-root table).} The integer
@@ -609,7 +609,7 @@ sync-point records, sorted by byte\_offset ascending. The array length
 is encoded as a uint64 prefix to the array.
 
 \textbf{R-8.2.2 (Lookup).} Sync-point lookup for byte position N MUST
-use binary search to find the largest byte\_offset $\leq$ N. The
+use binary search to find the largest byte\_offset \textless= N. The
 lookup is O(log(index\_length)).
 
 \textbf{R-8.2.3 (Compression).} The seek index MAY be compressed with a
@@ -632,7 +632,7 @@ function range\_decode(archive, N, k):
 \# returns: bytes {[}N, N+k) of the source
 
 P = binary\_search(archive.seek\_index, N) \# largest sync\_point
-$\leq$ N
+\textless= N
 
 state = initialize\_predictor\_state(archive, P)
 
@@ -642,18 +642,18 @@ output = bytearray(k)
 
 for i in {[}P.byte\_offset .. N + k):
 
-$Y_{i}$ = predictor(state, context\_window)
+Y\_i = predictor(state, context\_window)
 
 repair\_bits = read\_bits(archive.repair\_stream, bit\_offset,
 length\_for\_position\_i)
 
 bit\_offset += length\_for\_position\_i
 
-byte\_i = decode\_position($Y_{i}$, repair\_bits)
+byte\_i = decode\_position(Y\_i, repair\_bits)
 
 context\_window.append(byte\_i)
 
-if i $\geq$ N and i \textless{} N + k:
+if i \textgreater= N and i \textless{} N + k:
 
 output{[}i - N{]} = byte\_i
 
@@ -971,7 +971,7 @@ archives); PATCH version changes are bidirectional-compatible.
 
 \textbf{R-13.2 (Forward compatibility).} An implementation supporting
 format version X.Y MUST read archives with version X.Z for any Z
-$\leq$ Y. It MAY refuse to read archives with version X.Z for Z
+\textless= Y. It MAY refuse to read archives with version X.Z for Z
 \textgreater{} Y, but if it does read them, MUST honor all features it
 understands and reject features it does not.
 
@@ -995,13 +995,13 @@ use this to verify that the specification covers every relevant theorem.
 implementation (separately specified in encoder spec, out of scope
 here).
 
-\textbf{Theorem 4.3, 4.4 ($E_{12}$ NP-hard, inapproximable)} → Heuristic
-$E_{12}$ selection in encoder; spec does not require optimal $E_{12}$.
+\textbf{Theorem 4.3, 4.4 (E\_12 NP-hard, inapproximable)} → Heuristic
+E\_12 selection in encoder; spec does not require optimal E\_12.
 
 \textbf{Lemma 5.1, Theorems 5.2--5.4, Proposition 5.5, Theorem 5.6 (Type-II)} → Type-II implementation
 (separately specified in encoder spec).
 
-\textbf{Theorems 6.1, 6.2 (Type-III-A mode selection, tight 2*$\varepsilon$
+\textbf{Theorems 6.1, 6.2 (Type-III-A mode selection, tight 2*eps
 bound)} → Mode-selection logic in encoder (separately specified).
 
 \textbf{Theorems 6.3, 6.4 (Type-III-B mutual-information and

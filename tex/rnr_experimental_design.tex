@@ -73,7 +73,7 @@ claim.
 The document covers three classes of empirical work: (a) coding-rate
 measurements that test each Type\textquotesingle s predicted advantage
 against baselines; (b) information-theoretic measurements (total
-correlation TC($D_{N}$) and intrinsic dimension d) that test whether
+correlation TC(D\_N) and intrinsic dimension d) that test whether
 specific natural data classes satisfy the conditions of Theorem 5.6 and
 Remark 5.7; and (c) cross-platform reproducibility tests that verify
 Theorems 10.1 and 10.2 hold for a specific reference implementation.
@@ -125,10 +125,10 @@ positional model achieves coding rate 10--20\% below LZMA at maximum
 preset.
 
 \textbf{H3 {[}confirming{]}:} For each of the data classes in H2, the
-measured total correlation TC($D_{N}$) is $\Theta(N)$, i.e., remains at least
+measured total correlation TC(D\_N) is Theta(N), i.e., remains at least
 10\% of N as N grows over the range 1 KiB to 16 KiB.
 
-\emph{Falsification:} if measured TC($D_{N}$) decays as o(N) for any of the
+\emph{Falsification:} if measured TC(D\_N) decays as o(N) for any of the
 data classes, then Theorem 5.6\textquotesingle s separation regime does
 not apply and Type-II provides only logarithmic-scale gains. If Type-II
 rate equals or exceeds LZMA on database pages, the separation regime is
@@ -144,31 +144,31 @@ dimension N.
 
 \emph{Falsification:} if d is comparable to N (within a factor of 2) for
 any tested natural-data class, the manifold-hypothesis quantification in
-Remark 5.7 does not apply to that class, and TC($D_{N}$) is not predicted
-to be $\Theta(N)$ for it. The conditional theorem still holds; only the
+Remark 5.7 does not apply to that class, and TC(D\_N) is not predicted
+to be Theta(N) for it. The conditional theorem still holds; only the
 empirical applicability is in question.
 
 \textbf{2.4 Type-III-A mode-selection effectiveness (Theorems 6.1, 6.2)}
 
 \textbf{H5 {[}quantifying{]}:} On heterogeneous archives (mixed
 text/binary, container files, database dumps with header and payload),
-an RNR Type-III-A scheduler with calibrated $U_{m}$(t) achieves rate within
+an RNR Type-III-A scheduler with calibrated U\_m(t) achieves rate within
 5\% of the per-tile oracle best mode. The per-mode prediction error
-$\varepsilon_{t}$ averages below 0.1 bits per position.
+eps\_t averages below 0.1 bits per position.
 
 \emph{Falsification:} if the scheduler\textquotesingle s rate exceeds
 the per-tile oracle by more than 20\% on heterogeneous data, the
-predictor for U is undercalibrated and the 2*$\varepsilon$ bound is not approached
+predictor for U is undercalibrated and the 2*eps bound is not approached
 in practice.
 
 \textbf{2.5 Type-III-B mutual-information advantage (Theorem 6.3)}
 
-\textbf{H6 {[}quantifying{]}:} Measured $I(H ; L \mid C)$ on ASCII
+\textbf{H6 {[}quantifying{]}:} Measured I(H ; L \textbar{} C) on ASCII
 text falls in 0.3--0.7 bits per byte; on x86-64 instruction streams,
 0.4--0.9 bits per byte; on float32 numeric arrays (scientific data),
 1.0--2.0 bits per byte.
 
-\emph{Falsification:} if $I(H ; L \mid C)$ is below 0.1 bits per
+\emph{Falsification:} if I(H ; L \textbar{} C) is below 0.1 bits per
 byte on any of these classes, the Type-III-B advantage over Type-II at
 nibble alphabet is negligible and not worth the additional model cost.
 
@@ -180,7 +180,7 @@ over a small VAE-style latent predictor achieves rate within 2\% of H(X
 The empirical KL(q \textbar\textbar{} P\_posterior) gap is bounded by
 the variational training loss.
 
-\emph{Falsification:} if the measured rate exceeds $H(X \mid Y)$ +
+\emph{Falsification:} if the measured rate exceeds H(X \textbar{} Y) +
 5\% on image data, the bits-back accounting in Theorem 6.6 has
 implementation defects or the variational posterior q is poorly fit. The
 theorem is unaffected.
@@ -229,7 +229,7 @@ cold-context cost is larger than predicted, requiring reconsideration of
 W or K.
 
 \emph{Comparison baselines:} T(N, k) for sequential decoding of NNCP at
-the same archive sizes (expected: $O(N)$ scaling, hours for 1 GiB); T(N,
+the same archive sizes (expected: O(N) scaling, hours for 1 GiB); T(N,
 k) for bgzip and zstd seekable mode at matched block sizes (expected:
 comparable to RNR W-bounded). The kill-feature claim of §10.7 stands or
 falls on this comparison.
@@ -458,7 +458,7 @@ Remark 5.7:
 
 \begin{itemize}
 \item
-  Total correlation TC($D_{N}$) via the Cmix entropy estimator at multiple
+  Total correlation TC(D\_N) via the Cmix entropy estimator at multiple
   block lengths N in \{256, 512, 1024, 2048, 4096, 8192, 16384\}.
   Estimated as (sum of marginal entropies measured from histograms)
   minus (Cmix-estimated joint entropy).
@@ -468,12 +468,12 @@ Remark 5.7:
   byte n-gram embedding spaces (n in \{2, 4, 8, 16\}). Report d as a
   function of (k, n).
 \item
-  Conditional mutual information $I(H ; L \mid C)$ for Type-III-B,
+  Conditional mutual information I(H ; L \textbar{} C) for Type-III-B,
   estimated via the empirical joint and marginal distributions of (high
   nibble, low nibble) conditioned on a sliding-window context.
 \item
-  Per-mode prediction error $\varepsilon_{t}$ for Type-III-A, computed as the
-  empirical maximum over modes of \textbar $U_{m}$(t) - $L_{m}$(t)\textbar{}
+  Per-mode prediction error eps\_t for Type-III-A, computed as the
+  empirical maximum over modes of \textbar U\_m(t) - L\_m(t)\textbar{}
   over a sample of tiles.
 \end{itemize}
 
@@ -556,7 +556,7 @@ the OSF Registries or equivalent open-science platform.
 \textbf{6.4 Multiple-comparisons correction}
 
 With 9 hypotheses and multiple coder/corpus pairs each, the
-per-comparison $\alpha$ of 0.05 would inflate the family-wise error rate
+per-comparison alpha of 0.05 would inflate the family-wise error rate
 substantially. Apply Holm-Bonferroni correction across all
 primary-hypothesis tests. Secondary analyses (effect sizes, exploratory
 measurements) report uncorrected confidence intervals with a clear label
@@ -598,7 +598,7 @@ Comparison to \textless baseline name\textgreater:
 Delta rate: \textless value\textgreater{} bpb
 (\textless percentage\textgreater\%)
 
-Bootstrap 95\% CI on $\delta$: {[}\textless low\textgreater,
+Bootstrap 95\% CI on delta: {[}\textless low\textgreater,
 \textless high\textgreater{]}
 
 Cohen\textquotesingle s d (block-level): \textless value\textgreater{}
@@ -655,9 +655,9 @@ For each test block X and each RNR variant, on each platform:
 4. For all pairs (platform\_i, platform\_j), record byte-identity =
 (hash\_i == hash\_j).
 
-5. Run decoder on each A on each platform; emit $\hat{X}$.
+5. Run decoder on each A on each platform; emit X\_hat.
 
-6. Verify $\hat{X}$ == X on every (encoder\_platform, decoder\_platform)
+6. Verify X\_hat == X on every (encoder\_platform, decoder\_platform)
 pair.
 \end{quote}
 
@@ -711,17 +711,17 @@ is acceptable since the predictor is already part of the framework.
 \textbf{9.2 Estimator}
 
 Apply the Levina-Bickel maximum-likelihood estimator (Levina-Bickel
-2004) with k nearest neighbors. For each sample point $x_{i}$ and each of
+2004) with k nearest neighbors. For each sample point x\_i and each of
 its k nearest neighbors x\_\{i,1\}, ..., x\_\{i,k\} (by Euclidean
 distance in the embedding space):
 
 \begin{quote}
-$T_{k}$($x_{i}$) = distance to k-th nearest neighbor
+T\_k(x\_i) = distance to k-th nearest neighbor
 
-d\_hat($x_{i}$, k) = (k - 1) / sum\_\{j=1..k-1\} log($T_{k}$($x_{i}$) /
-$T_{j}$($x_{i}$))
+d\_hat(x\_i, k) = (k - 1) / sum\_\{j=1..k-1\} log(T\_k(x\_i) /
+T\_j(x\_i))
 
-d\_hat(k) = mean over all sample points of d\_hat($x_{i}$, k)
+d\_hat(k) = mean over all sample points of d\_hat(x\_i, k)
 \end{quote}
 
 Report d\_hat for k in \{5, 10, 20, 50\} and stable across these k
@@ -770,12 +770,12 @@ estimates must precede the H3/H4 analysis, etc. The suggested order is:
 
 \begin{itemize}
 \item
-  Estimate TC($D_{N}$) and intrinsic dimension d for each corpus (H3, H4).
+  Estimate TC(D\_N) and intrinsic dimension d for each corpus (H3, H4).
 \item
   Publish the estimates as a standalone artifact (pre-registration
   permits early publication of corpus characterization).
 \item
-  Estimate $I(H ; L \mid C)$ for H6.
+  Estimate I(H ; L \textbar{} C) for H6.
 \end{itemize}
 
 \emph{\textbf{Phase 3: rate measurements (weeks 7--12)}}
