@@ -592,250 +592,239 @@ E\_12, the error‑mask distribution concentrates on low Hamming weights
 when the model is approximately correct, and Hamming weight is cheap to
 entropy‑code.
 
-We specify E\_12 as a shortened‑Hamming‑like systematic mapping. Let the
-source byte bits be (b\_0, ..., b\_7). Use 1‑based codeword positions
-c\_1, ..., c\_12 and place data bits at non‑parity positions:
-
-\begin{quote}
-c3 = b0 c5 = b1 c6 = b2 c7 = b3
-
-c9 = b4 c10 = b5 c11 = b6 c12 = b7
-\end{quote}
-
-The parity positions c\_1, c\_2, c\_4, c\_8 are computed by even parity
+We specify $E_{12}$ as a shortened-Hamming-like systematic mapping. Let
+the source byte bits be $(b_0, \ldots, b_7)$. Use 1-based codeword
+positions $c_1, \ldots, c_{12}$ and place data bits at non-parity
+positions:
+\[
+\begin{aligned}
+c_3 &= b_0, & c_5 &= b_1, & c_6 &= b_2, & c_7 &= b_3, \\
+c_9 &= b_4, & c_{10} &= b_5, & c_{11} &= b_6, & c_{12} &= b_7.
+\end{aligned}
+\]
+The parity positions $c_1, c_2, c_4, c_8$ are computed by even parity
 over selected data positions:
-
-\begin{quote}
-c1 = c3 XOR c5 XOR c7 XOR c9 XOR c11
-
-c2 = c3 XOR c6 XOR c7 XOR c10 XOR c11
-
-c4 = c5 XOR c6 XOR c7 XOR c12
-
-c8 = c9 XOR c10 XOR c11 XOR c12
-\end{quote}
-
-This construction is reversible because the data bits b\_0, ..., b\_7
-appear directly in c. We use it for two reasons: first, single‑bit and
-many two‑bit codeword errors decode to small Hamming‑weight masks, which
-are cheap; second, the parity structure means random predictor noise
-distributes errors over both data and parity positions, rather than
-concentrating in the data bits. We discuss alternative E\_12 mappings
-(Gray‑ordered, learned, bucketed with candidate lists) in Section 4.6.
+\[
+\begin{aligned}
+c_1 &= c_3 \oplus c_5 \oplus c_7 \oplus c_9 \oplus c_{11}, \\
+c_2 &= c_3 \oplus c_6 \oplus c_7 \oplus c_{10} \oplus c_{11}, \\
+c_4 &= c_5 \oplus c_6 \oplus c_7 \oplus c_{12}, \\
+c_8 &= c_9 \oplus c_{10} \oplus c_{11} \oplus c_{12}.
+\end{aligned}
+\]
+This construction is reversible because the data bits $b_0, \ldots, b_7$
+appear directly in $c$. We use it for two reasons: first, single-bit
+and many two-bit codeword errors decode to small Hamming-weight masks,
+which are cheap; second, the parity structure means random predictor
+noise distributes errors over both data and parity positions, rather
+than concentrating in the data bits. We discuss alternative $E_{12}$
+mappings (Gray-ordered, learned, bucketed with candidate lists) in
+Section 4.6.
 
 \textbf{4.3 Repair stream encoding}
 
-The simplest repair symbol at position i is the error mask e\_i in
-\{0,1\}\^{}12 itself, of which there are 2\^{}12 = 4096 possibilities.
+The simplest repair symbol at position $i$ is the error mask $e_i \in
+\{0,1\}^{12}$ itself, of which there are $2^{12} = 4096$ possibilities.
 To avoid paying 12 bits per position regardless of prediction quality,
-we encode by Hamming‑weight class:
-
-\begin{quote}
-class 0 : no error (1 codeword)
-
-class 1 : one-bit flip (12 codewords, log2(12) approx 3.585 bits)
-
-class 2 : two-bit pattern (C(12,2) = 66 codewords, log2(66) approx 6.044
-bits)
-
-class candidate-k : correct codeword is k-th in predicted candidate list
-
-class escape : store raw byte (8 bits) or raw codeword (12 bits)
-\end{quote}
-
-Let the class probabilities be p\_0, p\_1, p\_2, p\_cand, p\_esc summing
-to 1. The expected per‑position repair length is
+we encode by Hamming-weight class:
+\begin{itemize}
+\item class 0: no error (1 codeword);
+\item class 1: one-bit flip (12 codewords, $\log_2 12 \approx 3.585$ bits);
+\item class 2: two-bit pattern ($\binom{12}{2} = 66$ codewords, $\log_2 66 \approx 6.044$ bits);
+\item class candidate-$k$: correct codeword is $k$-th in predicted candidate list;
+\item class escape: store raw byte (8 bits) or raw codeword (12 bits).
+\end{itemize}
+Let the class probabilities be $p_0, p_1, p_2, p_{\text{cand}}, p_{\text{esc}}$
+summing to 1. The expected per-position repair length is
 
 \[
 \ell_{\text{rep}} = p_0 \cdot 0 + p_1 \log_2(12) + p_2 \log_2(66) + p_{\text{cand}} \cdot (\text{header} + \text{rank}) + p_{\text{esc}} \cdot 8 + H(\text{class}) + \varepsilon,
 \tag{4.1}
 \]
 
-where H(class) is the entropy of the class label encoded with a small
-adaptive entropy coder, and eps is the entropy‑coder redundancy. When
-p\_0 dominates, the dominant cost is H(class) plus a tiny contribution
-from the other classes; ell\_rep can fall well below 1 bit per byte if
-the model is good.
+where $H(\text{class})$ is the entropy of the class label encoded with
+a small adaptive entropy coder, and $\varepsilon$ is the entropy-coder
+redundancy. When $p_0$ dominates, the dominant cost is $H(\text{class})$
+plus a tiny contribution from the other classes; $\ell_{\text{rep}}$
+can fall well below 1 bit per byte if the model is good.
 
 \textbf{4.4 Achievability bound}
 
-\textbf{Theorem 4.1 (Type‑I achievability).} \emph{Let X be a source
-block of N bytes, Y = M\_I(C) be the predicted Code12 stream, and E =
-(e\_1, ..., e\_N) be the error‑mask sequence with empirical class
-distribution P\_E. Suppose the class entropy coder achieves expected
-length at most N * H(P\_E) + eps\_N. Then the expected Type‑I code
-length is bounded by}
-
+\textbf{Theorem 4.1 (Type-I achievability).} \emph{Let $X$ be a source
+block of $N$ bytes, $Y = M_I(C)$ be the predicted Code12 stream, and
+$E = (e_1, \ldots, e_N)$ be the error-mask sequence with empirical
+class distribution $P_E$. Suppose the class entropy coder achieves
+expected length at most $N \cdot H(P_E) + \varepsilon_N$. Then the
+expected Type-I code length is bounded by}
 \[
 \mathbb{E}[L_I(X)] \leq L(M_I) + N \cdot H(P_E) + N \cdot \ell_{\text{cond}} + \varepsilon_N + L(V) + L(\Theta),
 \tag{4.2}
 \]
+\emph{where $\ell_{\text{cond}}$ denotes the expected conditional
+payload (within-class rank or escape) per position. Consequently,
+Type-I is conditionally advantageous on a distribution $D$ if the
+right-hand side, in expectation under $D$, is smaller than the
+expected baseline length $\mathbb{E}_D[B(X)]$.}
 
-\emph{where ell\_cond denotes the expected conditional payload
-(within‑class rank or escape) per position. Consequently, Type‑I is
-conditionally advantageous on a distribution D if the right‑hand side,
-in expectation under D, is smaller than the expected baseline length
-E\_D{[} B(X) {]}.}
+\emph{\textbf{Proof.}} The Type-I code is the concatenation of the
+model description, the class stream, the within-class payloads, the
+verification block, and the metadata block. By the entropy-coder
+hypothesis, the class stream has expected length at most
+$N \cdot H(P_E) + \varepsilon_N$. The within-class payload is a
+separate stream whose expected length, summed across positions, is
+$N \cdot \ell_{\text{cond}}$ by definition. Adding the constant
+overheads $L(M_I), L(V), L(\Theta)$ gives the bound. Taking
+expectation under $D$ and comparing to $\mathbb{E}_D[B(X)]$ yields
+the advantage condition. \hfill$\blacksquare$
 
-\emph{\textbf{Proof.}} The Type‑I code is the concatenation of the model
-description, the class stream, the within‑class payloads, the
-verification block, and the metadata block. By the entropy‑coder
-hypothesis, the class stream has expected length at most N * H(P\_E) +
-eps\_N. The within‑class payload is a separate stream whose expected
-length, summed across positions, is N * ell\_cond by definition. Adding
-the constant overheads L(M\_I), L(V), L(Theta) gives the bound. Taking
-expectation under D and comparing to E\_D{[} B(X) {]} yields the
-advantage condition. \hfill$\blacksquare$
-
-\textbf{Theorem 4.2 (Type‑I converse).} \emph{Let X \textasciitilde{} D
-be a source over length‑N byte blocks and Y = M\_I(C) be
+\textbf{Theorem 4.2 (Type-I converse).} \emph{Let $X \sim D$ be a
+source over length-$N$ byte blocks and $Y = M_I(C)$ be
 decoder-reproducible side information. For any uniquely decodable
-lossless code for X whose decoder uses no information about X beyond the
-codeword and Y, the expected code length satisfies E{[}L(X \textbar{}
-Y){]} \textgreater= H(X \textbar{} Y). The Type‑I achievability of
-Theorem 4.1 therefore matches the conditional source-coding lower bound
-to first order: the gap is L(M\_I) + L(V) + L(Theta) + eps\_N, which is
-O(1) in N.}
+lossless code for $X$ whose decoder uses no information about $X$
+beyond the codeword and $Y$, the expected code length satisfies
+$\mathbb{E}[L(X \mid Y)] \geq H(X \mid Y)$. The Type-I achievability
+of Theorem 4.1 therefore matches the conditional source-coding lower
+bound to first order: the gap is $L(M_I) + L(V) + L(\Theta) +
+\varepsilon_N$, which is $O(1)$ in $N$.}
 
-\emph{\textbf{Proof.}} This is Shannon\textquotesingle s noiseless
-source coding theorem applied to the conditional distribution P(X
-\textbar{} Y). Since Y is available to the decoder as a deterministic
-function of public context C, the encoder needs only convey enough
-information for the decoder to disambiguate X within its conditional
-support given Y. The minimum expected length of any uniquely decodable
-code for X given Y is the conditional entropy H(X \textbar{} Y) (Cover
-and Thomas 2006, Theorem 5.4.1). The Type-I coder achieves N * H(P\_E) +
-N * ell\_cond + eps\_N for the repair stream; by construction the
-class-and-payload decomposition is a particular factorization of the
-conditional distribution of X given Y, so N * H(P\_E) + N * ell\_cond =
-H(X \textbar{} Y) when the predictor is matched to the data. The
-remaining L(M\_I) + L(V) + L(Theta) terms are O(1) constants independent
-of N. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} This is Shannon's noiseless source coding
+theorem applied to the conditional distribution $P(X \mid Y)$. Since
+$Y$ is available to the decoder as a deterministic function of public
+context $C$, the encoder needs only convey enough information for the
+decoder to disambiguate $X$ within its conditional support given $Y$.
+The minimum expected length of any uniquely decodable code for $X$
+given $Y$ is the conditional entropy $H(X \mid Y)$ (Cover and Thomas
+2006, Theorem 5.4.1). The Type-I coder achieves
+$N \cdot H(P_E) + N \cdot \ell_{\text{cond}} + \varepsilon_N$ for the
+repair stream; by construction the class-and-payload decomposition is a
+particular factorization of the conditional distribution of $X$ given
+$Y$, so $N \cdot H(P_E) + N \cdot \ell_{\text{cond}} = H(X \mid Y)$
+when the predictor is matched to the data. The remaining
+$L(M_I) + L(V) + L(\Theta)$ terms are $O(1)$ constants independent of
+$N$. \hfill$\blacksquare$
 
 \textbf{4.5 Reduction to NNCP}
 
-Consider the degenerate Code12 mapping in which c is simply the byte b
-zero‑padded to 12 bits, and the model predicts a probability
-distribution Q\_i over the next byte rather than a single damaged
+Consider the degenerate Code12 mapping in which $c$ is simply the byte
+$b$ zero-padded to 12 bits, and the model predicts a probability
+distribution $Q_i$ over the next byte rather than a single damaged
 codeword. Then the optimal Code12 repair is to discard the predicted
-codeword and encode each position via arithmetic coding under Q\_i,
-achieving expected per‑position cost equal to the categorical
-cross‑entropy plus eps/N. This recovers NNCP exactly. Type‑I therefore
-generalizes NNCP by allowing (a) non‑trivial E\_12 mappings whose error
-distribution is more concentrated than a flat softmax, and (b)
-class‑based entropy coding that can be cheaper than arithmetic coding
-for sharply peaked predictors.
+codeword and encode each position via arithmetic coding under $Q_i$,
+achieving expected per-position cost equal to the categorical
+cross-entropy plus $\varepsilon/N$. This recovers NNCP exactly. Type-I
+therefore generalizes NNCP by allowing (a) non-trivial $E_{12}$
+mappings whose error distribution is more concentrated than a flat
+softmax, and (b) class-based entropy coding that can be cheaper than
+arithmetic coding for sharply peaked predictors.
 
-\textbf{4.6 Variants of E\_12}
+\textbf{4.6 Variants of $E_{12}$}
 
-Four E\_12 variants are worth comparing empirically.
-
+Four $E_{12}$ variants are worth comparing empirically.
 \begin{itemize}
 \item
-  E12‑A: shortened Hamming(12,8)‑like systematic mapping as in Section
-  4.2.
+  $E_{12}$-A: shortened Hamming(12,8)-like systematic mapping as in
+  Section 4.2.
 \item
-  E12‑B: Gray‑ordered mapping in which numerically adjacent bytes differ
-  by Hamming weight 1, suitable when model errors are predominantly
-  small numerical perturbations of the true byte.
+  $E_{12}$-B: Gray-ordered mapping in which numerically adjacent bytes
+  differ by Hamming weight 1, suitable when model errors are
+  predominantly small numerical perturbations of the true byte.
 \item
-  E12‑C: learned mapping in which the byte‑to‑codeword assignment is
-  optimized to minimize the expected Hamming weight of c XOR c\_hat over
-  a training corpus and predictor.
+  $E_{12}$-C: learned mapping in which the byte-to-codeword assignment
+  is optimized to minimize the expected Hamming weight of $c \oplus
+  \hat{c}$ over a training corpus and predictor.
 \item
-  E12‑D: bucketed mapping in which bytes that the predictor frequently
-  confuses share a 4‑byte bucket, and the repair stores a 2‑bit
-  within‑bucket selector.
+  $E_{12}$-D: bucketed mapping in which bytes that the predictor
+  frequently confuses share a 4-byte bucket, and the repair stores a
+  2-bit within-bucket selector.
 \end{itemize}
 
-Among these, only E12-A and E12-B admit closed-form construction. E12-C
-and E12-D are learned, and we now show that finding the optimum is
-computationally intractable.
+Among these, only $E_{12}$-A and $E_{12}$-B admit closed-form
+construction. $E_{12}$-C and $E_{12}$-D are learned, and we now show
+that finding the optimum is computationally intractable.
 
-\textbf{Theorem 4.3 (Optimal E\_12 mapping is NP-hard).} \emph{Given a
-predictor confusion matrix F where F\_\{ij\} = Pr(model predicts
-codeword for byte j \textbar{} true byte is i), the problem of choosing
-a byte-to-codeword mapping E\_12 : \{0, ..., 255\} -\textgreater{}
-\{0,1\}\^{}12 minimizing the expected Hamming weight of c XOR c\_hat is
-NP-hard in the description size of F.}
+\textbf{Theorem 4.3 (Optimal $E_{12}$ mapping is NP-hard).} \emph{Given
+a predictor confusion matrix $F$ where $F_{ij} = \Pr(\text{model
+predicts codeword for byte } j \mid \text{true byte is } i)$, the
+problem of choosing a byte-to-codeword mapping $E_{12} : \{0, \ldots,
+255\} \to \{0,1\}^{12}$ minimizing the expected Hamming weight of
+$c \oplus \hat{c}$ is NP-hard in the description size of $F$.}
 
 \emph{\textbf{Proof.}} Reduce from the Quadratic Assignment Problem
-(QAP). A QAP instance consists of an n x n flow matrix
-F\textquotesingle{} and an n x n distance matrix D\textquotesingle,
-asking for an assignment pi : \{1, ..., n\} -\textgreater{} \{1, ...,
-n\} minimizing sum\_\{i,j\} F\textquotesingle\_\{ij\} *
-D\textquotesingle\_\{pi(i)pi(j)\}. QAP is NP-hard (Sahni and Gonzalez
-1976), and remains NP-hard when D\textquotesingle{} is the Hamming
-distance matrix of any n-element subset of \{0,1\}\^{}m for m
-sufficiently large (this follows from the fact that the Hamming geometry
-on \{0,1\}\^{}m contains arbitrarily complex finite distance matrices as
-isometric subspaces for m large enough). For our problem, set n = 256,
-take any 256-element subset S of \{0,1\}\^{}12, set F\textquotesingle{}
-= F (the predictor confusion matrix), and D\textquotesingle{} to the
-restriction of Hamming distance to S. The expected Hamming weight under
-E\_12 = pi is sum\_\{i,j\} F\_\{ij\} * Hamming(E\_12(i), E\_12(j)) =
-sum\_\{i,j\} F\textquotesingle\_\{ij\} *
-D\textquotesingle\_\{pi(i)pi(j)\}, which is exactly the QAP objective.
-Polynomial-time optimization of E\_12 would solve QAP in polynomial
-time, contradiction. \hfill$\blacksquare$
+(QAP). A QAP instance consists of an $n \times n$ flow matrix $F'$ and
+an $n \times n$ distance matrix $D'$, asking for an assignment
+$\pi : \{1, \ldots, n\} \to \{1, \ldots, n\}$ minimizing
+$\sum_{i,j} F'_{ij} \cdot D'_{\pi(i)\pi(j)}$. QAP is NP-hard (Sahni and
+Gonzalez 1976), and remains NP-hard when $D'$ is the Hamming distance
+matrix of any $n$-element subset of $\{0,1\}^m$ for $m$ sufficiently
+large (this follows from the fact that the Hamming geometry on
+$\{0,1\}^m$ contains arbitrarily complex finite distance matrices as
+isometric subspaces for $m$ large enough). For our problem, set
+$n = 256$, take any 256-element subset $S$ of $\{0,1\}^{12}$, set
+$F' = F$ (the predictor confusion matrix), and $D'$ to the restriction
+of Hamming distance to $S$. The expected Hamming weight under
+$E_{12} = \pi$ is
+$\sum_{i,j} F_{ij} \cdot \mathrm{Hamming}(E_{12}(i), E_{12}(j)) =
+\sum_{i,j} F'_{ij} \cdot D'_{\pi(i)\pi(j)}$, which is exactly the QAP
+objective. Polynomial-time optimization of $E_{12}$ would solve QAP in
+polynomial time, contradiction. \hfill$\blacksquare$
 
-Consequently, E12-C and E12-D must be obtained by approximation
-algorithms. Standard relaxations include gradient descent on a
-continuous relaxation of the assignment (interpreting E\_12 as a
+Consequently, $E_{12}$-C and $E_{12}$-D must be obtained by
+approximation algorithms. Standard relaxations include gradient descent
+on a continuous relaxation of the assignment (interpreting $E_{12}$ as a
 stochastic mapping with simplex constraints), simulated annealing, and
-tabu search. These approximations carry no constant-factor guarantee for
-general F but perform well empirically on natural predictor confusion
-matrices, which are typically sparse and structured.
+tabu search. These approximations carry no constant-factor guarantee
+for general $F$ but perform well empirically on natural predictor
+confusion matrices, which are typically sparse and structured.
 
-\textbf{Theorem 4.4 (Inapproximability of optimal E\_12).} \emph{For any
-constant alpha \textgreater{} 1, no polynomial-time algorithm
-approximates the optimal E\_12 mapping within ratio alpha unless P = NP.
+\textbf{Theorem 4.4 (Inapproximability of optimal $E_{12}$).} \emph{For
+any constant $\alpha > 1$, no polynomial-time algorithm approximates
+the optimal $E_{12}$ mapping within ratio $\alpha$ unless $P = NP$.
 Equivalently, the problem admits no polynomial-time approximation
 scheme.}
 
 \emph{\textbf{Proof.}} The reduction from QAP in Theorem 4.3 is
-gap-preserving: a polynomial-time alpha-approximation for E\_12
+gap-preserving: a polynomial-time $\alpha$-approximation for $E_{12}$
 selection on the constructed instance would yield a polynomial-time
-alpha-approximation for the original QAP instance via the same
+$\alpha$-approximation for the original QAP instance via the same
 byte-to-codeword correspondence, since the objective values match
-exactly under the isometric Hamming embedding. Sahni and Gonzalez (1976)
-established that QAP admits no constant-factor polynomial-time
-approximation unless P = NP. The inapproximability therefore transfers
-to E\_12 selection. \hfill$\blacksquare$
+exactly under the isometric Hamming embedding. Sahni and Gonzalez
+(1976) established that QAP admits no constant-factor polynomial-time
+approximation unless $P = NP$. The inapproximability therefore
+transfers to $E_{12}$ selection. \hfill$\blacksquare$
 
 Theorem 4.4 is a strengthening of Theorem 4.3: even arbitrarily loose
 approximation is intractable. This justifies the empirical,
-problem-specific nature of E12-C and E12-D in practice, and rules out
-any general-purpose polynomial-time algorithm with provable
+problem-specific nature of $E_{12}$-C and $E_{12}$-D in practice, and
+rules out any general-purpose polynomial-time algorithm with provable
 approximation guarantees.
 
 \textbf{4.7 Worked numerical example}
 
-Consider a block of N = 4096 bytes drawn from a source where the Code12
-predictor achieves the following empirical class distribution: p\_0 =
-0.60 (no error), p\_1 = 0.25 (one‑bit flip), p\_2 = 0.10 (two‑bit
-pattern), p\_cand = 0.04 (within candidate list of size 4), p\_esc =
-0.01 (escape to raw byte).
+Consider a block of $N = 4096$ bytes drawn from a source where the
+Code12 predictor achieves the following empirical class distribution:
+$p_0 = 0.60$ (no error), $p_1 = 0.25$ (one-bit flip), $p_2 = 0.10$
+(two-bit pattern), $p_{\text{cand}} = 0.04$ (within candidate list of
+size 4), $p_{\text{esc}} = 0.01$ (escape to raw byte).
 
 The class entropy is
-
-\emph{H(P\_E) = - 0.60 log2 0.60 - 0.25 log2 0.25 - 0.10 log2 0.10 -
-0.04 log2 0.04 - 0.01 log2 0.01 approx 1.527 bits.}
-
-The expected within‑class payload per position is
-
-\emph{ell\_cond = 0.25 * log2(12) + 0.10 * log2(66) + 0.04 * log2(4) +
-0.01 * 8 approx 0.896 + 0.604 + 0.080 + 0.080 = 1.660 bits.}
-
-Per‑position total is therefore 1.527 + 1.660 approx 3.19 bits, or 3.19
-* 4096 approx 13063 bits = 1633 bytes for the repair stream. Adding L(V)
-= 32 bytes (a SHA‑256 per 4 KiB subblock) and L(Theta) = 16 bytes of
-metadata gives 1681 bytes plus the amortized model cost. For comparison,
-a 4096‑byte block at 8 bits per byte raw is 4096 bytes; LZMA on
-structured text typically achieves 1500--2000 bytes. The Type‑I coder is
-competitive whenever the amortized L(M\_I) per block is below
-approximately 100--300 bytes, which is achievable for a small distilled
-byte‑level predictor.
+\[
+H(P_E) = -0.60 \log_2 0.60 - 0.25 \log_2 0.25 - 0.10 \log_2 0.10
+- 0.04 \log_2 0.04 - 0.01 \log_2 0.01 \approx 1.527 \text{ bits.}
+\]
+The expected within-class payload per position is
+\[
+\ell_{\text{cond}} = 0.25 \log_2 12 + 0.10 \log_2 66 + 0.04 \log_2 4
++ 0.01 \cdot 8 \approx 0.896 + 0.604 + 0.080 + 0.080 = 1.660 \text{ bits.}
+\]
+Per-position total is therefore $1.527 + 1.660 \approx 3.19$ bits, or
+$3.19 \cdot 4096 \approx 13063$ bits $= 1633$ bytes for the repair
+stream. Adding $L(V) = 32$ bytes (a SHA-256 per 4 KiB subblock) and
+$L(\Theta) = 16$ bytes of metadata gives 1681 bytes plus the amortized
+model cost. For comparison, a 4096-byte block at 8 bits per byte raw
+is 4096 bytes; LZMA on structured text typically achieves 1500--2000
+bytes. The Type-I coder is competitive whenever the amortized $L(M_I)$
+per block is below approximately 100--300 bytes, which is achievable
+for a small distilled byte-level predictor.
 
 \textbf{5. Type‑II: Positional Symbol Coding}
 
