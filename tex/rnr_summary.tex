@@ -110,37 +110,58 @@ $H(X \mid Y)$. When pressed on ``could you do better than this
 rate?'' the answer is: no, by this converse.
 \end{quote}
 
-\textbf{Theorem 4.3 (Optimal $E_{12}$ NP-hard) --- {[}complexity{]}}
+\textbf{Remark 4.3a (Fixed-size Code12 is constant-size) --- {[}disclaimer{]}}
 
 \begin{quote}
-\emph{Statement.} Choosing $E_{12}$ to minimize expected Hamming
-weight of $c \oplus \hat{c}$ under a given confusion matrix $F$ is
-NP-hard in $|F|$.
+\emph{Statement.} For the deployed Code12 parameters $n_0 = 256$,
+$m_0 = 12$, optimal $E_{12}$ is a finite enumeration over
+$\binom{2^{12}}{256} \cdot 256!$ injective maps --- a constant
+independent of $|F|$. Hence the practical problem is polynomial in
+the formal asymptotic sense; NP-hardness applies only when $n$ or
+$m$ is part of the input.
 
-\emph{Proof.} Reduction from QAP: $F$ becomes the flow matrix,
-Hamming distance on $\{0,1\}^{12}$ becomes the distance matrix. QAP
-is NP-hard (Sahni-Gonzalez 1976).
-
-\emph{Why it matters.} Justifies using approximation algorithms in
-practice (gradient relaxation, simulated annealing). Rules out hope
-for a general-purpose polynomial-time exact solver.
+\emph{Why it matters.} Honest disclaimer. The earlier draft claimed
+NP-hardness for fixed $(256, 12)$; that claim is formally vacuous and
+has been removed.
 \end{quote}
 
-\textbf{Theorem 4.4 ($E_{12}$ inapproximability) --- {[}strong
-complexity{]}}
+\textbf{Theorem 4.3 (Varying-parameter NP-hardness) --- {[}complexity{]}}
 
 \begin{quote}
-\emph{Statement.} For any constant $\alpha > 1$, no polynomial-time
-$\alpha$-approximation for optimal $E_{12}$ exists unless $P = NP$.
+\emph{Statement.} For varying $(n, m)$ with $n \leq 2^m$, symmetric
+row-stochastic $F \in \mathbb{Q}_{\geq 0}^{n \times n}$, and rational
+$B$, deciding whether there is an injective $E : [n] \to \{0, 1\}^m$
+with $\sum_{i,j} F_{ij} d_H(E(i), E(j)) \leq B$ is NP-hard.
 
-\emph{Proof.} The QAP reduction in 4.3 is gap-preserving;
-Sahni-Gonzalez established no constant-factor polynomial-time
-approximation for QAP unless $P = NP$. Inapproximability transfers.
+\emph{Proof.} Reduce from Wagner-Corneil (1990) tree-to-hypercube
+subgraph embedding. Given a tree $T$, build symmetric row-stochastic
+$F$ with $F_{uv} = 1/\Delta$ on tree edges, $F_{uu} = 1 -
+\deg_T(u)/\Delta$, and threshold $B = 2(n-1)/\Delta$. By injectivity
+the objective is $\geq B$ with equality iff every tree edge has
+Hamming distance one, iff $T$ embeds as a subgraph of $Q_m$.
 
-\emph{Why it matters.} Strengthens 4.3: even loose approximations
-are intractable. Defends the empirical, heuristic-based choice of
-$E_{12}$ variants in any practical implementation.
+\emph{Why it matters.} Replaces the broken QAP-Hamming-embedding
+proof with a sound reduction from a Hamming-native NP-hard problem.
+Justifies heuristics for $E_{12}$ in the asymptotic regime.
 \end{quote}
+
+\textbf{Remark 4.3b (Asymmetric confusion matrices) --- {[}reduction{]}}
+
+\begin{quote}
+\emph{Statement.} For any nonnegative $F$, $\sum F_{ij} d_H(E(i),
+E(j)) = \sum \frac{F_{ij}+F_{ji}}{2} d_H(E(i), E(j))$ because $d_H$
+is symmetric. Thus an arbitrary asymmetric empirical confusion
+matrix induces the same labeling objective as its symmetric part.
+
+\emph{Why it matters.} The symmetric-input restriction in Theorem 4.3
+is not a real restriction.
+\end{quote}
+
+\textbf{(Theorem 4.4 deleted.)} The earlier APX-hardness claim
+inherited the broken QAP-Hamming-embedding reduction. No clean
+constant-gap reduction from an APX-hard source into the
+Hamming-realizable geometry is currently known; constant-gap
+inapproximability for $E_{12}$ is listed as an open problem.
 
 \textbf{Section 5 --- Type-II: Positional Symbol Coding}
 

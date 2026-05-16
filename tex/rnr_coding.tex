@@ -236,10 +236,12 @@ This article makes the following contributions.
   the Type-I rate matches the conditional source-coding lower bound
   $H(X \mid Y)$ to first order in $N$.
 \item
-  Complete complexity classification for Type-I codeword selection:
-  optimal $E_{12}$ is NP-hard via reduction from QAP (Theorem 4.3)
-  and inapproximable within any constant factor unless $P = NP$
-  (Theorem 4.4).
+  Complexity boundary for Type-I codeword selection: the fixed
+  Code12 selection at $n_0 = 256, m_0 = 12$ is a finite constant-size
+  optimization (Remark 4.3a), while the varying-parameter
+  learned-code labeling problem (alphabet size $n$ and codeword
+  length $m$ as input) is NP-hard via reduction from Wagner and
+  Corneil's (1990) tree-to-hypercube subgraph embedding (Theorem 4.3).
 \item
   A corrected positional-advantage theorem (Theorem 5.3) with a
   multinomial baseline and an explicit escape-mode cost term,
@@ -750,61 +752,114 @@ Among these, only $E_{12}$-A and $E_{12}$-B admit closed-form
 construction. $E_{12}$-C and $E_{12}$-D are learned, and we now show
 that finding the optimum is computationally intractable.
 
-\textbf{Theorem 4.3 (Optimal $E_{12}$ mapping is NP-hard).} \emph{Given
-a predictor confusion matrix $F$ where $F_{ij} = \Pr(\text{model
-predicts codeword for byte } j \mid \text{true byte is } i)$, the
-problem of choosing a byte-to-codeword mapping $E_{12} : \{0, \ldots,
-255\} \to \{0,1\}^{12}$ minimizing the expected Hamming weight of
-$c \oplus \hat{c}$ is NP-hard in the description size of $F$.}
+\textbf{Remark 4.3a (Fixed-size Code12 search).} In the deployed
+Code12 setting the alphabet size and code length are fixed constants:
+$n_0 = 256$ and $m_0 = 12$. For these fixed parameters, optimizing
+$E_{12}$ is a finite search over $\binom{2^{12}}{256} \cdot 256!$
+injective byte-to-codeword maps, a number independent of the input
+description length of the empirical confusion data. Exhaustive search
+is therefore astronomically large but still a constant-size
+enumeration, hence polynomial in the formal asymptotic sense. Thus
+the practical Code12 case is not itself an asymptotically NP-hard
+problem; NP-hardness only applies to a varying-parameter family in
+which $n$ or $m$ is part of the input.
 
-\emph{\textbf{Proof.}} Reduce from the Quadratic Assignment Problem
-(QAP). A QAP instance consists of an $n \times n$ flow matrix $F'$ and
-an $n \times n$ distance matrix $D'$, asking for an assignment
-$\pi : \{1, \ldots, n\} \to \{1, \ldots, n\}$ minimizing
-$\sum_{i,j} F'_{ij} \cdot D'_{\pi(i)\pi(j)}$. QAP is NP-hard (Sahni and
-Gonzalez 1976), and remains NP-hard when $D'$ is the Hamming distance
-matrix of any $n$-element subset of $\{0,1\}^m$ for $m$ sufficiently
-large (this follows from the fact that the Hamming geometry on
-$\{0,1\}^m$ contains arbitrarily complex finite distance matrices as
-isometric subspaces for $m$ large enough). For our problem, set
-$n = 256$, take any 256-element subset $S$ of $\{0,1\}^{12}$, set
-$F' = F$ (the predictor confusion matrix), and $D'$ to the restriction
-of Hamming distance to $S$. The expected Hamming weight under
-$E_{12} = \pi$ is
-$\sum_{i,j} F_{ij} \cdot \mathrm{Hamming}(E_{12}(i), E_{12}(j)) =
-\sum_{i,j} F'_{ij} \cdot D'_{\pi(i)\pi(j)}$, which is exactly the QAP
-objective. Polynomial-time optimization of $E_{12}$ would solve QAP in
-polynomial time, contradiction. \hfill$\blacksquare$
+\textbf{Theorem 4.3 (NP-hardness of varying-parameter learned-code
+labeling).} \emph{Consider the family of instances specified by
+integers $n, m$ with $n \leq 2^m$, a symmetric row-stochastic matrix
+$F \in \mathbb{Q}_{\geq 0}^{n \times n}$, and a rational threshold
+$B$. Given an injective labeling
+$E : \{1, \ldots, n\} \to \{0, 1\}^m$, define the unnormalized
+uniform-prior Hamming loss}
+\[
+C_F(E) = \sum_{i,j=1}^n F_{ij} \cdot d_H(E(i), E(j)).
+\]
+\emph{Deciding whether there exists an injective labeling $E$ with
+$C_F(E) \leq B$ is NP-hard in the description size of $(F, B, n, m)$.
+Consequently, optimizing the learned code labeling is NP-hard for
+varying parameters.}
+
+\emph{\textbf{Proof.}} Reduce from tree-to-hypercube subgraph
+embedding. Let $Q_m$ denote the graph on $\{0,1\}^m$ in which two
+vertices are adjacent exactly when their Hamming distance is one.
+Wagner and Corneil (1990) showed that deciding, given a tree $T$ and
+integer $m$, whether $T$ is isomorphic to a subgraph of $Q_m$ is
+NP-complete. Equivalently, the question is whether there is an
+injective map $\phi : V(T) \to \{0, 1\}^m$ such that
+$d_H(\phi(u), \phi(v)) = 1$ for every tree edge $\{u, v\}$.
+
+Given such an instance, write $n = |V(T)|$ and
+$\Delta = \max_{v \in V(T)} \deg_T(v)$. For nontrivial instances
+$\Delta \geq 1$. Construct an $n \times n$ matrix $F$ indexed by the
+vertices of $T$ as follows:
+\[
+F_{uv} =
+\begin{cases}
+1/\Delta, & u \neq v \text{ and } \{u, v\} \in E(T), \\
+1 - \deg_T(u)/\Delta, & u = v, \\
+0, & \text{otherwise.}
+\end{cases}
+\]
+This construction is polynomial in the size of $T$. The matrix is
+symmetric because $T$ is undirected. It is row-stochastic because, for
+each vertex $u$,
+\[
+F_{uu} + \sum_{v : \{u, v\} \in E(T)} F_{uv}
+= 1 - \deg_T(u)/\Delta + \deg_T(u)/\Delta = 1.
+\]
+Thus $F$ is a valid symmetric row-stochastic confusion matrix: the
+off-diagonal mass follows the tree edges, and the remaining
+probability is placed on the diagonal self-confusion term.
+
+Set
+\[
+B = \frac{2(n - 1)}{\Delta}.
+\]
+For any injective labeling $E$, diagonal terms contribute zero
+($d_H(E(u), E(u)) = 0$), so
+\[
+C_F(E) = \frac{1}{\Delta}
+\sum_{\{u, v\} \in E(T)} \!\!\bigl(d_H(E(u), E(v)) + d_H(E(v), E(u))\bigr)
+= \frac{2}{\Delta} \sum_{\{u, v\} \in E(T)} d_H(E(u), E(v)).
+\]
+Since $E$ is injective, every tree edge has distinct endpoint labels,
+hence $d_H(E(u), E(v)) \geq 1$. Because a tree on $n$ vertices has
+$n - 1$ edges, every feasible labeling satisfies
+\[
+C_F(E) \geq \frac{2(n - 1)}{\Delta} = B.
+\]
+Equality holds if and only if every tree edge is mapped to Hamming
+distance one. Therefore $T$ embeds as a subgraph of $Q_m$ if and only
+if the constructed learned-code instance has an injective labeling
+with $C_F(E) \leq B$. A polynomial-time algorithm for the learned-code
+decision problem, or for exact optimization followed by comparison
+with $B$, would decide the NP-complete tree-to-hypercube embedding
+problem of Wagner and Corneil (1990). Hence varying-parameter
+learned-code labeling is NP-hard. \hfill$\blacksquare$
+
+\textbf{Remark 4.3b (Handling asymmetric confusion matrices).} The
+restriction to symmetric $F$ in Theorem 4.3 is not hiding an
+asymmetric effect. For any nonnegative confusion matrix $F$,
+\[
+\sum_{i, j} F_{ij} \cdot d_H(E(i), E(j))
+= \sum_{i, j} \frac{F_{ij} + F_{ji}}{2} \cdot d_H(E(i), E(j)),
+\]
+because $d_H$ is symmetric and diagonal terms vanish. Thus an
+arbitrary asymmetric empirical confusion matrix induces the same
+labeling objective as its symmetric part $(F + F^T)/2$, viewed as an
+undirected pair-weight matrix. The hardness consequence is therefore
+not specific to symmetric inputs.
 
 Consequently, $E_{12}$-C and $E_{12}$-D must be obtained by
-approximation algorithms. Standard relaxations include gradient descent
-on a continuous relaxation of the assignment (interpreting $E_{12}$ as a
-stochastic mapping with simplex constraints), simulated annealing, and
-tabu search. These approximations carry no constant-factor guarantee
-for general $F$ but perform well empirically on natural predictor
-confusion matrices, which are typically sparse and structured.
-
-\textbf{Theorem 4.4 (Inapproximability of optimal $E_{12}$).} \emph{For
-any constant $\alpha > 1$, no polynomial-time algorithm approximates
-the optimal $E_{12}$ mapping within ratio $\alpha$ unless $P = NP$.
-Equivalently, the problem admits no polynomial-time approximation
-scheme.}
-
-\emph{\textbf{Proof.}} The reduction from QAP in Theorem 4.3 is
-gap-preserving: a polynomial-time $\alpha$-approximation for $E_{12}$
-selection on the constructed instance would yield a polynomial-time
-$\alpha$-approximation for the original QAP instance via the same
-byte-to-codeword correspondence, since the objective values match
-exactly under the isometric Hamming embedding. Sahni and Gonzalez
-(1976) established that QAP admits no constant-factor polynomial-time
-approximation unless $P = NP$. The inapproximability therefore
-transfers to $E_{12}$ selection. \hfill$\blacksquare$
-
-Theorem 4.4 is a strengthening of Theorem 4.3: even arbitrarily loose
-approximation is intractable. This justifies the empirical,
-problem-specific nature of $E_{12}$-C and $E_{12}$-D in practice, and
-rules out any general-purpose polynomial-time algorithm with provable
-approximation guarantees.
+approximation algorithms. Standard relaxations include gradient
+descent on a continuous relaxation of the assignment (interpreting
+$E_{12}$ as a stochastic mapping with simplex constraints), simulated
+annealing, and tabu search. These approximations carry no
+constant-factor guarantee in the varying-parameter regime; on the
+fixed Code12 instance they are evaluated empirically against the
+constant-size oracle of Remark 4.3a. The paper makes no
+inapproximability claim for $E_{12}$: a sound constant-gap reduction
+into the Hamming-restricted geometry is left as an open problem.
 
 \textbf{4.7 Worked numerical example}
 
@@ -2673,10 +2728,15 @@ point to the relevant theorems.
   achievability bound of Theorem 4.1 matches the conditional
   source-coding lower bound $H(X \mid Y)$ to first order in $N$.
 \item
-  Computational complexity of optimal $E_{12}$ --- resolved by
-  Theorem 4.3 (NP-hardness via QAP) and Theorem 4.4
-  (inapproximability: no polynomial-time constant-factor
-  approximation exists unless $P = NP$).
+  Computational complexity of optimal $E_{12}$ --- partially
+  resolved by Theorem 4.3 (NP-hardness of the varying-parameter
+  learned-code labeling problem via Wagner and Corneil's 1990
+  tree-to-hypercube subgraph embedding). The fixed Code12 instance
+  ($n_0 = 256, m_0 = 12$) is constant-size and hence formally
+  polynomial in the input bit-length of the empirical confusion data
+  (Remark 4.3a). A sound constant-gap inapproximability proof in
+  the Hamming-restricted geometry remains open and is listed in
+  §13.2.
 \item
   Optimal candidate-support threshold for Type-II --- resolved by
   Proposition 5.7: the optimal $S_v$ is a prefix of positions sorted
@@ -2767,15 +2827,15 @@ the present paper.
   enumerable), but the polynomial-time construction is
   data-class-specific.
 \item
-  Tight inapproximability constants. Theorems 4.4 and 6.8 establish
-  inapproximability via reductions from QAP and SGP respectively.
-  The exact inapproximability constants --- the largest $\alpha$
-  and $\gamma$ for which $\alpha$-approximation and
-  $\gamma$-approximation are NP-hard --- inherit the corresponding
-  constants from QAP and SGP, which are themselves only partially
-  characterized. Improving the inapproximability constants for the
-  source problems would automatically improve them for $E_{12}$ and
-  dictionary learning.
+  Constant-gap inapproximability for $E_{12}$ in the
+  Hamming-restricted geometry. The decision version of
+  varying-parameter learned-code labeling is NP-hard (Theorem 4.3)
+  via an exact YES/NO threshold reduction; no constant-gap reduction
+  from any APX-hard source into the Hamming-realizable distance
+  geometry is currently known. The Type-III-C side (Theorem 6.8) is
+  APX-hard, transferring the explicit $8569/8568$ constant of
+  Charikar et al. (2005), but the analogous constant for $E_{12}$ is
+  open.
 \item
   Practical compatible Adam variants with full convergence
   analysis. Theorem 10.2 covers any optimizer satisfying Definition
