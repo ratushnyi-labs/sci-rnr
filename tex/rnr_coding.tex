@@ -255,17 +255,17 @@ This article makes the following contributions.
   coding under the same Q.
 \item
   An approximate‑oracle mode‑selection bound for Type‑III‑A (Theorem
-  6.1) and a tight matching lower bound (Theorem 6.4) showing the 2*eps
+  6.1) and a tight matching lower bound (Theorem 6.2) showing the 2*eps
   factor cannot be improved without additional assumptions on the
   prediction error structure.
 \item
   A mutual‑information characterization of the Type‑III‑B byte‑tensor
-  advantage (Theorem 6.2) and an invariance result (Theorem 6.5) showing
+  advantage (Theorem 6.3) and an invariance result (Theorem 6.4) showing
   all rooted binary tree decompositions of the 256-byte alphabet achieve
   the same information-theoretic rate.
 \item
   Complete characterization of Type-III-C: the MDL admission criterion
-  (Theorem 6.3), the bits-back integration with an exact KL-divergence
+  (Theorem 6.5), the bits-back integration with an exact KL-divergence
   accounting (Theorem 6.6), NP-hardness of joint
   dictionary-and-predictor learning (Theorem 6.7), and inapproximability
   with an explicit constant transferred from the Smallest Grammar
@@ -1260,7 +1260,7 @@ decrease the oracle cost, and the 2*eps bound continues to hold provided
 the predictor is calibrated on m′. This gives Type‑III‑A its role as the
 top‑level scheduler in any RNR composition.
 
-\textbf{Theorem 6.4 (Tightness of the 2*eps bound).} \emph{For every eps
+\textbf{Theorem 6.2 (Tightness of the 2*eps bound).} \emph{For every eps
 \textgreater{} 0 and every delta \textgreater{} 0, there exist a tile, a
 mode set M of size 2, true costs L\_m(t), and predictions U\_m(t) with
 max\_m \textbar{} U\_m(t) - L\_m(t) \textbar{} \textless= eps such that
@@ -1277,7 +1277,7 @@ Therefore L\_\{m\_hat\} - L\_\{m\_star\} = (2 * eps - delta/2) - delta/2
 = 2 * eps - delta. As delta tends to zero, the gap approaches 2 * eps.
 \textbf{∎}
 
-Theorem 6.4 shows that the 2*eps factor in Theorem 6.1 cannot be
+Theorem 6.2 shows that the 2*eps factor in Theorem 6.1 cannot be
 improved without additional assumptions on the
 predictor\textquotesingle s error structure (for example, one-sided
 errors, calibrated quantile bounds, or bounded total variation between U
@@ -1303,7 +1303,7 @@ M\^{}\{L\textbar H=h\}\_l = \{ i in M\^{}H\_h : l\_i = l \}. The
 hierarchical scheme is preferred when the predictor decomposes naturally
 as Q\_\{h,l\}(i) = Q\^{}H\_h(i) * Q\^{}\{L\textbar H\}\_l(i, h).
 
-\textbf{Theorem 6.2 (Type‑III‑B mutual‑information advantage).}
+\textbf{Theorem 6.3 (Type‑III‑B mutual‑information advantage).}
 \emph{Let H, L, and C denote the random variables corresponding to the
 high nibble, low nibble, and public context at a fixed position. Under
 an ideal entropy coder, independent nibble coding pays expected length
@@ -1334,7 +1334,7 @@ locally correlated joint byte distributions. On such data, Type‑III‑B
 can recover several tenths of a bit per byte over Type‑II at the nibble
 alphabet.
 
-\textbf{Theorem 6.5 (Hierarchical decomposition is
+\textbf{Theorem 6.4 (Hierarchical decomposition is
 information-theoretically invariant).} \emph{Let T be any rooted binary
 tree whose leaves are the 256 byte values, defining a sequence of nested
 binary partitions of the alphabet. Encoding a byte b under T by
@@ -1387,7 +1387,7 @@ MDL‑selected dictionary of 1024 useful fragments. Admission of a token
 to D is governed by the standard MDL token gain criterion, formalized in
 the next theorem.
 
-\textbf{Theorem 6.3 (Type‑III‑C MDL token admission).} \emph{A candidate
+\textbf{Theorem 6.5 (Type‑III‑C MDL token admission).} \emph{A candidate
 token tau of byte length ell and corpus frequency f is admitted to D if
 its per‑corpus savings exceed its description cost:}
 
@@ -1481,7 +1481,7 @@ L(M) = O(1) is fixed). Under this construction, the optimal dictionary D
 corresponds bijectively to a smallest grammar for s: each non-terminal
 in the grammar becomes a token, dictionary\_cost(tau) corresponds to the
 rule description length for the corresponding non-terminal, and the MDL
-admission criterion of Theorem 6.3 selects exactly the rules of an
+admission criterion of Theorem 6.5 selects exactly the rules of an
 MDL-optimal grammar. A polynomial-time solver for the Type-III-C
 dictionary problem would solve SGP in polynomial time, contradiction.
 The general case with non-constant M is at least as hard as the
@@ -2427,11 +2427,11 @@ point to the relevant theorems.
   structured records).
 \item
   Tightness of the 2*eps mode-selection bound --- resolved by Theorem
-  6.4: the 2*eps factor in Theorem 6.1 cannot be improved without
+  6.2: the 2*eps factor in Theorem 6.1 cannot be improved without
   additional assumptions on the prediction error structure.
 \item
   Optimal hierarchical decomposition for Type-III-B --- resolved by
-  Theorem 6.5: all rooted binary tree decompositions of the 256-byte
+  Theorem 6.4: all rooted binary tree decompositions of the 256-byte
   alphabet achieve the same information-theoretic rate H(B \textbar{}
   C); the choice of tree affects only encoder/decoder complexity and
   predictor calibration.

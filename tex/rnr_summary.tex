@@ -277,7 +277,7 @@ lets the framework approach oracle mode selection. The 2*eps factor is
 the key constant.
 \end{quote}
 
-\textbf{Theorem 6.4 (2*eps bound is tight) --- {[}matching lower
+\textbf{Theorem 6.2 (2*eps bound is tight) --- {[}matching lower
 bound{]}}
 
 \begin{quote}
@@ -294,7 +294,7 @@ improved without additional assumptions on the
 predictor\textquotesingle s error structure.
 \end{quote}
 
-\textbf{Theorem 6.2 (byte-tensor mutual information advantage) ---
+\textbf{Theorem 6.3 (byte-tensor mutual information advantage) ---
 {[}achievability{]}}
 
 \begin{quote}
@@ -310,7 +310,7 @@ I(H;L\textbar C).
 a reviewer asks: "what does joint byte modeling actually buy you?"
 \end{quote}
 
-\textbf{Theorem 6.5 (hierarchical decomposition is invariant) ---
+\textbf{Theorem 6.4 (hierarchical decomposition is invariant) ---
 {[}invariance{]}}
 
 \begin{quote}
@@ -327,7 +327,7 @@ arbitrary tree decompositions is a calibration question, not a rate
 question. Information-theoretically free.
 \end{quote}
 
-\textbf{Theorem 6.3 (MDL token admission) --- {[}optimization
+\textbf{Theorem 6.5 (MDL token admission) --- {[}optimization
 criterion{]}}
 
 \begin{quote}
@@ -642,18 +642,18 @@ is for hard-candidate-set predictors only.
 
 \textbf{Q:} \emph{``Why 2*eps and not 1*eps?''}
 
-\textbf{A:} Theorem 6.4: 2*eps is tight via a constructive adversarial
+\textbf{A:} Theorem 6.2: 2*eps is tight via a constructive adversarial
 example.
 
 \textbf{Q:} \emph{``Why use byte-tensor instead of separate nibble
 coders?''}
 
-\textbf{A:} Theorem 6.2: the gain equals I(H;L\textbar C), which is
+\textbf{A:} Theorem 6.3: the gain equals I(H;L\textbar C), which is
 sizable for ASCII text, opcode streams, and pixel data.
 
 \textbf{Q:} \emph{``Is the choice of decomposition tree material?''}
 
-\textbf{A:} Theorem 6.5: no, all rooted binary tree decompositions
+\textbf{A:} Theorem 6.4: no, all rooted binary tree decompositions
 achieve H(B\textbar C); it\textquotesingle s a calibration question, not
 a rate question.
 
@@ -727,7 +727,7 @@ quantification depends on the manifold hypothesis being operationalized
 for the specific data class. Empirical intrinsic-dimension estimation is
 out of scope (§13.3).
 
-• Theorem 6.4 is tight in worst case; typical-case behavior is much
+• Theorem 6.2 is tight in worst case; typical-case behavior is much
 better. The 2*eps factor is conservative.
 
 • Theorem 6.8 inherits an APX-hardness constant from SGP; the exact
