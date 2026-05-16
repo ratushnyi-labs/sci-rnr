@@ -71,12 +71,13 @@ the results should be reported to falsify or confirm each theoretical
 claim.
 
 The document covers three classes of empirical work: (a) coding-rate
-measurements that test each Type\textquotesingle s predicted advantage
-against baselines; (b) information-theoretic measurements (total
-correlation TC(D\_N) and intrinsic dimension d) that test whether
-specific natural data classes satisfy the conditions of Theorem 5.6 and
-Remark 5.7; and (c) cross-platform reproducibility tests that verify
-Theorems 10.1 and 10.2 hold for a specific reference implementation.
+measurements that test each Type's predicted advantage against
+baselines; (b) information-theoretic measurements (total correlation
+$\mathrm{TC}(D_N)$ and intrinsic dimension $d$) that test whether
+specific natural data classes satisfy the conditions of Theorem 5.6
+and Remark 5.7; and (c) cross-platform reproducibility tests that
+verify Theorems 10.1 and 10.2 hold for a specific reference
+implementation.
 
 Scope deliberately excluded: privacy auditing (a separate effort with
 its own threat model), end-user benchmarking (a deployment concern), and
@@ -124,66 +125,72 @@ streams (x86-64, RISC-V), an RNR Type-II coder with semi-non-factorized
 positional model achieves coding rate 10--20\% below LZMA at maximum
 preset.
 
-\textbf{H3 {[}confirming{]}:} For each of the data classes in H2, the
-measured total correlation TC(D\_N) is Theta(N), i.e., remains at least
-10\% of N as N grows over the range 1 KiB to 16 KiB.
+\textbf{H3 {[}confirming{]}:} For each of the data classes in H2,
+the measured total correlation $\mathrm{TC}(D_N)$ is $\Theta(N)$,
+i.e., remains at least 10\% of $N$ as $N$ grows over the range 1
+KiB to 16 KiB.
 
-\emph{Falsification:} if measured TC(D\_N) decays as o(N) for any of the
-data classes, then Theorem 5.6\textquotesingle s separation regime does
-not apply and Type-II provides only logarithmic-scale gains. If Type-II
-rate equals or exceeds LZMA on database pages, the separation regime is
-not realized at the predictor size tested.
+\emph{Falsification:} if measured $\mathrm{TC}(D_N)$ decays as
+$o(N)$ for any of the data classes, then Theorem 5.6's separation
+regime does not apply and Type-II provides only logarithmic-scale
+gains. If Type-II rate equals or exceeds LZMA on database pages,
+the separation regime is not realized at the predictor size tested.
 
 \textbf{2.3 Manifold-hypothesis quantification (Remark 5.7)}
 
-\textbf{H4 {[}confirming{]}:} For each natural-data class in H2 and H6,
-the estimated intrinsic dimension d, computed via the Levina-Bickel
-maximum-likelihood estimator on byte-level embedding vectors at multiple
-ambient dimensions, lies in the regime d much less than ambient
-dimension N.
+\textbf{H4 {[}confirming{]}:} For each natural-data class in H2 and
+H6, the estimated intrinsic dimension $d$, computed via the
+Levina-Bickel maximum-likelihood estimator on byte-level embedding
+vectors at multiple ambient dimensions, lies in the regime
+$d \ll N$.
 
-\emph{Falsification:} if d is comparable to N (within a factor of 2) for
-any tested natural-data class, the manifold-hypothesis quantification in
-Remark 5.7 does not apply to that class, and TC(D\_N) is not predicted
-to be Theta(N) for it. The conditional theorem still holds; only the
-empirical applicability is in question.
+\emph{Falsification:} if $d$ is comparable to $N$ (within a factor
+of 2) for any tested natural-data class, the manifold-hypothesis
+quantification in Remark 5.7 does not apply to that class, and
+$\mathrm{TC}(D_N)$ is not predicted to be $\Theta(N)$ for it. The
+conditional theorem still holds; only the empirical applicability is
+in question.
 
-\textbf{2.4 Type-III-A mode-selection effectiveness (Theorems 6.1, 6.2)}
+\textbf{2.4 Type-III-A mode-selection effectiveness (Theorems 6.1,
+6.2)}
 
 \textbf{H5 {[}quantifying{]}:} On heterogeneous archives (mixed
-text/binary, container files, database dumps with header and payload),
-an RNR Type-III-A scheduler with calibrated U\_m(t) achieves rate within
-5\% of the per-tile oracle best mode. The per-mode prediction error
-eps\_t averages below 0.1 bits per position.
+text/binary, container files, database dumps with header and
+payload), an RNR Type-III-A scheduler with calibrated $U_m(t)$
+achieves rate within 5\% of the per-tile oracle best mode. The
+per-mode prediction error $\varepsilon_t$ averages below 0.1 bits
+per position.
 
-\emph{Falsification:} if the scheduler\textquotesingle s rate exceeds
-the per-tile oracle by more than 20\% on heterogeneous data, the
-predictor for U is undercalibrated and the 2*eps bound is not approached
-in practice.
+\emph{Falsification:} if the scheduler's rate exceeds the per-tile
+oracle by more than 20\% on heterogeneous data, the predictor for
+$U$ is undercalibrated and the $2\varepsilon$ bound is not
+approached in practice.
 
 \textbf{2.5 Type-III-B mutual-information advantage (Theorem 6.3)}
 
-\textbf{H6 {[}quantifying{]}:} Measured I(H ; L \textbar{} C) on ASCII
+\textbf{H6 {[}quantifying{]}:} Measured $I(H ; L \mid C)$ on ASCII
 text falls in 0.3--0.7 bits per byte; on x86-64 instruction streams,
 0.4--0.9 bits per byte; on float32 numeric arrays (scientific data),
 1.0--2.0 bits per byte.
 
-\emph{Falsification:} if I(H ; L \textbar{} C) is below 0.1 bits per
-byte on any of these classes, the Type-III-B advantage over Type-II at
-nibble alphabet is negligible and not worth the additional model cost.
+\emph{Falsification:} if $I(H ; L \mid C)$ is below 0.1 bits per
+byte on any of these classes, the Type-III-B advantage over Type-II
+at nibble alphabet is negligible and not worth the additional model
+cost.
 
 \textbf{2.6 Type-III-C with bits-back (Theorem 6.6)}
 
-\textbf{H7 {[}confirming{]}:} An RNR Type-III-C coder with bits-back ANS
-over a small VAE-style latent predictor achieves rate within 2\% of H(X
-\textbar{} Y) on natural image data, matching the bits-back identity.
-The empirical KL(q \textbar\textbar{} P\_posterior) gap is bounded by
+\textbf{H7 {[}confirming{]}:} An RNR Type-III-C coder with
+bits-back ANS over a small VAE-style latent predictor achieves rate
+within 2\% of $H(X \mid Y)$ on natural image data, matching the
+bits-back identity. The empirical
+$\mathrm{KL}(q \,\Vert\, P_{\text{posterior}})$ gap is bounded by
 the variational training loss.
 
-\emph{Falsification:} if the measured rate exceeds H(X \textbar{} Y) +
-5\% on image data, the bits-back accounting in Theorem 6.6 has
-implementation defects or the variational posterior q is poorly fit. The
-theorem is unaffected.
+\emph{Falsification:} if the measured rate exceeds
+$H(X \mid Y) + 5\%$ on image data, the bits-back accounting in
+Theorem 6.6 has implementation defects or the variational posterior
+$q$ is poorly fit. The theorem is unaffected.
 
 \textbf{2.7 Reproducibility (Theorems 10.1, 10.2)}
 
@@ -205,34 +212,35 @@ platforms as H8, after 1000 adaptation steps.
 
 \textbf{2.8 Random access scaling (Theorems 10.3, 10.4)}
 
-\textbf{H10 {[}confirming{]}:} For RNR archives built with a W-bounded
-transformer predictor (W = 4 KiB) and sync points placed every K = 64
-KiB, wall-clock time for random access to k = 1 KiB at any position N
-satisfies: (a) T(N, k) is independent of N within measurement noise,
-across archive sizes spanning 100 MiB to 100 GiB; (b) T(N, k) lies in
-the range 20 to 200 milliseconds on commodity hardware; (c) ratio
-overhead from sync points relative to a no-sync RNR baseline is below 2
-percent for K = 64 KiB and below 5 percent for K = 4 KiB.
+\textbf{H10 {[}confirming{]}:} For RNR archives built with a
+$W$-bounded transformer predictor ($W = 4$ KiB) and sync points
+placed every $K = 64$ KiB, wall-clock time for random access to
+$k = 1$ KiB at any position $N$ satisfies: (a)~$T(N, k)$ is
+independent of $N$ within measurement noise, across archive sizes
+spanning 100 MiB to 100 GiB; (b)~$T(N, k)$ lies in the range 20 to
+200 milliseconds on commodity hardware; (c)~ratio overhead from
+sync points relative to a no-sync RNR baseline is below 2 percent
+for $K = 64$ KiB and below 5 percent for $K = 4$ KiB.
 
 \textbf{H11 {[}quantifying{]}:} For the LSTM-based RNR variant
-(non-W-bounded, requiring state snapshots), random-access time T(N, k)
-is 3 to 10 times higher than the W-bounded transformer variant at
-matched K, due to state-snapshot deserialization and predictor
-warm-start cost. Seek index size grows by approximately L(state) per
-sync point.
+(non-$W$-bounded, requiring state snapshots), random-access time
+$T(N, k)$ is 3 to 10 times higher than the $W$-bounded transformer
+variant at matched $K$, due to state-snapshot deserialization and
+predictor warm-start cost. Seek index size grows by approximately
+$L(\text{state})$ per sync point.
 
-\emph{Falsification:} if T(N, k) grows monotonically with N for the
-W-bounded variant, the bounded-context assumption is not realized in the
-implementation, or sync points are ineffective. If sync-point ratio
-overhead exceeds 10 percent at K = 64 KiB, the per-sync-point
-cold-context cost is larger than predicted, requiring reconsideration of
-W or K.
+\emph{Falsification:} if $T(N, k)$ grows monotonically with $N$ for
+the $W$-bounded variant, the bounded-context assumption is not
+realized in the implementation, or sync points are ineffective. If
+sync-point ratio overhead exceeds 10 percent at $K = 64$ KiB, the
+per-sync-point cold-context cost is larger than predicted,
+requiring reconsideration of $W$ or $K$.
 
-\emph{Comparison baselines:} T(N, k) for sequential decoding of NNCP at
-the same archive sizes (expected: O(N) scaling, hours for 1 GiB); T(N,
-k) for bgzip and zstd seekable mode at matched block sizes (expected:
-comparable to RNR W-bounded). The kill-feature claim of §10.7 stands or
-falls on this comparison.
+\emph{Comparison baselines:} $T(N, k)$ for sequential decoding of
+NNCP at the same archive sizes (expected: $O(N)$ scaling, hours for
+1 GiB); $T(N, k)$ for bgzip and zstd seekable mode at matched
+block sizes (expected: comparable to RNR $W$-bounded). The
+kill-feature claim of §10.7 stands or falls on this comparison.
 
 \textbf{2.9 Mounted-filesystem performance (Theorem 10.5)}
 
@@ -284,7 +292,7 @@ reproducible to support independent verification.
 
 \begin{itemize}
 \item
-  enwik9 (first 10\^{}9 bytes of English Wikipedia, standard Hutter
+  enwik9 (first $10^9$ bytes of English Wikipedia, standard Hutter
   Prize corpus). Tests Type-I and Type-III-B on ASCII text.
 \item
   Linux kernel source tarball (latest LTS release, .tar without
@@ -313,8 +321,9 @@ reproducible to support independent verification.
 
 \begin{itemize}
 \item
-  CIFAR-10 raw uncompressed pixel data (50000 32x32 images, 150 MB).
-  Tests Type-III-B and Type-III-C with bits-back on small images.
+  CIFAR-10 raw uncompressed pixel data (50000 $32 \times 32$
+  images, 150 MB). Tests Type-III-B and Type-III-C with bits-back on
+  small images.
 \item
   ImageNet validation set raw RGB (50000 images at original resolution).
   Tests Type-III-C with bits-back at scale.
@@ -393,16 +402,16 @@ Six RNR variants are evaluated, plus their Type-III-A composition:
 
 \begin{itemize}
 \item
-  RNR-I-A: Type-I with Code12 E12-A (shortened Hamming) mapping.
+  RNR-I-A: Type-I with Code12 $E_{12}$-A (shortened Hamming) mapping.
 \item
-  RNR-I-C: Type-I with E12-C (learned mapping, trained per corpus).
+  RNR-I-C: Type-I with $E_{12}$-C (learned mapping, trained per corpus).
 \item
   RNR-II: Type-II semi-non-factorized positional coder.
 \item
   RNR-III-B: Type-III-B byte tensor coder.
 \item
-  RNR-III-C-D: Type-III-C with discrete BPE-style dictionary (1024
-  tokens, 32x32 grid).
+  RNR-III-C-D: Type-III-C with discrete BPE-style dictionary
+  ($1024$ tokens, $32 \times 32$ grid).
 \item
   RNR-III-C-V: Type-III-C with continuous latents via bits-back ANS over
   a VAE-style model.
@@ -427,8 +436,8 @@ includes:
 \item
   Total bits per byte (full archive).
 \item
-  Amortized rate excluding L(M) (relevant for large archives where model
-  cost vanishes).
+  Amortized rate excluding $L(M)$ (relevant for large archives where
+  model cost vanishes).
 \item
   Per-block rate distribution: minimum, 25th percentile, median, 75th
   percentile, maximum.
@@ -458,23 +467,24 @@ Remark 5.7:
 
 \begin{itemize}
 \item
-  Total correlation TC(D\_N) via the Cmix entropy estimator at multiple
-  block lengths N in \{256, 512, 1024, 2048, 4096, 8192, 16384\}.
-  Estimated as (sum of marginal entropies measured from histograms)
-  minus (Cmix-estimated joint entropy).
+  Total correlation $\mathrm{TC}(D_N)$ via the Cmix entropy
+  estimator at multiple block lengths
+  $N \in \{256, 512, 1024, 2048, 4096, 8192, 16384\}$. Estimated as
+  (sum of marginal entropies measured from histograms) minus
+  (Cmix-estimated joint entropy).
 \item
-  Intrinsic dimension d via the Levina-Bickel maximum-likelihood
-  estimator with k in \{5, 10, 20, 50\} nearest neighbors, computed on
-  byte n-gram embedding spaces (n in \{2, 4, 8, 16\}). Report d as a
-  function of (k, n).
+  Intrinsic dimension $d$ via the Levina-Bickel maximum-likelihood
+  estimator with $k \in \{5, 10, 20, 50\}$ nearest neighbors, computed
+  on byte $n$-gram embedding spaces ($n \in \{2, 4, 8, 16\}$). Report
+  $d$ as a function of $(k, n)$.
 \item
-  Conditional mutual information I(H ; L \textbar{} C) for Type-III-B,
-  estimated via the empirical joint and marginal distributions of (high
-  nibble, low nibble) conditioned on a sliding-window context.
+  Conditional mutual information $I(H ; L \mid C)$ for Type-III-B,
+  estimated via the empirical joint and marginal distributions of
+  (high nibble, low nibble) conditioned on a sliding-window context.
 \item
-  Per-mode prediction error eps\_t for Type-III-A, computed as the
-  empirical maximum over modes of \textbar U\_m(t) - L\_m(t)\textbar{}
-  over a sample of tiles.
+  Per-mode prediction error $\varepsilon_t$ for Type-III-A, computed
+  as the empirical maximum over modes of $|U_m(t) - L_m(t)|$ over a
+  sample of tiles.
 \end{itemize}
 
 \textbf{5.4 Reproducibility metrics}
@@ -497,20 +507,22 @@ Remark 5.7:
 
 \begin{itemize}
 \item
-  Random-access wall-clock time T(N, k) for k in \{1 KiB, 4 KiB, 16 KiB,
-  64 KiB\} and N sampled uniformly over the archive, with at least 1000
-  samples per (archive size, k) pair. Report mean, median, 95th
+  Random-access wall-clock time $T(N, k)$ for
+  $k \in \{1 \text{ KiB}, 4 \text{ KiB}, 16 \text{ KiB}, 64 \text{ KiB}\}$
+  and $N$ sampled uniformly over the archive, with at least 1000
+  samples per (archive size, $k$) pair. Report mean, median, 95th
   percentile.
 \item
-  Random-access throughput: number of independent random-access reads
-  per second under serial query load.
+  Random-access throughput: number of independent random-access
+  reads per second under serial query load.
 \item
-  Sync-point overhead: ratio cost as (archive size with sync points) /
-  (archive size without sync points) - 1, reported at K in \{4 KiB, 16
-  KiB, 64 KiB, 256 KiB, 1 MiB\}.
+  Sync-point overhead: ratio cost as
+  $(\text{archive size with sync points}) / (\text{archive size without sync points}) - 1$,
+  reported at $K \in \{4, 16, 64, 256, 1024\}$ KiB.
 \item
-  Seek index size as a fraction of total archive size, with W-bounded
-  versus non-W-bounded predictor variants separately reported.
+  Seek index size as a fraction of total archive size, with
+  $W$-bounded versus non-$W$-bounded predictor variants separately
+  reported.
 \end{itemize}
 
 \textbf{6. Statistical methodology}
@@ -556,59 +568,39 @@ the OSF Registries or equivalent open-science platform.
 \textbf{6.4 Multiple-comparisons correction}
 
 With 9 hypotheses and multiple coder/corpus pairs each, the
-per-comparison alpha of 0.05 would inflate the family-wise error rate
-substantially. Apply Holm-Bonferroni correction across all
-primary-hypothesis tests. Secondary analyses (effect sizes, exploratory
-measurements) report uncorrected confidence intervals with a clear label
-distinguishing them from primary hypothesis tests.
+per-comparison $\alpha$ of $0.05$ would inflate the family-wise
+error rate substantially. Apply Holm-Bonferroni correction across all
+primary-hypothesis tests. Secondary analyses (effect sizes,
+exploratory measurements) report uncorrected confidence intervals
+with a clear label distinguishing them from primary hypothesis tests.
 
 \textbf{7. Reporting template}
 
 Each experiment is reported in a uniform template for downstream
 meta-analysis. The template is:
-
-\begin{quote}
-Experiment ID: \textless slug, e.g.,
-\textquotesingle h2-pgdump-rnr-ii\textquotesingle\textgreater{}
-
-Hypothesis: \textless H1..H9 from Section 2\textgreater{}
-
-Corpus: \textless slug + SHA-256 hash\textgreater{}
-
-Coder: \textless RNR variant or baseline name + version\textgreater{}
-
-Hardware: \textless CPU, RAM, OS\textgreater{}
-
-Software: \textless library versions, RNR git commit hash\textgreater{}
-
-Pre-registration ID: \textless OSF URL or equivalent\textgreater{}
-
-Runs: 5
+\begin{verbatim}
+Experiment ID:        <slug, e.g., 'h2-pgdump-rnr-ii'>
+Hypothesis:           <H1..H9 from Section 2>
+Corpus:               <slug + SHA-256 hash>
+Coder:                <RNR variant or baseline name + version>
+Hardware:             <CPU, RAM, OS>
+Software:             <library versions, RNR git commit hash>
+Pre-registration ID:  <OSF URL or equivalent>
+Runs:                 5
 
 Result table:
+  Rate (bpb):    mean +/- 95% CI
+  Time (s/MiB):  mean +/- 95% CI
+  Memory (MiB):  mean +/- 95% CI
 
-Rate (bpb): mean +/- 95\% CI
+Comparison to <baseline name>:
+  Delta rate:                <value> bpb (<percentage>%)
+  Bootstrap 95% CI on delta: [<low>, <high>]
+  Cohen's d (block-level):   <value>
 
-Time (s/MiB): mean +/- 95\% CI
-
-Memory (MiB): mean +/- 95\% CI
-
-Comparison to \textless baseline name\textgreater:
-
-Delta rate: \textless value\textgreater{} bpb
-(\textless percentage\textgreater\%)
-
-Bootstrap 95\% CI on delta: {[}\textless low\textgreater,
-\textless high\textgreater{]}
-
-Cohen\textquotesingle s d (block-level): \textless value\textgreater{}
-
-Hypothesis verdict: \textless confirmed / falsified /
-inconclusive\textgreater{}
-
-Notes: \textless implementation details, anomalies,
-caveats\textgreater{}
-\end{quote}
+Hypothesis verdict:  <confirmed / falsified / inconclusive>
+Notes:               <implementation details, anomalies, caveats>
+\end{verbatim}
 
 \textbf{8. Cross-platform reproducibility test (H8, H9)}
 
@@ -643,23 +635,17 @@ least 10 blocks per Type.
 
 \textbf{8.3 Test procedure}
 
-For each test block X and each RNR variant, on each platform:
-
-\begin{quote}
-1. Run encoder on X with deterministic seed; emit archive A.
-
-2. Compute SHA-256(A).
-
-3. Cross-tabulate SHA-256 values across platforms.
-
-4. For all pairs (platform\_i, platform\_j), record byte-identity =
-(hash\_i == hash\_j).
-
-5. Run decoder on each A on each platform; emit X\_hat.
-
-6. Verify X\_hat == X on every (encoder\_platform, decoder\_platform)
-pair.
-\end{quote}
+For each test block $X$ and each RNR variant, on each platform:
+\begin{enumerate}
+\item Run encoder on $X$ with deterministic seed; emit archive $A$.
+\item Compute $\mathrm{SHA\text{-}256}(A)$.
+\item Cross-tabulate SHA-256 values across platforms.
+\item For all pairs $(\text{platform}_i, \text{platform}_j)$, record
+$\text{byte-identity} = (\text{hash}_i = \text{hash}_j)$.
+\item Run decoder on each $A$ on each platform; emit $\hat{X}$.
+\item Verify $\hat{X} = X$ on every
+$(\text{encoder platform}, \text{decoder platform})$ pair.
+\end{enumerate}
 
 Pass criterion: for every test block, all 6 platforms produce the same
 archive hash, and every cross-decoded result equals the original. Fail
@@ -697,11 +683,12 @@ estimation.
 
 \textbf{9.1 Embedding choice}
 
-Intrinsic dimension is estimated in an embedding space, not raw byte
-space, because raw bytes are unstructured. For each corpus, compute byte
-n-gram embeddings at n in \{2, 4, 8, 16\}. Each block becomes a vector
-of counts over a vocabulary of distinct n-grams observed in that corpus.
-Vocabulary is capped at 65536 by frequency.
+Intrinsic dimension is estimated in an embedding space, not raw
+byte space, because raw bytes are unstructured. For each corpus,
+compute byte $n$-gram embeddings at $n \in \{2, 4, 8, 16\}$. Each
+block becomes a vector of counts over a vocabulary of distinct
+$n$-grams observed in that corpus. Vocabulary is capped at 65536 by
+frequency.
 
 Alternative embedding: use the byte-level transformer\textquotesingle s
 penultimate-layer hidden state at each position, averaged over the
@@ -711,22 +698,19 @@ is acceptable since the predictor is already part of the framework.
 \textbf{9.2 Estimator}
 
 Apply the Levina-Bickel maximum-likelihood estimator (Levina-Bickel
-2004) with k nearest neighbors. For each sample point x\_i and each of
-its k nearest neighbors x\_\{i,1\}, ..., x\_\{i,k\} (by Euclidean
-distance in the embedding space):
-
-\begin{quote}
-T\_k(x\_i) = distance to k-th nearest neighbor
-
-d\_hat(x\_i, k) = (k - 1) / sum\_\{j=1..k-1\} log(T\_k(x\_i) /
-T\_j(x\_i))
-
-d\_hat(k) = mean over all sample points of d\_hat(x\_i, k)
-\end{quote}
-
-Report d\_hat for k in \{5, 10, 20, 50\} and stable across these k
-values. If d\_hat varies substantially across k, the corpus does not
-exhibit a clean low-dimensional manifold structure.
+2004) with $k$ nearest neighbors. For each sample point $x_i$ and
+each of its $k$ nearest neighbors $x_{i,1}, \ldots, x_{i,k}$ (by
+Euclidean distance in the embedding space):
+\[
+\begin{aligned}
+T_k(x_i)         &= \text{distance to $k$-th nearest neighbor,} \\
+\hat{d}(x_i, k)  &= \frac{k - 1}{\sum_{j=1}^{k-1} \log(T_k(x_i) / T_j(x_i))}, \\
+\hat{d}(k)       &= \text{mean over all sample points of } \hat{d}(x_i, k).
+\end{aligned}
+\]
+Report $\hat{d}$ for $k \in \{5, 10, 20, 50\}$ and stable across
+these $k$ values. If $\hat{d}$ varies substantially across $k$, the
+corpus does not exhibit a clean low-dimensional manifold structure.
 
 \textbf{9.3 Validation against alternative estimators}
 
@@ -742,10 +726,11 @@ Cross-check with at least one alternative:
   Two-NN dimension estimator (Facco et al. 2017).
 \end{itemize}
 
-Report agreement or disagreement among estimators. Strong disagreement
-(factor of 2 or more) indicates the corpus may not admit a manifold
-description; in that case Remark 5.7\textquotesingle s quantification of
-TC does not transfer cleanly to that corpus.
+Report agreement or disagreement among estimators. Strong
+disagreement (factor of 2 or more) indicates the corpus may not
+admit a manifold description; in that case Remark 5.7's
+quantification of $\mathrm{TC}$ does not transfer cleanly to that
+corpus.
 
 \textbf{10. Suggested execution order}
 
@@ -770,12 +755,13 @@ estimates must precede the H3/H4 analysis, etc. The suggested order is:
 
 \begin{itemize}
 \item
-  Estimate TC(D\_N) and intrinsic dimension d for each corpus (H3, H4).
+  Estimate $\mathrm{TC}(D_N)$ and intrinsic dimension $d$ for each
+  corpus (H3, H4).
 \item
   Publish the estimates as a standalone artifact (pre-registration
   permits early publication of corpus characterization).
 \item
-  Estimate I(H ; L \textbar{} C) for H6.
+  Estimate $I(H ; L \mid C)$ for H6.
 \end{itemize}
 
 \emph{\textbf{Phase 3: rate measurements (weeks 7--12)}}
@@ -792,8 +778,8 @@ estimates must precede the H3/H4 analysis, etc. The suggested order is:
   H5 on heterogeneous corpora (after composition implementation is
   complete).
 \item
-  H6 cross-checks (rate gain in Type-III-B against measured I(H ; L
-  \textbar{} C)).
+  H6 cross-checks (rate gain in Type-III-B against measured
+  $I(H ; L \mid C)$).
 \item
   H7 on image corpora (bits-back over VAE).
 \item
