@@ -214,23 +214,6 @@ genuinely beats Type-I: yes, by $\Theta(N)$ bits in the worst case.
 Strongest separation result in the paper.
 \end{quote}
 
-\textbf{Proposition 5.7 (optimal support is a Q-prefix; arithmetic
-coding is the limit) --- {[}optimization{]}}
-
-\begin{quote}
-\emph{Statement.} The optimal $S_v$ is the top-$s_v^\star$ prefix of
-positions sorted by $Q_v(i)$; support-set coding is strictly more
-expensive than per-position arithmetic coding under the same $Q$,
-unless $Q$ is binary.
-
-\emph{Proof.} Swap argument for the prefix structure; data-processing
-inequality for the arithmetic-coding lower bound.
-
-\emph{Why it matters.} Resolves the support-threshold design
-question. For real-valued $Q$, use arithmetic coding directly;
-reserve support coding for hard-candidate-set predictors.
-\end{quote}
-
 \textbf{Theorem 5.5 (multi-information separation, general source) ---
 {[}separation, general{]}}
 
@@ -264,6 +247,23 @@ Tenenbaum et al.
 \emph{Why it matters.} Bridges the conditional theorem to natural data.
 Use when a reviewer asks why the framework is relevant beyond contrived
 families.
+\end{quote}
+
+\textbf{Proposition 5.7 (optimal support is a Q-prefix; arithmetic
+coding is the limit) --- {[}optimization{]}}
+
+\begin{quote}
+\emph{Statement.} The optimal $S_v$ is the top-$s_v^\star$ prefix of
+positions sorted by $Q_v(i)$; support-set coding is strictly more
+expensive than per-position arithmetic coding under the same $Q$,
+unless $Q$ is binary.
+
+\emph{Proof.} Swap argument for the prefix structure; data-processing
+inequality for the arithmetic-coding lower bound.
+
+\emph{Why it matters.} Resolves the support-threshold design
+question. For real-valued $Q$, use arithmetic coding directly;
+reserve support coding for hard-candidate-set predictors.
 \end{quote}
 
 \textbf{Section 6 --- Type-III: Tensor Entropy-Field Coding}

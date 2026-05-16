@@ -934,6 +934,12 @@ decomposition invariance)} → Byte tensor coding (encoder spec).
 \textbf{Theorems 6.5, 6.6, 6.7, 6.8 (Type-III-C MDL, bits-back, NP-hard,
 APX-hard)} → Token tensor coding (encoder spec).
 
+\textbf{Theorem 7.1 (composition correctness)} → §3 (universal
+requirements R-3.1 through R-3.8) and §10 (mode-flag stream)
+together ensure each mode coder produces a uniquely decodable repair
+stream conditional on its mode flag; the composed archive is therefore
+uniquely decodable by direct application of the theorem.
+
 \textbf{Theorem 8.1 (no universal dominance)} → Acknowledged in archive
 header (fallback-mode flag).
 
