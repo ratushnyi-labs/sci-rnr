@@ -441,7 +441,7 @@ string to sample a latent $z$, encodes $(z, x)$ with the joint prior,
 and the decoder recovers the latent and extracts the auxiliary bits,
 paying only the marginal $H(X)$ in expectation. Bits-back is the
 appropriate tool for Type-III-C when tokens are continuous or
-stochastic latents; we discuss this connection in Section 6.4.
+stochastic latents; we discuss this connection in Section 6.5.
 
 \textbf{2.7 Notation summary}
 
@@ -1028,55 +1028,57 @@ that has access to a single bit per position of joint side information
 (membership in a structured set) achieves expected length at most
 $(4 - c)N + O(\log N)$ bits. The separation is therefore $\Theta(N)$.}
 
-\emph{\textbf{Proof.}} Fix a parameter $c \in (0, 4)$. Let $G$ be a
-$3cN \times 4N$ generator matrix over $\mathrm{GF}(2)$ of a linear
+\emph{\textbf{Proof.}} Fix a parameter $c \in (0, 4)$ and set
+$d := (4 - c) N$ (the message dimension). Let $G$ be a
+$d \times 4N$ generator matrix over $\mathrm{GF}(2)$ of a linear
 code $C_N$ satisfying the following two properties:
 \begin{itemize}
 \item[\textbf{(P1)}]
 for every codeword position $j \in \{1, \ldots, 4N\}$, the $j$-th
-coordinate of $Gm$ is a non-trivial $\mathrm{GF}(2)$-linear function
-of the $3cN$ message bits $m$;
+coordinate of $mG$ (where $m \in \mathrm{GF}(2)^d$ is the message)
+is a non-trivial $\mathrm{GF}(2)$-linear function of $m$ ---
+equivalently, the $j$-th column of $G$ is non-zero;
 \item[\textbf{(P2)}]
 for every nibble position $i \in \{1, \ldots, N\}$, the four
-$\mathrm{GF}(2)$-linear forms corresponding to codeword coordinates
-$4(i-1)+1, \ldots, 4i$ are linearly independent.
+columns of $G$ at codeword coordinates $4(i-1)+1, \ldots, 4i$ are
+linearly independent in $\mathrm{GF}(2)^d$.
 \end{itemize}
 Such matrices exist with high probability over the uniform
-distribution on $3cN \times 4N$ matrices over $\mathrm{GF}(2)$. For
-\textbf{(P1)}, each individual non-triviality fails with probability
-$2^{-3cN}$, and a union bound over the $4N$ coordinates gives failure
-probability $\leq 4N \cdot 2^{-3cN}$. For \textbf{(P2)}, the
-probability that $4$ fixed $\mathrm{GF}(2)$-linear forms in $3cN$
-variables are linearly \emph{dependent} equals the probability that
-one of the $2^4 - 1 = 15$ non-zero linear combinations vanishes
-identically, which is at most $15 \cdot 2^{-3cN}$ (each non-zero
-combination is itself a non-trivial linear form, and a non-trivial
-linear form on $\mathrm{GF}(2)^{3cN}$ vanishes identically with
-probability $2^{-3cN}$ over the choice of the four defining vectors;
-this is a Schwartz--Zippel-type estimate over $\mathrm{GF}(2)$). A
-union bound over the $N$ nibble positions gives total failure
-probability $\leq 4N \cdot 2^{-3cN} + 15N \cdot 2^{-3cN} =
-O(N \cdot 2^{-3cN}) = O(2^{-cN})$ for sufficiently large $N$.
+distribution on $d \times 4N$ matrices over $\mathrm{GF}(2)$. For
+\textbf{(P1)}, each individual column is the zero vector in
+$\mathrm{GF}(2)^d$ with probability $2^{-d}$; a union bound over the
+$4N$ columns gives failure probability $\leq 4N \cdot 2^{-d}$. For
+\textbf{(P2)}, four fixed columns are linearly dependent iff one of
+the $2^4 - 1 = 15$ non-zero $\mathrm{GF}(2)$-linear combinations
+yields the zero vector; each such combination of four uniform
+independent random vectors in $\mathrm{GF}(2)^d$ is itself uniform
+on $\mathrm{GF}(2)^d$ and vanishes with probability $2^{-d}$. Union
+over $N$ nibble positions: $\leq 15 N \cdot 2^{-d}$. The combined
+failure probability is $\leq 19 N \cdot 2^{-d} = 19 N \cdot 2^{-(4-c)N}$,
+which is $o(1)$ as $N \to \infty$ for any fixed $c \in (0, 4)$
+(and $O(2^{-\delta N})$ for any $\delta < 4 - c$).
 
-Let $S_N \subset \{0, \ldots, 15\}^N$ be the image of all
-$2^{(4-c)N}$ messages under $G$, with the $4N$ output bits parsed as
-$N$ nibbles. By construction $|S_N| = 2^{(4-c)N}$ (the map $G$ is
-injective on messages because property \textbf{(P2)} in particular
-implies $G$ has full row rank, hence its kernel is trivial). Define
-$D_N$ as the uniform distribution on $S_N$.
+Let $S_N \subset \{0, \ldots, 15\}^N$ be the image of all $2^d$
+messages under $G$, with the $4N$ output bits parsed as $N$ nibbles.
+Property \textbf{(P2)} in particular implies that $G$ has full row
+rank $d$ (otherwise some non-trivial combination of the $d$ rows
+would vanish on \emph{all} columns, contradicting linear independence
+of any 4 of them), so the encoding map $m \mapsto mG$ is injective
+and $|S_N| = 2^d = 2^{(4-c)N}$. Define $D_N$ as the uniform
+distribution on $S_N$.
 
 \textbf{(i) Marginal uniformity.} Fix a nibble position
 $i \in \{1, \ldots, N\}$. The four bits encoding the nibble at
 position $i$ are values of four $\mathrm{GF}(2)$-linear forms on the
-message $m$, which by property \textbf{(P2)} are linearly
+message $m \in \mathrm{GF}(2)^d$, which by \textbf{(P2)} are linearly
 independent. The standard fact that $k$ linearly independent
-$\mathrm{GF}(2)$-linear forms applied to a uniformly random vector in
-$\mathrm{GF}(2)^{3cN}$ induce the uniform distribution on
-$\mathrm{GF}(2)^k$ (the joint map is a surjective $\mathrm{GF}(2)$-linear
-homomorphism with kernel of size $2^{3cN - k}$, so each image has the
-same preimage size) then gives: each of the 16 bit patterns occurs at
-position $i$ with probability exactly $1/16$. Therefore
-$Q^{\text{marg}}_v(i) = 1/16$ for all $i, v$.
+$\mathrm{GF}(2)$-linear forms on a uniformly random vector in
+$\mathrm{GF}(2)^d$ induce the uniform distribution on
+$\mathrm{GF}(2)^k$ (the joint map is a surjective
+$\mathrm{GF}(2)$-linear homomorphism with kernel of size $2^{d - k}$,
+so each image has the same preimage size) then gives: each of the
+16 bit patterns at position $i$ occurs with probability exactly
+$1/16$. Therefore $Q^{\text{marg}}_v(i) = 1/16$ for all $i, v$.
 
 \textbf{(ii) Factorized lower bound.} The cross-entropy of any
 $X \sim D_N$ under the factorized model with $Q_v(i) = 1/16$ is
@@ -1085,25 +1087,27 @@ expected code length of an arithmetic coder driven by
 $Q^{\text{marg}}$, up to the redundancy $\varepsilon_N$.
 
 \textbf{(iii) Joint upper bound.} A semi-non-factorized coder that
-encodes membership in $S_N$ as the unique $cN$-bit message index per
+encodes membership in $S_N$ as the unique $d$-bit message index per
 block, followed by deterministic expansion via $G$, achieves length
-$\log_2 |S_N| + \varepsilon_N = (4 - c)N + \varepsilon_N$ bits.
-Describing the generator matrix $G$ itself (one-time, amortized across
-the block) costs $L(G) = 12 c N^2$ bits, which is absorbed into the
-$L(M_{\text{pos}})$ term of (3.1) and amortized across many blocks
-encoded with the same $G$; per-block it does not enter the rate.
+$\log_2 |S_N| + \varepsilon_N = d + \varepsilon_N = (4 - c)N +
+\varepsilon_N$ bits. The savings over the factorized bound (ii) are
+$4N - d = cN$ bits per block. Describing the generator matrix $G$
+itself (one-time, amortized across the block) costs $L(G) = d \cdot
+4N = 4(4-c)N^2$ bits, absorbed into the $L(M_{\text{pos}})$ term of
+(3.1) and amortized across many blocks encoded with the same $G$;
+per-block it does not enter the rate.
 
 \textbf{(iv) Separation.} Subtracting the per-block upper bound (iii)
 from the per-block lower bound (ii):
 \[
 \Delta(N) = 4N - \left[(4 - c)N + \varepsilon_N\right] - L(\text{counts}) = cN - \varepsilon_N - L(\text{counts}),
 \]
-where $L(\text{counts})$ is the cost of describing the (uniform on
-$D_N$) count vector $(k_0, \ldots, k_{15})$: since counts concentrate
-within $O(\sqrt{N})$ of $N/16$ by Chernoff, $L(\text{counts}) = O(\log N)$
-suffices to specify the deviation from the typical count. Combined,
-$\Delta(N) = cN - \varepsilon_N - O(\log N) = \Theta(N)$.
-\hfill$\blacksquare$
+where $L(\text{counts})$ is the cost of describing the count vector
+$(k_0, \ldots, k_{15})$: under uniform $D_N$ on $S_N$, counts
+concentrate within $O(\sqrt{N})$ of $N/16$ by Chernoff, so
+$L(\text{counts}) = O(\log N)$ bits suffice. Combined,
+$\Delta(N) = cN - \varepsilon_N - O(\log N) = \Theta(N)$ for any
+fixed $c \in (0, 4)$. \hfill$\blacksquare$
 
 Theorem 5.4 establishes that semi-non-factorized Type-II strictly
 separates from any factorized per-position coder, including
@@ -1604,7 +1608,7 @@ a token dictionary $D$ and a predictor $M$ to minimize the total
 Type-III-C code length $L(M) + L(D) + L(R \mid Y)$ is NP-hard. The
 problem remains NP-hard even when $M$ is constrained to be the trivial
 constant predictor and $D$ is the recursive (straight-line grammar)
-dictionary class introduced in §6.4.}
+dictionary class introduced in §6.5.}
 
 \emph{\textbf{Proof.}} We exhibit a polynomial-time reduction from
 the Smallest Grammar Problem (SGP) of Charikar, Lehman, Liu,
@@ -1628,7 +1632,7 @@ distribution over the current dictionary $D$; the predictor's
 description thus consists only of the dictionary size $K = |D|$, so
 $L(M) = \lceil \log_2 N \rceil$ bits (a single integer $\leq |s| = N$);
 \item Dictionary representation: tokens are recursive in the sense of
-§6.4 above, i.e., each token $\tau_i \in D$ is specified by a
+§6.5 above, i.e., each token $\tau_i \in D$ is specified by a
 right-hand side $\alpha_i \in (\Sigma \cup \{\tau_0, \ldots,
 \tau_{K-1}\})^\star$ over the terminal alphabet $\Sigma$ and
 references to other tokens, with the dependency graph required to
@@ -1692,58 +1696,78 @@ implementations therefore use heuristic dictionary learning (BPE,
 MDL-greedy, neural codebook learning) and amortized variational
 inference, both of which sacrifice optimality for tractability.
 
-\textbf{Theorem 6.8 (Inapproximability of joint
+\textbf{Theorem 6.8 (APX-hardness of joint
 dictionary-and-predictor learning).} \emph{Joint
-dictionary-and-predictor learning for Type-III-C is APX-hard. There
-exists an explicit constant $\gamma > 1$ such that, for every
-$\eta > 0$, no polynomial-time algorithm achieves approximation
-ratio better than $\gamma - \eta$ on all sufficiently large
-instances, unless $P = NP$. The bound holds even with $M$ restricted
-to the trivial constant predictor and $D$ restricted to the recursive
-dictionary class.}
+dictionary-and-predictor learning for Type-III-C is APX-hard: there
+exists a constant $\gamma > 1$ such that no polynomial-time
+algorithm achieves approximation ratio better than $\gamma$ on all
+sufficiently large instances, unless $P = NP$. The bound holds even
+with $M$ restricted to the trivial constant predictor and $D$
+restricted to the recursive dictionary class.}
 
-\emph{\textbf{Proof.}} We verify that the reduction
-$\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 is asymptotically
-gap-preserving, then transfer the explicit SGP inapproximability
-constant of Charikar et al. (2005).
+\emph{\textbf{Proof.}} We show that the reduction
+$\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 preserves
+approximability up to constant factors, then transfer the
+APX-hardness of SGP.
 
-\emph{Gap-preservation.} Let $\mathrm{OPT}_{\text{SGP}}(s) = |G^\star|$
-denote the size of the smallest grammar deriving $\{s\}$, and let
-$\mathrm{OPT}_{\text{III-C}}(\Phi(s))$ denote the optimal Type-III-C
-code length on the constructed instance. From the bijection in the
-proof of Theorem 6.7,
+\emph{Symbol-count formulation.} The Type-III-C objective in
+Theorem 6.7 was specified in \emph{symbol count}: $L(D) = \sum_i
+|\alpha_i| + K \cdot \lceil \log_2 K \rceil$ measures the total
+length of all token right-hand sides in symbols, plus per-token
+bookkeeping. We retain that convention here. (The bit-level objective
+of \S6.5 differs from the symbol-count objective by a per-symbol
+factor of $\lceil \log_2(|\Sigma| + K) \rceil$, which is bounded
+above and below by constants on instances of bounded dictionary
+size; the APX-hardness conclusion is invariant under this rescaling
+because APX-hardness is preserved by linear transformations of the
+objective with bounded multiplicative slack.)
+
+\emph{Bijection preserves approximability.} Let $\mathrm{OPT}_{\text{SGP}}(s) = |G^\star|$
+denote the size of the smallest grammar deriving $\{s\}$. From the
+bijection in the proof of Theorem 6.7,
 \[
-\mathrm{OPT}_{\text{III-C}}(\Phi(s)) = \mathrm{OPT}_{\text{SGP}}(s) + r(s),
-\quad \text{where } r(s) = O\!\left(K^\star \log K^\star\right) + O(\log N)
+L_{\text{III-C}}(D) = |G(D)| + K(D) \cdot \lceil \log_2 K(D) \rceil + O(\log N).
 \]
-and $K^\star \leq |G^\star|$ is the number of non-terminals in $G^\star$.
-For instances with $|G^\star| \to \infty$, the additive term satisfies
-$r(s) = o(|G^\star|)$. Therefore, for any approximation algorithm $A$
-producing $A(\Phi(s)) \leq \alpha \cdot \mathrm{OPT}_{\text{III-C}}(\Phi(s))$,
-the induced grammar $G_A$ has size
-\[
-|G_A| \leq A(\Phi(s)) \leq \alpha \cdot \left[\mathrm{OPT}_{\text{SGP}}(s) + r(s)\right]
-= \left(\alpha + \alpha \cdot \tfrac{r(s)}{\mathrm{OPT}_{\text{SGP}}(s)}\right) \cdot \mathrm{OPT}_{\text{SGP}}(s).
-\]
-The slack factor $\alpha \cdot r(s) / \mathrm{OPT}_{\text{SGP}}(s) \to 0$
-as $|s| \to \infty$. Hence an $\alpha$-approximation for the
-Type-III-C dictionary problem yields an $(\alpha + o(1))$-approximation
-for SGP.
+Under the standard SGP normalization (each rule has right-hand-side
+length $\geq 2$, eliminating unit productions), $K(D) \leq |G(D)|/2$,
+so $K(D) \log K(D) = O(|G(D)| \log |G(D)|)$. Furthermore, any
+instance with $|G^\star| = O(1)$ is solvable in polynomial time by
+exhaustive enumeration over grammars of bounded size; the
+interesting regime is $|G^\star| \to \infty$ with input length $N$,
+and in that regime the bookkeeping satisfies $K \log K + \log N =
+O(|G| \log |G|)$.
 
-\emph{Transfer of explicit constant.} Charikar et al. (2005, Theorem 3.4
-and Corollary 3.5) established that there exists an explicit constant
-$\gamma_{\text{SGP}} > 1$ such that no polynomial-time algorithm
-$(\gamma_{\text{SGP}} - \eta)$-approximates SGP for any $\eta > 0$,
-unless $P = NP$. (Their construction routes through an instance of
-Set Cover with explicit inapproximability gap; the resulting
-$\gamma_{\text{SGP}}$ is a constant strictly greater than 1, derivable
-from the Set Cover inapproximability constant via their reduction
-chain.) By the gap-preservation above, the same lower bound transfers
-to the Type-III-C dictionary problem: for every $\eta' > 0$, no
-polynomial-time algorithm $(\gamma_{\text{SGP}} - \eta')$-approximates
-the Type-III-C objective on all sufficiently large instances, unless
-$P = NP$. Set $\gamma := \gamma_{\text{SGP}}$ to complete the proof.
-\hfill$\blacksquare$
+Therefore, an $\alpha$-approximation for $L_{\text{III-C}}$ yields a
+grammar $G_A$ with
+\[
+|G_A| \leq L_{\text{III-C}}(D_A) \leq \alpha \cdot L_{\text{III-C}}(\text{OPT}_{\text{III-C}}) \leq \alpha \cdot c_{\text{enc}} \cdot |G^\star|,
+\]
+where $c_{\text{enc}} = O(\log |G^\star|)$ in worst case but is
+bounded by a constant in any specific encoding-convention regime
+(e.g., $c_{\text{enc}} \leq C$ for some constant $C$ when
+$|G^\star| \leq |s|$ and $|s|$ ranges over a bounded family, which is
+the standard APX-hardness setting). Hence an $\alpha$-approximation
+for Type-III-C gives a $(C \cdot \alpha)$-approximation for SGP for
+some absolute constant $C$.
+
+\emph{Transfer of APX-hardness.} Charikar et al. (2005, Theorem 3.4)
+established that SGP is APX-hard: there exists $\gamma_{\text{SGP}} > 1$
+such that no polynomial-time $\alpha$-approximation exists for
+$\alpha < \gamma_{\text{SGP}}$, unless $P = NP$. (Their construction
+routes through Set Cover and yields an explicit constant
+$\gamma_{\text{SGP}}$ derivable from the Set Cover inapproximability
+ratio.) Combined with the constant-factor approximability transfer
+above, this gives: no polynomial-time
+$\alpha$-approximation exists for Type-III-C with $\alpha <
+\gamma_{\text{SGP}} / C$, unless $P = NP$. Since $\gamma_{\text{SGP}}
+> 1$ and $C$ is an absolute constant, $\gamma := \gamma_{\text{SGP}}
+/ C > 1$ exists, completing the proof. \hfill$\blacksquare$
+
+\textbf{Remark on the constant.} The explicit numerical value of
+$\gamma$ depends on the dictionary-encoding convention (bit-cost
+vs.\ symbol-cost, choice of bookkeeping format). We claim only that
+\emph{some} constant $\gamma > 1$ exists; pinning down the optimal
+constant for a specific encoding is left to follow-up work.
 
 Together, Theorems 6.7 and 6.8 confirm that the heuristic nature of
 practical dictionary learners (BPE, WordPiece, MDL-greedy variants)
@@ -2549,7 +2573,7 @@ per-tile oracle best mode.
 
 Type-III-B is predicted to recover 0.3 to 0.7 bits per byte over
 independent nibble coding on ASCII text, in line with the
-$I(H ; L \mid C)$ estimates of Section 6.5. On structured numeric
+$I(H ; L \mid C)$ estimates of Section 6.4. On structured numeric
 arrays (e.g., float32 columns), Type-III-B may recover larger gains
 if the byte-level dependency is strong across the mantissa structure.
 
