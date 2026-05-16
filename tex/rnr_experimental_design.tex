@@ -105,15 +105,15 @@ effect size on real data).
 \textbf{2.1 Type-I rate (Theorems 4.1, 4.2)}
 
 \textbf{H1 {[}quantifying{]}:} On English-language text and source code
-corpora, an RNR Type-I coder with the Code12 E12-A mapping and a small
+corpora, an RNR Type-I coder with the Code12 $E_{12}$-A mapping and a small
 (5--20 MB amortized) byte-level transformer predictor achieves coding
 rate 1.5--2.0 bits per byte, competitive with LZMA at maximum preset
 (2.1--2.5 bpb) and behind NNCP (1.3--1.6 bpb). The gap to NNCP narrows
-under E12-C (learned mapping).
+under $E_{12}$-C (learned mapping).
 
 \emph{Falsification:} if Type-I rate exceeds 2.5 bpb on enwik9 (worse
 than LZMA), or if Type-I rate exceeds NNCP rate by more than 0.5 bpb
-after E12-C optimization, the conjecture in §11 is falsified for this
+after $E_{12}$-C optimization, the conjecture in §11 is falsified for this
 regime.
 
 \textbf{2.2 Type-II separation on structured data (Theorems 5.3, 5.4,
