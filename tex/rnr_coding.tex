@@ -1225,121 +1225,128 @@ arithmetic-coder state, or (iii) a hardware/parallelism constraint
 favors rank coding over arithmetic streaming. In other cases,
 per-position arithmetic coding is the form to use.
 
-\textbf{6. Type‑III: Tensor Entropy‑Field Coding}
+\textbf{6. Type-III: Tensor Entropy-Field Coding}
 
 \textbf{6.1 General formulation}
 
-Type‑III generalizes Type‑II in two directions. First, the
-representation target Z = T(X) is a multi‑dimensional tensor: it may
+Type-III generalizes Type-II in two directions. First, the
+representation target $Z = T(X)$ is a multi-dimensional tensor: it may
 index over symbol class, position, scale, context class, or token
-family. Second, the model predicts not only a first‑order field Q over Z
-but also a second‑order field U interpreted as predicted uncertainty,
-repair cost, or coding mode suitability. The decoder, having both Q and
-U deterministically, can select coding strategies tile‑by‑tile and
-recover the exact Z, hence X = T\^{}\{-1\}(Z).
+family. Second, the model predicts not only a first-order field $Q$
+over $Z$ but also a second-order field $U$ interpreted as predicted
+uncertainty, repair cost, or coding mode suitability. The decoder,
+having both $Q$ and $U$ deterministically, can select coding
+strategies tile-by-tile and recover the exact $Z$, hence
+$X = T^{-1}(Z)$.
 
-Three subtypes specialize this construction. Type‑III‑A treats U as a
-per‑tile coding‑mode score and uses it to switch between Type‑I,
-Type‑II, and other coders. Type‑III‑B treats Z as a byte tensor in which
-high and low nibbles are jointly modeled. Type‑III‑C treats Z as a
-token‑interval cover under a hierarchically indexed learned dictionary.
+Three subtypes specialize this construction. Type-III-A treats $U$ as
+a per-tile coding-mode score and uses it to switch between Type-I,
+Type-II, and other coders. Type-III-B treats $Z$ as a byte tensor in
+which high and low nibbles are jointly modeled. Type-III-C treats $Z$
+as a token-interval cover under a hierarchically indexed learned
+dictionary.
 
-\textbf{6.2 Type‑III‑A: entropy‑field meta‑prediction}
+\textbf{6.2 Type-III-A: entropy-field meta-prediction}
 
-Type‑III‑A predicts a per‑tile, per‑mode coding‑cost field U\_m(t),
-where t indexes a tile of the block (a fixed‑size window of 64, 128,
-256, or 512 positions) and m in M indexes a coding mode (Type‑I,
-Type‑II, Type‑III‑B, Type‑III‑C, raw escape). The deterministic selector
-chooses m\_hat(t) = argmin\_m U\_m(t), and each tile is encoded with the
-selected mode. Because U is a function of decoder‑reproducible state, no
-per‑tile mode flag needs to be stored, except when the encoder departs
-from the predicted argmin.
+Type-III-A predicts a per-tile, per-mode coding-cost field $U_m(t)$,
+where $t$ indexes a tile of the block (a fixed-size window of 64,
+128, 256, or 512 positions) and $m \in M$ indexes a coding mode
+(Type-I, Type-II, Type-III-B, Type-III-C, raw escape). The
+deterministic selector chooses
+$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$, and each tile is
+encoded with the selected mode. Because $U$ is a function of
+decoder-reproducible state, no per-tile mode flag needs to be stored,
+except when the encoder departs from the predicted argmin.
 
-Let L\_m(t) denote the actual code length when tile t is encoded with
-mode m, and U\_m(t) the predicted value. Define the per‑mode prediction
-error eps\_t = max\_m \textbar{} U\_m(t) - L\_m(t) \textbar. The next
-theorem bounds the gap between the cost of the model‑selected mode and
-the cost of the oracle‑best mode.
+Let $L_m(t)$ denote the actual code length when tile $t$ is encoded
+with mode $m$, and $U_m(t)$ the predicted value. Define the per-mode
+prediction error $\varepsilon_t = \max_m |U_m(t) - L_m(t)|$. The next
+theorem bounds the gap between the cost of the model-selected mode
+and the cost of the oracle-best mode.
 
-\textbf{Theorem 6.1 (Approximate‑oracle mode selection (Type‑III‑A)).}
-\emph{Let m\_star(t) = argmin\_m L\_m(t) be the oracle best mode for
-tile t and m\_hat(t) = argmin\_m U\_m(t) be the model‑selected mode. If
-\textbar{} U\_m(t) - L\_m(t) \textbar{} \textless= eps\_t for every m,
-then}
+\textbf{Theorem 6.1 (Approximate-oracle mode selection (Type-III-A)).}
+\emph{Let $m^\star(t) = \operatorname*{arg\,min}_m L_m(t)$ be the
+oracle best mode for tile $t$ and
+$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ be the model-selected
+mode. If $|U_m(t) - L_m(t)| \leq \varepsilon_t$ for every $m$, then}
 
 \[
 L_{\hat{m}(t)}(t) \leq L_{m^\star(t)}(t) + 2\varepsilon_t.
 \tag{6.1}
 \]
 
-\emph{\textbf{Proof.}} By the prediction error bound, L\_\{m\_hat\}(t)
-\textless= U\_\{m\_hat\}(t) + eps\_t. By the definition of m\_hat,
-U\_\{m\_hat\}(t) \textless= U\_\{m\_star\}(t). By the prediction error
-bound applied to m\_star, U\_\{m\_star\}(t) \textless= L\_\{m\_star\}(t)
-+ eps\_t. Chaining: L\_\{m\_hat\}(t) \textless= L\_\{m\_star\}(t) + 2 *
-eps\_t. \hfill$\blacksquare$
-
-The 2*eps factor is tight. The theorem says: a Type‑III‑A coder loses at
-most twice the per‑mode prediction error relative to an omniscient mode
-selector. When the predictor is accurate on per‑mode cost (small
-eps\_t), the loss vanishes. This is the formal justification for
-predicting prediction cost.
-
-A useful corollary is that Type‑III‑A composes with any set of
-underlying coders without loss: adding a new mode $m'$ to M can only
-decrease the oracle cost, and the 2*eps bound continues to hold provided
-the predictor is calibrated on $m'$. This gives Type‑III‑A its role as the
-top‑level scheduler in any RNR composition.
-
-\textbf{Theorem 6.2 (Tightness of the 2*eps bound).} \emph{For every eps
-\textgreater{} 0 and every delta \textgreater{} 0, there exist a tile, a
-mode set M of size 2, true costs L\_m(t), and predictions U\_m(t) with
-max\_m \textbar{} U\_m(t) - L\_m(t) \textbar{} \textless= eps such that
-the model-selected mode m\_hat satisfies L\_\{m\_hat\}(t) \textgreater=
-L\_\{m\_star\}(t) + 2 * eps - delta.}
-
-\emph{\textbf{Proof.}} Set L\_1 = delta/2 and L\_2 = 2 * eps - delta/2,
-so m\_star = 1 and L\_\{m\_star\} = delta/2. Set U\_1 = delta/2 + eps
-(overestimate by eps) and U\_2 = eps - delta/2 (underestimate by eps).
-Then \textbar{} U\_1 - L\_1 \textbar{} = eps and \textbar{} U\_2 - L\_2
-\textbar{} = eps, both within bound. Since U\_2 = eps - delta/2
-\textless{} eps + delta/2 = U\_1, the argmin selects m\_hat = 2.
-Therefore L\_\{m\_hat\} - L\_\{m\_star\} = (2 * eps - delta/2) - delta/2
-= 2 * eps - delta. As delta tends to zero, the gap approaches 2 * eps.
+\emph{\textbf{Proof.}} By the prediction error bound,
+$L_{\hat{m}}(t) \leq U_{\hat{m}}(t) + \varepsilon_t$. By the
+definition of $\hat{m}$, $U_{\hat{m}}(t) \leq U_{m^\star}(t)$. By the
+prediction error bound applied to $m^\star$,
+$U_{m^\star}(t) \leq L_{m^\star}(t) + \varepsilon_t$. Chaining:
+$L_{\hat{m}}(t) \leq L_{m^\star}(t) + 2\varepsilon_t$.
 \hfill$\blacksquare$
 
-Theorem 6.2 shows that the 2*eps factor in Theorem 6.1 cannot be
-improved without additional assumptions on the
-predictor\textquotesingle s error structure (for example, one-sided
-errors, calibrated quantile bounds, or bounded total variation between U
-and L). Standard concentration arguments give better constants in the
-typical case but the worst-case factor is exactly 2.
+The $2\varepsilon$ factor is tight. The theorem says: a Type-III-A
+coder loses at most twice the per-mode prediction error relative to an
+omniscient mode selector. When the predictor is accurate on per-mode
+cost (small $\varepsilon_t$), the loss vanishes. This is the formal
+justification for predicting prediction cost.
 
-\textbf{6.3 Type‑III‑B: byte tensor coding}
+A useful corollary is that Type-III-A composes with any set of
+underlying coders without loss: adding a new mode $m'$ to $M$ can only
+decrease the oracle cost, and the $2\varepsilon$ bound continues to
+hold provided the predictor is calibrated on $m'$. This gives
+Type-III-A its role as the top-level scheduler in any RNR composition.
 
-Type‑III‑B extends Type‑II from nibble to byte alphabets by jointly
-modeling the high and low nibbles of each byte. Write byte b = 16h + l
-with h, l in A\_16. The model predicts a 16 x 16 x N tensor
-Q\_\{h,l\}(i) approximating Pr(h\_i = h, l\_i = l \textbar{} C),
-normalized so the double sum over h and l of Q\_\{h,l\}(i) equals 1 for
-every i. The construction is exactly Type‑II with a 256‑symbol alphabet
-but with the alphabet structure exposed.
+\textbf{Theorem 6.2 (Tightness of the $2\varepsilon$ bound).}
+\emph{For every $\varepsilon > 0$ and every $\delta > 0$, there exist
+a tile, a mode set $M$ of size 2, true costs $L_m(t)$, and predictions
+$U_m(t)$ with $\max_m |U_m(t) - L_m(t)| \leq \varepsilon$ such that
+the model-selected mode $\hat{m}$ satisfies
+$L_{\hat{m}}(t) \geq L_{m^\star}(t) + 2\varepsilon - \delta$.}
 
-Two coding strategies are available. Direct partition coding treats the
-alphabet as 256 flat classes and applies Theorem 5.3 with A\_256.
-Hierarchical coding decomposes the byte partition along the high‑nibble
-axis: first encode the high‑nibble partition M\^{}H\_h = \{ i : h\_i = h
-\}, then for each h encode the low‑nibble conditional partition
-M\^{}\{L\textbar H=h\}\_l = \{ i in M\^{}H\_h : l\_i = l \}. The
-hierarchical scheme is preferred when the predictor decomposes naturally
-as Q\_\{h,l\}(i) = Q\^{}H\_h(i) * Q\^{}\{L\textbar H\}\_l(i, h).
+\emph{\textbf{Proof.}} Set $L_1 = \delta/2$ and
+$L_2 = 2\varepsilon - \delta/2$, so $m^\star = 1$ and
+$L_{m^\star} = \delta/2$. Set $U_1 = \delta/2 + \varepsilon$
+(overestimate by $\varepsilon$) and $U_2 = \varepsilon - \delta/2$
+(underestimate by $\varepsilon$). Then $|U_1 - L_1| = \varepsilon$ and
+$|U_2 - L_2| = \varepsilon$, both within bound. Since
+$U_2 = \varepsilon - \delta/2 < \varepsilon + \delta/2 = U_1$, the
+argmin selects $\hat{m} = 2$. Therefore
+$L_{\hat{m}} - L_{m^\star} = (2\varepsilon - \delta/2) - \delta/2 =
+2\varepsilon - \delta$. As $\delta \to 0$, the gap approaches
+$2\varepsilon$. \hfill$\blacksquare$
 
-\textbf{Theorem 6.3 (Type‑III‑B mutual‑information advantage).}
-\emph{Let H, L, and C denote the random variables corresponding to the
-high nibble, low nibble, and public context at a fixed position. Under
-an ideal entropy coder, independent nibble coding pays expected length
-H(H \textbar{} C) + H(L \textbar{} C) per position, while joint byte
-coding pays H(H, L \textbar{} C). The advantage of byte coding over
+Theorem 6.2 shows that the $2\varepsilon$ factor in Theorem 6.1
+cannot be improved without additional assumptions on the predictor's
+error structure (for example, one-sided errors, calibrated quantile
+bounds, or bounded total variation between $U$ and $L$). Standard
+concentration arguments give better constants in the typical case but
+the worst-case factor is exactly 2.
+
+\textbf{6.3 Type-III-B: byte tensor coding}
+
+Type-III-B extends Type-II from nibble to byte alphabets by jointly
+modeling the high and low nibbles of each byte. Write byte
+$b = 16h + l$ with $h, l \in A_{16}$. The model predicts a
+$16 \times 16 \times N$ tensor $Q_{h,l}(i)$ approximating
+$\Pr(h_i = h, l_i = l \mid C)$, normalized so $\sum_{h,l} Q_{h,l}(i) =
+1$ for every $i$. The construction is exactly Type-II with a 256-symbol
+alphabet but with the alphabet structure exposed.
+
+Two coding strategies are available. Direct partition coding treats
+the alphabet as 256 flat classes and applies Theorem 5.3 with
+$A_{256}$. Hierarchical coding decomposes the byte partition along the
+high-nibble axis: first encode the high-nibble partition
+$M^H_h = \{ i : h_i = h \}$, then for each $h$ encode the low-nibble
+conditional partition
+$M^{L \mid H = h}_l = \{ i \in M^H_h : l_i = l \}$. The hierarchical
+scheme is preferred when the predictor decomposes naturally as
+$Q_{h,l}(i) = Q^H_h(i) \cdot Q^{L \mid H}_l(i, h)$.
+
+\textbf{Theorem 6.3 (Type-III-B mutual-information advantage).}
+\emph{Let $H$, $L$, and $C$ denote the random variables corresponding
+to the high nibble, low nibble, and public context at a fixed
+position. Under an ideal entropy coder, independent nibble coding pays
+expected length $H(H \mid C) + H(L \mid C)$ per position, while joint
+byte coding pays $H(H, L \mid C)$. The advantage of byte coding over
 independent nibble coding is}
 
 \[
@@ -1347,227 +1354,239 @@ independent nibble coding is}
 \tag{6.2}
 \]
 
-\emph{the conditional mutual information between the high and low nibble
-given context. Type‑III‑B is conditionally advantageous over Type‑II at
-the nibble alphabet whenever I(H ; L \textbar{} C) exceeds the
-additional model and metadata cost of byte‑tensor prediction.}
+\emph{the conditional mutual information between the high and low
+nibble given context. Type-III-B is conditionally advantageous over
+Type-II at the nibble alphabet whenever $I(H ; L \mid C)$ exceeds the
+additional model and metadata cost of byte-tensor prediction.}
 
-\emph{\textbf{Proof.}} By the chain rule of entropy, H(H, L \textbar{}
-C) = H(H \textbar{} C) + H(L \textbar{} H, C). Subtracting from H(H
-\textbar{} C) + H(L \textbar{} C) gives H(L \textbar{} C) - H(L
-\textbar{} H, C), which by definition is I(H ; L \textbar{} C). Both
-terms are non‑negative, so Delta\_B \textgreater= 0, with equality iff L
-is conditionally independent of H given C. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} By the chain rule of entropy,
+$H(H, L \mid C) = H(H \mid C) + H(L \mid H, C)$. Subtracting from
+$H(H \mid C) + H(L \mid C)$ gives $H(L \mid C) - H(L \mid H, C)$,
+which by definition is $I(H ; L \mid C)$. Both terms are non-negative,
+so $\Delta_B \geq 0$, with equality iff $L$ is conditionally
+independent of $H$ given $C$. \hfill$\blacksquare$
 
-The mutual information I(H ; L \textbar{} C) is large for many practical
+The mutual information $I(H ; L \mid C)$ is large for many practical
 data classes. ASCII text concentrates on high nibbles 2 through 7 with
-structured low‑nibble distributions per high nibble; opcode streams
+structured low-nibble distributions per high nibble; opcode streams
 restrict low nibbles depending on the high nibble; pixel data has
-locally correlated joint byte distributions. On such data, Type‑III‑B
-can recover several tenths of a bit per byte over Type‑II at the nibble
-alphabet.
+locally correlated joint byte distributions. On such data, Type-III-B
+can recover several tenths of a bit per byte over Type-II at the
+nibble alphabet.
 
 \textbf{Theorem 6.4 (Hierarchical decomposition is
-information-theoretically invariant).} \emph{Let T be any rooted binary
-tree whose leaves are the 256 byte values, defining a sequence of nested
-binary partitions of the alphabet. Encoding a byte b under T by
-traversing root-to-leaf and encoding the binary decision at each node
-with the corresponding conditional probability achieves expected length
-H(B \textbar{} C). The expected cost is independent of the tree shape T;
-it depends only on the joint distribution P(B \textbar{} C).}
+information-theoretically invariant).} \emph{Let $T$ be any rooted
+binary tree whose leaves are the 256 byte values, defining a sequence
+of nested binary partitions of the alphabet. Encoding a byte $b$ under
+$T$ by traversing root-to-leaf and encoding the binary decision at
+each node with the corresponding conditional probability achieves
+expected length $H(B \mid C)$. The expected cost is independent of the
+tree shape $T$; it depends only on the joint distribution
+$P(B \mid C)$.}
 
-\emph{\textbf{Proof.}} By the chain rule of entropy, for any sequence of
-random variables Z\_1, ..., Z\_L that together determine B, H(B
-\textbar{} C) = H(Z\_1 \textbar{} C) + H(Z\_2 \textbar{} Z\_1, C) + ...
-+ H(Z\_L \textbar{} Z\_1, ..., Z\_\{L-1\}, C). The tree T defines a
-particular such sequence: Z\_l is the binary decision at depth l on the
-path to B\textquotesingle s leaf. By the chain rule, the sum of
-conditional entropies equals H(B \textbar{} C) regardless of which
-decisions are encoded first. Different trees T\_1 and T\_2 simply
-reorder the conditional entropies, and reordering does not change their
-sum. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} By the chain rule of entropy, for any sequence
+of random variables $Z_1, \ldots, Z_L$ that together determine $B$,
+\[
+H(B \mid C) = H(Z_1 \mid C) + H(Z_2 \mid Z_1, C) + \cdots + H(Z_L \mid Z_1, \ldots, Z_{L-1}, C).
+\]
+The tree $T$ defines a particular such sequence: $Z_l$ is the binary
+decision at depth $l$ on the path to $B$'s leaf. By the chain rule,
+the sum of conditional entropies equals $H(B \mid C)$ regardless of
+which decisions are encoded first. Different trees $T_1$ and $T_2$
+simply reorder the conditional entropies, and reordering does not
+change their sum. \hfill$\blacksquare$
 
-The practical implication is that the choice of decomposition tree for
-Type-III-B (high-low, or any other binary split) affects encoder/decoder
-complexity and predictor calibration, but not the information-theoretic
-code length. The optimal tree for a specific practical entropy coder is
-the one whose binary decisions are best predicted by the available Q;
-this is a calibration question, not a coding-rate question. In
-particular, the canonical high-low decomposition is optimal when the
-predictor factorizes naturally as Q\_\{h,l\}(i) = Q\^{}H\_h(i) *
-Q\^{}\{L\textbar H\}\_l(i, h), which is typical for transformer
-predictors trained on byte streams.
+The practical implication is that the choice of decomposition tree
+for Type-III-B (high-low, or any other binary split) affects
+encoder/decoder complexity and predictor calibration, but not the
+information-theoretic code length. The optimal tree for a specific
+practical entropy coder is the one whose binary decisions are best
+predicted by the available $Q$; this is a calibration question, not a
+coding-rate question. In particular, the canonical high-low
+decomposition is optimal when the predictor factorizes naturally as
+$Q_{h,l}(i) = Q^H_h(i) \cdot Q^{L \mid H}_l(i, h)$, which is typical
+for transformer predictors trained on byte streams.
 
-\textbf{6.4 Type‑III‑C: token tensor coding}
+\textbf{6.4 Type-III-C: token tensor coding}
 
-Type‑III‑C generalizes Type‑III‑B from the byte alphabet to a learned
-token dictionary D = \{tau\_0, ..., tau\_\{K-1\}\}. Tokens may be single
-bytes, byte pairs, longer byte fragments, or structural markers. The
-model predicts a position‑and‑scale tensor Q(k, i, s) approximating
-Pr(tau\_k begins at position i at scale s \textbar{} C), where s is a
-length or scale class.
+Type-III-C generalizes Type-III-B from the byte alphabet to a learned
+token dictionary $D = \{\tau_0, \ldots, \tau_{K-1}\}$. Tokens may be
+single bytes, byte pairs, longer byte fragments, or structural
+markers. The model predicts a position-and-scale tensor $Q(k, i, s)$
+approximating $\Pr(\tau_k \text{ begins at position } i \text{ at
+scale } s \mid C)$, where $s$ is a length or scale class.
 
-The dictionary is structured hierarchically as a grid of K = a * b
-classes, with token\_id = a * family + variant. For K = 1024, the
-canonical grid is 32 x 32; for K = 4096, the grid is 64 x 64. The
-hierarchical factorization Q(k, i, s) = P(family \textbar{} i, C) *
-P(variant \textbar{} family, i, C) reduces the output dimension of the
-predictor at each position from K to a + b, which is asymptotically a
-quadratic reduction in softmax cost.
+The dictionary is structured hierarchically as a grid of $K = a \cdot
+b$ classes, with $\text{token\_id} = a \cdot \text{family} +
+\text{variant}$. For $K = 1024$, the canonical grid is
+$32 \times 32$; for $K = 4096$, the grid is $64 \times 64$. The
+hierarchical factorization
+$Q(k, i, s) = P(\text{family} \mid i, C) \cdot
+P(\text{variant} \mid \text{family}, i, C)$
+reduces the output dimension of the predictor at each position from
+$K$ to $a + b$, which is asymptotically a quadratic reduction in
+softmax cost.
 
-The 32 x 32 grid does not span all 65536 byte pairs. It is an
-MDL‑selected dictionary of 1024 useful fragments. Admission of a token
-to D is governed by the standard MDL token gain criterion, formalized in
-the next theorem.
+The $32 \times 32$ grid does not span all 65536 byte pairs. It is an
+MDL-selected dictionary of 1024 useful fragments. Admission of a token
+to $D$ is governed by the standard MDL token gain criterion,
+formalized in the next theorem.
 
-\textbf{Theorem 6.5 (Type‑III‑C MDL token admission).} \emph{A candidate
-token tau of byte length ell and corpus frequency f is admitted to D if
-its per‑corpus savings exceed its description cost:}
-
+\textbf{Theorem 6.5 (Type-III-C MDL token admission).} \emph{A
+candidate token $\tau$ of byte length $\ell$ and corpus frequency $f$
+is admitted to $D$ if its per-corpus savings exceed its description
+cost:}
 \[
 f \cdot [8\ell - \mathrm{code\_cost}(\tau)] > \mathrm{dictionary\_cost}(\tau) + \mathrm{parse\_overhead}(\tau),
 \tag{6.3}
 \]
+\emph{where $\mathrm{code\_cost}(\tau)$ is the average bit length to
+encode an occurrence of $\tau$ under the predictor and entropy coder,
+$\mathrm{dictionary\_cost}(\tau)$ is the bit length to describe $\tau$
+in the dictionary header, and $\mathrm{parse\_overhead}(\tau)$
+accounts for any additional boundary or interval bookkeeping
+introduced by including $\tau$.}
 
-\emph{where code\_cost(tau) is the average bit length to encode an
-occurrence of tau under the predictor and entropy coder,
-dictionary\_cost(tau) is the bit length to describe tau in the
-dictionary header, and parse\_overhead(tau) accounts for any additional
-boundary or interval bookkeeping introduced by including tau.}
+\emph{\textbf{Proof.}} Without $\tau$ in $D$, each occurrence of the
+byte pattern is coded as raw literals at $8\ell$ bits, with no
+contribution to the dictionary. With $\tau$ in $D$, each occurrence is
+coded at $\mathrm{code\_cost}(\tau)$ bits and the dictionary pays
+$\mathrm{dictionary\_cost}(\tau)$ once plus
+$\mathrm{parse\_overhead}(\tau)$ per use. Across $f$ occurrences, the
+net change in total code length is the right-hand side of (6.3) minus
+the left-hand side; $\tau$ reduces the total length iff the left-hand
+side dominates. \hfill$\blacksquare$
 
-\emph{\textbf{Proof.}} Without tau in D, each occurrence of the byte
-pattern is coded as raw literals at 8 * ell bits, with no contribution
-to the dictionary. With tau in D, each occurrence is coded at
-code\_cost(tau) bits and the dictionary pays dictionary\_cost(tau) once
-plus parse\_overhead(tau) per use. Across f occurrences, the net change
-in total code length is the right‑hand side of (6.3) minus the left‑hand
-side; tau reduces the total length iff the left‑hand side dominates.
-\hfill$\blacksquare$
-
-The token MDL criterion is the standard dictionary‑learning admission
-rule. Its placement here is to make explicit that Type‑III‑C does not
-store every possible token, only those whose per‑corpus savings cover
+The token MDL criterion is the standard dictionary-learning admission
+rule. Its placement here is to make explicit that Type-III-C does not
+store every possible token, only those whose per-corpus savings cover
 their description. For a corpus encoded across many archives,
-dictionary\_cost is amortized and Type‑III‑C grows more permissive.
+$\mathrm{dictionary\_cost}$ is amortized and Type-III-C grows more
+permissive.
 
 When tokens are continuous latent variables of a variational model
 rather than discrete byte fragments, the appropriate encoding tool is
-bits‑back coding (Townsend, Bird, Barber 2019). The encoder uses an
+bits-back coding (Townsend, Bird, Barber 2019). The encoder uses an
 auxiliary bit string to sample the latent, encodes the latent and the
 data conditional on the latent via ANS, and the decoder recovers both
 and extracts the auxiliary bits. The effective rate is the marginal
-H(X), not the joint H(X, Z). The next theorem makes this rigorous and
-shows how bits-back fits into the L(R \textbar{} Y) decomposition of
+$H(X)$, not the joint $H(X, Z)$. The next theorem makes this rigorous
+and shows how bits-back fits into the $L(R \mid Y)$ decomposition of
 §3.3.
 
-\textbf{Theorem 6.6 (Bits-back integration into the RNR decomposition).}
-\emph{Let z be a continuous latent variable of a variational model with
-prior P(z \textbar{} Y), conditional P(X \textbar{} z, Y), and
-variational posterior q(z \textbar{} X, Y). Under bits-back ANS coding
-with auxiliary bits used to sample z from q, the effective Type-III-C
-repair length is L(R \textbar{} Y) = L\_prior(z \textbar{} Y) +
-L\_cond(X \textbar{} z, Y) - L\_aux(z), where the three terms encode the
-latent under the prior, the data under the conditional, and recover the
-auxiliary bits respectively. Its expectation under X \textasciitilde{} D
-and z \textasciitilde{} q satisfies}
-
+\textbf{Theorem 6.6 (Bits-back integration into the RNR
+decomposition).} \emph{Let $z$ be a continuous latent variable of a
+variational model with prior $P(z \mid Y)$, conditional
+$P(X \mid z, Y)$, and variational posterior $q(z \mid X, Y)$. Under
+bits-back ANS coding with auxiliary bits used to sample $z$ from $q$,
+the effective Type-III-C repair length is
+$L(R \mid Y) = L_{\text{prior}}(z \mid Y) + L_{\text{cond}}(X \mid z, Y) - L_{\text{aux}}(z)$,
+where the three terms encode the latent under the prior, the data
+under the conditional, and recover the auxiliary bits respectively.
+Its expectation under $X \sim D$ and $z \sim q$ satisfies}
 \[
 \mathbb{E}[L(R \mid Y)] = H(X \mid Y) + \mathrm{KL}\!\left(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y)\right).
 \tag{6.4}
 \]
-
-\emph{When q equals the true posterior, the KL term vanishes and the
-bits-back rate equals the conditional entropy H(X \textbar{} Y),
+\emph{When $q$ equals the true posterior, the KL term vanishes and
+the bits-back rate equals the conditional entropy $H(X \mid Y)$,
 matching the Slepian-Wolf lower bound. Type-III-C with continuous
 latents is therefore a strict generalization of Type-III-C with a
-discrete dictionary, with the dictionary case as the degenerate limit q
--\textgreater{} Dirac-delta at the nearest discrete token.}
+discrete dictionary, with the dictionary case as the degenerate limit
+$q \to \delta$ at the nearest discrete token.}
 
 \emph{\textbf{Proof.}} The three-stream bits-back coder transmits
-log\_2(1 / P(z \textbar{} Y)) bits for the latent under the prior,
-log\_2(1 / P(X \textbar{} z, Y)) bits for the data under the
-conditional, and recovers log\_2(1 / q(z \textbar{} X, Y)) bits from the
-auxiliary stream (used to sample z). Net code length: -log\_2 P(z
-\textbar{} Y) - log\_2 P(X \textbar{} z, Y) + log\_2 q(z \textbar{} X,
-Y) = -log\_2 P(X, z \textbar{} Y) + log\_2 q(z \textbar{} X, Y) =
--log\_2 P(X \textbar{} Y) + log\_2 {[} q(z \textbar{} X, Y) / P(z
-\textbar{} X, Y) {]}, using the joint factorization P(X, z \textbar{} Y)
-= P(X \textbar{} Y) * P(z \textbar{} X, Y). Taking expectation under q(z
-\textbar{} X, Y) conditional on X: E{[}net \textbar{} X{]} = -log\_2 P(X
-\textbar{} Y) + KL(q(z \textbar{} X, Y) \textbar\textbar{} P(z
-\textbar{} X, Y)). Taking expectation under X \textasciitilde{} D:
-E{[}net{]} = H(X \textbar{} Y) + E\_\{X \textasciitilde{} D\}{[} KL(q(z
-\textbar{} X, Y) \textbar\textbar{} P(z \textbar{} X, Y)) {]}. When q
-equals the posterior, KL is zero and the rate is H(X \textbar{} Y).
-\hfill$\blacksquare$
+$\log_2 \tfrac{1}{P(z \mid Y)}$ bits for the latent under the prior,
+$\log_2 \tfrac{1}{P(X \mid z, Y)}$ bits for the data under the
+conditional, and recovers $\log_2 \tfrac{1}{q(z \mid X, Y)}$ bits from
+the auxiliary stream (used to sample $z$). Net code length:
+\[
+\begin{aligned}
+&-\log_2 P(z \mid Y) - \log_2 P(X \mid z, Y) + \log_2 q(z \mid X, Y) \\
+&\quad= -\log_2 P(X, z \mid Y) + \log_2 q(z \mid X, Y) \\
+&\quad= -\log_2 P(X \mid Y) + \log_2 \!\left[\frac{q(z \mid X, Y)}{P(z \mid X, Y)}\right],
+\end{aligned}
+\]
+using the joint factorization
+$P(X, z \mid Y) = P(X \mid Y) \cdot P(z \mid X, Y)$. Taking
+expectation under $q(z \mid X, Y)$ conditional on $X$:
+$\mathbb{E}[\text{net} \mid X] = -\log_2 P(X \mid Y) + \mathrm{KL}(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y))$.
+Taking expectation under $X \sim D$:
+$\mathbb{E}[\text{net}] = H(X \mid Y) + \mathbb{E}_{X \sim D}[\mathrm{KL}(q(z \mid X, Y) \,\Vert\, P(z \mid X, Y))]$.
+When $q$ equals the posterior, KL is zero and the rate is
+$H(X \mid Y)$. \hfill$\blacksquare$
 
 \textbf{Theorem 6.7 (Joint dictionary and predictor learning is
-NP-hard).} \emph{Given a corpus X, the problem of jointly choosing a
-token dictionary D and a predictor M to minimize the total Type-III-C
-code length L(M) + L(D) + L(R \textbar{} Y) is NP-hard. The problem
-remains NP-hard even when M is constrained to be the trivial constant
-predictor.}
+NP-hard).} \emph{Given a corpus $X$, the problem of jointly choosing
+a token dictionary $D$ and a predictor $M$ to minimize the total
+Type-III-C code length $L(M) + L(D) + L(R \mid Y)$ is NP-hard. The
+problem remains NP-hard even when $M$ is constrained to be the trivial
+constant predictor.}
 
-\emph{\textbf{Proof.}} Reduce from the Smallest Grammar Problem (SGP) of
-Charikar et al. (2005). SGP asks: given a string s, find a context-free
-grammar of minimum total description size that generates only s; SGP is
-NP-hard and APX-hard. Given an SGP instance s, construct a Type-III-C
-instance with corpus X = s and a trivial constant predictor M that
-assigns uniform probability over the dictionary at every position (so
-L(M) = O(1) is fixed). Under this construction, the optimal dictionary D
-corresponds bijectively to a smallest grammar for s: each non-terminal
-in the grammar becomes a token, dictionary\_cost(tau) corresponds to the
-rule description length for the corresponding non-terminal, and the MDL
+\emph{\textbf{Proof.}} Reduce from the Smallest Grammar Problem (SGP)
+of Charikar et al. (2005). SGP asks: given a string $s$, find a
+context-free grammar of minimum total description size that generates
+only $s$; SGP is NP-hard and APX-hard. Given an SGP instance $s$,
+construct a Type-III-C instance with corpus $X = s$ and a trivial
+constant predictor $M$ that assigns uniform probability over the
+dictionary at every position (so $L(M) = O(1)$ is fixed). Under this
+construction, the optimal dictionary $D$ corresponds bijectively to a
+smallest grammar for $s$: each non-terminal in the grammar becomes a
+token, $\mathrm{dictionary\_cost}(\tau)$ corresponds to the rule
+description length for the corresponding non-terminal, and the MDL
 admission criterion of Theorem 6.5 selects exactly the rules of an
 MDL-optimal grammar. A polynomial-time solver for the Type-III-C
 dictionary problem would solve SGP in polynomial time, contradiction.
-The general case with non-constant M is at least as hard as the
-constant-M case, so it inherits NP-hardness. \hfill$\blacksquare$
+The general case with non-constant $M$ is at least as hard as the
+constant-$M$ case, so it inherits NP-hardness. \hfill$\blacksquare$
 
 Theorems 6.6 and 6.7 together establish the boundary of what is
-achievable in Type-III-C. Bits-back gives the optimal rate for any joint
-(model, posterior) pair (Theorem 6.6), but finding the optimal pair is
-computationally intractable (Theorem 6.7). Practical implementations
-therefore use heuristic dictionary learning (BPE, MDL-greedy, neural
-codebook learning) and amortized variational inference, both of which
-sacrifice optimality for tractability.
+achievable in Type-III-C. Bits-back gives the optimal rate for any
+joint (model, posterior) pair (Theorem 6.6), but finding the optimal
+pair is computationally intractable (Theorem 6.7). Practical
+implementations therefore use heuristic dictionary learning (BPE,
+MDL-greedy, neural codebook learning) and amortized variational
+inference, both of which sacrifice optimality for tractability.
 
-\textbf{Theorem 6.8 (Inapproximability of joint dictionary-and-predictor
-learning).} \emph{Joint dictionary-and-predictor learning for Type-III-C
-is APX-hard. There exists an explicit constant gamma \textgreater{} 1
-such that no polynomial-time algorithm achieves approximation ratio
-better than gamma for the total code length, unless P = NP. The bound
-holds even with M restricted to the trivial constant predictor.}
+\textbf{Theorem 6.8 (Inapproximability of joint
+dictionary-and-predictor learning).} \emph{Joint
+dictionary-and-predictor learning for Type-III-C is APX-hard. There
+exists an explicit constant $\gamma > 1$ such that no polynomial-time
+algorithm achieves approximation ratio better than $\gamma$ for the
+total code length, unless $P = NP$. The bound holds even with $M$
+restricted to the trivial constant predictor.}
 
-\emph{\textbf{Proof.}} The reduction from the Smallest Grammar Problem
-(SGP) constructed in Theorem 6.7 is gap-preserving: a polynomial-time
-gamma-approximation for joint dictionary learning on the constructed
-instance would yield a polynomial-time gamma-approximation for SGP via
-the same correspondence between non-terminals and dictionary entries.
-Charikar, Lehman, Liu, Panigrahy, Prabhakaran, Sahai and Shelat (2005)
-established that SGP is APX-hard with an explicit inapproximability
-ratio: no polynomial-time approximation within a constant strictly
-closer to 1 exists unless P = NP. This constant transfers to the
+\emph{\textbf{Proof.}} The reduction from the Smallest Grammar
+Problem (SGP) constructed in Theorem 6.7 is gap-preserving: a
+polynomial-time $\gamma$-approximation for joint dictionary learning
+on the constructed instance would yield a polynomial-time
+$\gamma$-approximation for SGP via the same correspondence between
+non-terminals and dictionary entries. Charikar, Lehman, Liu,
+Panigrahy, Prabhakaran, Sahai and Shelat (2005) established that SGP
+is APX-hard with an explicit inapproximability ratio: no
+polynomial-time approximation within a constant strictly closer to 1
+exists unless $P = NP$. This constant transfers to the
 dictionary-learning problem via the reduction. \hfill$\blacksquare$
 
 Together, Theorems 6.7 and 6.8 confirm that the heuristic nature of
-practical dictionary learners (BPE, WordPiece, MDL-greedy variants) is
-not a deficiency of those algorithms but a necessary consequence of
-complexity-theoretic limits. Even with unbounded compute applied to the
-dictionary search, polynomial-time algorithms cannot close the
-approximation gap unless P = NP.
+practical dictionary learners (BPE, WordPiece, MDL-greedy variants)
+is not a deficiency of those algorithms but a necessary consequence of
+complexity-theoretic limits. Even with unbounded compute applied to
+the dictionary search, polynomial-time algorithms cannot close the
+approximation gap unless $P = NP$.
 
-\textbf{6.5 Worked numerical example for Type‑III‑B}
+\textbf{6.5 Worked numerical example for Type-III-B}
 
-Consider an ASCII‑text block where the empirical marginal entropies are
-H(H \textbar{} C) = 2.4 bits and H(L \textbar{} C) = 2.9 bits per byte,
-while the joint entropy is H(H, L \textbar{} C) = 4.7 bits. Independent
-nibble coding pays 2.4 + 2.9 = 5.3 bits per byte; joint byte coding pays
-4.7 bits per byte. The mutual‑information advantage is Delta\_B = 5.3 -
-4.7 = 0.6 bits per byte, or 0.075 bytes per byte (about 7.5\% saving)
-before model and metadata overhead. Over a 4096‑byte block, this is 307
-bytes of raw saving against independent nibble coding, against an extra
-model cost that is typically a few tens of bytes per amortized block.
+Consider an ASCII-text block where the empirical marginal entropies
+are $H(H \mid C) = 2.4$ bits and $H(L \mid C) = 2.9$ bits per byte,
+while the joint entropy is $H(H, L \mid C) = 4.7$ bits. Independent
+nibble coding pays $2.4 + 2.9 = 5.3$ bits per byte; joint byte coding
+pays $4.7$ bits per byte. The mutual-information advantage is
+$\Delta_B = 5.3 - 4.7 = 0.6$ bits per byte, or 0.075 bytes per byte
+(about 7.5\% saving) before model and metadata overhead. Over a
+4096-byte block, this is 307 bytes of raw saving against independent
+nibble coding, against an extra model cost that is typically a few
+tens of bytes per amortized block.
 
 \textbf{7. Composition and mode selection}
 
