@@ -249,14 +249,14 @@ This article makes the following contributions.
   Type-II advantage.
 \item
   A separation theorem (Theorem 5.4) for semi-non-factorized Type-II
-  via a linear-code construction, generalized by Theorem 5.6
+  via a linear-code construction, generalized by Theorem 5.5
   (multi-information separation: the exact information-theoretic
   quantity governing factorized-versus-joint coding) and quantified
-  for natural data by Remark 5.7 (manifold-hypothesis quantification
+  for natural data by Remark 5.6 (manifold-hypothesis quantification
   with empirical intrinsic-dimension estimates).
 \item
   An optimality characterization for Type-II support sets
-  (Proposition 5.5): optimal $S_v$ is a prefix of positions sorted by
+  (Proposition 5.7): optimal $S_v$ is a prefix of positions sorted by
   $Q_v$, and support-set coding is at best equivalent to per-position
   arithmetic coding under the same $Q$.
 \item
@@ -916,14 +916,16 @@ Several coding strategies are available.
   with the given counts.
 \end{itemize}
 
-\textbf{5.5 The corrected positional gain theorem}
+\textbf{5.5 Baseline, lemma, and the corrected gain theorem}
 
-Earlier drafts of this work used the per-symbol enumerative baseline
-$\sum_v \log_2 \binom{N}{k_v}$. This baseline overcounts because the
-16 subset choices it sums over are not constrained to be disjoint:
-each position may be assigned to multiple $v$ in the enumeration, so
-the count is larger than the true number of valid partitions. The
-correct baseline is the multinomial.
+A natural but incorrect baseline for the partition residual is the
+per-symbol enumerative sum $\sum_v \log_2 \binom{N}{k_v}$. This
+overcounts: the 16 subset choices it sums over are not constrained to
+be disjoint, so the same position may be assigned to multiple $v$ in
+the enumeration, and the resulting count exceeds the true number of
+valid partitions. The correct baseline is the multinomial, which we
+state in Theorem 5.2 below; the gain theorem in Theorem 5.3 is
+expressed against it.
 
 \textbf{Lemma 5.1.} \emph{Under the factorized regime, per-position
 arithmetic coding under $Q$ and per-position Type-I arithmetic coding
@@ -995,17 +997,17 @@ the two log-binomials across $v$ gives the residual length. The
 advantage condition follows by subtracting this from the multinomial
 baseline and accounting for overhead. \hfill$\blacksquare$
 
-Theorem 5.3 corrects two flaws in the earlier statement. First, it
-uses the multinomial coefficient as the baseline, which is the correct
-entropy of an unconstrained partition with known counts; the looser
-$\sum_v \log_2 \binom{N}{k_v}$ baseline overstated the gain by
-allowing inconsistent subset choices. Second, it admits the realistic
-case where $M_v$ is not entirely contained in $S_v$ by introducing
-the per-symbol escape count $\alpha_v$, which carries its own
-enumerative cost. The bound is tight: when $\alpha_v = 0$ for all
-$v$, the second log-binomial vanishes and the formula reduces to
-$\sum_v \log_2 \binom{s_v}{k_v}$, recovering the idealized oracle
-bound.
+Theorem 5.3 differs from a natural but flawed formulation in two
+respects. First, it uses the multinomial coefficient as the baseline,
+which is the correct entropy of an unconstrained partition with
+known counts; the looser $\sum_v \log_2 \binom{N}{k_v}$ baseline
+overstates the gain by allowing inconsistent subset choices. Second,
+it admits the realistic case where $M_v$ is not entirely contained
+in $S_v$ by introducing the per-symbol escape count $\alpha_v$,
+which carries its own enumerative cost. The bound is tight: when
+$\alpha_v = 0$ for all $v$, the second log-binomial vanishes and the
+formula reduces to $\sum_v \log_2 \binom{s_v}{k_v}$, recovering the
+idealized oracle bound.
 
 \textbf{5.6 Type-II vs Type-I: a separation theorem}
 
@@ -1028,30 +1030,79 @@ $(4 - c)N + O(\log N)$ bits. The separation is therefore $\Theta(N)$.}
 
 \emph{\textbf{Proof.}} Fix a parameter $c \in (0, 4)$. Let $G$ be a
 $3cN \times 4N$ generator matrix over $\mathrm{GF}(2)$ of a linear
-code $C_N$ with the property that, for every codeword position
-$j \in \{1, \ldots, 4N\}$, the $j$-th coordinate is a non-trivial
-$\mathrm{GF}(2)$-linear function of the $3cN$ message bits. Such
-generator matrices are abundant; a random matrix satisfies the
-property with probability $1 - O(2^{-cN})$. Let
-$S_N \subset \{0, \ldots, 15\}^N$ be the image of all $2^{(4-c)N}$
-messages under $G$, with the $4N$ output bits parsed as $N$ nibbles.
-By construction $|S_N| = 2^{(4-c)N}$. Define $D_N$ as the uniform
-distribution on $S_N$.
-(i)~Marginal uniformity: for any position $i$ and value
-$v \in \{0, \ldots, 15\}$, the four bits encoding $v$ at position $i$
-are non-trivial linear functions of a uniformly random message, hence
-each of the 16 bit patterns occurs with probability exactly $1/16$.
-Therefore $Q^{\text{marg}}_v(i) = 1/16$ for all $i, v$.
-(ii)~Factorized lower bound: the cross-entropy of any $X \sim D_N$
-under the factorized model with $Q_v(i) = 1/16$ is exactly
-$N \cdot \log_2 16 = 4N$ bits; this is also the optimal expected code
-length of an arithmetic coder driven by $Q^{\text{marg}}$, up to the
-redundancy $\varepsilon_N$.
-(iii)~Joint upper bound: a semi-non-factorized coder that encodes
-membership in $S_N$ (one $cN$-bit message index per block) achieves
-length $\log_2 |S_N| + \varepsilon_N = (4 - c)N + \varepsilon_N$ bits.
-(iv)~Separation: subtracting, the gap is
-$cN - \varepsilon_N - O(\log N)$, which is $\Theta(N)$.
+code $C_N$ satisfying the following two properties:
+\begin{itemize}
+\item[\textbf{(P1)}]
+for every codeword position $j \in \{1, \ldots, 4N\}$, the $j$-th
+coordinate of $Gm$ is a non-trivial $\mathrm{GF}(2)$-linear function
+of the $3cN$ message bits $m$;
+\item[\textbf{(P2)}]
+for every nibble position $i \in \{1, \ldots, N\}$, the four
+$\mathrm{GF}(2)$-linear forms corresponding to codeword coordinates
+$4(i-1)+1, \ldots, 4i$ are linearly independent.
+\end{itemize}
+Such matrices exist with high probability over the uniform
+distribution on $3cN \times 4N$ matrices over $\mathrm{GF}(2)$. For
+\textbf{(P1)}, each individual non-triviality fails with probability
+$2^{-3cN}$, and a union bound over the $4N$ coordinates gives failure
+probability $\leq 4N \cdot 2^{-3cN}$. For \textbf{(P2)}, the
+probability that $4$ fixed $\mathrm{GF}(2)$-linear forms in $3cN$
+variables are linearly \emph{dependent} equals the probability that
+one of the $2^4 - 1 = 15$ non-zero linear combinations vanishes
+identically, which is at most $15 \cdot 2^{-3cN}$ (each non-zero
+combination is itself a non-trivial linear form, and a non-trivial
+linear form on $\mathrm{GF}(2)^{3cN}$ vanishes identically with
+probability $2^{-3cN}$ over the choice of the four defining vectors;
+this is a Schwartz--Zippel-type estimate over $\mathrm{GF}(2)$). A
+union bound over the $N$ nibble positions gives total failure
+probability $\leq 4N \cdot 2^{-3cN} + 15N \cdot 2^{-3cN} =
+O(N \cdot 2^{-3cN}) = O(2^{-cN})$ for sufficiently large $N$.
+
+Let $S_N \subset \{0, \ldots, 15\}^N$ be the image of all
+$2^{(4-c)N}$ messages under $G$, with the $4N$ output bits parsed as
+$N$ nibbles. By construction $|S_N| = 2^{(4-c)N}$ (the map $G$ is
+injective on messages because property \textbf{(P2)} in particular
+implies $G$ has full row rank, hence its kernel is trivial). Define
+$D_N$ as the uniform distribution on $S_N$.
+
+\textbf{(i) Marginal uniformity.} Fix a nibble position
+$i \in \{1, \ldots, N\}$. The four bits encoding the nibble at
+position $i$ are values of four $\mathrm{GF}(2)$-linear forms on the
+message $m$, which by property \textbf{(P2)} are linearly
+independent. The standard fact that $k$ linearly independent
+$\mathrm{GF}(2)$-linear forms applied to a uniformly random vector in
+$\mathrm{GF}(2)^{3cN}$ induce the uniform distribution on
+$\mathrm{GF}(2)^k$ (the joint map is a surjective $\mathrm{GF}(2)$-linear
+homomorphism with kernel of size $2^{3cN - k}$, so each image has the
+same preimage size) then gives: each of the 16 bit patterns occurs at
+position $i$ with probability exactly $1/16$. Therefore
+$Q^{\text{marg}}_v(i) = 1/16$ for all $i, v$.
+
+\textbf{(ii) Factorized lower bound.} The cross-entropy of any
+$X \sim D_N$ under the factorized model with $Q_v(i) = 1/16$ is
+exactly $N \cdot \log_2 16 = 4N$ bits; this is also the optimal
+expected code length of an arithmetic coder driven by
+$Q^{\text{marg}}$, up to the redundancy $\varepsilon_N$.
+
+\textbf{(iii) Joint upper bound.} A semi-non-factorized coder that
+encodes membership in $S_N$ as the unique $cN$-bit message index per
+block, followed by deterministic expansion via $G$, achieves length
+$\log_2 |S_N| + \varepsilon_N = (4 - c)N + \varepsilon_N$ bits.
+Describing the generator matrix $G$ itself (one-time, amortized across
+the block) costs $L(G) = 12 c N^2$ bits, which is absorbed into the
+$L(M_{\text{pos}})$ term of (3.1) and amortized across many blocks
+encoded with the same $G$; per-block it does not enter the rate.
+
+\textbf{(iv) Separation.} Subtracting the per-block upper bound (iii)
+from the per-block lower bound (ii):
+\[
+\Delta(N) = 4N - \left[(4 - c)N + \varepsilon_N\right] - L(\text{counts}) = cN - \varepsilon_N - L(\text{counts}),
+\]
+where $L(\text{counts})$ is the cost of describing the (uniform on
+$D_N$) count vector $(k_0, \ldots, k_{15})$: since counts concentrate
+within $O(\sqrt{N})$ of $N/16$ by Chernoff, $L(\text{counts}) = O(\log N)$
+suffices to specify the deviation from the typical count. Combined,
+$\Delta(N) = cN - \varepsilon_N - O(\log N) = \Theta(N)$.
 \hfill$\blacksquare$
 
 Theorem 5.4 establishes that semi-non-factorized Type-II strictly
@@ -1079,7 +1130,7 @@ factorized and joint coding for any source distribution, and the
 following remark connects this quantity to the manifold hypothesis from
 statistical learning theory and topological data analysis.
 
-\textbf{Theorem 5.6 (Multi-information separation).} \emph{Let $D_N$
+\textbf{Theorem 5.5 (Multi-information separation).} \emph{Let $D_N$
 be any distribution over $A_{16}^N$. Define the total correlation
 (multi-information)
 $\mathrm{TC}(D_N) = \sum_{i=1}^N H_{\text{marg}}(X_i) - H(D_N)$, where
@@ -1108,7 +1159,7 @@ definition. Total correlation is non-negative, with equality iff
 positions are mutually independent under $D_N$.
 \hfill$\blacksquare$
 
-Theorem 5.6 generalizes Theorem 5.4 from the uniform-marginal
+Theorem 5.5 generalizes Theorem 5.4 from the uniform-marginal
 linear-code construction to arbitrary source distributions. The
 $\Theta(N)$ separation observed in Theorem 5.4 corresponds to
 $\mathrm{TC} = (4 - c)N$ for the linear-code family. For general
@@ -1116,7 +1167,7 @@ $D_N$, the magnitude of $\mathrm{TC}(D_N)$ determines whether Type-II
 provides a constant-factor or vanishing improvement over factorized
 coding.
 
-\textbf{Remark 5.7 (Manifold-hypothesis quantification of TC).} The
+\textbf{Remark 5.6 (Manifold-hypothesis quantification of TC).} The
 manifold hypothesis from statistical learning theory and topological
 data analysis (Donoho 2000; Tenenbaum, de Silva, Langford 2000;
 Carlsson 2009) states that high-dimensional natural data --- images,
@@ -1128,7 +1179,7 @@ maximum-likelihood estimator of Levina and Bickel 2004, or persistent
 homology), the joint entropy is $H(D_N) = O(d \log N)$ bits. With
 per-position marginals near uniform on $A_{16}$, the multi-information
 is $\mathrm{TC}(D_N) = 4N - O(d \log N) = \Theta(N)$. The manifold
-hypothesis therefore predicts that Theorem 5.6's separation is
+hypothesis therefore predicts that Theorem 5.5's separation is
 $\Theta(N)$ for any natural data class admitting a low-dimensional
 manifold representation. Empirical intrinsic-dimension estimates
 support this regime: natural images have $d$ in the range $10^2$ to
@@ -1139,7 +1190,7 @@ valid-program-graph dimensionality. The empirical question of which
 data classes admit a small $d$, and the operational question of how
 to construct efficient enumerative encoders for the corresponding
 subsets $S_N$, are deferred to experimental work; the conditional
-separation theorem itself is established by Theorem 5.6 plus the
+separation theorem itself is established by Theorem 5.5 plus the
 manifold-hypothesis premise.
 
 \textbf{5.7 Worked numerical example}
@@ -1181,7 +1232,7 @@ prefix of positions sorted by $Q_v(i)$, and (b) the support-set
 construction is at best equivalent to per-position arithmetic coding
 under $Q$.
 
-\textbf{Proposition 5.5 (Optimal support is a prefix; arithmetic
+\textbf{Proposition 5.7 (Optimal support is a prefix; arithmetic
 coding is the limit).} \emph{Fix a symbol $v$ and a predictor $Q$
 with positions sorted in decreasing order of $Q_v(i)$. Among all
 support sets $S_v$ of any size, the choice that minimizes the
@@ -1217,7 +1268,7 @@ discretization, the support-set cost is at least the arithmetic-coding
 cost, with equality only when $Q$ is already binary (so no
 discretization loss occurs). \hfill$\blacksquare$
 
-Proposition 5.5 has a practical consequence: for predictors producing
+Proposition 5.7 has a practical consequence: for predictors producing
 real-valued probabilities, the support-set construction of Theorem 5.3
 is strictly suboptimal compared to arithmetic coding under $Q$. The
 support-set form is preferred only when (i) the predictor structurally
@@ -1268,10 +1319,10 @@ and the cost of the oracle-best mode.
 
 \textbf{Theorem 6.1 (Approximate-oracle mode selection (Type-III-A)).}
 \emph{Let $m^\star(t) = \operatorname*{arg\,min}_m L_m(t)$ be the
-oracle best mode for tile $t$ and
-$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ be the model-selected
-mode. If $|U_m(t) - L_m(t)| \leq \varepsilon_t$ for every $m$, then}
-
+oracle best mode for tile $t$,
+$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ the model-selected
+mode, and $\varepsilon_t = \max_m |U_m(t) - L_m(t)|$ the per-mode
+$L^\infty$ prediction error on tile $t$. Then}
 \[
 L_{\hat{m}(t)}(t) \leq L_{m^\star(t)}(t) + 2\varepsilon_t.
 \tag{6.1}
@@ -1409,12 +1460,35 @@ decomposition is optimal when the predictor factorizes naturally as
 $Q_{h,l}(i) = Q^H_h(i) \cdot Q^{L \mid H}_l(i, h)$, which is typical
 for transformer predictors trained on byte streams.
 
-\textbf{6.4 Type-III-C: token tensor coding}
+\textbf{6.4 Worked numerical example for Type-III-B}
+
+Consider an ASCII-text block where the empirical marginal entropies
+are $H(H \mid C) = 2.4$ bits and $H(L \mid C) = 2.9$ bits per byte,
+while the joint entropy is $H(H, L \mid C) = 4.7$ bits. Independent
+nibble coding pays $2.4 + 2.9 = 5.3$ bits per byte; joint byte coding
+pays $4.7$ bits per byte. The mutual-information advantage is
+$\Delta_B = 5.3 - 4.7 = 0.6$ bits per byte, or 0.075 bytes per byte
+(about 7.5\% saving) before model and metadata overhead. Over a
+4096-byte block, this is 307 bytes of raw saving against independent
+nibble coding, against an extra model cost that is typically a few
+tens of bytes per amortized block.
+
+\textbf{6.5 Type-III-C: token tensor coding}
 
 Type-III-C generalizes Type-III-B from the byte alphabet to a learned
 token dictionary $D = \{\tau_0, \ldots, \tau_{K-1}\}$. Tokens may be
-single bytes, byte pairs, longer byte fragments, or structural
-markers. The model predicts a position-and-scale tensor $Q(k, i, s)$
+single bytes, byte pairs, longer byte fragments, structural markers,
+or --- most generally --- symbolic compositions in which a token's
+definition references other tokens in the dictionary. The latter case
+makes the dictionary a \emph{straight-line grammar}: a context-free
+grammar with one production per non-terminal and a directed acyclic
+dependency graph (Kieffer and Yang 2000; Charikar et al. 2005).
+Practical dictionaries used by BPE, WordPiece, and MDL-greedy fall
+into the flat case (no recursion); the framework also admits the
+recursive case, and we use it in the complexity arguments of Theorems
+6.7 and 6.8 below.
+
+The model predicts a position-and-scale tensor $Q(k, i, s)$
 approximating $\Pr(\tau_k \text{ begins at position } i \text{ at
 scale } s \mid C)$, where $s$ is a length or scale class.
 
@@ -1434,30 +1508,36 @@ MDL-selected dictionary of 1024 useful fragments. Admission of a token
 to $D$ is governed by the standard MDL token gain criterion,
 formalized in the next theorem.
 
-\textbf{Theorem 6.5 (Type-III-C MDL token admission).} \emph{A
-candidate token $\tau$ of byte length $\ell$ and corpus frequency $f$
-is admitted to $D$ if its per-corpus savings exceed its description
-cost:}
+\textbf{Theorem 6.5 (Type-III-C MDL token admission).} \emph{Let
+$\tau$ be a candidate token of byte length $\ell$ and corpus
+frequency $f$, with $\mathrm{code\_cost}(\tau)$ the average bit
+length to encode an occurrence of $\tau$ under the predictor and
+entropy coder, $\mathrm{dictionary\_cost}(\tau)$ the bit length to
+describe $\tau$ in the dictionary header, and
+$\mathrm{parse\_overhead}(\tau)$ the additional per-occurrence
+boundary or interval bookkeeping introduced by including $\tau$.
+The net change in total Type-III-C code length resulting from
+admitting $\tau$ to the dictionary $D$ is}
 \[
-f \cdot [8\ell - \mathrm{code\_cost}(\tau)] > \mathrm{dictionary\_cost}(\tau) + \mathrm{parse\_overhead}(\tau),
+\Delta L(\tau) = \mathrm{dictionary\_cost}(\tau) + f \cdot \left[\mathrm{code\_cost}(\tau) + \mathrm{parse\_overhead}(\tau) - 8\ell\right].
+\]
+\emph{Consequently, an MDL-optimal admission policy admits $\tau$ if
+and only if $\Delta L(\tau) < 0$, equivalently}
+\[
+f \cdot \left[8\ell - \mathrm{code\_cost}(\tau)\right] > \mathrm{dictionary\_cost}(\tau) + f \cdot \mathrm{parse\_overhead}(\tau).
 \tag{6.3}
 \]
-\emph{where $\mathrm{code\_cost}(\tau)$ is the average bit length to
-encode an occurrence of $\tau$ under the predictor and entropy coder,
-$\mathrm{dictionary\_cost}(\tau)$ is the bit length to describe $\tau$
-in the dictionary header, and $\mathrm{parse\_overhead}(\tau)$
-accounts for any additional boundary or interval bookkeeping
-introduced by including $\tau$.}
 
-\emph{\textbf{Proof.}} Without $\tau$ in $D$, each occurrence of the
-byte pattern is coded as raw literals at $8\ell$ bits, with no
-contribution to the dictionary. With $\tau$ in $D$, each occurrence is
-coded at $\mathrm{code\_cost}(\tau)$ bits and the dictionary pays
-$\mathrm{dictionary\_cost}(\tau)$ once plus
-$\mathrm{parse\_overhead}(\tau)$ per use. Across $f$ occurrences, the
-net change in total code length is the right-hand side of (6.3) minus
-the left-hand side; $\tau$ reduces the total length iff the left-hand
-side dominates. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} Without $\tau$ in $D$, the $f$ occurrences of
+the byte pattern are coded as raw literals at $f \cdot 8\ell$ bits
+total, with no dictionary contribution. With $\tau$ in $D$, the $f$
+occurrences cost $f \cdot \mathrm{code\_cost}(\tau)$ for encoding plus
+$f \cdot \mathrm{parse\_overhead}(\tau)$ for bookkeeping, and the
+dictionary pays a one-time $\mathrm{dictionary\_cost}(\tau)$. The
+difference of the two totals is $\Delta L(\tau)$. By the MDL
+principle (Rissanen 1978), the admission policy that minimizes total
+description length includes $\tau$ iff this difference is negative.
+Rearranging gives (6.3). \hfill$\blacksquare$
 
 The token MDL criterion is the standard dictionary-learning admission
 rule. Its placement here is to make explicit that Type-III-C does not
@@ -1523,24 +1603,86 @@ NP-hard).} \emph{Given a corpus $X$, the problem of jointly choosing
 a token dictionary $D$ and a predictor $M$ to minimize the total
 Type-III-C code length $L(M) + L(D) + L(R \mid Y)$ is NP-hard. The
 problem remains NP-hard even when $M$ is constrained to be the trivial
-constant predictor.}
+constant predictor and $D$ is the recursive (straight-line grammar)
+dictionary class introduced in §6.4.}
 
-\emph{\textbf{Proof.}} Reduce from the Smallest Grammar Problem (SGP)
-of Charikar et al. (2005). SGP asks: given a string $s$, find a
-context-free grammar of minimum total description size that generates
-only $s$; SGP is NP-hard and APX-hard. Given an SGP instance $s$,
-construct a Type-III-C instance with corpus $X = s$ and a trivial
-constant predictor $M$ that assigns uniform probability over the
-dictionary at every position (so $L(M) = O(1)$ is fixed). Under this
-construction, the optimal dictionary $D$ corresponds bijectively to a
-smallest grammar for $s$: each non-terminal in the grammar becomes a
-token, $\mathrm{dictionary\_cost}(\tau)$ corresponds to the rule
-description length for the corresponding non-terminal, and the MDL
-admission criterion of Theorem 6.5 selects exactly the rules of an
-MDL-optimal grammar. A polynomial-time solver for the Type-III-C
-dictionary problem would solve SGP in polynomial time, contradiction.
-The general case with non-constant $M$ is at least as hard as the
-constant-$M$ case, so it inherits NP-hardness. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} We exhibit a polynomial-time reduction from
+the Smallest Grammar Problem (SGP) of Charikar, Lehman, Liu,
+Panigrahy, Prabhakaran, Sahai and Shelat (2005). An instance of SGP
+is a string $s \in \Sigma^\star$ over an alphabet $\Sigma$ (we may
+take $\Sigma = \{0,1\}^8$ for concreteness), and the task is to find
+a straight-line grammar $G$ with $L(G) = \{s\}$ minimizing the
+\emph{grammar size}
+$|G| = \sum_{A \to \alpha \in P} |\alpha|$, the total length over all
+right-hand sides $\alpha$ (each symbol --- terminal or non-terminal
+reference --- counted as one). SGP is NP-hard (Charikar et al. 2005,
+Theorem 3.4).
+
+\emph{Reduction.} Given an SGP instance $s$, construct the
+Type-III-C instance $\Phi(s)$ as follows:
+\begin{itemize}
+\item Corpus $X := s$;
+\item Predictor $M$ := the constant predictor that, at every position
+where a dictionary token is required, outputs the uniform
+distribution over the current dictionary $D$; the predictor's
+description thus consists only of the dictionary size $K = |D|$, so
+$L(M) = \lceil \log_2 N \rceil$ bits (a single integer $\leq |s| = N$);
+\item Dictionary representation: tokens are recursive in the sense of
+§6.4 above, i.e., each token $\tau_i \in D$ is specified by a
+right-hand side $\alpha_i \in (\Sigma \cup \{\tau_0, \ldots,
+\tau_{K-1}\})^\star$ over the terminal alphabet $\Sigma$ and
+references to other tokens, with the dependency graph required to
+be acyclic;
+\item Dictionary description cost:
+$L(D) := \sum_{i=0}^{K-1} \left( |\alpha_i| + \lceil \log_2 K \rceil \right)$,
+where the $|\alpha_i|$ term counts the symbols in $\alpha_i$ (each
+symbol coded in $\lceil \log_2(|\Sigma| + K) \rceil$ bits) and the
+$\lceil \log_2 K \rceil$ term is the bookkeeping (token id and
+length prefix). For asymptotic analysis only the leading $|\alpha_i|$
+term matters; lower-order $\log K$ overheads are absorbed into the
+$o(1)$ analysis of Theorem 6.8;
+\item Repair stream: under the constant predictor, the repair
+stream $R \mid Y$ consists of a single pointer to the start token
+$\tau_0$ (which expands deterministically into $s$), of length
+$L(R \mid Y) = \lceil \log_2 K \rceil$.
+\end{itemize}
+
+\emph{Bijection between Type-III-C dictionaries on $\Phi(s)$ and
+straight-line grammars deriving $\{s\}$.} Every straight-line grammar
+$G = (V, \Sigma, P, S_0)$ deriving $\{s\}$ yields a Type-III-C
+dictionary $D(G)$ with $|D(G)| = |V|$ tokens, one per non-terminal,
+where the right-hand side $\alpha_A$ of the production $A \to \alpha_A$
+in $G$ becomes the right-hand side of token $\tau_A$ in $D(G)$ with
+non-terminal references replaced by token references; conversely,
+every recursive dictionary $D$ whose start-token $\tau_0$ expands
+deterministically to $s$ yields a straight-line grammar
+$G(D)$ deriving $\{s\}$ with $|V(G(D))| = |D|$ non-terminals and
+$|G(D)| = \sum_i |\alpha_i|$. The two maps are mutual inverses, and
+under them
+\[
+L(D) = |G(D)| + |D(G)| \cdot \lceil \log_2 |D(G)| \rceil = |G| + O(K \log K).
+\]
+With $L(M) + L(R \mid Y) = O(\log N) + O(\log K) = O(\log N)$,
+the total Type-III-C objective satisfies
+\[
+L_{\text{Type-III-C}}(D) = |G(D)| + O(K \log K) + O(\log N).
+\]
+
+\emph{Consequence.} A polynomial-time algorithm that minimizes
+$L_{\text{Type-III-C}}$ on $\Phi(s)$ would, by the bijection,
+minimize $|G|$ over straight-line grammars deriving $\{s\}$ (up to
+the lower-order $O(K \log K) + O(\log N)$ term, which is sub-linear
+in $|G^\star|$ whenever $|G^\star| = \omega(\log N)$ --- a regime that
+holds for all SGP instances with $|s| \geq 2$ distinct symbols,
+since $|G^\star| \geq |s| / \log |s|$ by a simple counting argument).
+This would yield a polynomial-time solver for SGP, contradicting
+Charikar et al. (2005, Theorem 3.4). The reduction $s \mapsto \Phi(s)$
+is computable in linear time in $|s|$.
+
+The general case (non-constant predictor $M$, or flat-only
+dictionary) is at least as hard as the constant-$M$, recursive-$D$
+case treated here, and therefore inherits NP-hardness.
+\hfill$\blacksquare$
 
 Theorems 6.6 and 6.7 together establish the boundary of what is
 achievable in Type-III-C. Bits-back gives the optimal rate for any
@@ -1553,22 +1695,55 @@ inference, both of which sacrifice optimality for tractability.
 \textbf{Theorem 6.8 (Inapproximability of joint
 dictionary-and-predictor learning).} \emph{Joint
 dictionary-and-predictor learning for Type-III-C is APX-hard. There
-exists an explicit constant $\gamma > 1$ such that no polynomial-time
-algorithm achieves approximation ratio better than $\gamma$ for the
-total code length, unless $P = NP$. The bound holds even with $M$
-restricted to the trivial constant predictor.}
+exists an explicit constant $\gamma > 1$ such that, for every
+$\eta > 0$, no polynomial-time algorithm achieves approximation
+ratio better than $\gamma - \eta$ on all sufficiently large
+instances, unless $P = NP$. The bound holds even with $M$ restricted
+to the trivial constant predictor and $D$ restricted to the recursive
+dictionary class.}
 
-\emph{\textbf{Proof.}} The reduction from the Smallest Grammar
-Problem (SGP) constructed in Theorem 6.7 is gap-preserving: a
-polynomial-time $\gamma$-approximation for joint dictionary learning
-on the constructed instance would yield a polynomial-time
-$\gamma$-approximation for SGP via the same correspondence between
-non-terminals and dictionary entries. Charikar, Lehman, Liu,
-Panigrahy, Prabhakaran, Sahai and Shelat (2005) established that SGP
-is APX-hard with an explicit inapproximability ratio: no
-polynomial-time approximation within a constant strictly closer to 1
-exists unless $P = NP$. This constant transfers to the
-dictionary-learning problem via the reduction. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} We verify that the reduction
+$\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 is asymptotically
+gap-preserving, then transfer the explicit SGP inapproximability
+constant of Charikar et al. (2005).
+
+\emph{Gap-preservation.} Let $\mathrm{OPT}_{\text{SGP}}(s) = |G^\star|$
+denote the size of the smallest grammar deriving $\{s\}$, and let
+$\mathrm{OPT}_{\text{III-C}}(\Phi(s))$ denote the optimal Type-III-C
+code length on the constructed instance. From the bijection in the
+proof of Theorem 6.7,
+\[
+\mathrm{OPT}_{\text{III-C}}(\Phi(s)) = \mathrm{OPT}_{\text{SGP}}(s) + r(s),
+\quad \text{where } r(s) = O\!\left(K^\star \log K^\star\right) + O(\log N)
+\]
+and $K^\star \leq |G^\star|$ is the number of non-terminals in $G^\star$.
+For instances with $|G^\star| \to \infty$, the additive term satisfies
+$r(s) = o(|G^\star|)$. Therefore, for any approximation algorithm $A$
+producing $A(\Phi(s)) \leq \alpha \cdot \mathrm{OPT}_{\text{III-C}}(\Phi(s))$,
+the induced grammar $G_A$ has size
+\[
+|G_A| \leq A(\Phi(s)) \leq \alpha \cdot \left[\mathrm{OPT}_{\text{SGP}}(s) + r(s)\right]
+= \left(\alpha + \alpha \cdot \tfrac{r(s)}{\mathrm{OPT}_{\text{SGP}}(s)}\right) \cdot \mathrm{OPT}_{\text{SGP}}(s).
+\]
+The slack factor $\alpha \cdot r(s) / \mathrm{OPT}_{\text{SGP}}(s) \to 0$
+as $|s| \to \infty$. Hence an $\alpha$-approximation for the
+Type-III-C dictionary problem yields an $(\alpha + o(1))$-approximation
+for SGP.
+
+\emph{Transfer of explicit constant.} Charikar et al. (2005, Theorem 3.4
+and Corollary 3.5) established that there exists an explicit constant
+$\gamma_{\text{SGP}} > 1$ such that no polynomial-time algorithm
+$(\gamma_{\text{SGP}} - \eta)$-approximates SGP for any $\eta > 0$,
+unless $P = NP$. (Their construction routes through an instance of
+Set Cover with explicit inapproximability gap; the resulting
+$\gamma_{\text{SGP}}$ is a constant strictly greater than 1, derivable
+from the Set Cover inapproximability constant via their reduction
+chain.) By the gap-preservation above, the same lower bound transfers
+to the Type-III-C dictionary problem: for every $\eta' > 0$, no
+polynomial-time algorithm $(\gamma_{\text{SGP}} - \eta')$-approximates
+the Type-III-C objective on all sufficiently large instances, unless
+$P = NP$. Set $\gamma := \gamma_{\text{SGP}}$ to complete the proof.
+\hfill$\blacksquare$
 
 Together, Theorems 6.7 and 6.8 confirm that the heuristic nature of
 practical dictionary learners (BPE, WordPiece, MDL-greedy variants)
@@ -1576,19 +1751,6 @@ is not a deficiency of those algorithms but a necessary consequence of
 complexity-theoretic limits. Even with unbounded compute applied to
 the dictionary search, polynomial-time algorithms cannot close the
 approximation gap unless $P = NP$.
-
-\textbf{6.5 Worked numerical example for Type-III-B}
-
-Consider an ASCII-text block where the empirical marginal entropies
-are $H(H \mid C) = 2.4$ bits and $H(L \mid C) = 2.9$ bits per byte,
-while the joint entropy is $H(H, L \mid C) = 4.7$ bits. Independent
-nibble coding pays $2.4 + 2.9 = 5.3$ bits per byte; joint byte coding
-pays $4.7$ bits per byte. The mutual-information advantage is
-$\Delta_B = 5.3 - 4.7 = 0.6$ bits per byte, or 0.075 bytes per byte
-(about 7.5\% saving) before model and metadata overhead. Over a
-4096-byte block, this is 307 bytes of raw saving against independent
-nibble coding, against an extra model cost that is typically a few
-tens of bytes per amortized block.
 
 \textbf{7. Composition and mode selection}
 
@@ -1624,7 +1786,7 @@ heterogeneous data where the per-tile best mode varies.
 
 Several parameters in the framework are input-dependent: the codeword
 rate $k$ in Type-I (Code-$k$), the alphabet size $K$ in Type-II, the
-support threshold $\tau_v$ in Proposition 5.5, the tile size in
+support threshold $\tau_v$ in Proposition 5.7, the tile size in
 Type-III-A, the dictionary size in Type-III-C, and others. No single
 setting is optimal across all inputs; the right approach is input
 probing at encode time, where the encoder scans the block, estimates
@@ -2505,16 +2667,16 @@ point to the relevant theorems.
   approximation exists unless $P = NP$).
 \item
   Optimal candidate-support threshold for Type-II --- resolved by
-  Proposition 5.5: the optimal $S_v$ is a prefix of positions sorted
+  Proposition 5.7: the optimal $S_v$ is a prefix of positions sorted
   by $Q_v$, and support-set coding is at best equivalent to
   per-position arithmetic coding under the same $Q$ (strictly more
   expensive unless $Q$ is binary).
 \item
   Joint structure on natural data and the Type-II separation regime
-  --- resolved by Theorem 5.6 (the multi-information
+  --- resolved by Theorem 5.5 (the multi-information
   $\mathrm{TC}(D_N)$ is the exact information-theoretic quantity
   governing factorized-versus-joint separation) and quantified by
-  Remark 5.7 (the manifold hypothesis predicts
+  Remark 5.6 (the manifold hypothesis predicts
   $\mathrm{TC} = \Theta(N)$ for natural data classes of low intrinsic
   dimension, supported by empirical estimates of $d$ for images,
   text, and structured records).
@@ -2580,9 +2742,9 @@ the present paper.
 \begin{itemize}
 \item
   Construction of efficient enumerative encoders for specific
-  natural-data submanifolds. Theorem 5.6 establishes that the
+  natural-data submanifolds. Theorem 5.5 establishes that the
   separation between factorized and joint coding equals
-  $\mathrm{TC}(D_N)$, and Remark 5.7 predicts this is $\Theta(N)$
+  $\mathrm{TC}(D_N)$, and Remark 5.6 predicts this is $\Theta(N)$
   for low-dimensional natural-data manifolds. Constructing an
   efficient (polynomial-time) membership oracle and rank coder for
   the submanifold of a specific data class --- say, database pages
@@ -2639,8 +2801,8 @@ see what additional work is required for a deployable system.
   experimental work, not mathematics. Out of scope for this paper; the
   natural artifact is a separate experimental paper.
 \item
-  Intrinsic-dimension estimation for specific data classes. Remark 5.7
-  connects Theorem 5.6\textquotesingle s separation to the manifold
+  Intrinsic-dimension estimation for specific data classes. Remark 5.6
+  connects Theorem 5.5\textquotesingle s separation to the manifold
   hypothesis. Computing or estimating the intrinsic dimension d of
   specific natural-data classes (database pages of a given schema,
   telemetry under a given protocol, image data of a given modality)

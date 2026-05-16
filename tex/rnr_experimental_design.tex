@@ -63,7 +63,7 @@ This document specifies the experimental program required to convert the
 theoretical claims of RNR Coding v0.5 into empirically verified
 statements. The main paper is theory-only by design: every quantitative
 prediction in its §11 is labeled as a conjecture, every theorem is
-conditional on stated assumptions, and Remark 5.7 invokes the manifold
+conditional on stated assumptions, and Remark 5.6 invokes the manifold
 hypothesis without verifying it on specific data. This companion
 document fills the gap by stating exactly what must be measured, on what
 data, with what baselines, under what statistical methodology, and how
@@ -74,8 +74,8 @@ The document covers three classes of empirical work: (a) coding-rate
 measurements that test each Type's predicted advantage against
 baselines; (b) information-theoretic measurements (total correlation
 $\mathrm{TC}(D_N)$ and intrinsic dimension $d$) that test whether
-specific natural data classes satisfy the conditions of Theorem 5.6
-and Remark 5.7; and (c) cross-platform reproducibility tests that
+specific natural data classes satisfy the conditions of Theorem 5.5
+and Remark 5.6; and (c) cross-platform reproducibility tests that
 verify Theorems 10.1 and 10.2 hold for a specific reference
 implementation.
 
@@ -131,12 +131,12 @@ i.e., remains at least 10\% of $N$ as $N$ grows over the range 1
 KiB to 16 KiB.
 
 \emph{Falsification:} if measured $\mathrm{TC}(D_N)$ decays as
-$o(N)$ for any of the data classes, then Theorem 5.6's separation
+$o(N)$ for any of the data classes, then Theorem 5.5's separation
 regime does not apply and Type-II provides only logarithmic-scale
 gains. If Type-II rate equals or exceeds LZMA on database pages,
 the separation regime is not realized at the predictor size tested.
 
-\textbf{2.3 Manifold-hypothesis quantification (Remark 5.7)}
+\textbf{2.3 Manifold-hypothesis quantification (Remark 5.6)}
 
 \textbf{H4 {[}confirming{]}:} For each natural-data class in H2 and
 H6, the estimated intrinsic dimension $d$, computed via the
@@ -146,7 +146,7 @@ $d \ll N$.
 
 \emph{Falsification:} if $d$ is comparable to $N$ (within a factor
 of 2) for any tested natural-data class, the manifold-hypothesis
-quantification in Remark 5.7 does not apply to that class, and
+quantification in Remark 5.6 does not apply to that class, and
 $\mathrm{TC}(D_N)$ is not predicted to be $\Theta(N)$ for it. The
 conditional theorem still holds; only the empirical applicability is
 in question.
@@ -462,8 +462,8 @@ includes:
 \textbf{5.3 Information-theoretic measurements}
 
 Independent of compression rate, several information-theoretic
-quantities are estimated to test the conditions of Theorem 5.6 and
-Remark 5.7:
+quantities are estimated to test the conditions of Theorem 5.5 and
+Remark 5.6:
 
 \begin{itemize}
 \item
@@ -677,7 +677,7 @@ If a platform pair produces divergent archives:
 
 \textbf{9. Intrinsic-dimension estimation procedure (H4)}
 
-Remark 5.7 connects Theorem 5.6\textquotesingle s separation to
+Remark 5.6 connects Theorem 5.5\textquotesingle s separation to
 natural-data intrinsic dimension. This section operationalizes the
 estimation.
 
@@ -728,7 +728,7 @@ Cross-check with at least one alternative:
 
 Report agreement or disagreement among estimators. Strong
 disagreement (factor of 2 or more) indicates the corpus may not
-admit a manifold description; in that case Remark 5.7's
+admit a manifold description; in that case Remark 5.6's
 quantification of $\mathrm{TC}$ does not transfer cleanly to that
 corpus.
 

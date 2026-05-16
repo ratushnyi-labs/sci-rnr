@@ -214,7 +214,7 @@ genuinely beats Type-I: yes, by $\Theta(N)$ bits in the worst case.
 Strongest separation result in the paper.
 \end{quote}
 
-\textbf{Proposition 5.5 (optimal support is a Q-prefix; arithmetic
+\textbf{Proposition 5.7 (optimal support is a Q-prefix; arithmetic
 coding is the limit) --- {[}optimization{]}}
 
 \begin{quote}
@@ -231,7 +231,7 @@ question. For real-valued $Q$, use arithmetic coding directly;
 reserve support coding for hard-candidate-set predictors.
 \end{quote}
 
-\textbf{Theorem 5.6 (multi-information separation, general source) ---
+\textbf{Theorem 5.5 (multi-information separation, general source) ---
 {[}separation, general{]}}
 
 \begin{quote}
@@ -247,7 +247,7 @@ construction to arbitrary sources. The right unifying object for
 understanding when Type-II wins is total correlation.
 \end{quote}
 
-\textbf{Remark 5.7 (manifold-hypothesis quantification of TC) ---
+\textbf{Remark 5.6 (manifold-hypothesis quantification of TC) ---
 {[}conditional quantitative claim{]}}
 
 \begin{quote}
@@ -257,7 +257,7 @@ $\mathrm{TC}(D_N) = \Theta(N) - O(d \log N)$, supported by published
 intrinsic-dimension estimates for images, text, and structured
 records.
 
-\emph{Proof.} Combination of Theorem 5.6 with empirical
+\emph{Proof.} Combination of Theorem 5.5 with empirical
 intrinsic-dimension results from Carlsson et al., Levina-Bickel,
 Tenenbaum et al.
 
@@ -644,14 +644,14 @@ explicit escape cost.
 \textbf{Q:} \emph{``For what data classes is your separation
 actually realized?''}
 
-\textbf{A:} Theorem 5.6 ($\mathrm{TC}$ is the exact quantity);
-Remark 5.7 (manifold hypothesis predicts
+\textbf{A:} Theorem 5.5 ($\mathrm{TC}$ is the exact quantity);
+Remark 5.6 (manifold hypothesis predicts
 $\mathrm{TC} = \Theta(N)$ for natural data).
 
 \textbf{Q:} \emph{``Doesn't arithmetic coding under $Q$ dominate
 your support-set scheme?''}
 
-\textbf{A:} Proposition 5.5: yes, and we say so explicitly.
+\textbf{A:} Proposition 5.7: yes, and we say so explicitly.
 Support-set is for hard-candidate-set predictors only.
 
 \textbf{Q:} \emph{``Why $2\varepsilon$ and not $\varepsilon$?''}
@@ -735,7 +735,7 @@ only assert conditional advantage.
 an isometric Hamming-embedding argument; a fully self-contained
 proof would expand the embedding step.
 
-\item Theorem 5.6 is unconditional; Remark 5.7's quantification
+\item Theorem 5.5 is unconditional; Remark 5.6's quantification
 depends on the manifold hypothesis being operationalized for the
 specific data class. Empirical intrinsic-dimension estimation is out
 of scope (§13.3).
