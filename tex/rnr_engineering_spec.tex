@@ -62,9 +62,9 @@ Pavlo Ratushnyi --- May 2026
 
 This document specifies the conformance requirements for a reference
 implementation of RNR Coding. It operationalizes Theorems 10.1, 10.2,
-10.3, 10.5, and 10.6 of the main paper into a software-engineering
-specification that can be implemented, tested, and certified across the
-hardware targets named in §10.6.
+10.3, 10.4, 10.5, and 10.6 of the main paper into a
+software-engineering specification that can be implemented, tested,
+and certified across the hardware targets named in §10.8.
 
 The specification is RFC-style: requirements use the MUST/SHOULD/MAY
 language of RFC 2119. A conforming implementation MUST satisfy every
@@ -935,10 +935,12 @@ decomposition invariance)} → Byte tensor coding (encoder spec).
 APX-hard)} → Token tensor coding (encoder spec).
 
 \textbf{Theorem 7.1 (composition correctness)} → §3 (universal
-requirements R-3.1 through R-3.8) and §10 (mode-flag stream)
-together ensure each mode coder produces a uniquely decodable repair
-stream conditional on its mode flag; the composed archive is therefore
-uniquely decodable by direct application of the theorem.
+requirements R-3.1 through R-3.8) ensures each mode coder produces
+bit-exact, uniquely decodable output per mode. The mode-flag stream
+itself and the encoder-side composition logic are specified in the
+encoder spec (out of scope here); the composed archive is uniquely
+decodable by direct application of the theorem once that spec is in
+place.
 
 \textbf{Theorem 8.1 (no universal dominance)} → Acknowledged in archive
 header (fallback-mode flag).

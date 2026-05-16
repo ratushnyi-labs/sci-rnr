@@ -60,8 +60,6 @@ Pavlo Ratushnyi
 
 \emph{Independent Research --- Draft v0.8, May 2026}
 
-\textbf{Contents}
-
 \textbf{Abstract}
 
 We introduce Ratushnyi Neural Repair Coding (RNR Coding), a framework
@@ -434,8 +432,9 @@ per-occurrence cost beats raw literal coding.
 
 \textbf{2.6 Bits-back coding}
 
-Bits-back coding (Hinton and van Camp 1993; Frey 1997; Townsend,
-Bird, Barber 2019) is a technique for losslessly compressing data
+Bits-back coding (Hinton and van Camp 1993; Frey 1997, 1998;
+Townsend, Bird, Barber 2019) is a technique for losslessly
+compressing data
 under a latent-variable model. The encoder uses an auxiliary bit
 string to sample a latent $z$, encodes $(z, x)$ with the joint prior,
 and the decoder recovers the latent and extracts the auxiliary bits,
@@ -1136,7 +1135,8 @@ statistical learning theory and topological data analysis.
 
 \textbf{Theorem 5.5 (Multi-information separation).} \emph{Let $D_N$
 be any distribution over $A_{16}^N$. Define the total correlation
-(multi-information)
+(multi-information, Watanabe 1960; see also Studen\'y and Vejnarov\'a
+1998)
 $\mathrm{TC}(D_N) = \sum_{i=1}^N H_{\text{marg}}(X_i) - H(D_N)$, where
 $H_{\text{marg}}(X_i)$ is the marginal entropy at position $i$ under
 $D_N$. The optimal factorized per-position arithmetic coder driven by
@@ -1165,7 +1165,12 @@ positions are mutually independent under $D_N$.
 
 Theorem 5.5 generalizes Theorem 5.4 from the uniform-marginal
 linear-code construction to arbitrary source distributions. The
-$\Theta(N)$ separation observed in Theorem 5.4 corresponds to
+quantity $\mathrm{TC}(D_N)$ is the classical \emph{multi-information}
+of Watanabe (1960), and the gap between factorized and joint coding
+is a standard consequence of the chain rule for entropy; the novelty
+is the placement of this quantity as the operational separator
+between Type-I and Type-II under the RNR framework. The $\Theta(N)$
+separation observed in Theorem 5.4 corresponds to
 $\mathrm{TC} = (4 - c)N$ for the linear-code family. For general
 $D_N$, the magnitude of $\mathrm{TC}(D_N)$ determines whether Type-II
 provides a constant-factor or vanishing improvement over factorized
@@ -1525,8 +1530,8 @@ admitting $\tau$ to the dictionary $D$ is}
 \[
 \Delta L(\tau) = \mathrm{dictionary\_cost}(\tau) + f \cdot \left[\mathrm{code\_cost}(\tau) + \mathrm{parse\_overhead}(\tau) - 8\ell\right].
 \]
-\emph{Consequently, an MDL-optimal admission policy admits $\tau$ if
-and only if $\Delta L(\tau) < 0$, equivalently}
+\emph{Consequently, the per-token greedy MDL admission policy admits
+$\tau$ if and only if $\Delta L(\tau) < 0$, equivalently}
 \[
 f \cdot \left[8\ell - \mathrm{code\_cost}(\tau)\right] > \mathrm{dictionary\_cost}(\tau) + f \cdot \mathrm{parse\_overhead}(\tau).
 \tag{6.3}
@@ -1543,12 +1548,18 @@ principle (Rissanen 1978), the admission policy that minimizes total
 description length includes $\tau$ iff this difference is negative.
 Rearranging gives (6.3). \hfill$\blacksquare$
 
-The token MDL criterion is the standard dictionary-learning admission
-rule. Its placement here is to make explicit that Type-III-C does not
-store every possible token, only those whose per-corpus savings cover
-their description. For a corpus encoded across many archives,
-$\mathrm{dictionary\_cost}$ is amortized and Type-III-C grows more
-permissive.
+The token MDL criterion is the standard greedy dictionary-learning
+admission rule. Its placement here is to make explicit that Type-III-C
+does not store every possible token, only those whose per-corpus
+savings cover their description. The criterion is greedy in that it
+evaluates each candidate $\tau$ marginally, assuming the rest of the
+dictionary is fixed; it is not a global MDL optimum, since admitting
+$\tau$ can change the optimal parse and the
+$\mathrm{code\_cost}$ of other tokens. The global problem is
+addressed by Theorems 6.7 and 6.8 below, where it is shown to be
+NP-hard and APX-hard. For a corpus encoded across many archives,
+$\mathrm{dictionary\_cost}$ is amortized and the greedy admission
+criterion grows more permissive.
 
 When tokens are continuous latent variables of a variational model
 rather than discrete byte fragments, the appropriate encoding tool is
@@ -1751,17 +1762,19 @@ for Type-III-C gives a $(C \cdot \alpha)$-approximation for SGP for
 some absolute constant $C$.
 
 \emph{Transfer of APX-hardness.} Charikar et al. (2005, Theorem 3.4)
-established that SGP is APX-hard: there exists $\gamma_{\text{SGP}} > 1$
-such that no polynomial-time $\alpha$-approximation exists for
-$\alpha < \gamma_{\text{SGP}}$, unless $P = NP$. (Their construction
-routes through Set Cover and yields an explicit constant
-$\gamma_{\text{SGP}}$ derivable from the Set Cover inapproximability
-ratio.) Combined with the constant-factor approximability transfer
-above, this gives: no polynomial-time
-$\alpha$-approximation exists for Type-III-C with $\alpha <
-\gamma_{\text{SGP}} / C$, unless $P = NP$. Since $\gamma_{\text{SGP}}
-> 1$ and $C$ is an absolute constant, $\gamma := \gamma_{\text{SGP}}
-/ C > 1$ exists, completing the proof. \hfill$\blacksquare$
+established a $\Omega(\log n / \log \log n)$ inapproximability
+threshold for SGP via a reduction from Set Cover and the Lund and
+Yannakakis (1994) inapproximability of Set Cover. Their bound is
+super-constant in the input size $n = |s|$; in particular, for any
+constant $\gamma > 1$ there exists $n_0$ such that no polynomial-time
+$\gamma$-approximation to SGP exists on instances of size $\geq n_0$,
+unless $P = NP$. Combined with the constant-factor approximability
+transfer above ($\alpha$-approximation for Type-III-C yields a
+$(C \alpha)$-approximation for SGP), this gives: no polynomial-time
+$\alpha$-approximation exists for Type-III-C with $\alpha \leq
+\gamma / C$ for any constant $\gamma > 1$ and sufficiently large
+instances, unless $P = NP$. Existence of such a constant $\gamma > 1$
+suffices for APX-hardness of Type-III-C. \hfill$\blacksquare$
 
 \textbf{Remark on the constant.} The explicit numerical value of
 $\gamma$ depends on the dictionary-encoding convention (bit-cost
@@ -2166,7 +2179,11 @@ index to locate the sync point $P \leq N$ closest to $N$;
 (ii)~decoding of at most $K + k$ positions of $R$, of which at most
 $K$ positions are warmup (discarded output); (iii)~$K + k$ predictor
 evaluations and entropy-coder updates. Total work is
-$O((K + k) \cdot \mathrm{cost}(M))$, independent of $N$.}
+$O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$. The second term
+dominates whenever $(K+k) \cdot \mathrm{cost}(M) \gg \log(N/K)$, which
+holds for any non-trivial predictor; in that regime the cost is
+$O((K+k) \cdot \mathrm{cost}(M))$, with only a polylogarithmic
+dependence on archive size $N$.}
 
 \emph{\textbf{Proof.}} Binary-search the seek index for the largest
 sync point $P$ with $P \leq N$; the index has at most
@@ -2189,7 +2206,9 @@ $[N, N+k)$. Total decoded positions: $N + k - P \leq K + k$ since
 $P > N - K$. \hfill$\blacksquare$
 
 Theorem 10.3 establishes that random access in RNR archives runs in
-time independent of archive size. For $K = 64$ KiB and $k = 1$ KiB,
+time with only polylogarithmic dependence on archive size (a
+$\log(N/K)$ seek-index lookup plus a $K+k$ decode window).
+For $K = 64$ KiB and $k = 1$ KiB,
 the cost is roughly $K + k = 65$ KiB worth of predictor evaluations
 --- typically on the order of 10 to 100 milliseconds for a small
 distilled transformer on commodity hardware. This is asymptotically a
@@ -3003,5 +3022,18 @@ Theory, 23(3), 337-343.
 \textbf{{[}44{]}} Ziv, J., and Lempel, A. (1978). Compression of
 Individual Sequences via Variable-Rate Coding. IEEE Transactions on
 Information Theory, 24(5), 530-536.
+
+\textbf{{[}45{]}} Watanabe, S. (1960). Information Theoretical
+Analysis of Multivariate Correlation. IBM Journal of Research and
+Development, 4(1), 66-82.
+
+\textbf{{[}46{]}} Studen\'y, M., and Vejnarov\'a, J. (1998). The
+Multiinformation Function as a Tool for Measuring Stochastic
+Dependence. In: \emph{Learning in Graphical Models}, Jordan, M. I.
+(ed.), MIT Press, pp. 261-297.
+
+\textbf{{[}47{]}} Lund, C., and Yannakakis, M. (1994). On the
+Hardness of Approximating Minimization Problems. Journal of the ACM,
+41(5), 960-981.
 
 \end{document}

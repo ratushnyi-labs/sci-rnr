@@ -117,7 +117,7 @@ after $E_{12}$-C optimization, the conjecture in §11 is falsified for this
 regime.
 
 \textbf{2.2 Type-II separation on structured data (Theorems 5.3, 5.4,
-5.6)}
+5.5 and Remark 5.6)}
 
 \textbf{H2 {[}quantifying{]}:} On database pages, structured binary
 records (Protocol Buffers, MessagePack, Apache Parquet), and instruction
@@ -195,10 +195,11 @@ $q$ is poorly fit. The theorem is unaffected.
 \textbf{2.7 Reproducibility (Theorems 10.1, 10.2)}
 
 \textbf{H8 {[}confirming{]}:} A reference RNR implementation built to
-Definition 10.1 produces byte-identical archive outputs across (a)
-x86-64 Linux with stock libc, (b) ARM64 Linux on Apple Silicon, (c)
-RISC-V QEMU emulation, (d) Windows x86-64 with MSVC runtime, on a
-100-block test corpus.
+the conditions of Theorem 10.1 (integer arithmetic, deterministic
+non-linearity tables, fixed reduction order) produces byte-identical
+archive outputs across (a) x86-64 Linux with stock libc, (b) ARM64
+Linux on Apple Silicon, (c) RISC-V QEMU emulation, (d) Windows x86-64
+with MSVC runtime, on a 100-block test corpus.
 
 \emph{Falsification:} if any platform produces a byte-divergent archive
 on any test block, the reference implementation does not meet Theorem
@@ -567,7 +568,7 @@ the OSF Registries or equivalent open-science platform.
 
 \textbf{6.4 Multiple-comparisons correction}
 
-With 9 hypotheses and multiple coder/corpus pairs each, the
+With 14 hypotheses and multiple coder/corpus pairs each, the
 per-comparison $\alpha$ of $0.05$ would inflate the family-wise
 error rate substantially. Apply Holm-Bonferroni correction across all
 primary-hypothesis tests. Secondary analyses (effect sizes,
@@ -580,7 +581,7 @@ Each experiment is reported in a uniform template for downstream
 meta-analysis. The template is:
 \begin{verbatim}
 Experiment ID:        <slug, e.g., 'h2-pgdump-rnr-ii'>
-Hypothesis:           <H1..H9 from Section 2>
+Hypothesis:           <H1..H14 from Section 2>
 Corpus:               <slug + SHA-256 hash>
 Coder:                <RNR variant or baseline name + version>
 Hardware:             <CPU, RAM, OS>
@@ -828,7 +829,7 @@ Anticipated risks and contingency plans:
   Manifold-hypothesis estimators may give inconsistent intrinsic
   dimensions on certain corpora. Contingency: report the disagreement
   honestly and label the corresponding corpus as outside Remark
-  5.7\textquotesingle s predicted regime. The
+  5.6\textquotesingle s predicted regime. The
   framework\textquotesingle s conditional theorems are unaffected; only
   the empirical applicability for that corpus is in question.
 \item

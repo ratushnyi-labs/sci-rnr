@@ -199,14 +199,15 @@ what the predictor must achieve for Type-II to win.
 
 \begin{quote}
 \emph{Statement.} There exists a distribution $D_N$ over
-$A_{16}^N$ (uniform marginals, image of a $4N$-to-$(4-c)N$ linear
+$A_{16}^N$ (uniform marginals, image of a $(4-c)N$-to-$4N$ linear
 code) such that any factorized arithmetic coder pays $\geq 4N$ bits
 while a semi-non-factorized Type-II coder achieves
 $(4-c)N + O(\log N)$ bits. Separation is $\Theta(N)$.
 
-\emph{Proof.} Linear-code construction over $\mathrm{GF}(2)$:
-generator matrix with non-trivial bits at every position yields
-exactly uniform marginals; membership in the codeword set fits in
+\emph{Proof.} Linear-code construction over $\mathrm{GF}(2)$: a
+generator matrix $G : \mathrm{GF}(2)^{(4-c)N} \to \mathrm{GF}(2)^{4N}$
+whose four columns per nibble are linearly independent yields exactly
+uniform per-nibble marginals; membership in the codeword set fits in
 $(4-c)N$ bits.
 
 \emph{Why it matters.} Settles whether semi-non-factorized Type-II
@@ -343,7 +344,7 @@ criterion{]}}
 
 \begin{quote}
 \emph{Statement.} Token $\tau$ is admitted to the dictionary iff
-$f \cdot [8\ell - \mathrm{code\_cost}(\tau)] > \mathrm{dictionary\_cost}(\tau) + \mathrm{parse\_overhead}(\tau)$.
+$f \cdot [8\ell - \mathrm{code\_cost}(\tau)] > \mathrm{dictionary\_cost}(\tau) + f \cdot \mathrm{parse\_overhead}(\tau)$.
 
 \emph{Proof.} Net code-length change from adding $\tau$ is the LHS
 minus RHS; $\tau$ saves bits iff this is positive.
