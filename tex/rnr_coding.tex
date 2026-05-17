@@ -2191,11 +2191,16 @@ explicit framing).} \emph{Assume the archive header stores, for each
 subblock $i$, an explicit byte/bit-offset into the repair stream
 (framing), so that subblock $i + 1$'s repair-stream slice is parsed
 from a fixed position independent of the bytes recovered in
-subblock $i$. Suppose further that $H_v$ is a cryptographic hash
-with negligible collision probability $\delta$ on the considered
-set of candidate subblocks. Then the probability that an incorrect
-$\hat{X}_i$ is used to update the predictor context for subblock
-$i + 1$ is at most $\delta$.}
+subblock $i$. Suppose further that the predictor uses a
+\emph{context-reset boundary} at each subblock break: the input to
+$M$ for subblock $i + 1$ is a function only of public boundary
+state (a stored state snapshot in the archive header, or a fixed
+context-reset value), not of the recovered bytes of subblock $i$.
+Finally, suppose $H_v$ is a cryptographic hash with negligible
+collision probability $\delta$ on the considered set of candidate
+subblocks. Then the probability that an incorrect $\hat{X}_i$ is
+used to update the predictor context or repair-stream parsing for
+subblock $i + 1$ is at most $\delta$.}
 
 \emph{\textbf{Proof.}} The framing assumption guarantees that
 subblock $i + 1$'s repair-stream bits are isolated by the header
@@ -2311,11 +2316,13 @@ product of fan-in $d_\ell$ followed by a non-linearity. Suppose:
 (i)~all weights and inputs are integers; (ii)~every accumulator in
 layer $\ell$ uses signed bit-width $b_\ell$ satisfying
 \[
-b_\ell \geq \lceil \log_2(d_\ell \cdot W_\ell \cdot I_{\ell-1}) \rceil + 1,
+b_\ell \geq \lceil \log_2(d_\ell \cdot W_\ell \cdot I_{\ell-1} + 1) \rceil + 1,
 \]
 where $W_\ell$ is an upper bound on the magnitude of any weight entry
 at layer $\ell$ and $I_{\ell-1}$ is an upper bound on the magnitude of
-any input to layer $\ell$; (iii)~all non-linearities are deterministic
+any input to layer $\ell$ (the $+1$ inside the $\log$ accounts for
+the asymmetric signed-two's-complement range $[-2^{b-1}, 2^{b-1}-1]$,
+so the positive extremum $+d_\ell W_\ell I_{\ell-1}$ is representable); (iii)~all non-linearities are deterministic
 integer-to-integer mappings (e.g., piecewise-constant lookup tables);
 (iv)~all reduction operations (sums in matrix-vector products) follow
 a fixed, deterministic order specified by the model description. Then
@@ -2409,15 +2416,24 @@ floating-point optimizer without quantization wrappers, Adam with
 real-valued square roots, and stochastic optimizers with unseeded
 random masking.
 
-\textbf{Theorem 10.2 (Bit-exact adaptive predictors).} \emph{Suppose
-the forward pass of $M$ satisfies the conditions of Theorem 10.1.
-Suppose the encoder updates $M$ online via a compatible online
-optimizer (Definition 10.1) with gradient computed by deterministic
-integer backpropagation. Suppose the order in which subblocks are
-used for adaptation is pinned by the model description and identical
-on encoder and decoder. Then at every subblock boundary, the
+\textbf{Theorem 10.2 (Bit-exact adaptive predictors, causal updates).}
+\emph{Suppose the forward pass of $M$ satisfies the conditions of
+Theorem 10.1. Suppose the encoder updates $M$ online via a compatible
+online optimizer (Definition 10.1) with gradient computed by
+deterministic integer backpropagation. Suppose the order in which
+subblocks are used for adaptation is pinned by the model description
+and identical on encoder and decoder. Suppose further the
+\emph{causal-update condition}: the encoder's adaptation step at
+subblock boundary $t$ uses only data already available to the decoder
+at that boundary (i.e., bytes from subblocks $0, \ldots, t$ all of
+which the decoder has already verified per Theorem 9.1 before
+predicting subblock $t+1$). Then at every subblock boundary, the
 encoder's and decoder's parameter states are bit-identical, and the
-resulting predictor outputs are bit-identical.}
+resulting predictor outputs are bit-identical. \emph{Caveat:} without
+the causal-update condition (e.g., if the encoder updates using the
+current byte before encoding it), the decoder cannot replicate the
+same update sequence, and parameter states diverge despite
+deterministic backprop and pinned order.}
 
 \emph{\textbf{Proof.}} Induction on the adaptation step $t$. Base
 case ($t = 0$): the initial parameter state is part of $L(M)$ and is
@@ -2490,7 +2506,7 @@ bounded by $W \cdot (\text{cold-context rate} - \text{asymptotic rate})$,
 typically a few hundred bytes. The total compression cost of sync
 points is $O((N/K) \cdot W)$ bytes.
 
-\textbf{Theorem 10.3 (Random access in time $O(K + k)$).} \emph{Let
+\textbf{Theorem 10.3 (Random access, output-sensitive).} \emph{Let
 $X$ be compressed under RNR with a $W$-bounded predictor $M$
 satisfying Theorem 10.1 and with sync points placed every $K$
 positions. Random access to $k$ consecutive bytes starting at any
@@ -2499,11 +2515,14 @@ index to locate the sync point $P \leq N$ closest to $N$;
 (ii)~decoding of at most $K + k$ positions of $R$, of which at most
 $K$ positions are warmup (discarded output); (iii)~$K + k$ predictor
 evaluations and entropy-coder updates. Total work is
-$O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$. The second term
-dominates whenever $(K+k) \cdot \mathrm{cost}(M) \gg \log(N/K)$, which
-holds for any non-trivial predictor; in that regime the cost is
-$O((K+k) \cdot \mathrm{cost}(M))$, with only a polylogarithmic
-dependence on archive size $N$.}
+$O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$. \emph{This is
+polylogarithmic in archive size $N$ only when $K$ and $k$ are held
+fixed or grow at most polylogarithmically in $N$; for $K = \Theta(N)$
+or $k = \Theta(N)$ the cost is $\Theta(N \cdot \mathrm{cost}(M))$,
+no better than full sequential decode}. When $(K+k) \cdot
+\mathrm{cost}(M) \gg \log(N/K)$ the second term dominates and the
+cost is $O((K+k) \cdot \mathrm{cost}(M))$, independent of $N$ in
+that parameter regime.}
 
 \emph{\textbf{Proof.}} Binary-search the seek index for the largest
 sync point $P$ with $P \leq N$; the index has at most
@@ -2538,22 +2557,30 @@ speedup.
 
 \textbf{Theorem 10.4 (Random access for non-$W$-bounded predictors).}
 \emph{For a non-$W$-bounded predictor (RNN, LSTM, state-space model),
-random access requires storing a snapshot of $M$'s internal state at
-each sync point. Let $L(\text{state})$ be the bit length of one
-snapshot. The seek index grows to
+random access requires storing a snapshot at each sync point of
+\emph{all} boundary state that affects $M$'s output for subsequent
+positions --- namely the predictor's recurrent hidden state, any
+adaptive parameter snapshot (if Theorem 10.2 is in effect), and the
+entropy-coder boundary state (range/state for arithmetic coding or
+ANS state). Let $L(\text{state})$ be the bit length of this combined
+boundary snapshot. The seek index grows to
 $O((N/K) \cdot (\log L(R) + L(\text{state})))$ bits. The random-access
-cost is unchanged: $O((K + k) \cdot \mathrm{cost}(M))$ per access,
-independent of $N$.}
+cost per query is $O\bigl(\log(N/K) + L(\text{state}) + (K + k) \cdot
+\mathrm{cost}(M)\bigr)$, where the $L(\text{state})$ term covers
+loading and deserializing the snapshot before decoding can resume.}
 
 \emph{\textbf{Proof.}} Augment each sync point's index entry with
-$M$'s full internal state at position $P$, serialized as a
-fixed-bit-width integer tuple as required by Theorem 10.1. The state
-snapshot adds $L(\text{state})$ bits per sync point, multiplying the
-index size by $(1 + L(\text{state}) / \log L(R))$. To random-access
-bytes $[N, N+k)$, locate the latest sync point $P \leq N$, deserialize
-the stored state into the decoder's predictor instance, and decode
-forward as in Theorem 10.3. The decoded output is bit-identical by
-Theorem 10.1 applied to the restored state. \hfill$\blacksquare$
+all boundary state at position $P$, serialized as a fixed-bit-width
+integer tuple as required by Theorem 10.1. The combined snapshot adds
+$L(\text{state})$ bits per sync point, multiplying the index size by
+$(1 + L(\text{state}) / \log L(R))$. To random-access bytes
+$[N, N+k)$, locate the latest sync point $P \leq N$ (seek-index
+lookup $O(\log(N/K))$), read and deserialize the boundary snapshot
+(cost $O(L(\text{state}))$), restore the decoder's predictor,
+adaptive-parameter, and entropy-coder boundary states, and decode
+forward as in Theorem 10.3 (cost $O((K+k) \cdot \mathrm{cost}(M))$).
+The decoded output is bit-identical by Theorem 10.1 applied to the
+restored state. \hfill$\blacksquare$
 
 For LSTM predictors with $d$-dimensional state, $L(\text{state})$ is
 $O(d \cdot b)$ bits where $b$ is the per-component bit-width. For
@@ -2659,27 +2686,35 @@ as decompressing all preceding bytes; for archive sizes typical of disk
 images (gigabytes to terabytes), this is prohibitive. RNR removes this
 obstruction. The two theorems below formalize the application.
 
-\textbf{Theorem 10.5 (Block-device interface).} \emph{Let $X$ be
-compressed under RNR with a $W$-bounded predictor $M$ satisfying
-Theorem 10.1 and sync points placed every $K$ positions. A
-block-device driver that maps logical-block-address-indexed read
-requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR random-access
-calls can serve any read request in time
-$O((K + k) \cdot \mathrm{cost}(M))$ and working memory $O(K + k)$,
-independent of the archive size $N$.}
+\textbf{Theorem 10.5 (Block-device interface, parameter-conditional).}
+\emph{Let $X$ be compressed under RNR with a $W$-bounded predictor
+$M$ satisfying Theorem 10.1 and sync points placed every $K$
+positions. A block-device driver that maps logical-block-address-
+indexed read requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR
+random-access calls can serve any read request in time
+$O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ and working memory
+$O(K + k + L(M) + L(\mathrm{seek\_index}))$, where $L(M)$ is the
+predictor description size (kept resident in the driver) and
+$L(\mathrm{seek\_index})$ is the seek-index size (typically
+$O((N/K) \log L(R))$). The cost is polylogarithmic in archive size
+$N$ only in the parameter regime where $K$ and $k$ are held fixed
+or grow at most polylogarithmically in $N$; outside that regime the
+output-sensitive cost of Theorem 10.3 applies.}
 
 \emph{\textbf{Proof.}} Each LBA-indexed read request $(\mathcal{L},
 k)$ corresponds to a byte-range request on the underlying source $X$
 starting at byte position
 $N = \mathcal{L} \cdot \text{sector\_size}$ and continuing for $k$
 bytes. By Theorem 10.3, RNR random access to $k$ bytes at position
-$N$ runs in $O((K + k) \cdot \mathrm{cost}(M))$ time and requires
-$O(K + k)$ bytes of working memory (the warmup buffer for $K$
-positions plus the output buffer for $k$ positions). The translation
-from $(\mathcal{L}, k)$ to $(N, k)$ is a constant-time arithmetic
-operation. The total cost per read request is therefore
-$O((K + k) \cdot \mathrm{cost}(M))$, independent of $N$.
-\hfill$\blacksquare$
+$N$ runs in $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ time and
+requires $O(K + k)$ bytes of decode-window working memory (warmup
+buffer plus output buffer). The driver additionally keeps the
+predictor weights ($L(M)$ bits) and the seek index resident for
+constant-time per-query lookup; these are fixed at archive-mount
+time, not per-query. The translation from $(\mathcal{L}, k)$ to
+$(N, k)$ is a constant-time arithmetic operation. The total
+per-request cost is therefore as stated, with the parameter regime
+caveat inherited from Theorem 10.3. \hfill$\blacksquare$
 
 The $\mathrm{cost}(M)$ factor governs whether the driver is fast
 enough for interactive use. For a small distilled byte-level
@@ -2695,14 +2730,25 @@ Production deployments will target NPU or GPU paths when low latency
 is required and fall back to CPU only for archive inspection or
 compatibility.
 
-\textbf{Theorem 10.6 (Hardware-target portability).} \emph{Let $M$
-satisfy the integer-arithmetic, lookup-table, and
-fixed-reduction-order conditions of Theorem 10.1. For any hardware
-target $T$ providing bit-exact integer arithmetic at the specified
-bit-widths and the specified lookup-table evaluation semantics, the
-output $M(C)$ computed on $T$ is bit-identical to that computed on
-any other conforming target. The choice of target affects throughput
-and latency but not the produced bytes.}
+\textbf{Theorem 10.6 (Hardware-target portability, explicit
+conformance).} \emph{Let $M$ satisfy the integer-arithmetic,
+lookup-table, and fixed-reduction-order conditions of Theorem 10.1.
+A hardware target $T$ is said to \emph{conform} for $M$ if it pins,
+in a target-specific test vector matched to the engineering spec,
+all of the following: (a)~signed integer representation (two's
+complement) at the bit-widths declared by the model description;
+(b)~the result of every left/right shift, division, and modulo at
+those bit-widths (including round-toward-zero vs floor and signed
+vs unsigned semantics); (c)~the saturation-vs-wrap behaviour at each
+arithmetic operation; (d)~the byte-level serialization of every
+non-linearity lookup table; (e)~the reduction-tree shape and order;
+(f)~the per-target serialization of all approximation functions
+(integer Newton-Raphson, table-lookup interpolation, etc.) used in
+the forward pass. Under (a)-(f), the output $M(C)$ computed on $T$
+is bit-identical to that computed on any other conforming target.
+The choice of target affects throughput and latency but not the
+produced bytes; the engineering spec lists the conformance tests
+that establish (a)-(f) for each named target class.}
 
 \emph{\textbf{Proof.}} Direct corollary of Theorem 10.1, with the
 explicit observation that conformance is a property of the
