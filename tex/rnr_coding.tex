@@ -223,18 +223,24 @@ image priors. Among classical context‑mixing coders, PAQ and Cmix
 represent the upper end of what mixture‑of‑experts entropy coding
 achieves without neural networks.
 
-RNR is not a replacement for any of these. It is a taxonomy and a set of
-constructions that organize them. Per‑position arithmetic coding over a
-factorized predicted distribution is recovered as a special case of
-Type‑I, formally; PixelCNN++ over images can be viewed as a factorized
-Type‑II model, modulo its use of discretized mixture likelihoods rather
-than raw categorical probabilities; bits‑back coding fits into
-Type‑III‑C as a continuous-latent variant with an exact auxiliary-bit
-accounting (Theorem 6.6); and PAQ‑style switching context mixing can be
-viewed as a hand‑designed Type‑III‑A scheduler in which the entropy
-field is computed from explicit context features rather than predicted
-by a neural network, although strictly speaking PAQ uses
-continuous‑weight logistic mixing rather than discrete mode selection.
+RNR is not a replacement for any of these. It is a taxonomy and a set
+of constructions that, in our reading, naturally organize them ---
+though the mappings below are interpretive (not theorems) and are
+included to fix the vocabulary of later sections. Per-position
+arithmetic coding over a factorized predicted distribution is
+recovered as a special case of Type-I formally (see the reduction
+sketch in §4.5). PixelCNN++ over images is autoregressive over pixels
+conditioned on prior pixels (categorical or discretized-mixture
+likelihoods, depending on the head), and the relation to Type-II is
+analogy not equivalence: Type-II as defined in §3.2 is partition-based
+and does not subsume PixelCNN++'s pixel-wise softmax. Bits-back coding
+on a continuous latent fits into Type-III-C as the limit where the
+discrete dictionary is replaced by a variational posterior, with
+exact cross-entropy plus KL accounting (Theorem 6.6). PAQ-style
+switching context mixing can be viewed as a hand-designed
+Type-III-A-like scheduler with a continuous-weight logistic mix
+(rather than a discrete argmin), so the mapping is analogy rather
+than instantiation.
 The framework's intended contribution is to give a unified vocabulary
 and a set of constructions for three regimes that the existing methods
 treat ad hoc or not at all --- semi-non-factorized positional models,
@@ -358,12 +364,18 @@ This article makes the following contributions.
   testing per the conformance suite (engineering-spec document).
 \item
   A runtime parameter-selection framework (Section 7.2) that subsumes
-  input-dependent design choices (Code-k rate, alphabet size, support
-  threshold, tile size, dictionary size) under the existing
-  mode-selection machinery, with no loss in the oracle bound.
+  input-dependent design choices (Code-$k$ rate, alphabet size,
+  support threshold, tile size, dictionary size) under the existing
+  mode-selection machinery, with the same $2\varepsilon$
+  approximate-oracle gap as Theorem 6.1 plus the per-tile metadata
+  overhead $O(\log K_{\text{params}})$ for transmitting the chosen
+  parameter values.
 \item
-  Worked numerical examples for each type, demonstrating concrete
-  coding‑length arithmetic on toy distributions.
+  Worked numerical examples for Type-I (§4.7), Type-II (§5.7), and
+  Type-III-B (§6.4), demonstrating concrete coding-length arithmetic
+  on toy distributions. Type-III-A and Type-III-C are illustrated
+  through their composition and dictionary-construction sections
+  respectively.
 \end{itemize}
 
 \textbf{1.4 Organization}
