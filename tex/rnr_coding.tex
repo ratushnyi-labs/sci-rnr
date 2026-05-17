@@ -833,16 +833,23 @@ the advantage condition. \hfill$\blacksquare$
 
 \textbf{Theorem 4.2 (Type-I converse and ideal achievability).}
 \emph{Let $X \sim D$ be a source over length-$N$ byte blocks and let
-$Y = M_I(C)$ be decoder-reproducible side information. Any uniquely
-decodable lossless code for $X$ whose decoder uses only the codeword
-and $Y$ has expected length at least $H(X \mid Y)$. Conversely, an
-\emph{ideal} Type-I class-and-payload coder driven by the true
-conditional law of the Code12 error variable $E = E_{12}(X) \oplus Y$
+$Y = M_I(C)$ be decoder-reproducible side information. Fix an
+\emph{injective} Code12 map
+$E_{12} : \{0, \ldots, 255\} \to \{0, 1\}^{12}$ so that, given $Y$,
+the error variable $E = E_{12}(X) \oplus Y$ stands in bijection with
+$X$ (the decoder recovers $X$ from $(Y, E)$ via
+$X = E_{12}^{-1}(E \oplus Y)$). Then any uniquely decodable lossless
+code for $X$ whose decoder uses only the codeword and $Y$ has expected
+length at least $H(X \mid Y)$. Conversely, an \emph{ideal} Type-I
+class-and-payload coder driven by the true conditional law of $E$
 achieves expected length $H(X \mid Y) + \varepsilon_N$, plus the
 constant headers $L(M_I) + L(V) + L(\Theta)$. A concrete coder using
 an approximate class model or a uniform within-class payload pays the
 corresponding cross-entropy, which matches the bound only when those
-models match the true conditional law.}
+models match the true conditional law. Non-injective $E_{12}$ would
+collapse the bijection: e.g., if $E_{12}(0) = E_{12}(1) = 0$ and
+$Y \equiv 0$, then $E \equiv 0$ for $X \sim \mathrm{Unif}\{0, 1\}$
+while $H(X \mid Y) = 1$, so no decoder can recover $X$ from $(Y, E)$.}
 
 \emph{\textbf{Proof.}} The converse is obtained by applying Shannon's
 source-coding bound to each conditional distribution
