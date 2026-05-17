@@ -271,21 +271,24 @@ Use when a reviewer asks why the framework is relevant beyond contrived
 families.
 \end{quote}
 
-\textbf{Proposition 5.7 (optimal support is a Q-prefix; arithmetic
-coding is the limit) --- {[}optimization{]}}
+\textbf{Remark 5.7 (Support optimization is open) --- {[}status{]}}
 
 \begin{quote}
-\emph{Statement.} The optimal $S_v$ is the top-$s_v^\star$ prefix of
-positions sorted by $Q_v(i)$; support-set coding is strictly more
-expensive than per-position arithmetic coding under the same $Q$,
-unless $Q$ is binary.
+\emph{Statement.} The natural marginal-$Q$-prefix heuristic is not
+provably optimal for fixed-size Type-II support selection: even when
+$A_s(\alpha) = \log_2 \binom{s}{k - \alpha} + \log_2 \binom{N - s}{\alpha}$
+is non-decreasing on feasible escape counts, the expected cost depends
+on the full joint law of $M_v$, not only marginals $Q_v(i)$.
 
-\emph{Proof.} Swap argument for the prefix structure; data-processing
-inequality for the arithmetic-coding lower bound.
+\emph{Counterexample.} Concrete falsification at $N = 7$, $k = 2$,
+$s = 2$ in the verification script
+\texttt{scripts/verify/prop\_5\_7\_counterexample.py}: top-$Q$ support
+$\{2,4\}$ costs 2.658 bits; support $\{0,4\}$ costs 2.126 bits.
 
-\emph{Why it matters.} Resolves the support-threshold design
-question. For real-valued $Q$, use arithmetic coding directly;
-reserve support coding for hard-candidate-set predictors.
+\emph{Why it matters.} Replaces a previously-asserted prefix-optimality
+proposition. The arithmetic-coding benchmark (cross-entropy under $Q$,
+equal to $H(X \mid Q)$ only when $Q$ is the true conditional law)
+remains a separate result.
 \end{quote}
 
 \textbf{Section 6 --- Type-III: Tensor Entropy-Field Coding}
@@ -680,8 +683,13 @@ $\mathrm{TC} = \Theta(N)$ for natural data).
 \textbf{Q:} \emph{``Doesn't arithmetic coding under $Q$ dominate
 your support-set scheme?''}
 
-\textbf{A:} Proposition 5.7: yes, and we say so explicitly.
-Support-set is for hard-candidate-set predictors only.
+\textbf{A:} Arithmetic coding under $Q$ achieves cross-entropy
+$\mathbb{E}_D[-\sum_i \log_2 Q_{X_i}(i)]$, which equals $H(X \mid Q)$
+only when $Q$ matches the true conditional law. The optimal
+fixed-size support is currently an open problem (Remark 5.7); the
+natural top-$Q$-prefix heuristic is not provably optimal. Support-set
+remains preferred for hard-candidate-set predictors and for hardware
+regimes where rank coding is cheaper than arithmetic streaming.
 
 \textbf{Q:} \emph{``Why $2\varepsilon$ and not $\varepsilon$?''}
 

@@ -255,10 +255,13 @@ This article makes the following contributions.
   for natural data by Remark 5.6 (manifold-hypothesis quantification
   with empirical intrinsic-dimension estimates).
 \item
-  An optimality characterization for Type-II support sets
-  (Proposition 5.7): optimal $S_v$ is a prefix of positions sorted by
-  $Q_v$, and support-set coding is at best equivalent to per-position
-  arithmetic coding under the same $Q$.
+  A status remark on Type-II support selection
+  (Remark 5.7): the natural marginal-$Q$-prefix heuristic is not
+  provably optimal in the semi-non-factorized regime --- expected cost
+  depends on the full joint law of the partition sets, not just
+  marginals --- and a concrete counterexample is included in the
+  paper's verification scripts. Optimal fixed-size support selection
+  for general predictors remains open.
 \item
   An approximate-oracle mode-selection bound for Type-III-A (Theorem
   6.1) and a tight matching lower bound (Theorem 6.2) showing the
@@ -1098,10 +1101,12 @@ known counts; the looser $\sum_v \log_2 \binom{N}{k_v}$ baseline
 overstates the gain by allowing inconsistent subset choices. Second,
 it admits the realistic case where $M_v$ is not entirely contained
 in $S_v$ by introducing the per-symbol escape count $\alpha_v$,
-which carries its own enumerative cost. The bound is tight: when
-$\alpha_v = 0$ for all $v$, the second log-binomial vanishes and the
-formula reduces to $\sum_v \log_2 \binom{s_v}{k_v}$, recovering the
-idealized oracle bound.
+which carries its own enumerative cost. The bound becomes
+particularly clean when $\alpha_v = 0$ for all $v$: the second
+log-binomial vanishes and the formula reduces to
+$\sum_v \log_2 \binom{s'_v}{k_v}$ (with the chained $s'_v = |S_v \cap A_v|$,
+not the raw $s_v$), recovering the idealized oracle bound on the
+remaining universe at each step.
 
 \textbf{5.6 Type-II vs Type-I: a separation theorem}
 
@@ -1209,18 +1214,30 @@ from the per-block lower bound (ii):
 \Delta(N) = 4N - \left[(4 - c)N + \varepsilon_N\right] - L(\text{counts}) = cN - \varepsilon_N - L(\text{counts}),
 \]
 where $L(\text{counts})$ is the cost of describing the count vector
-$(k_0, \ldots, k_{15})$: under uniform $D_N$ on $S_N$, counts
-concentrate within $O(\sqrt{N})$ of $N/16$ by Chernoff, so
-$L(\text{counts}) = O(\log N)$ bits suffice. Combined,
+$(k_0, \ldots, k_{15})$. Since each $k_v \in \{0, \ldots, N\}$, the
+count vector lies in a set of size at most $(N+1)^{16}$, hence
+$L(\text{counts}) \leq 16 \log_2(N+1) = O(\log N)$ bits suffice by
+direct enumeration. (We do not invoke a Chernoff concentration
+argument because positions in the linear-code construction are
+correlated by membership in $S_N$, so per-position independence is
+not available.) Combined,
 $\Delta(N) = cN - \varepsilon_N - O(\log N) = \Theta(N)$ for any
 fixed $c \in (0, 4)$. \hfill$\blacksquare$
 
 Theorem 5.4 establishes that semi-non-factorized Type-II strictly
-separates from any factorized per-position coder, including
-PixelCNN-style autoregressive predictors that produce one categorical
-distribution per position. The separation is $\Theta(N)$, not
+separates from \emph{factorized marginal} per-position coders: coders
+that produce one categorical distribution per position using only
+each position's marginal $Q^{\text{marg}}_v(i)$, with no joint
+conditioning. A genuine autoregressive coder (PixelRNN, PixelCNN,
+NNCP) that uses chain-rule conditionals
+$Q(x_i \mid x_1, \ldots, x_{i-1})$ can in principle achieve the
+joint entropy $H(D_N) = (4 - c)N$ on the same $D_N$ and is
+\emph{not} separated by Theorem 5.4; the relevant boundary is
+between models with and without joint conditioning, not between RNN
+and CNN architectures. The separation is $\Theta(N)$, not
 $\Theta(\log N)$: joint structure beyond per-position marginals can
-carry a constant fraction of a bit per position. The linear-code
+carry a constant fraction of a bit per position even for the
+marginal-conditioning case. The linear-code
 family used in the proof is a worst case for factorized models
 (marginals are exactly uniform) and a best case for joint coders (the
 joint distribution lives on a $2^{(4-c)N}$-element set). Realistic
@@ -1340,54 +1357,55 @@ $\log_2 \binom{256}{64} \approx 203.6$ uses Stirling:
 $\log_2 \binom{N}{k} = N \cdot H(k/N) - \tfrac{1}{2} \log_2(2\pi N p(1-p)) + O(1/N)$,
 which for $N = 256, p = 1/4$ gives $207.69 - 4.12 \approx 203.57$.
 
-\textbf{5.8 Optimal support threshold and the arithmetic-coding limit}
+\textbf{5.8 Support selection and the arithmetic-coding benchmark}
 
 Theorem 5.3 bounds the Type-II partition residual under a candidate
 support $S_v$ of fixed size $s_v$. The remaining design question is
-how to choose $S_v$ from the predictor's probability field $Q$. The
-next result resolves this in two steps: (a) the optimal $S_v$ is a
-prefix of positions sorted by $Q_v(i)$, and (b) the support-set
-construction is at best equivalent to per-position arithmetic coding
-under $Q$.
+how to choose $S_v$ from the predictor's probability field $Q$. In the
+semi-non-factorized regime this is a joint support-optimization
+problem, not a problem determined by the one-position marginals alone.
 
-\textbf{Proposition 5.7 (Support selection and arithmetic benchmark).}
-\emph{Fix $v$, $k_v$, and a support size $s$. Write
-$A_s(\alpha) = \log_2 \binom{s}{k_v - \alpha} + \log_2 \binom{N - s}{\alpha}$.
-If $A_s(\alpha)$ is non-decreasing on the feasible escape counts
-$\alpha$ that can occur under $Q$, then among supports of size $s$
-the top-$s$ positions sorted by $Q_v(i)$ minimize the expected
-Theorem 5.3 residual. Without this monotonicity condition, no universal
-prefix-optimality statement is claimed.}
+\textbf{Remark 5.7 (Support optimization remains open).}
+\emph{A previous version asserted that, under a monotonicity condition
+on
+\[
+A_s(\alpha)
+= \log_2 \binom{s}{k_v - \alpha}
++ \log_2 \binom{N - s}{\alpha},
+\]
+the support of size $s$ minimizing the expected Theorem 5.3 residual
+is obtained by taking the top-$s$ positions sorted by $Q_v(i)$. This
+assertion is false in general (concrete counterexample at $N = 7$,
+$k = 2$, $s = 2$ verified in
+\texttt{scripts/verify/prop\_5\_7\_counterexample.py}). Even when
+$A_s(\alpha)$ is non-decreasing, the expected value of
+$A_s(|M_v \setminus S_v|)$ depends on the full joint law of the
+random set $M_v$, not only on the marginals $Q_v(i) = \Pr(i \in M_v)$.}
 
-\emph{Moreover, if $Q$ is the true conditional distribution used by
-the decoder, per-position arithmetic coding achieves expected length
-$H(X \mid Q) + \varepsilon_N$, and any support-set code using the
-same side information has expected length at least $H(X \mid Q) - O(1)$.
-For an arbitrary misspecified predictor $Q$, the arithmetic-coding
-rate is the cross-entropy
-$\mathbb{E}_D [-\sum_i \log_2 Q_{X_i}(i)]$, which equals the
-conditional entropy only when $Q$ matches the true conditional law
-and is not a lower bound on all other codes in general.}
+\emph{Thus the actual fixed-size support-selection problem is}
+\[
+\min_{S_v \subseteq \{1, \ldots, N\},\, |S_v| = s}
+\mathbb{E}_{M_v \sim Q}
+\left[
+A_s\bigl(|M_v \setminus S_v|\bigr)
+\right],
+\]
+\emph{with the remaining-universe correction of Theorem 5.3 applied
+when symbols are encoded sequentially. Determining an optimal support
+for a general semi-non-factorized predictor $Q$ is left open. Selecting
+the largest marginal values $Q_v(i)$ is a natural and common heuristic,
+but it is not a theorem of optimality for the general support-set
+residual.}
 
-\emph{\textbf{Proof.}} Under the stated monotonicity condition,
-swapping a lower-$Q_v$ included position $i$ with a higher-$Q_v$
-excluded position $j$ stochastically decreases $\alpha_v$, hence
-cannot increase $\mathbb{E}[A_s(\alpha_v)]$. Iterating the swap
-argument terminates at the top-prefix configuration.
-The arithmetic-coding statement is Shannon's converse when $Q$ is
-the true conditional law (Cover and Thomas 2006, Theorem 5.4.1);
-under misspecification the expected length is cross-entropy by
-definition. \hfill$\blacksquare$
-
-Proposition 5.7 has a practical consequence: for predictors producing
-real-valued probabilities, the support-set construction of Theorem 5.3
-is strictly suboptimal compared to arithmetic coding under $Q$. The
-support-set form is preferred only when (i) the predictor structurally
-produces hard candidate sets (e.g., beam search outputs without
-scores), (ii) the implementation cannot afford the per-position
-arithmetic-coder state, or (iii) a hardware/parallelism constraint
-favors rank coding over arithmetic streaming. In other cases,
-per-position arithmetic coding is the form to use.
+For comparison, in the factorized regime of Section 5.3, per-position
+arithmetic coding under $Q$ has expected length equal to the
+cross-entropy
+\[
+\mathbb{E}_D \!\left[-\sum_i \log_2 Q_{X_i}(i)\right],
+\]
+which equals the conditional entropy only when the factorized
+predictor matches the true conditional law. This arithmetic-coding
+benchmark is separate from the support-selection problem above.
 
 \textbf{6. Type-III: Tensor Entropy-Field Coding}
 
@@ -1862,7 +1880,8 @@ heterogeneous data where the per-tile best mode varies.
 
 Several parameters in the framework are input-dependent: the codeword
 rate $k$ in Type-I (Code-$k$), the alphabet size $K$ in Type-II, the
-support threshold $\tau_v$ in Proposition 5.7, the tile size in
+support threshold $\tau_v$ for the Type-II support sets (see Remark 5.7
+for the open-problem status of optimizing it), the tile size in
 Type-III-A, the dictionary size in Type-III-C, and others. No single
 setting is optimal across all inputs; the right approach is input
 probing at encode time, where the encoder scans the block, estimates
@@ -2763,11 +2782,12 @@ point to the relevant theorems.
   the Hamming-restricted geometry remains open and is listed in
   §13.2.
 \item
-  Optimal candidate-support threshold for Type-II --- resolved by
-  Proposition 5.7: the optimal $S_v$ is a prefix of positions sorted
-  by $Q_v$, and support-set coding is at best equivalent to
-  per-position arithmetic coding under the same $Q$ (strictly more
-  expensive unless $Q$ is binary).
+  Optimal candidate-support threshold for Type-II --- open. The
+  natural marginal-$Q$-prefix heuristic is not provably optimal in the
+  semi-non-factorized regime (Remark 5.7, with a concrete
+  counterexample at $N = 7, k = 2, s = 2$ in the verification
+  scripts). The arithmetic-coding benchmark under the same $Q$ is a
+  separate result and remains the comparison baseline.
 \item
   Joint structure on natural data and the Type-II separation regime
   --- resolved by Theorem 5.5 (the multi-information
