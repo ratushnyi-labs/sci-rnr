@@ -688,8 +688,8 @@ $32 \times 32 = 1024$ or $64 \times 64 = 4096$) hierarchically indexed
 by $\text{family} \in \{0, \ldots, a-1\}$ and
 $\text{variant} \in \{0, \ldots, b-1\}$ as
 $\text{token\_id} = b \cdot \text{family} + \text{variant}$. The
-model predicts $Q(k, i, s)$ approximating
-$\Pr(\tau_k \text{ begins at position } i \text{ at scale } s \mid C)$.
+model predicts $Q(k, i)$ approximating
+$\Pr(\tau_k \text{ begins at position } i \mid C)$.
 The archive stores a tokenization residual $R_C$ sufficient to
 reconstruct the exact token-interval cover of the block.
 
@@ -730,8 +730,9 @@ produces a predicted stream $Y = M_I(C)$ of the same length,
 considered as a damaged version of $X$. The encoder, knowing both
 $X$ and $Y$, computes a repair $R_I = \mathrm{EncRepair}(X, Y)$, and
 the decoder recovers $\hat{X} = \mathrm{DecRepair}(Y, R_I)$. The
-reconstruction is accepted only if a verification function $H_v$
-agrees, $H_v(\hat{X}) = H_v(X)$.
+encoder also stores the verification value $v = H_v(X)$ in the
+archive; the decoder accepts the reconstruction only if
+$H_v(\hat{X}) = v$ (Definition 3.1).
 
 \textbf{4.2 The Code12 construction}
 
