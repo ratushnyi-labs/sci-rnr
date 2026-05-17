@@ -1341,21 +1341,20 @@ $B_N = N^2$) makes this $O(1)$ bits per block, absorbed into the
 $O(\log N)$ overhead. For fewer blocks the per-block cost is
 correspondingly higher.
 
-\textbf{(iv) Separation.} Subtracting the per-block upper bound (iii)
-from the per-block lower bound (ii):
+\textbf{(iv) Separation.} The linear-code joint coder of step (iii)
+transmits only the $d$-bit message index per block; the decoder
+recovers $X$ by computing $m G$ and parsing as nibbles, with no
+auxiliary count vector required (the construction of $D_N$ already
+fixes $|S_N| = 2^d$ and the marginals are uniform by step (i)).
+Subtracting the per-block upper bound (iii) from the per-block lower
+bound (ii) thus gives
 \[
-\Delta(N) = 4N - \left[(4 - c)N + \varepsilon_N\right] - L(\text{counts}) = cN - \varepsilon_N - L(\text{counts}),
+\Delta(N) = 4N - \left[(4 - c)N + \varepsilon_N\right] = cN - \varepsilon_N = \Theta(N)
 \]
-where $L(\text{counts})$ is the cost of describing the count vector
-$(k_0, \ldots, k_{15})$. Since each $k_v \in \{0, \ldots, N\}$, the
-count vector lies in a set of size at most $(N+1)^{16}$, hence
-$L(\text{counts}) \leq 16 \log_2(N+1) = O(\log N)$ bits suffice by
-direct enumeration. (We do not invoke a Chernoff concentration
-argument because positions in the linear-code construction are
-correlated by membership in $S_N$, so per-position independence is
-not available.) Combined,
-$\Delta(N) = cN - \varepsilon_N - O(\log N) = \Theta(N)$ for any
-fixed $c \in (0, 4)$. \hfill$\blacksquare$
+for any fixed $c \in (0, 4)$, once the one-time generator-matrix
+description $L(G) = 4(4-c)N^2$ is amortized across $B_N = \Omega(N^2)$
+blocks (the per-block model contribution then absorbs into the
+$O(1)$ overhead). \hfill$\blacksquare$
 
 Theorem 5.4 establishes that semi-non-factorized Type-II strictly
 separates from \emph{factorized marginal} per-position coders: coders
