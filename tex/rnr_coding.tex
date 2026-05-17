@@ -235,10 +235,17 @@ viewed as a hand‑designed Type‑III‑A scheduler in which the entropy
 field is computed from explicit context features rather than predicted
 by a neural network, although strictly speaking PAQ uses
 continuous‑weight logistic mixing rather than discrete mode selection.
-The framework's contribution is to identify and analyze the regimes ---
-semi‑non‑factorized positional models, predicted entropy fields, and
-structured token tensors --- where these existing methods are
-individually weak.
+The framework's intended contribution is to give a unified vocabulary
+and a set of constructions for three regimes that the existing methods
+treat ad hoc or not at all --- semi-non-factorized positional models,
+predicted entropy fields, and structured token tensors. We do not
+claim that existing methods are empirically weak in these regimes;
+Theorem 5.4 specifically separates only factorized-marginal coders
+from semi-non-factorized ones, and a true autoregressive coder can in
+principle match the joint-coding rate on the same source. Whether the
+RNR constructions outperform existing methods on natural data classes
+is the empirical question of §11; the present paper provides only the
+theoretical scaffolding for the comparison.
 
 \textbf{1.3 Contributions}
 
@@ -274,12 +281,16 @@ This article makes the following contributions.
   addressing two errors in earlier drafts that overstated the
   Type-II advantage.
 \item
-  A separation theorem (Theorem 5.4) for semi-non-factorized Type-II
-  via a linear-code construction, generalized by Theorem 5.5
-  (multi-information separation: the exact information-theoretic
-  quantity governing factorized-versus-joint coding) and quantified
-  for natural data by Remark 5.6 (manifold-hypothesis quantification
-  with empirical intrinsic-dimension estimates).
+  An amortized separation theorem (Theorem 5.4) for
+  semi-non-factorized Type-II via a specific linear-code
+  construction, with the exact information-theoretic quantity
+  governing factorized-versus-joint coding identified as
+  multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5; the gap may be
+  zero on sources without joint structure). Whether
+  $\mathrm{TC}(D_N) = \Theta(N)$ holds for specific natural-data
+  classes is an open empirical question (Remark 5.6 sketches a
+  manifold-hypothesis intuition but does not establish a rigorous
+  entropy bound).
 \item
   A status remark on Type-II support selection
   (Remark 5.7): the natural marginal-$Q$-prefix heuristic is not
@@ -299,12 +310,16 @@ This article makes the following contributions.
   showing all rooted binary tree decompositions of the 256-byte
   alphabet achieve the same information-theoretic rate.
 \item
-  Complete characterization of Type-III-C: the greedy MDL admission
-  criterion (Theorem 6.5), the bits-back integration with an exact
-  KL-divergence accounting (Theorem 6.6), NP-hardness of joint
-  dictionary-and-predictor learning (Theorem 6.7), and APX-hardness
-  transferred from the super-constant inapproximability of the
-  Smallest Grammar Problem (Theorem 6.8).
+  Four results on Type-III-C: the greedy MDL admission criterion
+  (Theorem 6.5), the bits-back integration with an exact
+  cross-entropy plus KL-divergence accounting (Theorem 6.6),
+  NP-hardness of joint dictionary-and-predictor learning under a
+  normal-form symbol-count objective (Theorem 6.7), and APX-hardness
+  transferred from the explicit $8569/8568$ inapproximability constant
+  for the Smallest Grammar Problem (Charikar et al.\ 2005, Theorem
+  6.8). We do not claim this is a complete complexity characterization
+  of Type-III-C: e.g., the exact inapproximability constant under
+  bit-cost (rather than symbol-cost) bookkeeping is open.
 \item
   A no-universal-dominance result (Theorem 8.1) establishing the
   framework's claim as conditional, and a verification-discipline
@@ -319,25 +334,28 @@ This article makes the following contributions.
   low-precision-training methods.
 \item
   Random-access (seek-and-read) capability with cost
-  $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ --- only
-  polylogarithmic in archive size $N$ --- via Theorem 10.3 with
-  Definitions 10.2, 10.3 of $W$-bounded predictors and sync points, at
-  a sync-point compression cost of approximately 1 percent for typical
-  parameters.
-  This functionality is absent from existing neural compressors
-  (NNCP, PixelCNN++, Bit-Swap) and matches the seek capability of
-  dictionary-based seekable formats while preserving the neural ratio
-  advantage. Theorem 10.4 covers non-$W$-bounded predictors via state
-  snapshots.
+  $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ --- polylogarithmic
+  in archive size $N$ once sync-point spacing $K$, read window $k$,
+  and predictor cost are held fixed --- via Theorem 10.3 with
+  Definitions 10.2, 10.3 of $W$-bounded predictors and sync points.
+  Theorem 10.4 covers non-$W$-bounded predictors via state snapshots.
+  The sync-point compression overhead for natural data is estimated
+  in §10.7.4; a tight worst-case bound in general is not proved. The
+  comparison to existing neural compressors (NNCP-style autoregressive
+  byte models, block-decoding latent-variable schemes) on either seek
+  capability or ratio is empirical and is the subject of §11.
 \item
-  Block-device and read-only filesystem deployment with
-  hardware-target portability (Theorems 10.5 and 10.6 in §10.8): an
-  OS-level driver can serve LBA-indexed read requests with cost
-  polylogarithmic in archive size, with the predictor running
-  bit-exactly on any conforming hardware target (CPU scalar, CPU SIMD including
-  AVX-512, GPU integer Tensor Cores, integer NPUs). This enables the
-  squashfs-style mounted-compressed-filesystem use case for neural
-  compression, which existing neural compressors cannot support.
+  Block-device and read-only filesystem deployment as direct
+  corollaries (Theorems 10.5 and 10.6 in §10.8): an OS-level driver
+  can serve LBA-indexed read requests with cost polylogarithmic in
+  archive size (Theorem 10.5), and the predictor can be required to
+  run bit-exactly on any hardware target satisfying the conformance
+  specification of Theorem 10.1 (Theorem 10.6). Specific target
+  classes named in the spec (CPU scalar, CPU SIMD including
+  AVX-512, GPU integer Tensor Cores, integer NPUs) are engineering
+  assertions about what targets satisfy the spec, not theorems;
+  conformance for each named target requires implementation and
+  testing per the conformance suite (engineering-spec document).
 \item
   A runtime parameter-selection framework (Section 7.2) that subsumes
   input-dependent design choices (Code-k rate, alphabet size, support
