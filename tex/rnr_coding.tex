@@ -95,13 +95,12 @@ lower bound Theorem 6.2). The framework's deployment-relevant feature is random-
 with cost $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ for
 $W$-bounded predictors (Theorem 10.3) --- polylogarithmic in archive
 size $N$ once the sync-point spacing $K$, read window $k$, and
-predictor cost are treated as fixed parameters. The estimated
-sync-point compression overhead at typical parameters (Section
-10.7.4) is bounded by $W \cdot (\text{cold-context rate} - \text{asymptotic rate})$
-per sync point (Section 10.7.4); we conjecture it is on the order of
-one percent for natural data at typical parameters, but neither a
-tight upper bound in general nor a measured value on a specific
-corpus is provided here. The
+predictor cost are treated as fixed parameters. The sync-point compression overhead is bounded by
+$W \cdot (\text{cold-context rate} - \text{asymptotic rate})$ per sync
+point (Section 10.7.4); we conjecture it is on the order of one
+percent for natural data at typical parameters, but neither a tight
+upper bound in general nor a measured value on a specific corpus is
+provided here. The
 ratio comparison against existing dictionary-based seekable formats
 is an empirical conjecture (Section 11), not a theorem. Bit-exact cross-platform reproduction is
 reduced to a precision-and-determinism specification (Theorem 10.1);
