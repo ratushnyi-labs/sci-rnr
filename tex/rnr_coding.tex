@@ -97,9 +97,11 @@ $W$-bounded predictors (Theorem 10.3) --- polylogarithmic in archive
 size $N$ once the sync-point spacing $K$, read window $k$, and
 predictor cost are treated as fixed parameters. The estimated
 sync-point compression overhead at typical parameters (Section
-10.7.4) is on the order of one percent for natural data, but a tight
-upper bound on this overhead in general is not established; in the
-worst case the cold-context prefix dominates for small $k$. The
+10.7.4) is bounded by $W \cdot (\text{cold-context rate} - \text{asymptotic rate})$
+per sync point (Section 10.7.4); we conjecture it is on the order of
+one percent for natural data at typical parameters, but neither a
+tight upper bound in general nor a measured value on a specific
+corpus is provided here. The
 ratio comparison against existing dictionary-based seekable formats
 is an empirical conjecture (Section 11), not a theorem. Bit-exact cross-platform reproduction is
 reduced to a precision-and-determinism specification (Theorem 10.1);
@@ -336,8 +338,11 @@ This article makes the following contributions.
   fixed predictors (Theorem 10.1) and adaptive predictors (Theorem
   10.2 with Definition 10.1, the compatible-online-optimizer class),
   reducing reproducibility from a software-engineering question to a
-  conformance specification matched by published
-  low-precision-training methods.
+  conformance specification. Published low-precision-training methods
+  (integer SGD, signSGD, integer Adam, integer-quantized inference)
+  are candidate components but their conformance against the full
+  specification on any specific hardware target requires implementation
+  and testing.
 \item
   Random-access (seek-and-read) capability with cost
   $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ --- polylogarithmic
