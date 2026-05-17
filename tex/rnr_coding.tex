@@ -1386,26 +1386,43 @@ be any distribution over $A_{16}^N$. Define the total correlation
 1998)
 $\mathrm{TC}(D_N) = \sum_{i=1}^N H_{\text{marg}}(X_i) - H(D_N)$, where
 $H_{\text{marg}}(X_i)$ is the marginal entropy at position $i$ under
-$D_N$. The optimal factorized per-position arithmetic coder driven by
-these marginals achieves expected rate
-$\sum_i H_{\text{marg}}(X_i) + \varepsilon_N$ bits per block. Any
-coder that uses $D_N$ as joint side information achieves expected
-rate at least $H(D_N) + \varepsilon_N$ bits per block, with the bound
-saturated by the enumerative coder over the typical set. The
-separation between factorized and joint coding is exactly
-$\mathrm{TC}(D_N) + O(\varepsilon_N)$.}
+$D_N$. Then:
+\begin{enumerate}
+\item[\textnormal{(F)}] (Factorized rate.) The optimal factorized
+per-position arithmetic coder driven by the true marginals
+$Q^{\mathrm{marg}}_v(i) = \Pr_{X \sim D_N}(x_i = v)$ has expected
+length \emph{at least} $\sum_i H_{\mathrm{marg}}(X_i)$ bits per block
+(Shannon's converse for product-distribution coders), and a block
+arithmetic coder under those marginals attains
+$\sum_i H_{\mathrm{marg}}(X_i) + \varepsilon_N$ in expectation
+(achievability), with $\varepsilon_N$ the per-block entropy-coder
+redundancy of §2.3.
+\item[\textnormal{(J)}] (Joint rate.) Any uniquely decodable lossless
+code for $X$ has expected length \emph{at least} $H(D_N)$ bits per
+block (Shannon's converse), and a block arithmetic coder driven by
+the joint distribution $D_N$ attains
+$H(D_N) + \varepsilon_N$ in expectation (achievability).
+\item[\textnormal{(S)}] (Separation.) The gap between the optimal
+factorized and the optimal joint expected per-block rates equals
+$\mathrm{TC}(D_N) + O(\varepsilon_N)$.
+\end{enumerate}}
 
-\emph{\textbf{Proof.}} Both bounds are direct applications of
-Shannon's noiseless source coding theorem (Shannon 1948; Cover and
-Thomas 2006, Theorem 5.4.1). The factorized coder, treating positions
-as independent under the marginals, achieves Shannon-optimal rate
-$\sum_i H_{\text{marg}}(X_i)$ per block, with arithmetic-coding
-redundancy $\varepsilon_N$. The joint coder, encoding $X$ by its rank
-in the typical set under $D_N$, achieves rate $H(D_N) + o(N)$ by the
-asymptotic equipartition property (Cover and Thomas 2006, Theorem
-3.1.2), and no uniquely decodable code can do better by the converse.
-The difference of these rates is $\sum_i H_{\text{marg}}(X_i) -
-H(D_N)$, which is the total correlation $\mathrm{TC}(D_N)$ by
+\emph{\textbf{Proof.}} (F) The converse is Shannon's source coding
+theorem applied to the product distribution
+$\prod_i Q^{\mathrm{marg}}(\cdot \mid i)$; the achievability uses
+the same product model with an arithmetic coder (Cover and Thomas
+2006, Theorem 5.4.1), incurring at most $\varepsilon_N$ redundancy
+per block (§2.3). The expected length under $D_N$ of any code matched
+to this product model is the cross-entropy
+$\mathbb{E}_{D_N}[-\sum_i \log_2 Q^{\mathrm{marg}}_{X_i}(i)] =
+\sum_i H_{\mathrm{marg}}(X_i)$ (since the marginals match).
+(J) The converse is Shannon's source coding theorem applied directly
+to $D_N$; the achievability is block arithmetic coding under $D_N$,
+again with $\varepsilon_N$ redundancy. Neither argument uses AEP /
+typical-set machinery (which would require an iid asymptotic setup
+that we do not assume).
+(S) Subtracting the two attained rates gives
+$\sum_i H_{\mathrm{marg}}(X_i) - H(D_N) = \mathrm{TC}(D_N)$ by
 definition. Total correlation is non-negative, with equality iff
 positions are mutually independent under $D_N$.
 \hfill$\blacksquare$
@@ -1425,31 +1442,39 @@ $D_N$, the magnitude of $\mathrm{TC}(D_N)$ determines whether Type-II
 provides a constant-factor or vanishing improvement over factorized
 coding.
 
-\textbf{Remark 5.6 (Manifold-hypothesis quantification of TC).} The
-manifold hypothesis from statistical learning theory and topological
-data analysis (Donoho 2000; Tenenbaum, de Silva, Langford 2000;
-Carlsson 2009) states that high-dimensional natural data --- images,
-text, audio, structured records --- concentrates near a
-low-dimensional submanifold of the ambient space. Quantitatively, if
-$D_N$'s typical realizations live on a manifold of intrinsic
-dimension $d \ll N$ (measured via correlation dimension, the
-maximum-likelihood estimator of Levina and Bickel 2004, or persistent
-homology), the joint entropy is $H(D_N) = O(d \log N)$ bits. With
-per-position marginals near uniform on $A_{16}$, the multi-information
-is $\mathrm{TC}(D_N) = 4N - O(d \log N) = \Theta(N)$. The manifold
-hypothesis therefore predicts that Theorem 5.5's separation is
-$\Theta(N)$ for any natural data class admitting a low-dimensional
-manifold representation. Empirical intrinsic-dimension estimates
-support this regime: natural images have $d$ in the range $10^2$ to
-$10^3$ in pixel-space ambient dimension $10^6$ (Carlsson, Ishkhanov,
-de Silva, Zomorodian 2008); database pages have $d$ bounded by schema
-complexity, often in tens; instruction streams have $d$ bounded by
-valid-program-graph dimensionality. The empirical question of which
-data classes admit a small $d$, and the operational question of how
-to construct efficient enumerative encoders for the corresponding
-subsets $S_N$, are deferred to experimental work; the conditional
-separation theorem itself is established by Theorem 5.5 plus the
-manifold-hypothesis premise.
+\textbf{Remark 5.6 (Manifold-hypothesis intuition, not a theorem).}
+The manifold hypothesis from statistical learning theory and
+topological data analysis (Donoho 2000; Tenenbaum, de Silva, Langford
+2000; Carlsson 2009) is that high-dimensional natural data ---
+images, text, audio, structured records --- concentrates near a
+low-dimensional structure in the ambient space. It is tempting to
+conclude that if $D_N$'s typical realizations live near a structure
+of intrinsic dimension $d \ll N$, then $H(D_N) = O(d \log N)$ and
+hence $\mathrm{TC}(D_N) = \Theta(N)$ under near-uniform marginals.
+\emph{This implication is not a theorem.} A discrete distribution
+supported near a $d$-dimensional manifold can have arbitrarily large
+Shannon entropy unless additional structure is assumed: a
+quantization scale $\Delta$, a bound on the manifold's reach
+(local-curvature radius) and on the density (e.g., Lipschitz density
+with respect to the manifold's intrinsic measure), and a bound on
+the parameter complexity of the manifold itself. Under explicit such
+assumptions one can derive entropy bounds of the form
+$H(D_N) \leq d \log_2(1/\Delta) + C(d, \mathrm{reach}, \text{density})$;
+without them, low intrinsic dimension is not enough.
+
+The cited empirical estimates also do not support a direct
+quantitative claim about whole natural images. Carlsson, Ishkhanov,
+de Silva and Zomorodian (2008) found low-dimensional local topology
+(specifically a Klein-bottle-like structure) in $3 \times 3$
+high-contrast image patches; they do not establish
+$d \in [10^2, 10^3]$ for full images in ambient dimension $10^6$.
+Levina and Bickel (2004) gave a maximum-likelihood intrinsic-dimension
+estimator with known biases on noisy real data. We therefore treat
+the manifold connection as informal motivation only. Whether any
+specific natural-data class $D_N$ satisfies $\mathrm{TC}(D_N) =
+\Theta(N)$ is an empirical question (deferred to §11), and
+constructing an efficient enumerative encoder for the corresponding
+typical set is open.
 
 \textbf{5.7 Worked numerical example}
 
