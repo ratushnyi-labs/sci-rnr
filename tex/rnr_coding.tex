@@ -135,10 +135,16 @@ Many practically important data classes are not well described by this
 question. Database pages, raw or lightly preprocessed image sensor data,
 telemetry grids, structured binary sections, scientific tensors, and
 certain instruction streams contain structure that is positional,
-geometric, multi‑scale, or coupled across non‑adjacent positions. For
-such data, sequential redundancy is weaker than non‑local structural
-regularity, and dictionary‑based methods leave significant entropy
-unexploited.
+geometric, multi-scale, or coupled across non-adjacent positions. For
+such data, the conjecture motivating this paper is that sequential
+redundancy is weaker than non-local structural regularity, and
+dictionary-based methods leave entropy unexploited that more structural
+predictors could in principle reach. The conjecture is empirical, not
+proven here: §11 lists falsifiable bit-per-byte targets for specific
+corpora, and the experimental-design companion document specifies the
+pre-registered measurement protocol. Within this paper we make no
+quantitative claim about absolute compression ratios on any specific
+corpus.
 
 Neural lossless compressors such as Bellard's NNCP, PixelCNN‑style
 autoregressive models, integer discrete flows, and bits‑back schemes
@@ -153,19 +159,23 @@ practical deployment niches for lossless coding: archive and
 time-series storage engines inside database servers. Compressed
 read-only filesystems (squashfs, EROFS), columnar archive engines, and
 time-partitioned metric stores rely on \emph{random access} ---
-reading a byte at offset $N$ in constant time independent of archive
-size. Dictionary-based seekable formats (bgzip, zstd seekable) achieve
-this; existing neural compressors do not, because their autoregressive
-predictors require sequential decoding of all bytes $[0, N)$ before
-byte $N$ is available. The author's own engineering work on a
-MySQL-compatible server in Rust (with 20 storage engines, including a
-compressed-archive engine and a time-series engine for columnar
-metric data) exposed this gap concretely: classical compressors leave
-substantial entropy unexploited on structured columnar and binary
-data, while neural compressors offer better ratios at the price of
-$O(N)$ per-access latency, which is not viable for an archive engine.
-This practical pressure --- better ratios on structured data
-\emph{plus} random access --- motivated the present framework.
+reading a byte at offset $N$ in time polylogarithmic in archive size.
+Dictionary-based seekable formats (bgzip, zstd seekable) achieve this
+operationally via independent compressed frames plus a seek index.
+Autoregressive neural byte models (NNCP and similar) do not, because
+their predictors require sequential evaluation of all bytes $[0, N)$
+before byte $N$ is available; the latent-variable lossless schemes
+(IDF, Bit-Swap, HiLLoC) decode in block units that can be larger than
+the desired random-access granularity. The author's engineering
+experience with a Rust MySQL-compatible server motivated this
+obstruction concretely (compressed-archive and time-series engines
+across 20 storage engines): when ratio matters and seek latency
+matters jointly, neither existing class fits the niche. This anecdotal
+motivation is what suggested treating the neural model output as side
+information rather than as a sequential predictor; the question
+addressed in this paper is whether such a recasting can support random
+access at sync-point granularity without losing the ratio advantage
+(an empirical question deferred to §11).
 
 This work proposes a different organizing question. Treat the neural
 model output as side information about the source, not as a candidate
