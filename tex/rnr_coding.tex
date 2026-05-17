@@ -74,22 +74,38 @@ classes; Type-III performs multi-dimensional tensor entropy-field
 coding, divided into III-A (entropy-field meta-prediction), III-B
 (byte-tensor coding of joint nibble structure), and III-C
 (token-tensor coding over a learned hierarchically indexed
-dictionary). For each subtype we give a concrete construction,
-matching achievability and converse bounds, complexity results
-(including NP-hardness and APX-hardness of the two natural search
-problems), and a worked example. Two structural results connect the
-framework to natural data: a $\Theta(N)$ separation theorem for
-semi-non-factorized Type-II via linear codes, generalized to any
-source by the multi-information identity $\mathrm{TC}(D_N)$; and a
-tight $2\varepsilon$ approximate-oracle bound for Type-III-A mode
-selection. The framework's deployment-grade feature is random-access
-decoding with cost polylogarithmic in archive size for $W$-bounded
-predictors, at a sync-point compression cost of approximately one
-percent --- matching dictionary-based seekable formats while
-preserving the neural-ratio advantage, a capability absent from
-existing neural compressors. Bit-exact cross-platform reproduction is
-reduced to a precision-and-determinism specification satisfied by
-published integer-arithmetic methods. We do not claim universal
+dictionary). For each subtype we give a concrete construction and an
+achievability bound; a matching converse is given only for Type-I
+(Theorem 4.2). Complexity results include NP-hardness of the
+varying-parameter learned-code labeling problem (Theorem 4.3) and of
+joint dictionary-and-predictor learning (Theorem 6.7), plus an
+APX-hardness transfer for the latter (Theorem 6.8); the analogous
+inapproximability for $E_{12}$ is open. Worked numerical examples are
+given for Type-I, Type-II, and Type-III-B; III-A and III-C are
+illustrated through their composition and dictionary-construction
+sections respectively. Two structural results identify the
+information-theoretic quantity governing factorized-vs-joint
+separation: a $\Theta(N)$ amortized separation for a specific
+linear-code family in semi-non-factorized Type-II (Theorem 5.4), and
+the identity that for an arbitrary source $D_N$ the gap equals
+multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5, where the gap may
+vanish on sources without joint structure). Type-III-A admits a tight
+$2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
+lower bound Theorem 6.2). The framework's deployment-relevant feature is random-access decoding
+with cost $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ for
+$W$-bounded predictors (Theorem 10.3) --- polylogarithmic in archive
+size $N$ once the sync-point spacing $K$, read window $k$, and
+predictor cost are treated as fixed parameters. The estimated
+sync-point compression overhead at typical parameters (Section
+10.7.4) is on the order of one percent for natural data, but a tight
+upper bound on this overhead in general is not established; in the
+worst case the cold-context prefix dominates for small $k$. The
+ratio comparison against existing dictionary-based seekable formats
+is an empirical conjecture (Section 11), not a theorem. Bit-exact cross-platform reproduction is
+reduced to a precision-and-determinism specification (Theorem 10.1);
+published integer-arithmetic methods (integer SGD, signSGD, integer
+quantized inference) provide candidate components that an implementer
+must verify against the full specification on a chosen target. We do not claim universal
 dominance --- no lossless code can map every input of length $n$ to a
 strictly shorter one --- and the framework is evaluated conditionally
 on data classes for which side information reduces residual
