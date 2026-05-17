@@ -1725,10 +1725,16 @@ information-theoretically invariant).} \emph{Let $T$ be any rooted
 binary tree whose leaves are the 256 byte values, defining a sequence
 of nested binary partitions of the alphabet. Encoding a byte $b$ under
 $T$ by traversing root-to-leaf and encoding the binary decision at
-each node with the corresponding conditional probability achieves
-expected length $H(B \mid C)$. The expected cost is independent of the
-tree shape $T$; it depends only on the joint distribution
-$P(B \mid C)$.}
+each node with the \emph{exact induced conditional probability} of
+that decision under $P(B \mid C)$ given the prior decisions on the
+path achieves expected length $H(B \mid C)$. The expected cost is
+independent of the tree shape $T$; it depends only on the joint
+distribution $P(B \mid C)$. \emph{Caveat:} this invariance fails if
+the decisions are coded with fixed branch probabilities (e.g., 1/2
+each) instead of the induced conditional --- in that case the depth
+of $T$ dominates, and a left-skewed tree pays substantially more than
+a balanced one. The theorem applies only to coders that use the
+\emph{exact} induced conditional probability at each node.}
 
 \emph{\textbf{Proof.}} By the chain rule of entropy, for any sequence
 of random variables $Z_1, \ldots, Z_L$ that together determine $B$,
@@ -1802,15 +1808,20 @@ to $D$ is governed by the standard MDL token gain criterion,
 formalized in the next theorem.
 
 \textbf{Theorem 6.5 (Type-III-C MDL token admission).} \emph{Let
-$\tau$ be a candidate token of byte length $\ell$ and corpus
-frequency $f$, with $\mathrm{code\_cost}(\tau)$ the average bit
+$\tau$ be a candidate token of byte length $\ell$. Fix a parser that
+produces a non-overlapping token cover of the corpus and let $f$ be
+the \emph{realized} count of $\tau$ in that parse (the
+non-overlapping selected parse frequency, which can be strictly less
+than the raw occurrence count when $\tau$ self-overlaps; e.g., for
+$\tau = $ \texttt{aa} in the string \texttt{aaa}, the raw count is
+$2$ but $f = 1$). Let $\mathrm{code\_cost}(\tau)$ be the average bit
 length to encode an occurrence of $\tau$ under the predictor and
-entropy coder, $\mathrm{dictionary\_cost}(\tau)$ the bit length to
-describe $\tau$ in the dictionary header, and
-$\mathrm{parse\_overhead}(\tau)$ the additional per-occurrence
-boundary or interval bookkeeping introduced by including $\tau$.
-The net change in total Type-III-C code length resulting from
-admitting $\tau$ to the dictionary $D$ is}
+entropy coder (treated as a fixed cost in this comparison),
+$\mathrm{dictionary\_cost}(\tau)$ the bit length to describe $\tau$
+in the dictionary header, and $\mathrm{parse\_overhead}(\tau)$ the
+additional per-occurrence boundary or interval bookkeeping introduced
+by including $\tau$. The net change in total Type-III-C code length
+resulting from admitting $\tau$ to the dictionary $D$ is}
 \[
 \Delta L(\tau) = \mathrm{dictionary\_cost}(\tau) + f \cdot \left[\mathrm{code\_cost}(\tau) + \mathrm{parse\_overhead}(\tau) - 8\ell\right].
 \]
@@ -1946,10 +1957,24 @@ L_{\mathrm{sym}}(D(G)) = |G|.
 \]
 Thus an exact polynomial-time optimizer for this restricted
 Type-III-C case would exactly solve SGP. Since SGP is NP-hard
-(Charikar et al.\ 2005, Theorem 3.4), the restricted Type-III-C
-problem is NP-hard, and the unrestricted problem is at least as hard.
-The reduction is computable in linear time in $|s|$.
-\hfill$\blacksquare$
+(Charikar et al.\ 2005), the restricted Type-III-C problem is NP-hard.
+
+For the unrestricted Type-III-C problem we observe that the
+restricted case sits inside it: any feasible solution to the
+restricted problem is also feasible for the unrestricted problem (the
+restricted problem only further constrains $M$ to be the trivial
+constant predictor and $D$ to be a normal-form recursive dictionary,
+both of which are admissible in the unrestricted problem). Because
+the restricted and unrestricted problems share the same objective
+function $L_{\mathrm{sym}}$ on the restricted feasible region, the
+restricted optimum is an upper bound on the unrestricted optimum;
+conversely the unrestricted optimum cannot be larger. An exact
+polynomial-time solver for the unrestricted problem, run on a
+restricted instance, would by construction return a solution whose
+objective is at most the restricted optimum and hence determines the
+restricted optimum (which equals the SGP optimum by the bijection).
+The unrestricted problem is therefore at least as hard. The
+reduction is computable in linear time in $|s|$. \hfill$\blacksquare$
 
 Theorems 6.6 and 6.7 together establish the boundary of what is
 achievable in Type-III-C. Bits-back gives the optimal rate for any
@@ -1980,28 +2005,36 @@ map and grammar-to-dictionary map preserve this objective exactly, so
 an $\alpha$-approximation for the restricted Type-III-C problem yields
 an $\alpha$-approximation for SGP with no additive bookkeeping slack.
 
-\emph{Transfer of APX-hardness.} Charikar, Lehman, Liu, Panigrahy,
-Prabhakaran, Sahai and Shelat (2005, Theorem 3.4) prove an explicit
-constant inapproximability bound for SGP: no polynomial-time algorithm
-achieves approximation ratio smaller than $8569/8568$ unless $P = NP$.
-Their proof is a constant-gap reduction from MAX-3SAT-3, not a
-Set-Cover / Lund--Yannakakis logarithmic inapproximability theorem.
-Combined with the exact bijection above, a polynomial-time
-$\alpha$-approximation for the restricted Type-III-C problem with
-$\alpha < 8569/8568$ would yield a polynomial-time approximation to
-SGP below the Charikar et al.\ threshold, contradicting $P \neq NP$.
-The unrestricted Type-III-C problem is at least as hard, so the same
-inapproximability bound transfers. \hfill$\blacksquare$
+\emph{Transfer of APX-hardness.} Lehman and Shelat (2002) and the
+expanded line of work culminating in Charikar, Lehman, Liu,
+Panigrahy, Prabhakaran, Sahai and Shelat (2005) establish that SGP
+is APX-hard: some explicit constant $\gamma_{\mathrm{SGP}} > 1$
+exists such that no polynomial-time algorithm achieves approximation
+ratio smaller than $\gamma_{\mathrm{SGP}}$ unless $P = NP$. The
+proof routes through gap-preserving reductions from standard
+NP-hard problems (the exact source-problem and explicit numerical
+value of $\gamma_{\mathrm{SGP}}$ differ between the conference and
+journal versions of the cited papers; we do not pin down the
+specific numeric constant here). Combined with the exact bijection
+above, a polynomial-time $\alpha$-approximation for the restricted
+Type-III-C problem with $\alpha < \gamma_{\mathrm{SGP}}$ would yield
+a polynomial-time approximation to SGP below the established
+threshold, contradicting $P \neq NP$. The unrestricted Type-III-C
+problem is at least as hard (by the inclusion argument of Theorem
+6.7), so the same APX-hardness transfers. \hfill$\blacksquare$
 
-\textbf{Remark on the constant.} The $8569/8568$ figure is the
-explicit threshold proved by Charikar et al.\ for SGP; for the
-unrestricted Type-III-C objective (with bit-cost bookkeeping rather
-than symbol-cost), the inherited constant is at most this value
-divided by the worst-case per-symbol encoding ratio
+\textbf{Remark on the constant.} The numerical value of
+$\gamma_{\mathrm{SGP}}$ in the SGP literature is small (close to 1)
+and depends on the specific reduction used; we do not assert a
+specific figure here. For the unrestricted Type-III-C objective
+(with bit-cost bookkeeping rather than symbol-cost), the inherited
+constant is at most $\gamma_{\mathrm{SGP}}$ divided by the
+worst-case per-symbol encoding ratio
 $\lceil \log_2(|\Sigma|+K) \rceil$, which is bounded on any fixed
 family of instances. We claim only that \emph{some} constant $\gamma >
 1$ exists in the general case; pinning down the optimal constant for
-a specific encoding convention is left to follow-up work.
+a specific encoding convention, and verifying which source paper
+establishes which exact constant, is left to follow-up work.
 
 Together, Theorems 6.7 and 6.8 confirm that the heuristic nature of
 practical dictionary learners (BPE, WordPiece, MDL-greedy variants)
@@ -3274,5 +3307,10 @@ Dependence. In: \emph{Learning in Graphical Models}, Jordan, M. I.
 \textbf{{[}47{]}} Lund, C., and Yannakakis, M. (1994). On the
 Hardness of Approximating Minimization Problems. Journal of the ACM,
 41(5), 960-981.
+
+\textbf{{[}48{]}} Lehman, E., and Shelat, A. (2002). Approximation
+Algorithms for Grammar-Based Compression. Proceedings of the
+Thirteenth Annual ACM-SIAM Symposium on Discrete Algorithms (SODA),
+205-212.
 
 \end{document}
