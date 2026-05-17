@@ -1807,21 +1807,30 @@ MDL-selected dictionary of 1024 useful fragments. Admission of a token
 to $D$ is governed by the standard MDL token gain criterion,
 formalized in the next theorem.
 
-\textbf{Theorem 6.5 (Type-III-C MDL token admission).} \emph{Let
-$\tau$ be a candidate token of byte length $\ell$. Fix a parser that
-produces a non-overlapping token cover of the corpus and let $f$ be
-the \emph{realized} count of $\tau$ in that parse (the
-non-overlapping selected parse frequency, which can be strictly less
-than the raw occurrence count when $\tau$ self-overlaps; e.g., for
-$\tau = $ \texttt{aa} in the string \texttt{aaa}, the raw count is
-$2$ but $f = 1$). Let $\mathrm{code\_cost}(\tau)$ be the average bit
-length to encode an occurrence of $\tau$ under the predictor and
-entropy coder (treated as a fixed cost in this comparison),
+\textbf{Theorem 6.5 (Type-III-C marginal-MDL token admission, all
+else frozen).} \emph{Let $\tau$ be a candidate token of byte length
+$\ell$. Fix a parser that produces a non-overlapping token cover of
+the corpus and let $f$ be the \emph{realized} count of $\tau$ in
+that parse (the non-overlapping selected parse frequency, which can
+be strictly less than the raw occurrence count when $\tau$
+self-overlaps; e.g., for $\tau = $ \texttt{aa} in the string
+\texttt{aaa}, the raw count is $2$ but $f = 1$). Let
+$\mathrm{code\_cost}(\tau)$ be the average bit length to encode an
+occurrence of $\tau$ under the predictor and entropy coder,
 $\mathrm{dictionary\_cost}(\tau)$ the bit length to describe $\tau$
 in the dictionary header, and $\mathrm{parse\_overhead}(\tau)$ the
-additional per-occurrence boundary or interval bookkeeping introduced
-by including $\tau$. The net change in total Type-III-C code length
-resulting from admitting $\tau$ to the dictionary $D$ is}
+additional per-occurrence boundary or interval bookkeeping
+introduced by including $\tau$. \emph{Crucially, assume that the
+parser, the entropy-coder state, all other tokens' code costs,
+dictionary costs, parse overheads, and the realized counts of all
+other tokens are FROZEN during the admission test for $\tau$
+(``ceteris paribus''); the rule evaluates only the marginal effect
+of adding $\tau$ to an otherwise fixed dictionary. Adding $\tau$ in
+practice may change the parse and the marginal costs of competing
+tokens; the test below ignores those interactions, so it gives a
+greedy admission decision rather than a globally optimal one.} The
+net change in total Type-III-C code length under these frozen-rest
+assumptions is}
 \[
 \Delta L(\tau) = \mathrm{dictionary\_cost}(\tau) + f \cdot \left[\mathrm{code\_cost}(\tau) + \mathrm{parse\_overhead}(\tau) - 8\ell\right].
 \]
@@ -1915,13 +1924,24 @@ entropy unless $P_X(\cdot \mid Y) = D(\cdot \mid Y)$; the second
 term is the variational gap. When both vanish the rate is
 $H_D(X \mid Y)$. \hfill$\blacksquare$
 
-\textbf{Theorem 6.7 (Joint dictionary and predictor learning is
-NP-hard).} \emph{Given a corpus $X$, jointly choosing a token
-dictionary $D$ and predictor $M$ to minimize Type-III-C description
-length is NP-hard. This remains true in the restricted normal-form
-case where $M$ is fixed to the trivial constant predictor, the repair
-stream is the distinguished start token, and $D$ is a recursive
-straight-line dictionary measured by symbol count.}
+\textbf{Theorem 6.7 (Restricted Type-III-C dictionary learning is
+NP-hard).} \emph{Consider the restricted Type-III-C problem in which
+$M$ is fixed to the trivial constant predictor, the repair stream is
+the distinguished start token, and $D$ is a recursive straight-line
+dictionary in normal form (defined below), with objective the
+symbol-count $L_{\mathrm{sym}}(D) = \sum_i |\alpha_i|$. Finding the
+$D$ minimizing $L_{\mathrm{sym}}$ subject to $\tau_0$ expanding to
+the corpus $X$ is NP-hard.}
+
+\emph{The unrestricted joint problem ($M$, $D$, repair stream all
+free, total code length $L(M) + L(D) + L(R\mid Y)$) is conjectured
+to be NP-hard but is not established by the present reduction:
+dropping the restrictions changes both the feasible set and the
+objective function, and for minimization with a larger feasible set
+the optimum can be strictly smaller, so a polynomial-time
+unrestricted solver does not automatically determine the restricted
+optimum. Designing a reduction that forces the unrestricted optimum
+to coincide with the restricted optimum is left open.}
 
 \emph{\textbf{Proof.}} Reduce from the Smallest Grammar Problem (SGP)
 of Charikar, Lehman, Liu, Panigrahy, Prabhakaran, Sahai and Shelat
@@ -1957,24 +1977,19 @@ L_{\mathrm{sym}}(D(G)) = |G|.
 \]
 Thus an exact polynomial-time optimizer for this restricted
 Type-III-C case would exactly solve SGP. Since SGP is NP-hard
-(Charikar et al.\ 2005), the restricted Type-III-C problem is NP-hard.
+(Lehman and Shelat 2002; Charikar et al.\ 2005), the restricted
+Type-III-C problem is NP-hard. The reduction is computable in linear
+time in $|s|$.
 
-For the unrestricted Type-III-C problem we observe that the
-restricted case sits inside it: any feasible solution to the
-restricted problem is also feasible for the unrestricted problem (the
-restricted problem only further constrains $M$ to be the trivial
-constant predictor and $D$ to be a normal-form recursive dictionary,
-both of which are admissible in the unrestricted problem). Because
-the restricted and unrestricted problems share the same objective
-function $L_{\mathrm{sym}}$ on the restricted feasible region, the
-restricted optimum is an upper bound on the unrestricted optimum;
-conversely the unrestricted optimum cannot be larger. An exact
-polynomial-time solver for the unrestricted problem, run on a
-restricted instance, would by construction return a solution whose
-objective is at most the restricted optimum and hence determines the
-restricted optimum (which equals the SGP optimum by the bijection).
-The unrestricted problem is therefore at least as hard. The
-reduction is computable in linear time in $|s|$. \hfill$\blacksquare$
+The unrestricted-case claim is intentionally not proved by inclusion:
+the restricted feasible region is a strict subset of the unrestricted
+region, but the objective function also changes (the restricted case
+uses $L_{\mathrm{sym}}$ while the unrestricted case uses
+$L(M) + L(D) + L(R\mid Y)$), so the standard ``larger feasible set
+$\Rightarrow$ smaller optimum'' minimization fact does not let an
+unrestricted solver recover the restricted optimum. We leave the
+formal unrestricted hardness as an open problem.
+\hfill$\blacksquare$
 
 Theorems 6.6 and 6.7 together establish the boundary of what is
 achievable in Type-III-C. Bits-back gives the optimal rate for any
@@ -1985,13 +2000,19 @@ MDL-greedy, neural codebook learning) and amortized variational
 inference, both of which sacrifice optimality for tractability.
 
 \textbf{Theorem 6.8 (APX-hardness of joint
-dictionary-and-predictor learning).} \emph{Joint
-dictionary-and-predictor learning for Type-III-C is APX-hard: there
-exists a constant $\gamma > 1$ such that no polynomial-time
-algorithm achieves approximation ratio better than $\gamma$ on all
-sufficiently large instances, unless $P = NP$. The bound holds even
-with $M$ restricted to the trivial constant predictor and $D$
-restricted to the recursive dictionary class.}
+dictionary learning, restricted case).} \emph{The restricted
+Type-III-C problem of Theorem 6.7 (constant predictor, recursive
+normal-form dictionary, symbol-count objective $L_{\mathrm{sym}}$)
+is APX-hard, conditional on the established APX-hardness of the
+Smallest Grammar Problem: there exists a constant
+$\gamma_{\mathrm{SGP}} > 1$ such that no polynomial-time algorithm
+achieves approximation ratio better than $\gamma_{\mathrm{SGP}}$ on
+SGP unless $P = NP$ (Lehman and Shelat 2002; Charikar et al.\ 2005),
+and the bijection of Theorem 6.7 transfers this hardness to the
+restricted Type-III-C objective with the same constant. The
+APX-hardness of the unrestricted joint problem is left open for the
+same reason as in Theorem 6.7: the objective changes and the
+inclusion is non-trivial.}
 
 \emph{\textbf{Proof.}} We show that the reduction
 $\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 preserves
@@ -2052,20 +2073,36 @@ Type-III-B/C constructions. For each tile, the scheduler predicts a
 per-mode cost vector $U_*(t)$, selects the argmin mode, and delegates
 encoding to that mode.
 
-\textbf{Theorem 7.1 (Composition correctness).} \emph{Let $M$ be a
-finite set of RNR mode coders, each producing a uniquely decodable
-repair stream conditional on its mode flag. The Type-III-A composition
-with mode set $M$, deterministic mode selection
-$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$, and a uniquely
-decodable mode-flag stream produces a uniquely decodable codeword for
-$X$.}
+\textbf{Theorem 7.1 (Composition correctness, with explicit framing).}
+\emph{Let $M$ be a finite set of RNR mode coders, each producing a
+uniquely decodable repair stream conditional on its mode flag.
+Assume further that the per-tile repair streams are \emph{framed} ---
+either each carries an explicit byte-length prefix in the metadata
+$L(\Theta)$, or the per-tile encoding is itself prefix-free as a
+binary string --- so that the decoder, after parsing the mode flag,
+can isolate the bits belonging to tile $t$'s repair stream before
+applying the mode-specific decoder. Under this framing assumption,
+the Type-III-A composition with mode set $M$, deterministic mode
+selection $\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ (with
+fixed lexicographic tie-breaking from Definition 3.3), and a
+uniquely decodable mode-flag stream produces a uniquely decodable
+codeword for $X$.}
 
-\emph{\textbf{Proof.}} The decoder reads the metadata, reconstructs
-$U_*(t)$ deterministically from public state, recovers $\hat{m}(t)$
-by the same argmin, reads the per-tile repair stream, and applies the
-decoder of mode $\hat{m}(t)$ to recover the tile. Each step is
-uniquely determined; the concatenation is therefore an injection from
-$X$ to codewords. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} The decoder reads the metadata (including the
+per-tile length prefixes, if present, that fix the bit boundaries
+between successive tiles), reconstructs $U_*(t)$ deterministically
+from public state, recovers $\hat{m}(t)$ by the same argmin, isolates
+the repair-stream bits belonging to tile $t$ using the framing
+information, and applies the decoder of mode $\hat{m}(t)$ to recover
+the tile. Each step is uniquely determined; the concatenation is
+therefore an injection from $X$ to codewords. \emph{Caveat:} without
+the framing assumption, per-mode unique decodability alone is
+insufficient: e.g., mode-A codewords $\{0, 01\}$ and mode-B
+codewords $\{10, 0\}$ are each uniquely decodable, but the
+concatenation $010$ over a mode-A then mode-B tile parses as
+$0 \mid 10$ or $01 \mid 0$, ambiguously. The framing assumption
+removes this ambiguity by fixing tile boundaries explicitly.
+\hfill$\blacksquare$
 
 Composition also implies a strict no-regret guarantee for the
 framework as a whole: by including every coder in $M$, the Type-III-A
@@ -2149,19 +2186,37 @@ $\hat{X}_i$, checks $H_v(\hat{X}_i) = v_i$, and only on success uses
 $\hat{X}_i$ to update $C$ for subblock $i + 1$. The following theorem
 rules out cross-subblock error propagation.
 
-\textbf{Theorem 9.1 (No cross-subblock error propagation).}
-\emph{Suppose $H_v$ is a cryptographic hash with negligible collision
-probability $\delta$ on the considered set of candidate subblocks.
-Then the probability that an incorrect $\hat{X}_i$ is used to update
-the context for subblock $i + 1$ is at most $\delta$.}
+\textbf{Theorem 9.1 (No cross-subblock context propagation, with
+explicit framing).} \emph{Assume the archive header stores, for each
+subblock $i$, an explicit byte/bit-offset into the repair stream
+(framing), so that subblock $i + 1$'s repair-stream slice is parsed
+from a fixed position independent of the bytes recovered in
+subblock $i$. Suppose further that $H_v$ is a cryptographic hash
+with negligible collision probability $\delta$ on the considered
+set of candidate subblocks. Then the probability that an incorrect
+$\hat{X}_i$ is used to update the predictor context for subblock
+$i + 1$ is at most $\delta$.}
 
-\emph{\textbf{Proof.}} The context update rule is conditional on
-$H_v(\hat{X}_i) = v_i$. If $\hat{X}_i \neq X_i$, then
-$H_v(\hat{X}_i) = v_i$ can occur only as a hash collision with the
-unique stored $v_i$. Under the cryptographic hash assumption, this
-happens with probability at most $\delta$ per candidate. The bound
-holds by union over the considered candidates if $\delta$ is
-interpreted accordingly. \hfill$\blacksquare$
+\emph{\textbf{Proof.}} The framing assumption guarantees that
+subblock $i + 1$'s repair-stream bits are isolated by the header
+offset and not by any function of $\hat{X}_i$. The context update
+rule for the predictor is conditional on $H_v(\hat{X}_i) = v_i$. If
+$\hat{X}_i \neq X_i$, then $H_v(\hat{X}_i) = v_i$ can occur only as
+a hash collision with the unique stored $v_i$. Under the
+cryptographic hash assumption, this happens with probability at
+most $\delta$ per candidate; the bound holds by union over the
+considered candidates if $\delta$ is interpreted accordingly.
+
+\emph{Caveat.} Without the explicit-framing assumption, a deletion
+or length-mismatch in subblock $i$'s repair-stream encoding (e.g.,
+caused by a non-self-delimiting per-mode encoding without a header
+offset) shifts the byte boundaries of every subsequent subblock and
+can make all later subblocks unreadable; the per-subblock hash $v_i$
+detects that a failure occurred but does not localize or recover
+later subblocks. The framing assumption (explicit per-subblock
+offset table in the archive header, enforced by the engineering
+specification) eliminates this failure mode.
+\hfill$\blacksquare$
 
 The theorem is stated for cryptographic $H_v$ because
 non-cryptographic hashes (CRCs, simple checksums) admit structured
