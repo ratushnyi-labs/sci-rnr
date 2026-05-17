@@ -504,34 +504,45 @@ encoding is a design choice within each type.
 
 \textbf{Definition 3.1 (RNR Type-I).} An RNR Type-I coder predicts a
 one-dimensional damaged stream $Y = M_I(C)$ and stores a repair
-stream $R_I$ such that the decoder recovers
-$X = \mathrm{DecRepair}(Y, R_I)$ exactly, subject to a verification
-check $H_v(X) = H_v(\hat{X})$. The canonical instance is Code12, in
-which each source byte is mapped to a 12-bit codeword and the
-predicted error mask is entropy-coded by Hamming-weight class.
+stream $R_I$ together with a verification value $v = H_v(X)$ as part
+of the archive. The decoder forms
+$\hat{X} = \mathrm{DecRepair}(Y, R_I)$ and accepts the reconstruction
+only if $H_v(\hat{X}) = v$; for a valid archive, $\hat{X} = X$
+exactly. The canonical instance is Code12, in which each source byte
+is mapped to a 12-bit codeword and the predicted error mask is
+entropy-coded by Hamming-weight class.
 
 \textbf{Definition 3.2 (RNR Type-II).} An RNR Type-II coder predicts
-a positional probability field $Q_v(i)$,
-$v \in \{0, \ldots, 15\}$, $i \in \{1, \ldots, N\}$, that respects the
-disjoint-partition and exact-count constraints of a valid 16-way
-partition of $\{1, \ldots, N\}$. The archive stores a partition
-residual $R_\Pi$ that, combined with $Q$, recovers the exact
-partition $\Pi(X)$ and therefore the source $X$.
+a positional marginal probability field $Q_v(i)$ approximating
+$\Pr(i \in M_v \mid C)$, $v \in \{0, \ldots, 15\}$,
+$i \in \{1, \ldots, N\}$, with $\sum_v Q_v(i) = 1$ for each position
+$i$. The archive stores a partition residual $R_\Pi$ that, combined
+with $Q$, recovers the actual partition
+$\Pi(X) = (M_0, \ldots, M_{15})$, where the sets $M_v$ are pairwise
+disjoint subsets of $\{1, \ldots, N\}$ and
+$\sum_{v=0}^{15} |M_v| = N$. The recovered partition determines the
+source $X$.
 
 \textbf{Definition 3.3 (RNR Type-III-A).} An RNR Type-III-A coder
 predicts an entropy field $U_m(t)$ over tiles $t$ and coding modes
-$m$, selects per-tile modes
-$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$, and encodes each
-tile with the selected mode. The selection is deterministic and
-decoder-reproducible; the archive stores only the per-tile residual
-streams. Override flags may be stored when the encoder departs from
-the predicted argmin.
+$m$, selects predicted per-tile modes
+\[
+\hat{m}(t) = \min \{ m : U_m(t) = \min_{m'} U_{m'}(t) \},
+\]
+breaking ties by lexicographic order on the mode index, and encodes
+each tile with the selected mode unless an override is present. The
+selection is deterministic and decoder-reproducible. The archive
+stores the per-tile residual streams and, when the encoder departs
+from the predicted argmin, override flags as metadata.
 
 \textbf{Definition 3.4 (RNR Type-III-B).} An RNR Type-III-B coder
-predicts a byte tensor $Q_{h,l}(i)$ approximating
+predicts a normalized byte tensor $Q_{h, l}(i)$ approximating
 $\Pr(h_i = h, l_i = l \mid C)$ over high-nibble $h$ and low-nibble $l$
-of byte $i$, and encodes the byte sequence either via direct 256-class
-partition coding or via a hierarchical scheme that first encodes the
+of byte $i$, with $h, l \in \{0, \ldots, 15\}$ and
+$\sum_{h, l} Q_{h, l}(i) = 1$ for each position $i$. A
+decoder-reproducible mode choice, either stored as metadata or
+computed by a fixed rule from $(C, Q)$, selects direct 256-class
+partition coding or a hierarchical scheme that first encodes the
 high-nibble partition and then the low-nibble partition conditional
 on the high nibble.
 
@@ -539,7 +550,9 @@ on the high nibble.
 parameterized by a learned token dictionary
 $D = \{\tau_0, \ldots, \tau_{K-1}\}$ with $K = a \cdot b$ (typically
 $32 \times 32 = 1024$ or $64 \times 64 = 4096$) hierarchically indexed
-as $\text{token\_id} = a \cdot \text{family} + \text{variant}$. The
+by $\text{family} \in \{0, \ldots, a-1\}$ and
+$\text{variant} \in \{0, \ldots, b-1\}$ as
+$\text{token\_id} = b \cdot \text{family} + \text{variant}$. The
 model predicts $Q(k, i, s)$ approximating
 $\Pr(\tau_k \text{ begins at position } i \text{ at scale } s \mid C)$.
 The archive stores a tokenization residual $R_C$ sufficient to
@@ -695,16 +708,17 @@ an approximate class model or a uniform within-class payload pays the
 corresponding cross-entropy, which matches the bound only when those
 models match the true conditional law.}
 
-\emph{\textbf{Proof.}} The converse is Shannon's noiseless source
-coding theorem applied to the conditional distribution
-$P(X \mid Y)$ (Cover and Thomas 2006, Theorem 5.4.1). For
-achievability, fix an injective Code12 map and define
+\emph{\textbf{Proof.}} The converse is obtained by applying Shannon's
+source-coding bound to each conditional distribution
+$P(X \mid Y = y)$ and averaging over $Y$ (Cover and Thomas 2006,
+Theorem 5.4.1; see also Chapter 15 for coding with side information).
+For achievability, fix an injective Code12 map and define
 $E = E_{12}(X) \oplus Y$. Given $Y$, the map $X \leftrightarrow E$ is
 bijective, so $H(E \mid Y) = H(X \mid Y)$. Encoding first the class
 $C_E$ of $E$ and then the payload within that class, both under their
 true conditional probabilities given $Y$, achieves
 $H(C_E \mid Y) + H(E \mid C_E, Y) = H(E \mid Y) = H(X \mid Y)$ by the
-chain rule. An entropy coder driven by these conditional laws attains
+chain rule for entropy (Cover and Thomas 2006, Theorem 2.6.4). An entropy coder driven by these conditional laws attains
 this rate up to arithmetic-coding redundancy $\varepsilon_N$. A
 specific Code12 implementation that uses an approximate $P(C_E \mid Y)$
 or a uniform within-class payload (the construction of Theorem 4.1)
@@ -788,6 +802,17 @@ NP-complete. Equivalently, the question is whether there is an
 injective map $\phi : V(T) \to \{0, 1\}^m$ such that
 $d_H(\phi(u), \phi(v)) = 1$ for every tree edge $\{u, v\}$.
 
+If $|V(T)| > 2^m$, then no injective embedding into $Q_m$ exists. In
+that case the reduction outputs the fixed no-instance with $n' = 2$,
+$m' = 1$,
+\[
+F' = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \qquad B' = 1,
+\]
+which satisfies $n' \leq 2^{m'}$ and has no injective labeling with
+$C_{F'}(E) \leq B'$ (the only injective $E : \{1, 2\} \to \{0, 1\}$
+gives $C_{F'}(E) = 2 > B'$). Hence we may assume for the remaining
+construction that $|V(T)| \leq 2^m$.
+
 Given such an instance, write $n = |V(T)|$ and
 $\Delta = \max_{v \in V(T)} \deg_T(v)$. For nontrivial instances
 $\Delta \geq 1$. Construct an $n \times n$ matrix $F$ indexed by the
@@ -837,18 +862,18 @@ with $B$, would decide the NP-complete tree-to-hypercube embedding
 problem of Wagner and Corneil (1990). Hence varying-parameter
 learned-code labeling is NP-hard. \hfill$\blacksquare$
 
-\textbf{Remark 4.3b (Handling asymmetric confusion matrices).} The
-restriction to symmetric $F$ in Theorem 4.3 is not hiding an
-asymmetric effect. For any nonnegative confusion matrix $F$,
+\textbf{Remark 4.3b (Handling asymmetric confusion matrices).} For any
+nonnegative confusion matrix $F$,
 \[
 \sum_{i, j} F_{ij} \cdot d_H(E(i), E(j))
 = \sum_{i, j} \frac{F_{ij} + F_{ji}}{2} \cdot d_H(E(i), E(j)),
 \]
-because $d_H$ is symmetric and diagonal terms vanish. Thus an
-arbitrary asymmetric empirical confusion matrix induces the same
-labeling objective as its symmetric part $(F + F^T)/2$, viewed as an
-undirected pair-weight matrix. The hardness consequence is therefore
-not specific to symmetric inputs.
+because $d_H$ is symmetric. Thus an asymmetric empirical confusion
+matrix induces the same labeling objective as its symmetric pair-weight
+matrix $(F + F^T)/2$. However, if $F$ is row-stochastic,
+$(F + F^T)/2$ need not be row-stochastic, so this identity does not by
+itself extend the NP-hardness statement of Theorem 4.3 to the
+asymmetric row-stochastic promise.
 
 Consequently, $E_{12}$-C and $E_{12}$-D must be obtained by
 approximation algorithms. Standard relaxations include gradient
