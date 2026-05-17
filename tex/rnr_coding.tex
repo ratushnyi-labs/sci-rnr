@@ -402,47 +402,64 @@ work.
 
 \textbf{2.1 The lossless compression problem}
 
-A lossless compressor is an injective map $C$ from a source alphabet
-(here, finite-length binary strings or byte sequences) to binary
-codewords, together with a decoder $D$ such that $D(C(X)) = X$ for
-every $X$. Injectivity is necessary: if two distinct sources
-$X \neq X'$ mapped to the same codeword, the decoder could not recover
-both.
+A lossless compressor is an injective map
+$\mathsf{Enc}$ from a source alphabet (here, finite-length binary
+strings or byte sequences of a fixed block length $N$) to binary
+codewords, together with a decoder $\mathsf{Dec}$ such that
+$\mathsf{Dec}(\mathsf{Enc}(X)) = X$ for every $X$. Injectivity is
+necessary; for the multi-stream concatenations used later (model,
+repair, verification, metadata), each stream must in addition be
+prefix-free or carry an explicit length so that the decoder can
+partition the codeword.
 
-Throughout the paper, we write $L(\cdot)$ for the bit length of a
-binary description, and adopt the convention that
-$0 \cdot \log 0 = 0$. For a random variable $X$ over a finite
-alphabet, $H(X)$ denotes the Shannon entropy of $X$ in bits. Given a
-side-information variable $Y$, $H(X \mid Y)$ denotes the conditional
-entropy.
+Throughout the paper, we fix the block length $N$ and treat $X$ as a
+random variable over the finite alphabet $\{0,1\}^{8N}$ (byte block)
+under a distribution $D$ on that finite set. We write $L(\cdot)$ for
+the bit length of a binary description, and adopt the convention
+that $0 \cdot \log 0 = 0$. For a random variable $X$ over a finite
+alphabet, $H(X)$ denotes the Shannon entropy of $X$ in bits. Given
+a side-information variable $Y$, $H(X \mid Y)$ denotes the
+conditional entropy.
 
-For a source $X$ drawn from a distribution $D$, and a baseline
-compressor $B$, we say an RNR coder $C$ is conditionally advantageous
-on $D$ if
+For a source $X \sim D$ and a baseline compressor $B$, we say an RNR
+coder $\mathsf{Enc}$ is conditionally advantageous on $D$ if
 \[
-\mathbb{E}[L(C(X))] < \mathbb{E}[L(B(X))], \quad X \sim D.
+\mathbb{E}[L(\mathsf{Enc}(X))] < \mathbb{E}[L(B(X))], \quad X \sim D.
 \tag{2.1}
 \]
+\emph{Notation note.} The symbol $C$ in later sections denotes
+\emph{public context} (the input to the predictor $M$, so
+$Y = M(C)$), not the compressor; the symbol $D$ in later sections
+denotes the source distribution, not the decoder. The
+encoder/decoder pair is referred to as $\mathsf{Enc}/\mathsf{Dec}$
+throughout to avoid this collision.
 
 \textbf{2.2 Side-information coding}
 
-The classical theorem of Slepian and Wolf states that for jointly
-distributed sources $X$ and $Y$, $X$ can be encoded at rate
-arbitrarily close to $H(X \mid Y)$ when $Y$ is available losslessly
-at the decoder, even when the encoder does not see $Y$. This is the
-foundational result for our use of model output as decoder-side
-information.
+Slepian and Wolf's distributed-source-coding theorem (Slepian and
+Wolf 1973) characterizes the rate region for encoding jointly
+distributed sources $X$ and $Y$ with separate encoders and a joint
+decoder, with constraints $R_X \geq H(X \mid Y)$,
+$R_Y \geq H(Y \mid X)$, and $R_X + R_Y \geq H(X, Y)$ in the
+finite-alphabet memoryless setting. The corner of this region we use
+is the asymmetric case in which $Y$ is already available to the
+decoder, so only $X$ needs to be coded at rate
+$\geq H(X \mid Y)$. The motivating intuition --- that decoder-side
+information drives down the rate to a conditional entropy --- is
+Slepian-Wolf's; the achievability in our setting, however, reduces
+to ordinary \emph{conditional source coding} (Cover and Thomas 2006,
+Theorem 5.4.1) and does not require the binning constructions that
+Slepian-Wolf invokes when the encoder lacks $Y$.
 
-Our setting differs from the classical Slepian--Wolf setting in three
-ways. First, we consider a single sender, not two correlated sources
-at different physical locations. Second, the side information $Y$ is
-not a separately observed correlated random variable but the
-deterministic output of a public model $M$ applied to a public
-context $C$: $Y = M(C)$. Third, this side information is available to
-both encoder and decoder, so the encoder can exploit it directly; we
-therefore are concerned with achievability of $H(X \mid M(C))$, not
-with the more subtle Slepian--Wolf binning constructions required
-when the encoder lacks $Y$.
+Our setting differs from the classical distributed Slepian-Wolf
+setting in three ways. First, we consider a single sender, not two
+correlated sources at different physical locations. Second, the side
+information $Y$ is not a separately observed correlated random
+variable but the deterministic output of a public model $M$ applied
+to a public context $C$: $Y = M(C)$. Third, this side information is
+available to both encoder and decoder, so the encoder can exploit it
+directly; the relevant achievability is conditional source coding,
+and Slepian-Wolf binning is not needed.
 
 We use the term ``side information'' in this broader sense
 throughout: any deterministic, decoder-reproducible function of
@@ -453,80 +470,126 @@ public state that constrains the conditional distribution of $X$.
 We assume the availability of an entropy coder --- arithmetic coding
 (Witten, Neal, Cleary 1987; Rissanen and Langdon 1979) or asymmetric
 numeral systems (Duda 2009) --- that, given an explicit probability
-model $Q$ over a sequence of symbols, achieves a code length within a
-fixed constant (typically less than two bits per stream, for
-arithmetic coding) of the cross-entropy of the true source under $Q$.
-We denote this overhead by $\varepsilon_n$ and assume
-$\varepsilon_n / n \to 0$ as the block length $n$ grows.
+model $Q$ with $Q(x) > 0$ on the support of the source and finite-
+precision arithmetic of $b$ bits per state, encodes a sequence $x$ of
+length $n$ in $\lceil -\log_2 Q(x) \rceil + \varepsilon_n$ bits,
+where the redundancy $\varepsilon_n$ accounts for end-of-stream and
+finite-precision rounding (under-2-bit total overhead for the
+classical Witten-Neal-Cleary integer arithmetic coder; ANS adds an
+$O(\log b)$ state-initialization overhead amortized over the stream).
+Taking expectation under the true source $X \sim D$ gives expected
+length $\mathbb{E}_D[-\log_2 Q(X)] + \varepsilon_n$, i.e.,
+cross-entropy plus redundancy. We assume $\varepsilon_n / n \to 0$
+as the block length $n$ grows.
 
 \textbf{2.4 Enumerative coding}
 
-Cover's enumerative source coding (Cover 1973) describes a sequence
-or set drawn from a known finite class by its rank among the elements
-of that class. The cost is the binary logarithm of the class size,
-plus a constant for rank coding. Two enumerative formulas are used
-repeatedly in this paper.
+Cover's enumerative source coding (Cover 1973) describes an element
+of a \emph{known} finite class by its rank among the elements of that
+class. The information-theoretic cost is the binary logarithm of the
+class size; a self-delimiting binary rank requires
+$\lceil \log_2 |\mathcal{C}| \rceil$ bits (or
+$\log_2 |\mathcal{C}| + O(1)$ via arithmetic coding driven by the
+uniform rank distribution). Whenever we write the cost as
+$\log_2 |\mathcal{C}|$ below we mean the information-theoretic rate;
+the integer-representation overhead is absorbed into the
+$\varepsilon_n$ entropy-coder redundancy of §2.3. Crucially, the
+class itself must be decoder-reproducible: when its description
+depends on data-dependent parameters (e.g., the cardinality vector
+of a partition), those parameters must be transmitted separately.
+Two enumerative formulas are used repeatedly in this paper.
 
 The number of subsets of size $k$ drawn from $\{1, \ldots, N\}$ is
-$\binom{N}{k}$, so a subset is described in $\log_2 \binom{N}{k}$
-bits.
+$\binom{N}{k}$, so a subset is described in
+$\log_2 \binom{N}{k}$ bits relative to the class
+$\binom{[N]}{k}$ \emph{given $k$}. When $k$ is data-dependent it is
+transmitted in $O(\log N)$ bits before the rank.
 
 The number of partitions of $\{1, \ldots, N\}$ into 16 disjoint sets
 $M_0, \ldots, M_{15}$ with cardinalities $k_0, \ldots, k_{15}$ is the
 multinomial coefficient
-
 \[
 M(N; k_0, \ldots, k_{15}) = \frac{N!}{k_0!\, k_1! \cdots k_{15}!},
 \tag{2.2}
 \]
-
 so such a partition is described in
-$\log_2 M(N; k_0, \ldots, k_{15})$ bits. The multinomial baseline is
-strictly tighter than $\sum_v \log_2 \binom{N}{k_v}$, which
-corresponds to encoding 16 independent subsets without enforcing
-disjointness, and therefore overcounts.
+$\log_2 M(N; k_0, \ldots, k_{15})$ bits given the count vector
+$(k_0, \ldots, k_{15})$. The count vector itself lies in a set of
+size at most $(N + 1)^{16}$ and is transmitted in
+$16 \log_2(N + 1) = O(\log N)$ bits by direct enumeration. The
+multinomial baseline is strictly tighter than
+$\sum_v \log_2 \binom{N}{k_v}$, which corresponds to encoding 16
+independent subsets without enforcing disjointness, and therefore
+overcounts.
 
 \textbf{2.5 Minimum Description Length}
 
 Rissanen's Minimum Description Length principle (Rissanen 1978)
-states that a model $M$ is preferred over a baseline for data $X$ if
-$L(M) + L(X \mid M) < L_{\text{base}}(X)$, where $L_{\text{base}}$ is
-the baseline length. RNR adopts MDL as its admission criterion at
-every level: a Type-I model is admitted only if its parameter
-description plus the conditional repair length beats the baseline; a
-Type-III-C token is admitted only if its dictionary cost plus
-per-occurrence cost beats raw literal coding.
+selects the model that minimizes the total description length: model
+structure, real-valued parameters, and data given the model. There
+are several technical formulations --- crude two-part MDL,
+prequential MDL, universal coding, normalized maximum likelihood
+(NML) --- with different optimality criteria. RNR uses MDL only
+heuristically, in its simplest two-part admission form: a candidate
+model or token is included if its description cost plus the resulting
+conditional code length beats the alternative without it. The
+admission rule
+\[
+L(M) + L(X \mid M) < L_{\text{base}}(X)
+\]
+is a two-part-MDL comparison heuristic, not a theorem of optimality;
+we invoke it as a design criterion at every level (Type-I model
+admission, Type-III-C token admission) but do not claim that any RNR
+construction is the MDL optimum under a stronger criterion such as
+NML.
 
 \textbf{2.6 Bits-back coding}
 
-Bits-back coding (Hinton and van Camp 1993; Frey 1997, 1998;
-Townsend, Bird, Barber 2019) is a technique for losslessly
-compressing data
-under a latent-variable model. The encoder uses an auxiliary bit
-string to sample a latent $z$, encodes $(z, x)$ with the joint prior,
-and the decoder recovers the latent and extracts the auxiliary bits,
-paying only the marginal $H(X)$ in expectation. Bits-back is the
-appropriate tool for Type-III-C when tokens are continuous or
-stochastic latents; we discuss this connection in Section 6.5.
+Bits-back coding is a technique for losslessly compressing data under
+a latent-variable model. The encoder uses an auxiliary bit string to
+sample a latent $z$ from a variational posterior $q(z \mid x)$,
+encodes $(z, x)$ jointly via prior $P(z)$ and conditional
+$P(x \mid z)$, and the decoder recovers $z$ and $x$ and extracts the
+auxiliary bits. The expected net length is the \emph{negative
+ELBO}: $\mathbb{E}_q[-\log P(x, z) + \log q(z \mid x)]
+= \mathbb{E}[-\log P_X(x)] + \mathbb{E}\,\mathrm{KL}(q(z \mid x) \Vert P(z \mid x))$.
+This equals the source entropy $H(X)$ only when the model marginal
+matches the data ($P_X = D$) and $q$ equals the true posterior; in
+general it is cross-entropy under the model marginal plus the
+variational gap. Theorem 6.6 makes this accounting explicit for the
+RNR Type-III-C decomposition. The lineage is: Hinton and van Camp
+(1993) introduced the bits-back argument for noisy-weight
+communication in a Bayesian-network MDL setting; Frey (1997, 1998)
+extended it to one-to-many stochastic source codes with discrete
+latents in graphical models; Townsend, Bird and Barber (2019) gave
+the practical BB-ANS construction that handles continuous latents via
+ANS coding (Bit-Swap and HiLLoC are subsequent extensions). We use
+the term ``bits-back'' for the general principle and BB-ANS for the
+specific continuous-latent realization; see Section 6.5.
 
 \textbf{2.7 Notation summary}
 
 We adopt the following notation throughout.
 \begin{description}
+\item[$N$] block length (number of bytes per source block, fixed throughout)
+\item[$n$] generic symbol-sequence length (e.g., positional, when distinct from $N$)
 \item[$X$] original source block (sequence of bytes, nibbles, or symbols)
+\item[$D$] source distribution on $\{0,1\}^{8N}$; $X \sim D$
 \item[$Y$] decoder-reproducible side information: $Y = M(C)$
-\item[$M$] deterministic predictor; $M_I, M_{\text{pos}}, M_1, M_2$ for type-specific predictors
-\item[$C$] public context (seed, verified previous subblock, metadata)
-\item[$Q$] predicted probability field (vector, matrix, or tensor)
-\item[$U$] second-order predicted uncertainty / entropy / repair-cost field
+\item[$M$] deterministic predictor; $M_I, M_{\text{pos}}$ for type-specific predictors
+\item[$C$] public context (seed, verified previous subblock, metadata), distinct from the §2.1 compressor symbol
+\item[$Q$] predicted probability field (vector, matrix, or tensor); used as the entropy-coder model in §2.3
+\item[$U_m(t)$] predicted code-length / mode-cost field for tile $t$ under mode $m$ (Type-III-A)
 \item[$T$] invertible representation transform; $Z = T(X)$
 \item[$R$] repair / residual / rank / selector stream
-\item[$V$] verification overhead (hash, checksum)
+\item[$V$] verification overhead (hash, checksum); $H_v(X)$ stored as $v$
 \item[$\Theta$] metadata overhead (sizes, mode flags, quantization tables)
-\item[$B$] baseline compressor (LZMA, zstd, NNCP, $\ldots$)
-\item[$\varepsilon_n$] entropy-coder redundancy over $n$ symbols
-\item[$\Pi(X)$] positional partition of $X$ into symbol-class position sets
-\item[$H(\cdot)$] Shannon entropy in bits
+\item[$B$] baseline compressor (LZMA, zstd, NNCP, $\ldots$); $L_{\text{base}}$ is its description length
+\item[$\mathsf{Enc}, \mathsf{Dec}$] encoder/decoder pair (compressor); see §2.1
+\item[$\varepsilon_n$] entropy-coder redundancy over $n$ symbols (positivity + finite-precision overhead per §2.3)
+\item[$\Pi(X) = (M_0, \ldots, M_{15})$] positional partition of $X$ into symbol-class position sets
+\item[$k_v$] cardinality of $M_v$, i.e., count of symbol $v$ in the block
+\item[$H(\cdot), H(\cdot \mid \cdot)$] Shannon entropy / conditional entropy in bits
 \item[$I(\cdot\,;\cdot \mid \cdot)$] conditional mutual information
 \end{description}
 
