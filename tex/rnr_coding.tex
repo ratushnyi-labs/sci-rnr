@@ -554,10 +554,15 @@ a latent-variable model. The encoder uses an auxiliary bit string to
 sample a latent $z$ from a variational posterior $q(z \mid x)$,
 encodes $(z, x)$ jointly via prior $P(z)$ and conditional
 $P(x \mid z)$, and the decoder recovers $z$ and $x$ and extracts the
-auxiliary bits. The expected net length is the \emph{negative
-ELBO}: $\mathbb{E}_q[-\log P(x, z) + \log q(z \mid x)]
-= \mathbb{E}[-\log P_X(x)] + \mathbb{E}\,\mathrm{KL}(q(z \mid x) \Vert P(z \mid x))$.
-This equals the source entropy $H(X)$ only when the model marginal
+auxiliary bits. The expected net length under the data distribution
+$X \sim D$ and the variational sampler $z \sim q(\cdot \mid X)$ is
+the \emph{negative ELBO}:
+\[
+\mathbb{E}_{X \sim D,\, z \sim q(\cdot \mid X)} \!\left[-\log P(X, z) + \log q(z \mid X)\right]
+= \mathbb{E}_{X \sim D}\!\left[-\log P_X(X)\right]
++ \mathbb{E}_{X \sim D}\!\left[\mathrm{KL}(q(\cdot \mid X) \Vert P(\cdot \mid X))\right].
+\]
+This equals the source entropy $H_D(X)$ only when the model marginal
 matches the data ($P_X = D$) and $q$ equals the true posterior; in
 general it is cross-entropy under the model marginal plus the
 variational gap. Theorem 6.6 makes this accounting explicit for the
