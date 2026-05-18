@@ -2812,13 +2812,16 @@ Definition 10.3 admits two variants: \emph{uniform spacing} (sync
 points at byte positions $j K$, byte offsets implicit, used by
 default) and \emph{non-uniform spacing} (sync points at
 encoder-chosen byte positions $\Delta_0 = 0 < \Delta_1 < \cdots <
-\Delta_{m-1} < |X|$ subject to three invariants: (i) the first
+\Delta_{m-1} < |X|$ subject to four invariants: (i) the first
 sync point $\Delta_0 = 0$ (so every query position $p \in [0, |X|)$
-has some prior sync point); (ii) maximum gap
-$\Delta_{j+1} - \Delta_j \leq K$; (iii) minimum gap
-$\Delta_{j+1} - \Delta_j \geq K/2$ between consecutive sync-point
-positions, byte offsets stored explicitly per entry, used when
-token-edge alignment or other encoder constraints require it). The max-gap invariant ensures that the latest sync
+has some prior sync point); (ii) maximum gap between consecutive
+sync points $\Delta_{j+1} - \Delta_j \leq K$ for $j = 0, \dots,
+m-2$; (iii) tail gap $|X| - \Delta_{m-1} \leq K$ (so every query
+position is within $K$ bytes of its prior sync point); (iv)
+minimum gap $\Delta_{j+1} - \Delta_j \geq K/2$ for $j = 0, \dots,
+m-2$. Byte offsets are stored explicitly per entry; this variant
+is used when token-edge alignment or other encoder constraints
+require it. The max-gap invariant ensures that the latest sync
 point before any query position $p$ is within $K$ bytes of $p$, so
 the $K + k$ decode-window cost of Theorem 10.3 is preserved; the
 min-gap invariant bounds the entry count to at most
@@ -2890,12 +2893,12 @@ sync points under the floor assumption is at most
 $m \cdot S \cdot W \cdot \log_2(1/\eta)$ bits, where $m$ is the
 total number of sync points: $m = \lceil |X|/K \rceil$ for uniform
 spacing and $m \leq \lceil 2|X|/K \rceil$ for non-uniform spacing
-(Definition 10.3). So the worst-case total is at most
-$(|X|/K) \cdot S \cdot W \cdot \log_2(1/\eta)$ bits under uniform
-spacing or $(2|X|/K) \cdot S \cdot W \cdot \log_2(1/\eta)$ bits
-under non-uniform spacing, with $S$ as defined above ($S = 1$ for
-Type-I and direct byte arithmetic, $S = 2$ for per-byte sequential
-Type-III-B).
+(Definition 10.3); using $m$ rather than $|X|/K$ keeps the bound
+correct when $|X|$ is not a multiple of $K$ (e.g., when $|X| < K$
+the archive still has one sync point and $m = 1$). With $S$ as
+defined above ($S = 1$ for Type-I and direct byte arithmetic,
+$S = 2$ for per-byte sequential Type-III-B), the bound is loose
+by $S \cdot W \cdot \log_2(1/\eta)$ at most.
 Concrete-number estimates in the abstract and §11 (e.g., the
 ``approximately one percent'' figure) are heuristic conjectures
 based on empirical observations of cold-vs-warm rates for small
@@ -2943,8 +2946,11 @@ sync-point placement, each seek-index entry stores both a
 $\lceil \log_2 |X| \rceil$-bit source position and a
 $\lceil \log_2 L(R) \rceil$-bit repair-stream offset, so the
 binary-search lookup costs
-$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits; the rest of
-the analysis is unchanged.) \emph{This cost is polylogarithmic in archive size
+$O(\log m \cdot (\log |X| + \log L(R)))$ bits, where $m$ is the
+number of sync-point entries; for $|X| \geq K$ this gives
+$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits, and for
+$|X| < K$ there is a single entry and the lookup is $O(1)$. The
+rest of the analysis is unchanged.) \emph{This cost is polylogarithmic in archive size
 $|X|$ only when $K$ and $k$ are held fixed or grow at most
 polylogarithmically in $|X|$ and $L(R) = \mathrm{poly}(|X|)$; for
 $K = \Theta(|X|)$ or $k = \Theta(|X|)$ the cost is
@@ -3248,11 +3254,11 @@ spacing (or with an extra $\log(|X|/K)$ factor for non-uniform),
 independent of $|X|$ in the predictor-cost term and polylog in
 $|X|$ in the seek-index-lookup term, at a per-sync-point
 worst-case excess of $S \cdot W \cdot \log_2(1/\eta)$ bits
-(Section 10.7), giving a worst-case total of $(|X|/K) \cdot S \cdot
-W \cdot \log_2(1/\eta)$ bits over the archive for uniform spacing
-(or $(2|X|/K) \cdot S \cdot W \cdot \log_2(1/\eta)$ for non-uniform
-under Definition 10.3, where $S$ is
-symbols-emitted-per-source-byte; $S = 1$ for Type-I/direct byte
+(Section 10.7), giving a worst-case total of $m \cdot S \cdot W
+\cdot \log_2(1/\eta)$ bits over the archive where $m$ is the
+sync-point count ($m = \lceil |X|/K \rceil$ uniform, $m \leq \lceil
+2|X|/K \rceil$ non-uniform per Definition 10.3); $S$ is
+symbols-emitted-per-source-byte ($S = 1$ for Type-I/direct byte
 arithmetic, $S = 2$ for per-byte sequential Type-III-B). For
 $K = 64$ KiB, $W = 4$ KiB, $\eta = 2^{-12}$ (standard small
 uniform escape mixed with the predictor's main distribution;
@@ -3287,7 +3293,7 @@ Type-II and partition-coded Type-III-B modes, access is only
 sub-block-granular per Remark 10.3a, with a separate $O(K \cdot
 \mathrm{unrank}(K))$ per requested sub-block. For Type-III-C the
 worst-case bound depends additionally on $K$ and $\max_\tau
-|\tau|$ as detailed above. This is a capability that a capability that
+|\tau|$ as detailed above. This is a capability that
 LSTM-based or state-space-based
 neural compressors can only provide with the expensive state
 snapshots of Theorem 10.4 (4 KiB or more per sync point); that
