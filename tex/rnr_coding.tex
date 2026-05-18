@@ -78,9 +78,11 @@ dictionary). For each subtype we give a concrete construction and an
 achievability bound; a matching converse is given only for Type-I
 (Theorem 4.2). Complexity results include NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3) and of
-joint dictionary-and-predictor learning (Theorem 6.7), plus an
-APX-hardness transfer for the latter (Theorem 6.8); the analogous
-inapproximability for $E_{12}$ is open. Worked numerical examples are
+a restricted normal-form dictionary-only case of Type-III-C (Theorem
+6.7), plus an APX-hardness transfer for the same restricted case
+with an inherited constant $\gamma_{\mathrm{SGP}}>1$ (Theorem 6.8);
+hardness of the unrestricted joint (model, dictionary, repair)
+problem and the analogous inapproximability for $E_{12}$ are open. Worked numerical examples are
 given for Type-I, Type-II, and Type-III-B; III-A and III-C are
 illustrated through their composition and dictionary-construction
 sections respectively. Two structural results identify the
@@ -92,15 +94,20 @@ multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5, where the gap may
 vanish on sources without joint structure). Type-III-A admits a tight
 $2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
 lower bound Theorem 6.2). The framework's deployment-relevant feature is random-access decoding
-with cost $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ for
-$W$-bounded predictors (Theorem 10.3) --- polylogarithmic in archive
-size $N$ once the sync-point spacing $K$, read window $k$, and
-predictor cost are treated as fixed parameters. The sync-point compression overhead is bounded by
-$W \cdot (\text{cold-context rate} - \text{asymptotic rate})$ per sync
-point (Section 10.7.4); we conjecture it is on the order of one
-percent for natural data at typical parameters, but neither a tight
-upper bound in general nor a measured value on a specific corpus is
-provided here. The
+with cost
+$O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
+$W$-bounded predictors (Theorem 10.3), where $|X|$ is the
+uncompressed source length --- polylogarithmic in archive size
+$|X|$ once the sync-point spacing $K$, read window $k$, predictor
+cost, and $\log L(R)$ are treated as fixed (or polylogarithmic in
+$|X|$) parameters. Under an additional probability-floor assumption
+on the predictor (Section 10.7), the sync-point compression overhead
+per sync point is bounded by $W \cdot \log_2(1/\eta)$ where $\eta$
+is the floor (a sharper bound subtracts a warm-context rate term
+under an additional uniform-warm-rate assumption); we conjecture the
+actual overhead is on the order of one percent for natural data at
+typical parameters, but neither a tight upper bound in general nor
+a measured value on a specific corpus is provided here. The
 ratio comparison against existing dictionary-based seekable formats
 is an empirical conjecture (Section 11), not a theorem. Bit-exact cross-platform reproduction is
 reduced to a precision-and-determinism specification (Theorem 10.1);
@@ -160,12 +167,12 @@ practical deployment niches for lossless coding: archive and
 time-series storage engines inside database servers. Compressed
 read-only filesystems (squashfs, EROFS), columnar archive engines, and
 time-partitioned metric stores rely on \emph{random access} ---
-reading a byte at offset $N$ in time polylogarithmic in archive size.
-Dictionary-based seekable formats (bgzip, zstd seekable) achieve this
-operationally via independent compressed frames plus a seek index.
-Autoregressive neural byte models (NNCP and similar) do not, because
-their predictors require sequential evaluation of all bytes $[0, N)$
-before byte $N$ is available; the latent-variable lossless schemes
+reading a byte at offset $p$ in time polylogarithmic in archive
+size $|X|$. Dictionary-based seekable formats (bgzip, zstd seekable)
+achieve this operationally via independent compressed frames plus a
+seek index. Autoregressive neural byte models (NNCP and similar) do
+not, because their predictors require sequential evaluation of all
+bytes $[0, p)$ before byte $p$ is available; the latent-variable lossless schemes
 (IDF, Bit-Swap, HiLLoC) decode in block units that can be larger than
 the desired random-access granularity. The author's engineering
 experience with a Rust MySQL-compatible server motivated this
@@ -320,13 +327,14 @@ This article makes the following contributions.
   Four results on Type-III-C: the greedy MDL admission criterion
   (Theorem 6.5), the bits-back integration with an exact
   cross-entropy plus KL-divergence accounting (Theorem 6.6),
-  NP-hardness of joint dictionary-and-predictor learning under a
-  normal-form symbol-count objective (Theorem 6.7), and APX-hardness
-  transferred from the explicit $8569/8568$ inapproximability constant
-  for the Smallest Grammar Problem (Charikar et al.\ 2005, Theorem
-  6.8). We do not claim this is a complete complexity characterization
-  of Type-III-C: e.g., the exact inapproximability constant under
-  bit-cost (rather than symbol-cost) bookkeeping is open.
+  NP-hardness of the restricted (constant-predictor, normal-form
+  recursive dictionary, symbol-count objective) dictionary-learning
+  problem (Theorem 6.7), and APX-hardness of the same restricted
+  case inherited from the Smallest Grammar Problem (Lehman--Shelat
+  2002; Charikar et al.\ 2005) with constant $\gamma_{\mathrm{SGP}}
+  > 1$ (Theorem 6.8). We do not pin down the specific numerical
+  value of $\gamma_{\mathrm{SGP}}$, and we do not claim hardness of
+  the unrestricted joint problem; both are listed as open.
 \item
   A no-universal-dominance result (Theorem 8.1) establishing the
   framework's claim as conditional, and a verification-discipline
@@ -344,10 +352,11 @@ This article makes the following contributions.
   and testing.
 \item
   Random-access (seek-and-read) capability with cost
-  $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ --- polylogarithmic
-  in archive size $N$ once sync-point spacing $K$, read window $k$,
-  and predictor cost are held fixed --- via Theorem 10.3 with
-  Definitions 10.2, 10.3 of $W$-bounded predictors and sync points.
+  $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$
+  --- polylogarithmic in archive size $|X|$ once sync-point spacing
+  $K$, read window $k$, predictor cost, and $\log L(R)$ are held
+  fixed (or polylog in $|X|$) --- via Theorem 10.3 with Definitions
+  10.2, 10.3 of $W$-bounded predictors and sync points.
   Theorem 10.4 covers non-$W$-bounded predictors via state snapshots.
   The sync-point compression overhead for natural data is estimated
   in §10.7.4; a tight worst-case bound in general is not proved. The
@@ -358,7 +367,12 @@ This article makes the following contributions.
   Block-device and read-only filesystem deployment as direct
   corollaries (Theorems 10.5 and 10.6 in §10.8): an OS-level driver
   can serve LBA-indexed read requests with cost polylogarithmic in
-  archive size (Theorem 10.5), and the predictor can be required to
+  archive size $|X|$ in the parameter regime where the sync-point
+  spacing $K$, read window $k$, predictor cost $\mathrm{cost}(M)$,
+  and seek-index entry width $\log L(R)$ are fixed or grow at most
+  polylogarithmically in $|X|$, and additionally
+  $L(R) = \mathrm{poly}(|X|)$ (Theorem 10.5); and the predictor can
+  be required to
   run bit-exactly on any hardware target satisfying the conformance
   specification of Theorem 10.1 (Theorem 10.6). Specific target
   classes named in the spec (CPU scalar, CPU SIMD including
@@ -1269,10 +1283,13 @@ most $(4 - c)N + O(\log N)$ bits per block, when amortized over
 $B_N = \Omega(N^2)$ blocks sharing the same generator-matrix model
 header. The amortized per-block separation is therefore $\Theta(N)$.}
 
-\emph{\textbf{Proof.}} Fix a parameter $c \in (0, 4)$ and set
-$d := (4 - c) N$ (the message dimension). Let $G$ be a
-$d \times 4N$ generator matrix over $\mathrm{GF}(2)$ of a linear
-code $C_N$ satisfying the following two properties:
+\emph{\textbf{Proof.}} Fix a rational parameter $c \in (0, 4)$ and
+set $d := \lfloor (4 - c) N \rfloor$ (the integer message
+dimension; the floor causes at most a $1/N$ additive loss in $c$
+that is absorbed into the $O(\log N)$ slack of the theorem
+statement and does not affect the $\Theta(N)$ amortized separation).
+Let $G$ be a $d \times 4N$ generator matrix over $\mathrm{GF}(2)$
+of a linear code $C_N$ satisfying the following two properties:
 \begin{itemize}
 \item[\textbf{(P1)}]
 for every codeword position $j \in \{1, \ldots, 4N\}$, the $j$-th
@@ -1311,7 +1328,7 @@ Let $S_N \subset \{0, \ldots, 15\}^N$ be the image of all $2^d$
 messages under $G$, with the $4N$ output bits parsed as $N$ nibbles.
 Property \textbf{(P3)} implies that $G$ has full row rank $d$, so the
 encoding map $m \mapsto mG$ is injective and
-$|S_N| = 2^d = 2^{(4-c)N}$. Define $D_N$ as the uniform distribution
+$|S_N| = 2^d = 2^{\lfloor (4-c)N \rfloor}$. Define $D_N$ as the uniform distribution
 on $S_N$.
 
 \textbf{(i) Marginal uniformity.} Fix a nibble position
@@ -1337,16 +1354,18 @@ $Q^{\text{marg}}$, up to the redundancy $\varepsilon_N$.
 encodes membership in $S_N$ as the unique $d$-bit message index per
 block, followed by deterministic expansion via $G$, achieves per-block
 content length
-$\log_2 |S_N| + \varepsilon_N = d + \varepsilon_N = (4 - c)N +
-\varepsilon_N$ bits, i.e., savings of $4N - d = cN$ bits per block
-\emph{before} model-header amortization. Describing the generator
-matrix $G$ itself costs $L(G) = d \cdot 4N = 4(4-c)N^2$ bits, paid
-once and absorbed into the $L(M_{\text{pos}})$ term of (3.1). When
-the same $G$ is reused across $B_N$ blocks, the per-block model
-contribution is $L(G)/B_N$; taking $B_N = \Omega(N^2)$ (e.g.,
-$B_N = N^2$) makes this $O(1)$ bits per block, absorbed into the
-$O(\log N)$ overhead. For fewer blocks the per-block cost is
-correspondingly higher.
+$\log_2 |S_N| + \varepsilon_N = d + \varepsilon_N \leq (4 - c)N +
+\varepsilon_N$ bits (with the $\leq$ from the floor in
+$d = \lfloor (4-c)N \rfloor$, an additive loss of at most $1$ bit
+absorbed into the $O(\log N)$ slack), i.e., savings of at least
+$4N - (4-c)N = cN$ bits per block \emph{before} model-header
+amortization. Describing the generator matrix $G$ itself costs
+$L(G) = d \cdot 4N \leq 4(4-c)N^2$ bits, paid once and absorbed
+into the $L(M_{\text{pos}})$ term of (3.1). When the same $G$ is
+reused across $B_N$ blocks, the per-block model contribution is
+$L(G)/B_N$; taking $B_N = \Omega(N^2)$ (e.g., $B_N = N^2$) makes
+this $O(1)$ bits per block, absorbed into the $O(\log N)$ overhead.
+For fewer blocks the per-block cost is correspondingly higher.
 
 \textbf{(iv) Separation.} The linear-code joint coder of step (iii)
 transmits only the $d$-bit message index per block; the decoder
@@ -1356,12 +1375,13 @@ fixes $|S_N| = 2^d$ and the marginals are uniform by step (i)).
 Subtracting the per-block upper bound (iii) from the per-block lower
 bound (ii) thus gives
 \[
-\Delta(N) = 4N - \left[(4 - c)N + \varepsilon_N\right] = cN - \varepsilon_N = \Theta(N)
+\Delta(N) \geq 4N - \left[(4 - c)N + \varepsilon_N + 1\right] = cN - \varepsilon_N - 1 = \Theta(N)
 \]
 for any fixed $c \in (0, 4)$, once the one-time generator-matrix
-description $L(G) = 4(4-c)N^2$ is amortized across $B_N = \Omega(N^2)$
+description $L(G) \leq 4(4-c)N^2$ is amortized across $B_N = \Omega(N^2)$
 blocks (the per-block model contribution then absorbs into the
-$O(1)$ overhead). \hfill$\blacksquare$
+$O(1)$ overhead). The $-1$ from the floor in $d$ is absorbed.
+\hfill$\blacksquare$
 
 Theorem 5.4 establishes that semi-non-factorized Type-II strictly
 separates from \emph{factorized marginal} per-position coders: coders
@@ -1370,8 +1390,8 @@ each position's marginal $Q^{\text{marg}}_v(i)$, with no joint
 conditioning. A genuine autoregressive coder (PixelRNN, PixelCNN,
 NNCP) that uses chain-rule conditionals
 $Q(x_i \mid x_1, \ldots, x_{i-1})$ can in principle achieve the
-joint entropy $H(D_N) = (4 - c)N$ on the same $D_N$ and is
-\emph{not} separated by Theorem 5.4; the relevant boundary is
+joint entropy $H(D_N) = \lfloor (4 - c)N \rfloor$ on the same $D_N$
+and is \emph{not} separated by Theorem 5.4; the relevant boundary is
 between models with and without joint conditioning, not between RNN
 and CNN architectures. The separation is $\Theta(N)$, not
 $\Theta(\log N)$: joint structure beyond per-position marginals can
@@ -1379,7 +1399,7 @@ carry a constant fraction of a bit per position even for the
 marginal-conditioning case. The linear-code
 family used in the proof is a worst case for factorized models
 (marginals are exactly uniform) and a best case for joint coders (the
-joint distribution lives on a $2^{(4-c)N}$-element set). Realistic
+joint distribution lives on a $2^{\lfloor (4-c)N \rfloor}$-element set). Realistic
 data classes interpolate between these extremes; the practical regime
 in which Type-II is advantageous is one where the data lives on a
 small, structurally describable subset of $\{0, \ldots, 15\}^N$ whose
@@ -1451,9 +1471,9 @@ is a standard consequence of the chain rule for entropy; the novelty
 is the placement of this quantity as the operational separator
 between Type-I and Type-II under the RNR framework. The $\Theta(N)$
 separation observed in Theorem 5.4 corresponds to
-$\mathrm{TC} = cN$ for the linear-code family (sum of marginals
-$\sum_i H_{\text{marg}}(X_i) = 4N$ minus joint entropy
-$H(D_N) = (4-c)N$). For general
+$\mathrm{TC} \geq cN - 1$ for the linear-code family (sum of
+marginals $\sum_i H_{\text{marg}}(X_i) = 4N$ minus joint entropy
+$H(D_N) = \lfloor (4-c)N \rfloor$). For general
 $D_N$, the magnitude of $\mathrm{TC}(D_N)$ determines whether Type-II
 provides a constant-factor or vanishing improvement over factorized
 coding.
@@ -1505,21 +1525,36 @@ arithmetic coder under the uniform marginal pays approximately 4096
 bits. The multinomial coder saves 75 bits just from the count
 constraint alone.
 
-Suppose a positional predictor narrows each symbol's candidate support
-to $s_v = 256$ with no escapes, so $\alpha_v = 0$. The Type-II
-residual cost is
+Suppose a positional predictor narrows each symbol's candidate
+support to $s_v \leq 256$ with no escapes ($\alpha_v = 0$).
+Theorem 5.3's chained residual requires
+$s'_v = |S_v \cap A_v|$, and since $|A_v|$ shrinks by $k_{v-1} = 64$
+after each symbol is placed, the chain is
+$|A_0|, |A_1|, \dots, |A_{15}| = 1024, 960, \dots, 64$. The
+predictor's intended support size $s_v = 256$ is achievable as
+$s'_v = 256$ only when $|A_v| \geq 256$, i.e., for $v = 0, \dots,
+12$ (with $|A_{12}| = 256$); for $v = 13, 14, 15$ the chain caps
+the support at $|A_v| = 192, 128, 64$ respectively. Under the
+best-case chaining (the predictor picks $S_v \subseteq A_v$ at each
+step), the Type-II residual cost is
 \[
-\sum_v \log_2 \binom{256}{64} = 16 \cdot \log_2 \binom{256}{64} \approx 16 \cdot 203.6 = 3258 \text{ bits,}
+\sum_{v=0}^{12} \log_2 \binom{256}{64}
++ \log_2 \binom{192}{64}
++ \log_2 \binom{128}{64}
++ \log_2 \binom{64}{64}.
 \]
-for an apparent gain of $4021 - 3258 \approx 763$ bits over the
-multinomial baseline. Adding a model cost of, say, 200 bytes = 1600
-bits amortized over $m = 8$ blocks gives 200 bits per block, leaving an
-effective gain of approximately 563 bits per block. This is a saving
-of roughly 70 bytes per 512-byte equivalent block, a competitive
-figure on structured positional data. The estimate
-$\log_2 \binom{256}{64} \approx 203.6$ uses Stirling:
-$\log_2 \binom{N}{k} = N \cdot H(k/N) - \tfrac{1}{2} \log_2(2\pi N p(1-p)) + O(1/N)$,
-which for $N = 256, p = 1/4$ gives $207.69 - 4.12 \approx 203.57$.
+Using
+$\log_2 \binom{N}{k} = N \cdot H_2(k/N) - \tfrac{1}{2} \log_2(2\pi N p(1-p)) + O(1/N)$,
+the four binomials evaluate to approximately $203.6$, $172.3$,
+$124.2$, and $0$ bits respectively, giving a total of
+$13 \cdot 203.6 + 172.3 + 124.2 + 0 \approx 2943$ bits. Compared to
+the multinomial baseline of $4021$ bits, the apparent gain is
+$4021 - 2943 \approx 1078$ bits per block. Adding a model cost of,
+say, $200$ bytes $= 1600$ bits amortized over $m = 8$ blocks gives
+$200$ bits per block, leaving an effective gain of approximately
+$878$ bits per block. This is a saving of roughly $110$ bytes per
+$512$-byte equivalent block, a competitive figure on structured
+positional data.
 
 \textbf{5.8 Support selection and the arithmetic-coding benchmark}
 
@@ -1701,9 +1736,17 @@ independent nibble coding is}
 \]
 
 \emph{the conditional mutual information between the high and low
-nibble given context. Type-III-B is conditionally advantageous over
-Type-II at the nibble alphabet whenever $I(H ; L \mid C)$ exceeds the
-additional model and metadata cost of byte-tensor prediction.}
+nibble given context, in bits per position. For a block of $N$
+positions, Type-III-B is conditionally advantageous over Type-II at
+the nibble alphabet whenever the total saving
+$\sum_{i=1}^{N} I(H_i ; L_i \mid C_i)$ exceeds the additional model
+and metadata cost
+$L(M_{\mathrm{III\text{-}B}}) - L(M_{\mathrm{II}}) + L(\Theta_{\mathrm{III\text{-}B}}) - L(\Theta_{\mathrm{II}})$
+of the byte-tensor predictor (both sides in bits, both summed over
+the block); equivalently, when amortized per position, whenever
+$\overline{I(H;L \mid C)}$ exceeds
+$[L(M_{\mathrm{III\text{-}B}}) - L(M_{\mathrm{II}}) + L(\Theta_{\mathrm{III\text{-}B}}) - L(\Theta_{\mathrm{II}})] / N$
+in bits per position.}
 
 \emph{\textbf{Proof.}} By the chain rule of entropy,
 $H(H, L \mid C) = H(H \mid C) + H(L \mid H, C)$. Subtracting from
@@ -1727,26 +1770,46 @@ of nested binary partitions of the alphabet. Encoding a byte $b$ under
 $T$ by traversing root-to-leaf and encoding the binary decision at
 each node with the \emph{exact induced conditional probability} of
 that decision under $P(B \mid C)$ given the prior decisions on the
-path achieves expected length $H(B \mid C)$. The expected cost is
-independent of the tree shape $T$; it depends only on the joint
-distribution $P(B \mid C)$. \emph{Caveat:} this invariance fails if
-the decisions are coded with fixed branch probabilities (e.g., 1/2
-each) instead of the induced conditional --- in that case the depth
-of $T$ dominates, and a left-skewed tree pays substantially more than
-a balanced one. The theorem applies only to coders that use the
-\emph{exact} induced conditional probability at each node.}
+path, with an ideal sequential entropy coder (e.g.\ arithmetic
+coding in the asymptotic-redundancy limit), achieves expected
+\emph{ideal} length $H(B \mid C)$ per byte. The expected ideal cost
+is independent of the tree shape $T$; it depends only on the joint
+distribution $P(B \mid C)$. Practical prefix-code constructions
+(Huffman, etc.) achieve $H(B \mid C) + O(1)$ per byte; arithmetic
+or ANS coders achieve $H(B \mid C) + o(1)$ amortized over many
+bytes (Witten--Neal--Cleary 1987; Duda 2009). \emph{Caveat:} this
+invariance fails if the decisions are coded with fixed branch
+probabilities (e.g., 1/2 each) instead of the induced conditional
+--- in that case the depth of $T$ dominates, and a left-skewed tree
+pays substantially more than a balanced one. The theorem applies
+only to coders that use the \emph{exact} induced conditional
+probability at each node.}
 
-\emph{\textbf{Proof.}} By the chain rule of entropy, for any sequence
-of random variables $Z_1, \ldots, Z_L$ that together determine $B$,
+\emph{\textbf{Proof.}} Fix any rooted binary tree $T$ on the 256
+byte values. For each byte value $b$, let $\pi_T(b) = (z_1, z_2,
+\ldots, z_{\ell_T(b)}) \in \{0,1\}^\star$ denote the unique
+root-to-leaf path on $T$, of $T$-dependent depth $\ell_T(b)$ (a
+path-length integer, not a code-length). The map $b \mapsto
+\pi_T(b)$ is a bijection onto a prefix-free set of binary strings
+(the leaves of $T$), so
+$\Pr(\pi_T(B) = (z_1, \dots, z_{\ell_T(B)}) \mid C) = \Pr(B = b \mid C)$
+for the unique $b$ whose path is $(z_1, \dots, z_{\ell_T(B)})$.
+Encoding $b$ by sequentially passing the bits of $\pi_T(b)$ to an
+ideal sequential entropy coder (Shannon-Fano arithmetic, range, or
+ANS in the asymptotic-redundancy limit), with each bit's coding
+probability set to its \emph{exact induced conditional}
+$\Pr(z_l = 1 \mid z_1, \ldots, z_{l-1}, C)$, gives an
+ideal-coder code length of
+$-\log_2 \Pr(\pi_T(B) \mid C) = -\log_2 \Pr(B \mid C)$ bits per
+byte. Taking expectation under $B \sim P(\cdot \mid C)$:
 \[
-H(B \mid C) = H(Z_1 \mid C) + H(Z_2 \mid Z_1, C) + \cdots + H(Z_L \mid Z_1, \ldots, Z_{L-1}, C).
+\mathbb{E}_B[\text{ideal code length}] = \mathbb{E}_B[-\log_2 \Pr(B \mid C)] = H(B \mid C),
 \]
-The tree $T$ defines a particular such sequence: $Z_l$ is the binary
-decision at depth $l$ on the path to $B$'s leaf. By the chain rule,
-the sum of conditional entropies equals $H(B \mid C)$ regardless of
-which decisions are encoded first. Different trees $T_1$ and $T_2$
-simply reorder the conditional entropies, and reordering does not
-change their sum. \hfill$\blacksquare$
+which is independent of $T$. (Note that the \emph{path length}
+$\mathbb{E}_B[\ell_T(B)]$ does depend on $T$, and is in general
+much larger than $H(B \mid C)$ for unbalanced trees; the
+invariance is the expected entropy-coded length, not the expected
+path length.) \hfill$\blacksquare$
 
 The practical implication is that the choice of decomposition tree
 for Type-III-B (high-low, or any other binary split) affects
@@ -1811,10 +1874,13 @@ formalized in the next theorem.
 else frozen).} \emph{Let $\tau$ be a candidate token of byte length
 $\ell$. Fix a parser that produces a non-overlapping token cover of
 the corpus and let $f$ be the \emph{realized} count of $\tau$ in
-that parse (the non-overlapping selected parse frequency, which can
-be strictly less than the raw occurrence count when $\tau$
-self-overlaps; e.g., for $\tau = $ \texttt{aa} in the string
-\texttt{aaa}, the raw count is $2$ but $f = 1$). Let
+that parse, restricted to positions currently parsed as raw
+literals (i.e., not already covered by any token already in $D$).
+This count can be strictly less than the raw occurrence count when
+$\tau$ self-overlaps; e.g., for $\tau = $ \texttt{aa} in the
+string \texttt{aaa}, the raw count is $2$ but $f = 1$. Positions
+where $\tau$ would overlap an existing token are excluded from $f$
+by the frozen-parser assumption below. Let
 $\mathrm{code\_cost}(\tau)$ be the average bit length to encode an
 occurrence of $\tau$ under the predictor and entropy coder,
 $\mathrm{dictionary\_cost}(\tau)$ the bit length to describe $\tau$
@@ -1859,9 +1925,14 @@ savings cover their description. The criterion is greedy in that it
 evaluates each candidate $\tau$ marginally, assuming the rest of the
 dictionary is fixed; it is not a global MDL optimum, since admitting
 $\tau$ can change the optimal parse and the
-$\mathrm{code\_cost}$ of other tokens. The global problem is
-addressed by Theorems 6.7 and 6.8 below, where it is shown to be
-NP-hard and APX-hard. For a corpus encoded across many archives,
+$\mathrm{code\_cost}$ of other tokens. The closest computational
+counterpart we prove is the restricted normal-form dictionary-only
+problem of Theorems 6.7 and 6.8 below, which is shown to be NP-hard
+and APX-hard with constant $\gamma_{\mathrm{SGP}} > 1$; the fully
+global Type-III-C problem (with model, dictionary, parser, and
+repair stream all free) is conjectured at least as hard but its
+formal hardness is open (§13.2). For a corpus encoded across many
+archives,
 $\mathrm{dictionary\_cost}$ is amortized and the greedy admission
 criterion grows more permissive.
 
@@ -1876,9 +1947,18 @@ and shows how bits-back fits into the $L(R \mid Y)$ decomposition of
 §3.3.
 
 \textbf{Theorem 6.6 (Bits-back integration into the RNR
-decomposition).} \emph{Let $z$ be a continuous latent variable of a
-variational model with prior $P(z \mid Y)$, conditional
-$P(X \mid z, Y)$, and variational posterior $q(z \mid X, Y)$. Under
+decomposition).} \emph{Let $z$ be a latent variable of a variational
+model with prior $P(z \mid Y)$, conditional $P(X \mid z, Y)$, and
+variational posterior $q(z \mid X, Y)$. \emph{Quantization
+convention for continuous latents:} when $z$ is continuous, fix a
+finite-precision discretization $\Delta$ of the latent space common
+to encoder and decoder (e.g., $b$-bit fixed-point per coordinate as
+used by Townsend-Bird-Barber's BB-ANS implementation), and read all
+densities below as probability masses on the discretization cells.
+With this convention $-\log_2 P(z \mid Y)$ and $-\log_2 q(z \mid X,
+Y)$ are finite code lengths and the dictionary case is the trivial
+discretization where $z$ takes values in a discrete set of token
+identifiers (so $\Delta$ disappears). Under
 bits-back ANS coding with auxiliary bits used to sample $z$ from $q$,
 the effective Type-III-C repair length is
 $L(R \mid Y) = L_{\text{prior}}(z \mid Y) + L_{\text{cond}}(X \mid z, Y) - L_{\text{aux}}(z)$,
@@ -1897,16 +1977,18 @@ the cross-entropy of the data under the model. The bits-back rate
 equals the conditional entropy $H_D(X \mid Y)$ only when the model
 marginal matches the data conditional ($D = P_X$) and $q$ equals the
 true posterior; under both conditions matching the Slepian-Wolf lower
-bound. Type-III-C with continuous latents is therefore a strict
+bound. Type-III-C with quantized continuous latents is therefore a strict
 generalization of Type-III-C with a discrete dictionary, with the
-dictionary case as the degenerate limit $q \to \delta$ at the nearest
-discrete token.}
+dictionary case recovered when the discretization $\Delta$ identifies
+$q$ with a point mass on a single discrete token.}
 
-\emph{\textbf{Proof.}} The three-stream bits-back coder transmits
-$\log_2 \tfrac{1}{P(z \mid Y)}$ bits for the latent under the prior,
-$\log_2 \tfrac{1}{P(X \mid z, Y)}$ bits for the data under the
-conditional, and recovers $\log_2 \tfrac{1}{q(z \mid X, Y)}$ bits from
-the auxiliary stream (used to sample $z$). Net code length:
+\emph{\textbf{Proof.}} Under the quantization convention $\Delta$,
+the three-stream bits-back coder transmits
+$\log_2 \tfrac{1}{P(z \mid Y)}$ bits for the latent under the
+discretized prior, $\log_2 \tfrac{1}{P(X \mid z, Y)}$ bits for the
+data under the conditional, and recovers
+$\log_2 \tfrac{1}{q(z \mid X, Y)}$ bits from the auxiliary stream
+(used to sample $z$). Net code length:
 \[
 \begin{aligned}
 &-\log_2 P(z \mid Y) - \log_2 P(X \mid z, Y) + \log_2 q(z \mid X, Y) \\
@@ -1991,11 +2073,16 @@ unrestricted solver recover the restricted optimum. We leave the
 formal unrestricted hardness as an open problem.
 \hfill$\blacksquare$
 
-Theorems 6.6 and 6.7 together establish the boundary of what is
-achievable in Type-III-C. Bits-back gives the optimal rate for any
-joint (model, posterior) pair (Theorem 6.6), but finding the optimal
-pair is computationally intractable (Theorem 6.7). Practical
-implementations therefore use heuristic dictionary learning (BPE,
+Theorems 6.6 and 6.7 together delineate one slice of the
+achievability boundary in Type-III-C. Bits-back gives the optimal
+rate for any joint (model, posterior) pair (Theorem 6.6); finding
+the optimal pair in the joint (model, dictionary, repair) problem
+is not directly proven intractable by Theorem 6.7, which establishes
+NP-hardness only for the restricted normal-form dictionary-only
+case under the symbol-count objective $L_{\mathrm{sym}}$.
+Conjecturally the unrestricted joint problem is at least as hard,
+but a formal hardness reduction is open (see §13.2). Practical
+implementations nonetheless use heuristic dictionary learning (BPE,
 MDL-greedy, neural codebook learning) and amortized variational
 inference, both of which sacrifice optimality for tractability.
 
@@ -2011,8 +2098,9 @@ SGP unless $P = NP$ (Lehman and Shelat 2002; Charikar et al.\ 2005),
 and the bijection of Theorem 6.7 transfers this hardness to the
 restricted Type-III-C objective with the same constant. The
 APX-hardness of the unrestricted joint problem is left open for the
-same reason as in Theorem 6.7: the objective changes and the
-inclusion is non-trivial.}
+same reason as in Theorem 6.7: the feasible set is strictly larger
+and the objective function differs, so neither inclusion nor a
+direct gap-preserving reduction is available.}
 
 \emph{\textbf{Proof.}} We show that the reduction
 $\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 preserves
@@ -2040,21 +2128,23 @@ specific numeric constant here). Combined with the exact bijection
 above, a polynomial-time $\alpha$-approximation for the restricted
 Type-III-C problem with $\alpha < \gamma_{\mathrm{SGP}}$ would yield
 a polynomial-time approximation to SGP below the established
-threshold, contradicting $P \neq NP$. The unrestricted Type-III-C
-problem is at least as hard (by the inclusion argument of Theorem
-6.7), so the same APX-hardness transfers. \hfill$\blacksquare$
+threshold, contradicting $P \neq NP$. The unrestricted joint
+problem is not addressed by this argument: as in Theorem 6.7, the
+restricted feasible region is strict but the objective also
+changes, so an unrestricted approximation does not project back to
+a restricted-objective approximation. We leave the unrestricted
+APX-hardness open. \hfill$\blacksquare$
 
 \textbf{Remark on the constant.} The numerical value of
 $\gamma_{\mathrm{SGP}}$ in the SGP literature is small (close to 1)
 and depends on the specific reduction used; we do not assert a
-specific figure here. For the unrestricted Type-III-C objective
-(with bit-cost bookkeeping rather than symbol-cost), the inherited
-constant is at most $\gamma_{\mathrm{SGP}}$ divided by the
-worst-case per-symbol encoding ratio
-$\lceil \log_2(|\Sigma|+K) \rceil$, which is bounded on any fixed
-family of instances. We claim only that \emph{some} constant $\gamma >
-1$ exists in the general case; pinning down the optimal constant for
-a specific encoding convention, and verifying which source paper
+specific figure here. The constant $\gamma_{\mathrm{SGP}}$ inherited
+by Theorem 6.8 applies to the \emph{restricted} symbol-count
+objective only; we do not claim that any constant $\gamma > 1$
+inherits to the unrestricted bit-cost objective, since the latter
+problem's APX-hardness is itself open (see §13.2). Pinning down a
+specific numerical value of $\gamma_{\mathrm{SGP}}$ for any
+particular encoding convention, and verifying which source paper
 establishes which exact constant, is left to follow-up work.
 
 Together, Theorems 6.7 and 6.8 confirm that the heuristic nature of
@@ -2104,11 +2194,22 @@ $0 \mid 10$ or $01 \mid 0$, ambiguously. The framing assumption
 removes this ambiguity by fixing tile boundaries explicitly.
 \hfill$\blacksquare$
 
-Composition also implies a strict no-regret guarantee for the
-framework as a whole: by including every coder in $M$, the Type-III-A
-composition is at worst within $2 \max_t \varepsilon_t$ of the best
-single coder per tile, and strictly better than any single coder on
-heterogeneous data where the per-tile best mode varies.
+Composition implies an approximate-oracle bound (not a strict
+no-regret guarantee): by Theorem 6.1, including every coder in $M$
+makes the Type-III-A composition's total cost at worst within
+$2 \sum_t \varepsilon_t$ of the per-tile oracle (which picks the
+true argmin mode per tile). This is also at worst within
+$2 \sum_t \varepsilon_t$ of any fixed single coder $m^\star$ on the
+same data, since the per-tile oracle dominates any fixed single
+coder pointwise. When the per-tile best mode varies non-trivially across tiles
+(i.e., no single coder is among the per-tile argmin set on every
+tile), the per-tile oracle is strictly better than any fixed single
+coder; under ties (some tile has multiple argmin modes including
+$m^\star$) the oracle and $m^\star$ may agree on cost. The
+composition inherits a strict improvement only insofar as
+$2 \sum_t \varepsilon_t$ remains below that gap, which is itself an
+empirical property of the prediction calibration and is not
+guaranteed in general.
 
 \textbf{7.2 Runtime parameter selection}
 
@@ -2191,14 +2292,22 @@ explicit framing).} \emph{Assume the archive header stores, for each
 subblock $i$, an explicit byte/bit-offset into the repair stream
 (framing), so that subblock $i + 1$'s repair-stream slice is parsed
 from a fixed position independent of the bytes recovered in
-subblock $i$. Suppose further that the predictor uses a
-\emph{context-reset boundary} at each subblock break: the input to
-$M$ for subblock $i + 1$ is a function only of public boundary
-state (a stored state snapshot in the archive header, or a fixed
-context-reset value), not of the recovered bytes of subblock $i$.
-Finally, suppose $H_v$ is a cryptographic hash with negligible
-collision probability $\delta$ on the considered set of candidate
-subblocks. Then the probability that an incorrect $\hat{X}_i$ is
+subblock $i$. Suppose the decoder uses the following
+\emph{verified-only context-update rule}: after producing the
+candidate $\hat{X}_i$, the decoder evaluates
+$H_v(\hat{X}_i) \stackrel{?}{=} v_i$, and only on equality does it
+extend the predictor context $C$ with $\hat{X}_i$ for predicting
+subblock $i + 1$; on mismatch the decoder aborts (or marks the
+remainder unverified and does not update $C$). The predictor input
+for subblock $i+1$ is therefore a function only of (a)~the
+verified-bytes context $C$ built from $\{\hat{X}_j : j \leq i,
+H_v(\hat{X}_j) = v_j\}$ together with any public boundary state in
+the header; the rule permits but does not require a hard
+\emph{context-reset boundary} (i.e., dropping the verified-bytes
+context at each subblock break). Finally, suppose $H_v$ is a
+cryptographic hash with negligible collision probability $\delta$
+on the considered set of candidate subblocks. Then the probability
+that an incorrect $\hat{X}_i$ (one with $\hat{X}_i \neq X_i$) is
 used to update the predictor context or repair-stream parsing for
 subblock $i + 1$ is at most $\delta$.}
 
@@ -2347,16 +2456,29 @@ implementations, hence the final $M(C)$ is identical.
 The bit-width condition is per layer. If each layer renormalizes or
 clips outputs so that $|x| \leq I_{\max}$ holds uniformly, then a
 uniform sufficient condition is
-$b \geq \lceil \log_2(d_{\max} \cdot W_{\max} \cdot I_{\max}) \rceil + 1$,
-where $d_{\max} = \max_\ell d_\ell$ is the maximum fan-in. Without
-inter-layer renormalization, intermediate magnitudes can grow
-recursively: $I_\ell \leq d_\ell \cdot W_\ell \cdot I_{\ell-1}$ in
-the worst case, so $I_\ell \leq I_0 \prod_{r \leq \ell} d_r W_r$ and
-depth enters multiplicatively, not linearly. In practice, with
-quantized activations clipped to $I_{\max} \leq 2^{16}$ and weight
-entries bounded by $W_{\max} \leq 2^{16}$ at each layer, $b = 32$
-suffices for any fan-in $d_{\max} \leq 2^{16}$, which covers all
-practical predictor sizes. The non-linearity table requirement
+$b \geq \lceil \log_2(d_{\max} \cdot W_{\max} \cdot I_{\max} + 1) \rceil + 1$,
+where $d_{\max} = \max_\ell d_\ell$ is the maximum fan-in (the $+1$
+inside the $\log$ matches the asymmetric signed-integer range, as in
+the per-layer bound). Without inter-layer renormalization,
+intermediate magnitudes can grow recursively:
+$I_\ell \leq d_\ell \cdot W_\ell \cdot I_{\ell-1}$ in the worst
+case, so $I_\ell \leq I_0 \prod_{r \leq \ell} d_r W_r$ and depth
+enters multiplicatively, not linearly. Numerical sanity check: for
+int8 quantization with $I_{\max} = W_{\max} = 2^7$ and fan-in
+$d_{\max} = 2^{12}$ (4096-channel matrix-vector product), the
+worst-case sum is bounded by $2^{12} \cdot 2^7 \cdot 2^7 = 2^{26}$,
+so $b = 32$ suffices with comfortable headroom. For int16
+quantization with $I_{\max} = W_{\max} = 2^{15}$ and the same
+fan-in, the worst-case sum is $2^{12} \cdot 2^{15} \cdot 2^{15} =
+2^{42}$, so $b \geq 44$ is needed (in practice $b = 64$ is the next
+natural width; $b = 32$ overflows by 10+ bits at this fan-in;
+only the degenerate scalar case $d_{\max} = 1$ gives a worst-case
+product of at most $2^{30}$ and fits $b = 32$; any matrix-vector
+layer with fan-in $d_{\max} \geq 2$ under int16 weight and
+activation bounds exceeds $2^{31}$ in the worst case and requires
+$b \geq 33$). int16-only deployments must
+either use 64-bit accumulators or insert per-layer renormalization
+to bound $I_\ell$ at runtime. The non-linearity table requirement
 excludes any function involving real-valued division, square root, or
 transcendentals; sigmoid, tanh, GELU, and softmax must be replaced by
 piecewise-linear or integer-quantized approximations, which is
@@ -2418,36 +2540,49 @@ random masking.
 
 \textbf{Theorem 10.2 (Bit-exact adaptive predictors, causal updates).}
 \emph{Suppose the forward pass of $M$ satisfies the conditions of
-Theorem 10.1. Suppose the encoder updates $M$ online via a compatible
-online optimizer (Definition 10.1) with gradient computed by
-deterministic integer backpropagation. Suppose the order in which
-subblocks are used for adaptation is pinned by the model description
-and identical on encoder and decoder. Suppose further the
-\emph{causal-update condition}: the encoder's adaptation step at
-subblock boundary $t$ uses only data already available to the decoder
-at that boundary (i.e., bytes from subblocks $0, \ldots, t$ all of
-which the decoder has already verified per Theorem 9.1 before
-predicting subblock $t+1$). Then at every subblock boundary, the
-encoder's and decoder's parameter states are bit-identical, and the
-resulting predictor outputs are bit-identical. \emph{Caveat:} without
-the causal-update condition (e.g., if the encoder updates using the
-current byte before encoding it), the decoder cannot replicate the
-same update sequence, and parameter states diverge despite
-deterministic backprop and pinned order.}
+Theorem 10.1, and the \emph{backward pass} (integer backpropagation)
+satisfies the same four conditions independently: (i)~all backward
+operands and gradient buffers are integers, (ii)~every accumulator
+in any backward matrix-vector or reduction has signed bit-width
+$b^{\mathrm{bwd}}_\ell$ satisfying the per-layer bound of
+Theorem 10.1 applied to the backward operation's fan-in, weight
+magnitude, and incoming-gradient magnitude bounds; (iii)~every
+derivative-of-non-linearity is a deterministic integer-to-integer
+lookup table; (iv)~every backward reduction follows a fixed,
+deterministic order specified by the model description. Suppose the
+encoder updates $M$ online via a compatible online optimizer
+(Definition 10.1) using the gradient computed by this backward
+pass. Suppose the order in which subblocks are used for adaptation is
+pinned by the model description and identical on encoder and
+decoder. Suppose further the \emph{causal-update condition}: the
+encoder's adaptation step at subblock boundary $t$ uses only data
+already available to the decoder at that boundary (i.e., bytes from
+subblocks $0, \ldots, t$ all of which the decoder has already
+verified per Theorem 9.1 before predicting subblock $t+1$). Then at
+every subblock boundary, the encoder's and decoder's parameter
+states are bit-identical, and the resulting predictor outputs are
+bit-identical. \emph{Caveat:} without the causal-update condition
+(e.g., if the encoder updates using the current byte before encoding
+it), the decoder cannot replicate the same update sequence, and
+parameter states diverge despite deterministic backprop and pinned
+order; without the backward-pass conformance conditions, two
+implementations sharing a compatible optimizer can still compute
+different gradients (e.g., one wrapping, another saturating an
+accumulator overflow) and so diverge.}
 
 \emph{\textbf{Proof.}} Induction on the adaptation step $t$. Base
 case ($t = 0$): the initial parameter state is part of $L(M)$ and is
 bit-identical by construction. Induction step ($t \to t+1$): assume
 $S_t$ is bit-identical between encoder and decoder. The subblock
 $X_t$ used for adaptation is verified by Theorem 9.1 to be the same
-on both sides. The gradient
-$g_t = \nabla \mathcal{L}(X_t; S_t)$ is computed by deterministic
-integer backpropagation. Integer backpropagation through a forward
-pass satisfying Theorem 10.1's conditions is itself deterministic
-(each backward operation is an integer matrix-vector product with a
-fixed reduction order, followed by an integer-to-integer
-derivative-of-non-linearity table). Therefore $g_t$ is bit-identical
-on both sides. The update $S_{t+1} = \mathrm{Opt}(S_t, g_t)$ applies
+on both sides. The gradient $g_t = \nabla \mathcal{L}(X_t; S_t)$ is
+computed by integer backpropagation satisfying the four backward
+conformance conditions (i)--(iv) above; by the same argument as in
+Theorem 10.1 (no overflow, deterministic reduction order,
+deterministic non-linearity-derivative tables, integer inputs),
+each backward layer's output is bit-identical across implementations,
+and by induction on backward depth so is the full gradient
+$g_t$. The update $S_{t+1} = \mathrm{Opt}(S_t, g_t)$ applies
 the deterministic integer-to-integer function from Definition 10.1
 to bit-identical inputs, producing bit-identical outputs. By
 induction, $S_t$ is bit-identical for all $t$. By Theorem 10.1
@@ -2467,14 +2602,15 @@ companion artifact (§13.3) on the same grounds as Theorem
 
 Theorems 10.1 and 10.2 concern bit-exact decoder reproduction. A
 separate, operationally important question is whether a decoder can
-extract a small portion of X without decoding all of it --- the
+extract a small portion of $X$ without decoding all of it --- the
 seek-and-read functionality of bgzip and zstd seekable mode. Existing
 neural compressors (NNCP, PixelCNN++, Bit-Swap, IDF++) lack this
-capability; decoding byte N requires processing all N previous bytes
-sequentially, with a wall-clock cost proportional to N. This is a
-deployment blocker for archive-style use cases where partial reads are
-common. The RNR framework supports random access in time independent of
-N, provided the predictor has bounded context. We make this precise.
+capability; decoding byte $p$ requires processing all $p$ previous
+bytes sequentially, with a wall-clock cost proportional to $p$. This
+is a deployment blocker for archive-style use cases where partial
+reads are common. The RNR framework supports random access in time
+independent of $|X|$, provided the predictor has bounded context. We
+make this precise.
 
 \textbf{Definition 10.2 ($W$-bounded predictor).} A predictor $M$ is
 $W$-bounded if its output $Y_i = M(C_i)$ at position $i$ depends only
@@ -2491,45 +2627,105 @@ state can depend on arbitrarily long history. Theorem 10.4 below
 covers the non-$W$-bounded case via state snapshots.
 
 \textbf{Definition 10.3 (Sync point).} A sync point at position $P$ in
-the source is a position where the predictor's context state is reset
-to a known initial value $Q_{\text{init}}$ independent of bytes
-$[0, P)$. The encoder inserts sync points at fixed intervals $K$ and
-includes a seek index in the archive mapping each sync point
-identifier to its bit offset in $R$ and byte offset in $X$. The seek
-index has size at most $\lceil N/K \rceil \cdot \lceil \log_2 L(R) \rceil$
-bits.
+the source is a position where (a)~the predictor's context state is
+reset to a known initial value $Q_{\text{init}}$ independent of bytes
+$[0, P)$, and (b)~the entropy coder's internal state (arithmetic-coder
+interval, ANS register, or analogous) is flushed at the encoder and
+reset to a known initial value at the decoder, so that the next bit
+in the repair stream begins a fresh entropy-coder block. The encoder
+inserts sync points at fixed intervals $K$ so that the byte offset
+in $X$ of the $j$-th sync point is the deterministic value $j K$
+(no byte-offset storage required), and includes a seek index in the
+archive mapping each sync point identifier to its bit offset in $R$
+only. The seek index has size at most
+$\lceil |X|/K \rceil \cdot \lceil \log_2 L(R) \rceil$ bits.
+(Non-uniform sync-point spacing would require storing $\log_2 |X|$
+additional bits per entry, raising the seek index size to
+$\lceil |X|/K \rceil \cdot (\lceil \log_2 L(R) \rceil + \lceil
+\log_2 |X| \rceil)$ bits; we assume uniform spacing throughout.)
+The entropy-coder flush adds $O(1)$ bits of termination per sync
+point and contributes $O(|X|/K)$ bits of additional repair-stream
+overhead in total; the predictor and entropy-coder reset together
+make each sync-point bit offset a self-contained restart point for
+decoding.
 
 Each sync point forfeits some compression efficiency because the
 predictor restarts cold and cannot exploit the prior $W$ bytes of
-context. For a $W$-bounded predictor, the per-sync-point cost is
-bounded by $W \cdot (\text{cold-context rate} - \text{asymptotic rate})$,
-typically a few hundred bytes. The total compression cost of sync
-points is $O((N/K) \cdot W)$ bytes.
+context. \emph{Bounded-cost assumption.} We assume the predictor's
+output distribution satisfies a probability floor $\eta > 0$: for
+every byte $b \in \{0, \dots, 255\}$ and every context $c$,
+$\Pr_M(b \mid c) \geq \eta$ (in practice enforced by mixing with a
+small uniform escape, $\eta \geq 2^{-12}$ being standard). Under
+this floor, the per-byte cold-context arithmetic-code length is
+bounded above by $\log_2(1/\eta)$. The per-sync-point excess cost
+over warm-context encoding of the same $W$ bytes is therefore
+bounded by
+\[
+\Delta_{\mathrm{sync}} \leq \sum_{i=P}^{P+W-1}
+\bigl[\log_2(1/\eta) - (-\log_2 \Pr_M(X_i \mid C_i^{\mathrm{warm}}))\bigr]
+\leq W \cdot \log_2(1/\eta),
+\]
+where $C_i^{\mathrm{warm}}$ denotes the warm $W$-byte context the
+encoder would have used in a sync-point-free encoding. Per-byte
+cold cost is at most $\log_2(1/\eta)$ and warm cost is at least
+$0$, so each summand is at most $\log_2(1/\eta)$ and at least
+$-\log_2(1/\eta)$ (the latter when warm cost exceeds the cold-cost
+upper bound, which can happen on very unpredictable data); the
+trivial upper bound $W \cdot \log_2(1/\eta)$ is loose and does not
+depend on the warm rate. Sharper upper bounds require additional
+assumptions: e.g., a uniform per-byte warm-context \emph{lower}
+bound $r^{\mathrm{warm}}_{\min}$ on $-\log_2 \Pr_M(X_i \mid
+C_i^{\mathrm{warm}})$ valid at all positions, yielding
+$\Delta_{\mathrm{sync}} \leq W \cdot (\log_2(1/\eta) - r^{\mathrm{warm}}_{\min})$.
+(An upper bound on warm cost would give a lower, not an upper,
+bound on $\Delta_{\mathrm{sync}}$, so the warm-rate assumption must
+be a lower bound to yield a useful overhead ceiling.) Without the
+probability-floor assumption (e.g., a predictor that can place
+arbitrarily small mass on the true byte after reset), the
+per-sync-point cost is unbounded. The total compression cost of
+sync points under the floor assumption is at most
+$(|X|/K) \cdot W \cdot \log_2(1/\eta)$ bits.
+Concrete-number estimates in the abstract and §11 (e.g., the
+``approximately one percent'' figure) are heuristic conjectures
+based on empirical observations of cold-vs-warm rates for small
+distilled transformers; they are not theorems and depend on the
+sharper assumption above.
 
 \textbf{Theorem 10.3 (Random access, output-sensitive).} \emph{Let
 $X$ be compressed under RNR with a $W$-bounded predictor $M$
 satisfying Theorem 10.1 and with sync points placed every $K$
-positions. Random access to $k$ consecutive bytes starting at any
-position $N$ requires: (i)~$O(\log(N/K))$ bits read from the seek
-index to locate the sync point $P \leq N$ closest to $N$;
+positions. Let $|X|$ denote the archive's uncompressed source
+length. Random access to $k$ consecutive bytes starting at any
+position $p \in [0, |X|)$ requires: (i)~$O(\log(|X|/K) \cdot \log L(R))$
+bits read from the seek index, comprising $O(\log(|X|/K))$ index
+entries probed during binary search, each entry containing a
+$\lceil \log_2 L(R)\rceil$-bit repair-stream offset (or $O(\log
+L(R))$ bits to read a single entry once the index is in memory);
 (ii)~decoding of at most $K + k$ positions of $R$, of which at most
 $K$ positions are warmup (discarded output); (iii)~$K + k$ predictor
 evaluations and entropy-coder updates. Total work is
-$O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$. \emph{This is
-polylogarithmic in archive size $N$ only when $K$ and $k$ are held
-fixed or grow at most polylogarithmically in $N$; for $K = \Theta(N)$
-or $k = \Theta(N)$ the cost is $\Theta(N \cdot \mathrm{cost}(M))$,
-no better than full sequential decode}. When $(K+k) \cdot
-\mathrm{cost}(M) \gg \log(N/K)$ the second term dominates and the
-cost is $O((K+k) \cdot \mathrm{cost}(M))$, independent of $N$ in
-that parameter regime.}
+$O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$.
+\emph{This is polylogarithmic in archive size $|X|$ only when $K$
+and $k$ are held fixed or grow at most polylogarithmically in $|X|$
+and $L(R) = \mathrm{poly}(|X|)$; for $K = \Theta(|X|)$ or $k =
+\Theta(|X|)$ the cost is $\Theta(|X| \cdot \mathrm{cost}(M))$, no
+better than full sequential decode}. When $(K+k) \cdot
+\mathrm{cost}(M) \gg \log(|X|/K) \cdot \log L(R)$ the second term
+dominates and the cost is $O((K+k) \cdot \mathrm{cost}(M))$,
+independent of $|X|$ in that parameter regime.}
 
 \emph{\textbf{Proof.}} Binary-search the seek index for the largest
-sync point $P$ with $P \leq N$; the index has at most
-$\lceil N/K \rceil$ entries, giving $O(\log(N/K))$ seek cost. By
-Definition 10.3, decoding from $R$'s bit offset at $P$ proceeds with
-predictor state initialized to $Q_{\text{init}}$. Decode forward one
-position at a time: at each position $i \in \{P, P+1, \ldots, N+k-1\}$,
+sync point $P$ with $P \leq p$; the index has at most
+$\lceil |X|/K \rceil$ entries, each of width
+$\lceil \log_2 L(R)\rceil + O(1)$ bits, so the binary search reads
+$O(\log(|X|/K) \cdot \log L(R))$ bits in total (or $O(\log L(R))$
+bits per probed entry if the index is in memory). By
+Definition 10.3 (a, b), decoding from $R$'s bit offset at $P$
+proceeds with both the predictor state initialized to
+$Q_{\text{init}}$ and the entropy-coder state initialized to its
+post-flush starting value; no prior bits of $R$ are required to
+parse the bits following the sync-point offset. Decode forward one
+position at a time: at each position $i \in \{P, P+1, \ldots, p+k-1\}$,
 compute $Y_i = M(C_i)$ where $C_i$ is the context built from
 previously decoded positions $[P, i)$. By the $W$-bounded property
 (Definition 10.2), $Y_i$ depends only on bytes $[i-W, i)$, which are
@@ -2538,56 +2734,72 @@ first $W$ positions after $P$ may have shortened context (positions
 $[P, P+W)$ see fewer than $W$ bytes), which the encoder accommodates
 by encoding those positions with reduced-context predictions; this is
 exactly the cold-context cost analyzed before. Continue decoding
-until position $N + k$; output bytes $[N, N+k)$. By Theorem 10.1, all
+until position $p + k$; output bytes $[p, p+k)$. By Theorem 10.1, all
 predictor evaluations are deterministic and bit-identical to a full
 decoding from position 0, so the output matches the original $X$ on
-$[N, N+k)$. Total decoded positions: $N + k - P \leq K + k$ since
-$P > N - K$. \hfill$\blacksquare$
+$[p, p+k)$. Total decoded positions: $p + k - P \leq K + k$ since
+$P > p - K$. \hfill$\blacksquare$
 
 Theorem 10.3 establishes that random access in RNR archives runs in
 time with only polylogarithmic dependence on archive size (a
-$\log(N/K)$ seek-index lookup plus a $K+k$ decode window).
-For $K = 64$ KiB and $k = 1$ KiB,
-the cost is roughly $K + k = 65$ KiB worth of predictor evaluations
---- typically on the order of 10 to 100 milliseconds for a small
-distilled transformer on commodity hardware. This is asymptotically a
-factor of $N/(K + k)$ faster than full sequential decoding, which for
+$\log(|X|/K) \cdot \log L(R)$ seek-index cost plus a $K+k$ decode
+window). For $K = 64$ KiB and $k = 1$ KiB, the cost is roughly
+$K + k = 65$ KiB worth of predictor evaluations --- typically on
+the order of $650\,\text{ms}$ on a single CPU core for a small
+distilled transformer (one forward pass at $\sim 10\,\mu\text{s}$
+per byte; faster on GPU/NPU). This is asymptotically a
+factor of $|X|/(K + k)$ faster than full sequential decoding, which for
 archive sizes of 1 GiB and $K = 64$ KiB is a roughly 16{,}000-fold
 speedup.
 
 \textbf{Theorem 10.4 (Random access for non-$W$-bounded predictors).}
 \emph{For a non-$W$-bounded predictor (RNN, LSTM, state-space model),
-random access requires storing a snapshot at each sync point of
-\emph{all} boundary state that affects $M$'s output for subsequent
-positions --- namely the predictor's recurrent hidden state, any
-adaptive parameter snapshot (if Theorem 10.2 is in effect), and the
-entropy-coder boundary state (range/state for arithmetic coding or
-ANS state). Let $L(\text{state})$ be the bit length of this combined
+the predictor-reset condition (a) of Definition 10.3 cannot be
+satisfied by cold-resetting context alone: the predictor's
+recurrent hidden state depends on arbitrarily long history. Replace
+condition (a) by an \emph{augmented sync point}: instead of
+resetting the predictor's hidden state, store its full state at
+position $P$ in the seek-index entry (so the decoder, when seeking
+to $P$, loads the stored state and proceeds with bit-exact
+continuation). Condition (b) on entropy-coder flush/reset remains
+unchanged. The augmented snapshot stores the predictor's recurrent
+hidden state, any adaptive parameter snapshot (if Theorem 10.2 is
+in effect), and the entropy-coder boundary state (range/state for
+arithmetic coding or ANS state, if a different flush convention is
+used). Let $L(\text{state})$ be the bit length of this combined
 boundary snapshot. The seek index grows to
-$O((N/K) \cdot (\log L(R) + L(\text{state})))$ bits. The random-access
-cost per query is $O\bigl(\log(N/K) + L(\text{state}) + (K + k) \cdot
-\mathrm{cost}(M)\bigr)$, where the $L(\text{state})$ term covers
-loading and deserializing the snapshot before decoding can resume.}
+$O((|X|/K) \cdot (\log L(R) + L(\text{state})))$ bits. The random-access
+cost per query (to $k$ bytes at position $p$) is
+$O\bigl(\log(|X|/K) \cdot (\log L(R) + L(\text{state})) + (K + k) \cdot
+\mathrm{cost}(M)\bigr)$, where the
+$O(\log(|X|/K)) \cdot (\log L(R) + L(\text{state}))$ term covers
+binary search through the augmented index plus loading and
+deserializing the snapshot before decoding can resume.}
 
 \emph{\textbf{Proof.}} Augment each sync point's index entry with
 all boundary state at position $P$, serialized as a fixed-bit-width
 integer tuple as required by Theorem 10.1. The combined snapshot adds
 $L(\text{state})$ bits per sync point, multiplying the index size by
 $(1 + L(\text{state}) / \log L(R))$. To random-access bytes
-$[N, N+k)$, locate the latest sync point $P \leq N$ (seek-index
-lookup $O(\log(N/K))$), read and deserialize the boundary snapshot
-(cost $O(L(\text{state}))$), restore the decoder's predictor,
-adaptive-parameter, and entropy-coder boundary states, and decode
+$[p, p+k)$, locate the latest sync point $P \leq p$ by binary search
+on the augmented index (cost $O(\log(|X|/K) \cdot (\log L(R) +
+L(\text{state})))$ since each probed entry is $\log L(R) +
+L(\text{state})$ bits wide), read and deserialize the boundary
+snapshot, restore the decoder's predictor, adaptive-parameter, and
+entropy-coder boundary states, and decode
 forward as in Theorem 10.3 (cost $O((K+k) \cdot \mathrm{cost}(M))$).
 The decoded output is bit-identical by Theorem 10.1 applied to the
 restored state. \hfill$\blacksquare$
 
-For LSTM predictors with $d$-dimensional state, $L(\text{state})$ is
-$O(d \cdot b)$ bits where $b$ is the per-component bit-width. For
-modern state-space models with structured state-transition matrices,
-$L(\text{state})$ can be $O(d^2)$. With $d = 1024$ and $b = 16$, an
-LSTM state snapshot is 16 Kbits = 2 KiB; placing one snapshot per
-$K = 64$ KiB sync point adds 3\% index overhead. State-space models
+For LSTM predictors with $d$-dimensional hidden state and
+$d$-dimensional cell state (the standard LSTM has both), the
+snapshot is $L(\text{state}) = 2 d \cdot b$ bits where $b$ is the
+per-component bit-width. For modern state-space models with
+structured state-transition matrices, $L(\text{state})$ can be
+$O(d^2)$. With $d = 1024$ and $b = 16$, an LSTM state snapshot is
+$2 \cdot 1024 \cdot 16 = 32{,}768$ bits $= 4$ KiB; placing one
+snapshot per $K = 64$ KiB sync point adds approximately $6.25\%$
+index overhead. State-space models
 with $d = 256$ and structured-state representation can require 64 KiB
 snapshots, doubling the seek index. This motivates the $W$-bounded
 design choice for deployable RNR codecs, particularly for archive
@@ -2617,11 +2829,11 @@ Three trade-offs govern random-access design in RNR archives.
 \item
   Verification under random access. Theorem 9.1's chained-hash
   verification covers sequential decoding; a random-access reader
-  cannot verify bytes $[0, N)$ it never decoded. Three solutions
+  cannot verify bytes $[0, p)$ it never decoded. Three solutions
   exist: (a)~per-sync-point hashes that allow local verification,
-  costing $O((N/K) \cdot |\text{hash}|)$ bits; (b)~a Merkle tree over
-  the repair stream allowing verified random access with $O(\log N)$
-  hash overhead per read; (c)~explicitly unverified random access for
+  costing $O((|X|/K) \cdot |\text{hash}|)$ bits; (b)~a Merkle tree
+  over the repair stream allowing verified random access with
+  $O(\log |X|)$ hash overhead per read; (c)~explicitly unverified random access for
   trusted-source archives. The Merkle-tree option is standard in
   content-addressable storage and is the recommended default for
   archive deployments.
@@ -2655,11 +2867,22 @@ access.
 
 RNR with a $W$-bounded transformer predictor and sync points every
 $K$ positions: random access in $O(K + k)$ predictor evaluations
-independent of $N$, at a compression cost of $O((N/K) \cdot W)$
-bytes. For $K = 64$ KiB and $W = 4$ KiB on a 1 GiB archive, this is
-approximately 1 percent ratio overhead for sync points, comparable to
-bgzip and zstd seekable while preserving the neural compressor's
-substantial ratio advantage on natural data.
+independent of $|X|$, at a per-sync-point worst-case excess of
+$W \cdot \log_2(1/\eta)$ bits (Section 10.7), giving a worst-case
+total of $(|X|/K) \cdot W \cdot \log_2(1/\eta)$ bits over the
+archive. For $K = 64$ KiB, $W = 4$ KiB, $\eta = 2^{-8}$, and a 1
+GiB source, the worst-case bound evaluates to
+$16384 \cdot 4096 \cdot 8$ bits $= 64$ MiB, or roughly 6.25\% of
+the source size. The realistic overhead is smaller because the
+per-byte excess in practice is the cold-vs-warm \emph{rate gap}
+$\delta$ (typically a few tenths of a bit per byte for natural
+data) rather than the full $\log_2(1/\eta) = 8$ bits. With
+$\delta \approx 0.5$ bit/byte, $(|X|/K) \cdot W \cdot \delta =
+16384 \cdot 4096 \cdot 0.5$ bits $\approx 32$ Mibits $\approx 4$
+MiB, or roughly 0.4\% of the source size; this estimate is
+heuristic and is not a theorem. The ratio comparison
+against bgzip and zstd seekable (typically 2--7 percent overhead)
+is empirical and is the subject of §11.
 
 This is the framework\textquotesingle s deployment-grade distinguishing
 feature relative to other neural compressors. The bounded-context
@@ -2680,52 +2903,69 @@ demand without ever decompressing the whole archive. This is the
 deployment pattern of squashfs, EROFS, btrfs with zstd compression, and
 Apple Disk Images: read-only compressed system images mounted by the
 kernel and served to user-space applications transparently. Existing
-neural compressors cannot serve this use case because their O(N)
-sequential decoding requirement makes any access to byte N cost the same
-as decompressing all preceding bytes; for archive sizes typical of disk
-images (gigabytes to terabytes), this is prohibitive. RNR removes this
-obstruction. The two theorems below formalize the application.
+neural compressors cannot serve this use case because their
+$O(|X|)$ sequential decoding requirement makes any access to byte
+$p$ cost the same as decompressing all preceding bytes; for archive
+sizes typical of disk images (gigabytes to terabytes), this is
+prohibitive. RNR removes this obstruction. The two theorems below
+formalize the application.
 
 \textbf{Theorem 10.5 (Block-device interface, parameter-conditional).}
 \emph{Let $X$ be compressed under RNR with a $W$-bounded predictor
 $M$ satisfying Theorem 10.1 and sync points placed every $K$
-positions. A block-device driver that maps logical-block-address-
-indexed read requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR
-random-access calls can serve any read request in time
-$O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ and working memory
-$O(K + k + L(M) + L(\mathrm{seek\_index}))$, where $L(M)$ is the
-predictor description size (kept resident in the driver) and
-$L(\mathrm{seek\_index})$ is the seek-index size (typically
-$O((N/K) \log L(R))$). The cost is polylogarithmic in archive size
-$N$ only in the parameter regime where $K$ and $k$ are held fixed
-or grow at most polylogarithmically in $N$; outside that regime the
-output-sensitive cost of Theorem 10.3 applies.}
+positions; let $|X|$ denote the uncompressed source length. A
+block-device driver that maps logical-block-address-indexed read
+requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR random-access
+calls can serve any read request in time
+$O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$ and
+working memory $O((K + k) \cdot 8 + L(M) + L(\mathrm{seek\_index}))$
+\emph{bits}, equivalently $O(K + k + L(M)/8 + L(\mathrm{seek\_index})/8)$
+\emph{bytes}, where $L(M)$ is the predictor description size in bits
+(kept resident in the driver) and $L(\mathrm{seek\_index})$ is the
+seek-index size in bits (typically $O((|X|/K) \log L(R))$). The cost is polylogarithmic in
+archive size $|X|$ only in the parameter regime where $K$, $k$, and
+$\log L(R)$ are held fixed or grow at most polylogarithmically in
+$|X|$; outside that regime the output-sensitive cost of Theorem 10.3
+applies.}
 
 \emph{\textbf{Proof.}} Each LBA-indexed read request $(\mathcal{L},
 k)$ corresponds to a byte-range request on the underlying source $X$
 starting at byte position
-$N = \mathcal{L} \cdot \text{sector\_size}$ and continuing for $k$
+$p = \mathcal{L} \cdot \text{sector\_size}$ and continuing for $k$
 bytes. By Theorem 10.3, RNR random access to $k$ bytes at position
-$N$ runs in $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$ time and
-requires $O(K + k)$ bytes of decode-window working memory (warmup
-buffer plus output buffer). The driver additionally keeps the
-predictor weights ($L(M)$ bits) and the seek index resident for
+$p$ runs in $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$ time and
+requires $O(K + k)$ bytes (equivalently $O((K+k) \cdot 8)$ bits) of
+decode-window working memory (warmup buffer plus output buffer).
+The driver additionally keeps the predictor weights ($L(M)$ bits)
+and the seek index ($L(\mathrm{seek\_index})$ bits) resident for
 constant-time per-query lookup; these are fixed at archive-mount
 time, not per-query. The translation from $(\mathcal{L}, k)$ to
-$(N, k)$ is a constant-time arithmetic operation. The total
+$(p, k)$ is a constant-time arithmetic operation. The total
 per-request cost is therefore as stated, with the parameter regime
 caveat inherited from Theorem 10.3. \hfill$\blacksquare$
 
 The $\mathrm{cost}(M)$ factor governs whether the driver is fast
 enough for interactive use. For a small distilled byte-level
-transformer (10 to 50 million parameters, int8 weights), one forward
-pass costs approximately 10 microseconds on a single CPU core, 1
-microsecond on a server GPU, and 0.1 microseconds on a high-end NPU.
-Per-byte inference rate is thus approximately 1 MB/s on CPU, 100 MB/s
-on GPU, and 1 GB/s on NPU. For $K + k = 64$ KiB, the random-access
-latency ranges from approximately 64 milliseconds (CPU) to 64
-microseconds (NPU). The NPU end of this range matches modern NVMe
-random-read latency; the CPU end is closer to spinning-disk latency.
+transformer (10 to 50 million parameters, int8 weights), one
+single-byte forward pass costs approximately $10\,\mu\text{s}$ on a
+single CPU core, $1\,\mu\text{s}$ on a server GPU, and
+$0.1\,\mu\text{s}$ on a high-end NPU (engineering estimates; actual
+numbers vary by quantization scheme and hardware generation).
+Treating one forward pass as one decoded byte, per-byte inference
+throughput is thus approximately $100$ KB/s on CPU, $1$ MB/s on
+GPU, and $10$ MB/s on NPU. For $K + k = 64$ KiB, the random-access
+latency for cold reads is therefore approximately
+$64 \text{ KiB} \cdot 10\,\mu\text{s/byte} \approx 650\,\text{ms}$
+(CPU), $\approx 65\,\text{ms}$ (GPU), and
+$\approx 6.5\,\text{ms}$ (NPU). The NPU end of this range is in the
+same order of magnitude as a slow random-read of a multi-MB region
+from local NVMe (single-block NVMe random-read latency is
+$\sim 100\,\mu\text{s}$, so RNR-NPU is about $65 \times$ slower per
+request, comparable to a server-side decompressor); the CPU end
+matches spinning-disk seek latency. Hardware-batching multiple
+forward passes per kernel invocation can improve effective
+throughput by a factor of 10--100 on GPU/NPU when access patterns
+are sequential, narrowing the cold-read latency proportionally.
 Production deployments will target NPU or GPU paths when low latency
 is required and fall back to CPU only for archive inspection or
 compatibility.
@@ -2744,23 +2984,40 @@ arithmetic operation; (d)~the byte-level serialization of every
 non-linearity lookup table; (e)~the reduction-tree shape and order;
 (f)~the per-target serialization of all approximation functions
 (integer Newton-Raphson, table-lookup interpolation, etc.) used in
-the forward pass. Under (a)-(f), the output $M(C)$ computed on $T$
-is bit-identical to that computed on any other conforming target.
-The choice of target affects throughput and latency but not the
-produced bytes; the engineering spec lists the conformance tests
-that establish (a)-(f) for each named target class.}
+the forward pass; (g)~the byte-level encoding of all model
+parameters and intermediate tensors, including endianness, signed
+vs unsigned interpretation of each declared bit-width, the packing
+order of sub-byte quantizations (e.g., int4-pair-per-byte: low
+nibble first vs high nibble first), zero-point and scale storage
+layout, and tensor index-to-memory order for any layout-sensitive
+tensor (e.g., NHWC vs NCHW for convolution weights; row-major vs
+column-major for matrix multiplications). Under (a)-(g), the output
+$M(C)$ computed on $T$ is bit-identical to that computed on any
+other conforming target. The choice of target affects throughput
+and latency but not the produced bytes; the engineering spec lists
+the conformance tests that establish (a)-(g) for each named target
+class.}
 
 \emph{\textbf{Proof.}} Direct corollary of Theorem 10.1, with the
 explicit observation that conformance is a property of the
-target\textquotesingle s integer-arithmetic and lookup-table semantics
-rather than of its parallelism strategy or vendor identity. Integer
-arithmetic is associative, commutative, and bit-exact across any
-platform that implements two\textquotesingle s-complement integers at
-the specified bit-width, which is mandated by all general-purpose CPU
-instruction set architectures (x86-64, ARM64, RISC-V, POWER) and by all
-integer-mode neural accelerators. Lookup tables are deterministic
-functions from integer inputs to integer outputs, identical across
-platforms that support the table format. Fixed reduction order,
+target\textquotesingle s integer-arithmetic, lookup-table, and
+data-layout semantics rather than of its parallelism strategy or
+vendor identity. Two's-complement signed integer addition and
+multiplication at a fixed bit-width are associative and commutative
+\emph{within the representable range and under a pinned wrap-vs-saturate
+convention}; condition (a) fixes the representation, (c) fixes the
+wrap-vs-saturate behaviour for each operation, and the per-layer
+bit-width bound of Theorem 10.1 keeps every accumulator within the
+representable range so neither wrap nor saturation triggers in a
+conforming forward pass --- under those conditions the produced
+bits are identical across platforms. Conditions (b), (d), (e), (f),
+and (g) pin the remaining sources of cross-platform divergence
+(shift/division/modulo semantics, lookup-table layout, reduction
+order, approximation functions, and weight/input byte
+serialization); each is enforced by the engineering spec's
+target-specific test vectors. Without (a)--(g), bit-identity is
+not guaranteed: e.g., the same algorithm with different sub-byte
+packing orders produces different weights. Fixed reduction order,
 specified by the model description, is honored by any sequential
 implementation and by any parallel implementation that uses a
 tree-reduction with the specified schedule. Composing these properties
@@ -2817,8 +3074,19 @@ support read-write deployments.
   the modified bytes starting from $P$, re-encodes the repair stream
   for the region, and updates the seek index entry for the affected
   sync point. Cost: $O(K \cdot \mathrm{cost}(M))$ per modification.
+  The naive append-in-place form is well-defined only if the
+  re-encoded region's bit length is bounded by a pre-reserved slot
+  size; otherwise the rewritten region shifts every subsequent
+  sync-point bit offset, and the archive needs either (i)~per-region
+  fixed-size slots with reserved padding, (ii)~an indirection layer
+  that decouples logical sync-point identifiers from physical bit
+  offsets (e.g., a separately mutable offset table), or
+  (iii)~rewriting all later seek-index entries on each write,
+  raising the per-modification cost to
+  $O(K \cdot \mathrm{cost}(M) + (N-P)/K)$ for the index update.
   Suitable for low-frequency writes on archives that benefit from
-  in-place mutation.
+  in-place mutation, with the slot/indirection choice fixed at
+  archive format design time.
 \item
   Full re-encoding. Periodic offline compaction re-encodes the whole
   archive, merging accumulated overlay writes back into the base.
@@ -2858,13 +3126,21 @@ Compressed read-only filesystems are widely deployed:
   1.8 times. Random-access cost O(sector size).
 \end{itemize}
 
-RNR with a well-fitted transformer predictor achieves three to six times
-compression on structured data (system images, source archives, log
-files, structured binaries), at the same random-access cost class as the
-above systems and at the same conformance overhead. For read-mostly use
-cases with rare writes --- container images, system snapshots, archival
-storage, software distribution images --- this is a substantial space
-saving without sacrificing access pattern. The cost is the predictor
+RNR with a well-fitted transformer predictor is conjectured to
+achieve compression ratios materially better than the dictionary-
+based systems above on structured data classes (system images,
+source archives, log files, structured binaries), at the same
+random-access cost class and at the same conformance overhead.
+Specific numerical ratios are not derived here and are not theorems;
+order-of-magnitude predictions are stated as conjectures in §11
+(``Type-I, Code12 on text and source code'', and the corresponding
+predictions for other Types) and require empirical validation
+against NNCP, PixelCNN++, LZMA, and zstd baselines. For
+read-mostly use cases with rare writes --- container images, system
+snapshots, archival storage, software distribution images --- the
+qualitative deployment claim is that RNR matches the access pattern
+of these systems while potentially offering a compression advantage
+that empirical validation must establish. The cost is the predictor
 inference compute, which is feasible at NPU or GPU speeds and acceptable
 at CPU speeds for non-interactive workloads.
 
@@ -2885,9 +3161,9 @@ drivers:
   conforming to Theorem 10.6. The path is selected at driver load
   time based on hardware availability.
 \item
-  Range-decode function. Given $(N, k)$, looks up the latest sync
-  point $P \leq N$ in the seek index, decodes from $P$ to $N + k$
-  using Theorem 10.3, returns bytes $[N, N + k)$.
+  Range-decode function. Given $(p, k)$, looks up the latest sync
+  point $P \leq p$ in the seek index, decodes from $P$ to $p + k$
+  using Theorem 10.3, returns bytes $[p, p + k)$.
 \item
   Cache. LRU or ARC cache of recently decoded regions, with eviction
   policy tuned to expected access pattern. Sits between the
@@ -3080,21 +3356,16 @@ point to the relevant theorems.
   the Hamming-restricted geometry remains open and is listed in
   §13.2.
 \item
-  Optimal candidate-support threshold for Type-II --- open. The
-  natural marginal-$Q$-prefix heuristic is not provably optimal in the
-  semi-non-factorized regime (Remark 5.7, with a concrete
-  counterexample at $N = 7, k = 2, s = 2$ in the verification
-  scripts). The arithmetic-coding benchmark under the same $Q$ is a
-  separate result and remains the comparison baseline.
-\item
   Joint structure on natural data and the Type-II separation regime
-  --- resolved by Theorem 5.5 (the multi-information
-  $\mathrm{TC}(D_N)$ is the exact information-theoretic quantity
-  governing factorized-versus-joint separation) and quantified by
-  Remark 5.6 (the manifold hypothesis predicts
-  $\mathrm{TC} = \Theta(N)$ for natural data classes of low intrinsic
-  dimension, supported by empirical estimates of $d$ for images,
-  text, and structured records).
+  --- partially resolved. Theorem 5.5 is a theorem: the
+  multi-information $\mathrm{TC}(D_N)$ is the exact
+  information-theoretic quantity governing factorized-versus-joint
+  separation. Remark 5.6, which extrapolates this to $\Theta(N)$
+  separation under the manifold hypothesis for natural data, is an
+  informal heuristic (not a theorem) supported by but not implied by
+  the cited empirical estimates of intrinsic dimension $d$; the
+  precise scaling of $\mathrm{TC}(D_N)$ for any specific natural
+  data class is an empirical question and is also listed in §13.2.
 \item
   Tightness of the $2\varepsilon$ mode-selection bound --- resolved
   by Theorem 6.2: the $2\varepsilon$ factor in Theorem 6.1 cannot be
@@ -3108,14 +3379,25 @@ point to the relevant theorems.
   complexity and predictor calibration.
 \item
   Bits-back integration into the $L(R \mid Y)$ decomposition ---
-  resolved by Theorem 6.6: the three-stream accounting yields rate
-  $H(X \mid Y) + \mathrm{KL}(q \,\Vert\, P_{\text{posterior}})$ in
-  expectation, matching the Slepian-Wolf bound when $q$ is exact.
+  resolved by Theorem 6.6: the three-stream accounting yields
+  expected rate equal to the cross-entropy of the data under the
+  model marginal plus the variational gap, that is,
+  $H_D(X \mid Y) + \mathrm{KL}(D(\cdot \mid Y)\,\Vert\,
+  P_X(\cdot \mid Y)) + \mathrm{KL}(q(z \mid X, Y)\,\Vert\,
+  P(z \mid X, Y))$; this matches the Slepian-Wolf bound
+  $H_D(X \mid Y)$ exactly when both KL terms vanish (model marginal
+  matches data, and $q$ matches the true posterior).
 \item
   Computational complexity of joint dictionary-and-predictor
-  learning --- resolved by Theorem 6.7 (NP-hardness via SGP) and
-  Theorem 6.8 (APX-hardness: an explicit inapproximability constant
-  transferred from the Charikar et al. SGP bound).
+  learning --- partially resolved. Theorem 6.7 establishes
+  NP-hardness of the \emph{restricted} dictionary-only case via
+  reduction from SGP; Theorem 6.8 transfers APX-hardness from the
+  SGP literature (Lehman--Shelat 2002; Charikar et al.\ 2005) to the
+  same restricted case with the same inherited constant
+  $\gamma_{\mathrm{SGP}} > 1$ (we do not pin down a specific
+  numerical value). Hardness of the \emph{unrestricted} joint
+  problem is conjectured but not proved by the present reductions
+  and is listed in \S13.2.
 \item
   Bit-exact decoder reproduction for fixed predictors --- resolved
   by Theorem 10.1: a precision-and-determinism specification
@@ -3128,26 +3410,33 @@ point to the relevant theorems.
   across implementations, with several published optimizers fitting
   the compatible class.
 \item
-  Random access (seek-and-read) into a compressed archive with cost
-  polylogarithmic in archive size --- resolved by Definitions 10.2
-  ($W$-bounded predictor) and 10.3 (sync point) and Theorem 10.3
-  (random access in $O(\log(N/K) + (K + k) \cdot \mathrm{cost}(M))$
-  time), with Theorem 10.4 covering non-$W$-bounded predictors via
-  state snapshots. This is the
-  framework's deployment-grade distinguishing feature relative to
-  other neural compressors, which lack random-access support
-  entirely.
+  Random access (seek-and-read) into a compressed archive with
+  output-sensitive cost $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot
+  \mathrm{cost}(M))$ --- resolved by Definitions 10.2 ($W$-bounded
+  predictor) and 10.3 (sync point, including entropy-coder flush)
+  and Theorem 10.3, with Theorem 10.4 covering non-$W$-bounded
+  predictors via state snapshots. The cost is polylogarithmic in
+  archive size $|X|$ only in the parameter regime where the
+  sync-point spacing $K$, read window $k$, and $\log L(R)$ are held
+  fixed or grow at most polylogarithmically in $|X|$; outside that
+  regime (e.g., $K = \Theta(|X|)$ or $k = \Theta(|X|)$) the cost is
+  $\Theta(|X| \cdot \mathrm{cost}(M))$. This is the framework's deployment-grade
+  distinguishing feature relative to other neural compressors,
+  which lack random-access support entirely.
 \item
   Block-device and read-only filesystem deployment with
   hardware-target portability --- resolved by Theorem 10.5
   (block-device interface: an OS-level driver serves LBA-indexed
-  read requests with cost polylogarithmic in archive size) and Theorem
-  10.6 (hardware-target portability: bit-exact predictor execution
-  on CPU scalar, CPU SIMD, GPU integer Tensor Cores, and integer
-  NPUs follows from Theorem 10.1's conformance specification). The
-  copy-on-write overlay pattern (§10.8) enables read-write semantics
-  using the same architecture as existing compressed-filesystem
-  deployments.
+  read requests with the same output-sensitive cost as Theorem 10.3,
+  polylogarithmic in $|X|$ only in the same fixed/polylog $K$, $k$,
+  $\log L(R)$ parameter regime) and Theorem 10.6 (hardware-target
+  portability:
+  bit-exact predictor execution on CPU scalar, CPU SIMD, GPU integer
+  Tensor Cores, and integer NPUs follows from Theorem 10.1's
+  conformance specification, augmented in Theorem 10.6 with explicit
+  weight/input byte-serialization conformance). The copy-on-write
+  overlay pattern (§10.8) enables read-write semantics using the
+  same architecture as existing compressed-filesystem deployments.
 \end{itemize}
 
 \textbf{13.2 Remaining mathematical open problems}
@@ -3156,6 +3445,41 @@ A small number of mathematical questions remain genuinely open after
 the present paper.
 
 \begin{itemize}
+\item
+  Optimal candidate-support threshold for semi-non-factorized
+  Type-II. The natural marginal-$Q$-prefix heuristic
+  ($s$ largest-marginal symbols) is not provably optimal: Remark 5.7
+  retracts the corresponding earlier proposition with a concrete
+  counterexample at $N = 7, k = 2, s = 2$, demonstrated by the
+  verification script in \texttt{scripts/verify/}. A general
+  polynomial-time selector or a formal hardness result for support
+  optimization is open. The arithmetic-coding benchmark under the
+  same $Q$ is a separate, settled result and remains the comparison
+  baseline.
+\item
+  Hardness of the unrestricted joint Type-III-C problem
+  $(M, D, R \mid Y)$. Theorems 6.7 and 6.8 establish NP-hardness and
+  APX-hardness only for the restricted normal-form
+  dictionary-only case under the symbol-count objective
+  $L_{\mathrm{sym}}$. The unrestricted problem (model, dictionary,
+  repair stream all free, total code length
+  $L(M) + L(D) + L(R \mid Y)$) is conjectured to be at least as
+  hard, but neither inclusion nor a direct gap-preserving reduction
+  is available: the feasible set is strictly larger and the
+  objective function differs. A reduction that forces the
+  unrestricted optimum to coincide with (or polynomially recover)
+  the restricted optimum is open, both for NP-hardness and for
+  APX-hardness with any explicit inherited constant.
+\item
+  Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
+  natural-data classes. Theorem 5.5 establishes the
+  multi-information $\mathrm{TC}(D_N)$ as the exact separation
+  between factorized and joint coding. Remark 5.6's $\Theta(N)$
+  extrapolation for low-dimensional natural-data manifolds is an
+  informal heuristic; rigorously establishing or refuting
+  $\mathrm{TC}(D_N) = \Theta(N)$ for any specific class (e.g.,
+  natural images at a given resolution, English text at a given
+  vocabulary, database pages under a given schema) is open.
 \item
   Construction of efficient enumerative encoders for specific
   natural-data submanifolds. Theorem 5.5 establishes that the
@@ -3176,9 +3500,10 @@ the present paper.
   via an exact YES/NO threshold reduction; no constant-gap reduction
   from any APX-hard source into the Hamming-realizable distance
   geometry is currently known. The Type-III-C side (Theorem 6.8) is
-  APX-hard, transferring the explicit $8569/8568$ constant of
-  Charikar et al. (2005), but the analogous constant for $E_{12}$ is
-  open.
+  APX-hard with an inherited constant $\gamma_{\mathrm{SGP}} > 1$
+  whose specific numerical value depends on which source-problem
+  reduction is used (the literature includes several; we do not pin
+  one down here), but the analogous constant for $E_{12}$ is open.
 \item
   Practical compatible Adam variants with full convergence
   analysis. Theorem 10.2 covers any optimizer satisfying Definition
