@@ -3146,6 +3146,52 @@ account for cover-dependent $K(\sigma)$ and quantify the resulting
 log-factor variation; this remains open and is recorded as such in
 §13.2.
 
+\textbf{Remark 6.8b (Why padding-based reduction fails for
+unrestricted-predictor APX-hardness).} \emph{The natural attempt
+to transfer APX-hardness from the restricted (constant predictor,
+normal-form recursive dictionary) case (Theorem 6.8) to the
+\emph{unrestricted joint} Type-III-C problem $(M, D, R \mid Y)$ via
+incompressibility-style padding fails for a specific structural
+reason, formalized below.}
+
+\emph{Attempted reduction.} Given a restricted Type-III-C instance
+$(s, \tau_0)$ with $L_{\mathrm{sym}}^*$ the optimal symbol-count under
+the constant-predictor restriction, append an incompressible suffix
+$z$ of length $|z| = \mathrm{poly}(|s|)$ with Kolmogorov complexity
+$K(z) \geq |z| - O(\log |z|)$ (such a $z$ exists for each input
+length by a counting argument). Form the joint Type-III-C instance
+$(M, D, R \mid Y)$ on the concatenation $s z$. Naively, an
+$\alpha$-approximation for the joint bit-cost would translate to an
+$\alpha$-approximation for the restricted symbol-count, since the
+suffix $z$ is incompressible.
+
+\emph{Why this fails.} An unrestricted predictor $M$ can specialize:
+$M$ can pay $L(M) \geq |s|$ bits of model description to encode the
+exact mapping $s \mapsto \tau_0$, then for the prefix $s$ produce an
+arbitrarily small $L(R \mid Y)$ (e.g., $L(R \mid Y) = O(1)$) by
+direct lookup, while still requiring $L(R \mid Y \restriction z) \geq
+K(z)$ for the incompressible suffix. The total
+joint bit-cost is then $L(M) + L(D) + L(R \mid Y) \approx |s| + L(D)
++ K(z)$, dominated by the predictor description $|s|$ and the
+incompressible suffix $K(z)$, with the dictionary cost $L(D)$ pushed
+to negligible levels. The restricted symbol-count
+$L_{\mathrm{sym}}^*$ for $s$ is no longer reflected in any term of
+the unrestricted bit-cost: specialization absorbs the SGP structure
+into $L(M)$, and Theorem 6.8's $\gamma_{\mathrm{SGP}}$ inapproximability
+is lost in the trade-off.
+
+\emph{What would close OP2(b).} A successful reduction would need to
+either (i) bound $L(M)$ \emph{a priori} below the threshold at which
+specialization becomes profitable, restricting the class of
+predictors; or (ii) construct a source family such that any
+near-optimal predictor description $M$ \emph{must} encode the SGP
+structure faithfully, preventing escape via specialization; or
+(iii) use an entirely different gap-amplification framework
+(e.g., Dinur-style robust PCP composition, c.f.\ Remark 4.3c) that
+operates on the unrestricted Type-III-C objective directly. None of
+these is currently known; the unrestricted joint Type-III-C
+APX-hardness problem remains a research-scale open question.
+
 Together, Theorems 6.7 and 6.8 show that the restricted normal-form
 recursive dictionary problem under the symbol-count objective is
 NP-hard and (under the unbounded-alphabet variant) APX-hard with
