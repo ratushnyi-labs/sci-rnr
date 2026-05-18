@@ -81,14 +81,18 @@ bits-back rate analysis (Theorem 6.6) but no standalone
 achievability bound for the learned hierarchical
 dictionary/token-cover construction. A matching converse is given
 only for Type-I (Theorem 4.2). Complexity results include NP-hardness of the
-varying-parameter learned-code labeling problem (Theorem 4.3) and of
-a restricted normal-form dictionary-only case of Type-III-C (Theorem
-6.7), plus an APX-hardness transfer for the same restricted case
-under the unbounded-alphabet variant with explicit inapproximability
-constant $\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from Charikar
-et al.\ (2005, Theorem 1) via the symbol-count bijection (Theorem
-6.8); the fixed-byte-alphabet case ($|\Sigma| = 256$ as in canonical
-RNR) requires a separate gap-preserving construction and is open.
+varying-parameter learned-code labeling problem (Theorem 4.3), a
+polynomial-time vs.\ NP-hard dichotomy in semi-non-factorized
+Type-II support selection (Lemma 5.7a polynomial-time for
+permutation-like joint laws; Lemma 5.7c NP-hard for general joint
+laws via CLIQUE reduction), and NP-hardness of a restricted
+normal-form dictionary-only case of Type-III-C (Theorem 6.7), plus
+an APX-hardness transfer for the same restricted case under the
+unbounded-alphabet variant with explicit inapproximability constant
+$\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from Charikar et al.\
+(2005, Theorem 1) via the symbol-count bijection (Theorem 6.8); the
+fixed-byte-alphabet case ($|\Sigma| = 256$ as in canonical RNR)
+requires a separate gap-preserving construction and is open.
 Hardness of the unrestricted joint (model, dictionary, repair)
 problem and the analogous inapproximability for $E_{12}$ are also
 open. Worked numerical examples are
@@ -1815,7 +1819,7 @@ how to choose $S_v$ from the predictor's probability field $Q$. In the
 semi-non-factorized regime this is a joint support-optimization
 problem, not a problem determined by the one-position marginals alone.
 
-\textbf{Remark 5.7 (Support optimization remains open).}
+\textbf{Remark 5.7 (Support optimization: history and resolved status).}
 \emph{A previous version asserted that, under a monotonicity condition
 on
 \[
@@ -1934,8 +1938,8 @@ $n_0(S) := |\{j : T_j \subseteq S\}| \geq D$?
 in the general dependent regime---namely, computing
 $\min_{|S| = s} \mathbb{E}_{T \sim \mu}[A_s(|T \setminus S|)]$
 for an arbitrary rational-weighted joint law $\mu$ on $\binom{[N]}{2}$
-specified as an atom list---is NP-hard, by the positive-affine
-correspondence established in the proof.
+specified as an atom list---is NP-hard, by the strictly-decreasing
+affine correspondence in $n_0(S)$ established in the proof.
 
 \emph{Proof.} Reduction from CLIQUE, which is NP-complete (Karp 1972) and
 remains so when restricted to graphs with $|V_G| \leq 3k+1$: the standard
@@ -2750,8 +2754,9 @@ guaranteed in general.
 
 Several parameters in the framework are input-dependent: the codeword
 rate $k$ in Type-I (Code-$k$), the alphabet size $K$ in Type-II, the
-support threshold $\tau_v$ for the Type-II support sets (see Remark 5.7
-for the open-problem status of optimizing it), the tile size in
+support threshold $\tau_v$ for the Type-II support sets (optimal
+exact selection is NP-hard for general joint laws by Lemma 5.7c and
+polynomial-time for permutation-like laws by Lemma 5.7a), the tile size in
 Type-III-A, the dictionary size in Type-III-C, and others. No single
 setting is optimal across all inputs; the right approach is input
 probing at encode time, where the encoder scans the block, estimates

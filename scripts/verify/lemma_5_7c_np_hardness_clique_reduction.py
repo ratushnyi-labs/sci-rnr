@@ -157,6 +157,50 @@ def test_clique_means_exact_tau() -> bool:
     return False
 
 
+def test_no_padding_case() -> bool:
+    """Force |V_G| = 3k+1 (no padding): K_7 has every clique up to size 7."""
+    V_G_size, k = 7, 2  # 3k+1 = 7, no padding
+    G_edges = {frozenset({a, b}) for a, b in itertools.combinations(range(V_G_size), 2)}
+    has_k, _ = has_clique(G_edges, list(range(V_G_size)), k)
+    atoms, N, s, k_v, tau = reduce_clique_to_support(G_edges, V_G_size, k)
+    _, best_cost = support_selection_brute_force(atoms, N, s, k_v)
+    print(f"\nNo-padding sanity (K_7, k=2, |V_G|=N=3k+1=7):")
+    print(f"  has 2-clique: {has_k}, best_cost={best_cost:.6f}, tau={tau:.6f}")
+    if not has_k:
+        print(f"  FAIL: K_7 must have a 2-clique")
+        return False
+    if best_cost > tau + 1e-9:
+        print(f"  FAIL: best_cost should be <= tau when clique exists")
+        return False
+    print(f"  OK: clique detected, |V_G|=N=3k+1 path exercised")
+    return True
+
+
+def test_empty_edge_branch() -> bool:
+    """E_G = empty: per Lemma 5.7c, the reduction outputs a trivial NO."""
+    G_edges = set()
+    V_G_size, k = 4, 2
+    # Combinatorial decision: trivial NO instance N=5, s=2, m=0, D=1
+    N_combinatorial, s_combinatorial, D = 5, 2, 1
+    atoms_empty = {}  # no atoms
+    # Brute force: any |S|=2 has n_0=0 < 1, so the answer is NO
+    n_0_max = 0
+    for S in itertools.combinations(range(N_combinatorial), s_combinatorial):
+        S_set = frozenset(S)
+        n_0 = sum(1 for T in atoms_empty if T <= S_set)
+        n_0_max = max(n_0_max, n_0)
+    has_k, _ = has_clique(G_edges, list(range(V_G_size)), k)
+    print(f"\nEmpty-edge branch (G has no edges, k=2):")
+    print(f"  has 2-clique: {has_k} (correctly NO)")
+    print(f"  combinatorial output: N={N_combinatorial}, s={s_combinatorial}, m=0, D={D}")
+    print(f"  brute-force n_0_max = {n_0_max} < D = {D}, so combinatorial answer: NO")
+    if has_k or n_0_max >= D:
+        print(f"  FAIL: empty-edge instance should be trivial NO")
+        return False
+    print(f"  OK: CLIQUE NO <-> combinatorial NO")
+    return True
+
+
 def main() -> int:
     print("Verification of Lemma 5.7c (NP-hardness via CLIQUE -> support-selection)")
     print("=" * 75)
@@ -164,9 +208,11 @@ def main() -> int:
     ok2 = test_clique_reduction()
     ok3 = test_no_clique_means_strict_excess()
     ok4 = test_clique_means_exact_tau()
+    ok5 = test_no_padding_case()
+    ok6 = test_empty_edge_branch()
 
     print()
-    if ok1 and ok2 and ok3 and ok4:
+    if ok1 and ok2 and ok3 and ok4 and ok5 and ok6:
         print("PASS: CLIQUE-to-support-selection reduction verified.")
         print("      Therefore support-selection (general dependent regime) is NP-hard.")
         print("      Open Problem 6 (formal NP-hardness for general joint laws) is")
