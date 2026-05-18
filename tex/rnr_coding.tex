@@ -117,8 +117,8 @@ $\eta$ is the floor and $S$ is the number of floored entropy-coder
 symbols the coding mode emits per source byte ($S = 1$ for Type-I
 and direct byte arithmetic, $S = 2$ for per-byte sequential
 Type-III-B); a sharper bound subtracts a warm-context rate term
-under an additional uniform-warm-rate assumption. we conjecture the
-actual overhead is on the order of one percent for natural data at
+under an additional uniform-warm-rate assumption. We conjecture
+the actual overhead is on the order of one percent for natural data at
 typical parameters, but neither a tight upper bound in general nor
 a measured value on a specific corpus is provided here. The
 ratio comparison against existing dictionary-based seekable formats
@@ -2967,11 +2967,14 @@ $P \leq p$ is the deterministic value $P = K \cdot \lfloor p/K \rfloor$
 corresponding bit offset in $R$ from the seek index: the index has
 exactly $\lceil |X|/K \rceil$ entries, each of width
 $\lceil \log_2 L(R)\rceil + O(1)$ bits, indexed by $\lfloor p/K \rfloor$
-in $O(\log L(R))$ bits per direct probe. (For non-uniform spacing,
-each entry is $\lceil \log_2|X|\rceil + \lceil \log_2 L(R)\rceil + O(1)$
+in $O(\log L(R))$ bits per direct probe. (For non-uniform spacing
+with $m$ sync-point entries, each entry is
+$\lceil \log_2|X|\rceil + \lceil \log_2 L(R)\rceil + O(1)$
 bits wide, and binary search over the index costs
-$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits in total; the
-uniform case avoids both the $\log(|X|/K)$ factor and the
+$O(\log m \cdot (\log |X| + \log L(R)))$ bits in total
+(equivalently $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ when
+$|X| \geq K$, since $m \leq \lceil 2|X|/K \rceil$); the
+uniform case avoids both the $\log m$ factor and the
 $\log |X|$ per-entry term at the cost of one extra constant-time
 arithmetic operation.) By
 Definition 10.3 (a, b), decoding from $R$'s bit offset at $P$
@@ -3340,9 +3343,9 @@ $p+k \leq |X|$, a short read when $p+k > |X|$, mirroring POSIX
 \texttt{pread}). The boundary condition is inherited from Theorem
 10.3. The read is served in time
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ under uniform
-sync-point spacing (Theorem 10.3; non-uniform spacing replaces the
-direct lookup with binary search at
-$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits) and
+sync-point spacing (Theorem 10.3; non-uniform spacing with $m$
+sync-point entries replaces the direct lookup with binary search
+at $O(\log m \cdot (\log |X| + \log L(R)))$ bits) and
 working memory $O((K + k) \cdot 8 + L(M) + L(\mathrm{workspace}(M))
 + L(\mathrm{seek\_index}))$ \emph{bits}, equivalently
 $O(K + k + L(M)/8 + L(\mathrm{workspace}(M))/8 +
