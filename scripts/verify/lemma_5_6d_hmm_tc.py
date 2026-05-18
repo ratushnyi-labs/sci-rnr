@@ -231,6 +231,26 @@ def test_E_close_to_H_Y_for_deterministic_emissions():
     return True  # treat as warn, not fail
 
 
+def test_iid_Y_gives_iid_X():
+    """When hidden chain Y is iid (P rows identical to pi), X is iid
+    regardless of emission distinctness. E_HMM = 0."""
+    print("\nTest 4b: iid hidden chain -> iid observations -> E = 0")
+    P_Y = [[0.5, 0.5], [0.5, 0.5]]  # Y is iid Bernoulli(0.5)
+    pi_Y = [0.5, 0.5]
+    emission = {0: {0: 0.8, 1: 0.2}, 1: {0: 0.2, 1: 0.8}}  # NON-identical!
+
+    h_est = h_HMM_filter_recursion(P_Y, pi_Y, emission, num_steps=3000, num_chains=20, seed=42)
+    # Marginal X: 0.5 * Ber(0.2) + 0.5 * Ber(0.8) = Ber(0.5)
+    H_X1 = 1.0
+    E_HMM = H_X1 - h_est
+    print(f"  P=iid (uniform rows), emissions non-identical: h_HMM ≈ {h_est:.4f}, E ≈ {E_HMM:.4f}")
+    if abs(E_HMM) < 0.05:  # MC tolerance
+        print(f"  OK: E ≈ 0 even though emissions differ (iid Y => iid X)")
+        return True
+    print(f"  FAIL: E should be ≈ 0 for iid Y regardless of emissions")
+    return False
+
+
 def test_published_E_values():
     """Compute and report E values for two example HMM configurations."""
     print("\nTest 5: E values for two HMM configurations (high-precision MC)")
@@ -257,10 +277,11 @@ def main() -> int:
     ok2 = test_E_positive_for_informative_HMM()
     ok3 = test_E_zero_for_identical_emissions()
     ok4 = test_E_close_to_H_Y_for_deterministic_emissions()
+    ok4b = test_iid_Y_gives_iid_X()
     ok5 = test_published_E_values()
 
     print()
-    if all([ok1, ok2, ok3, ok4, ok5]):
+    if all([ok1, ok2, ok3, ok4, ok4b, ok5]):
         print("PASS: Lemma 5.6d HMM TC formula verified.")
         print("      Stationary HMM is a special case of Lemma 5.6c.")
         print("      E_HMM > 0 for informative HMMs, = 0 for identical emissions.")
