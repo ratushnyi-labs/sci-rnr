@@ -1602,6 +1602,87 @@ Mixing Conditions}, Probability Surveys 2 (2005), 107--144, DOI
 $\beta$-mixing iff Harris-recurrent and aperiodic).
 Lemma 5.1b only requires (5.8).
 
+\textbf{Lemma 5.1c (Tight cold-context excess per sync point for
+stationary processes).} \emph{Let $X = (X_n)_{n \geq 1}$ be a
+strictly stationary finite-alphabet process with entropy rate
+$h(X)$. In the per-position sequential coding scheme of Lemma 5.1a
+on sub-blocks of size $K$ starting at sync points, the
+\emph{expected} cold-context excess per sync point (the rate excess
+incurred by the entropy coder over the first $W$ positions, before
+the predictor's $W$-byte context is fully populated) equals exactly}
+\[
+\Delta_{\mathrm{sync, per-pt}}
+\;=\; \delta_W
+\;:=\; \sum_{i=1}^{W} \bigl[ H(X_i \mid X_1, \ldots, X_{i-1}) - h(X) \bigr]
+\;\geq\; 0,
+\tag{5.9}
+\]
+\emph{which is precisely the truncated cumulative excess from Lemma
+5.6c (5.7). In particular:}
+
+\emph{(a) Stationary order-$W'$ Markov ($W' \leq W$).} If the source
+is order-$W'$ Markov, then $H(X_i \mid X_{<i}) = h(X)$ for $i > W'$,
+so $\delta_W = \sum_{i=1}^{W'} [H(X_i \mid X_{<i}) - h(X)] = H(X^{W'})
+- W' \cdot h(X)$, a finite constant in the chain parameters and
+\emph{independent of the choice of $W$} (provided $W \geq W'$). For
+order-$1$ Markov, $\delta_W = H_{\mathrm{marg}} - h(X) = E$, the
+per-position excess entropy.
+
+\emph{(b) Exponentially mixing stationary sources (satisfying (5.8)).}
+$\delta_W \leq \sum_{i=1}^{W} C \cdot \rho^{i-1} = C \cdot
+(1 - \rho^W)/(1 - \rho) \leq C/(1-\rho)$, uniformly bounded in $W$
+by the limit $\delta_\infty = \mathbf{E}_{\mathrm{CF}}$ (Crutchfield--Feldman
+2003 ``excess entropy'').
+
+\emph{Total sync overhead.} Combining with $m = \lceil N/K \rceil$
+sync points,
+\[
+\Delta_{\mathrm{sync, total}} \;=\; m \cdot \delta_W \;\leq\; m \cdot \delta_\infty,
+\]
+\emph{which strictly tightens the worst-case bound $m \cdot S \cdot W
+\cdot \log_2(1/\eta)$ of Lemma 5.1a whenever the source has finite
+excess entropy $\delta_\infty < S \cdot W \cdot \log_2(1/\eta)$. For
+typical natural-data sources with $\delta_\infty = O(1)$ bits (e.g.,
+order-$1$ Markov bigrams with $E \approx 0.71$ bits/letter for
+English; Lemma 5.6c discussion), the total sync overhead is
+$\Theta(N/K)$ rather than the worst-case $\Theta(N \log N / K)$.}
+
+\emph{\textbf{Proof.}} For any sub-block starting at a sync point,
+the decoder enters with no prior context. By Definition 10.3, the
+arithmetic-coder state is reset, the predictor's $W$-byte window is
+empty, and the public context is the pre-sync state only. The
+predictor at position $i$ within the sub-block ($1 \leq i \leq K$)
+therefore conditions on $X_1, \ldots, X_{i-1}$ within this sub-block
+(no cross-sync context). By stationarity, the expected per-position
+length under arithmetic coding is exactly $H(X_i \mid X_{<i})$
+(plus $\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ amortized over
+the sub-block). The expected sub-block total length is therefore
+\[
+\sum_{i=1}^{K} H(X_i \mid X_{<i})
+\;=\; \underbrace{\sum_{i=1}^{W} H(X_i \mid X_{<i})}_{\text{cold-context region}}
+\;+\; \underbrace{\sum_{i=W+1}^{K} H(X_i \mid X_{<i})}_{\text{warm region}}.
+\]
+The warm region, by the convergence
+$H(X_i \mid X_{<i}) \to h(X)$, contributes $(K - W) \cdot h(X) + o(K)$
+bits (and exactly $(K-W) \cdot h(X)$ for order-$W'$ Markov with
+$W' \leq W$). The cold-context region contributes
+$\sum_{i=1}^{W} H(X_i \mid X_{<i}) = W \cdot h(X) + \delta_W$. The
+total is $K \cdot h(X) + \delta_W + o(K)$, so the cold-context excess
+above the steady-state rate $K \cdot h(X)$ is $\delta_W$. Summing
+over $m$ sync points gives total cold-context excess $m \cdot \delta_W$.
+The bound $\delta_W \leq C/(1-\rho)$ under (5.8) follows from
+geometric summation. \hfill$\blacksquare$
+
+\emph{Significance.} Lemma 5.1c sharpens the worst-case $W \log_2(1/\eta)$
+per-sync bound of Lemma 5.1a to the source-specific quantity $\delta_W$,
+which for stationary mixing sources is $O(1)$ rather than $O(W)$.
+This reduces the total sync overhead from $\Theta(N \log N / K)$ to
+$\Theta(N/K)$ for natural-data sources, recovering the
+\emph{simultaneous} polylog regime
+($K = \mathrm{polylog}(N)$, per-query polylog AND total
+$\Theta(N/\mathrm{polylog}(N))$, which is sub-linear and approaches
+polylog as the polylog spacing grows).
+
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
 coding).} \emph{Let $N$ be a block length, and let
 $(k_0, \ldots, k_{15})$ be the symbol counts with $\sum_v k_v = N$.
