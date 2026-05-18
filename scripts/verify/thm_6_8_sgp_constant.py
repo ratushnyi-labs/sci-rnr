@@ -10,9 +10,13 @@ Information Theory 51(7):2554-2576) via the symbol-count bijection of Theorem 6.
 
 This script reproduces the algebra of the Charikar et al. derivation:
   γ_SGP = (15|V| + 3|E| + (145/144)k) / (15|V| + 3|E| + k)
-with structural constraints |E| ≥ (3/2)|V| and k ≥ (1/3)|V| (bounded-degree-3
-Vertex Cover from Berman-Karpinski 1999, with min-VC ratio 145/144), minimized
-at |E| = (3/2)|V|, k = (1/3)|V|.
+with structural constraints |E| ≤ (3/2)|V| (max-degree-3) and k ≥ (1/3)|V|
+(min-VC from Berman-Karpinski 1999, ratio 145/144 inapproximable). The
+adversarial inapproximability lower bound ρ_min is the MINIMUM of ρ over the
+constraint region (the tightest inapproximability we can certify for the
+family). ρ is monotone decreasing in |E| and monotone increasing in k, so the
+minimum is achieved at the extreme point |E| = (3/2)|V| (upper bound), k =
+(1/3)|V| (lower bound), where ρ = 8569/8568.
 
 PASS = the formula evaluates exactly to 8569/8568 = 1.0001167... at the
 constraint extremum.

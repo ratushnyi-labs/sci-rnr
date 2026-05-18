@@ -6,12 +6,13 @@ distribution.
 Setting: D_N is uniform over the K!/(K-N)! injections from [N] (rows) to [K]
 (possible primary-key values), where K = α·N for some constant α > 1.
 
-Claim: TC(D_N) = N · c(α) + O(1), where
+Claim: TC(D_N) = N · c(α) + O(log N), where
   c(α) = log_2 e - (α-1) · log_2(α/(α-1)).
 
-For α = 2 (K = 2N): c(2) ≈ 1.4427 - 1 = 0.4427
-For α = 3: c(3) ≈ 1.4427 - 2 · log_2(3/2) ≈ 0.273
-For α → ∞: c(α) → 0 (UNIQUE constraint becomes vacuous)
+The coefficient c(α) is monotone DECREASING on (1, ∞):
+  lim_{α → 1+} c(α) = log_2 e ≈ 1.4427 (tightest, K = N+1)
+  c(1.5) ≈ 0.650, c(2) ≈ 0.4427, c(3) ≈ 0.273, c(10) ≈ 0.075
+  c(α) → 0 as α → ∞ (UNIQUE constraint becomes vacuous when K >> N)
 
 Verification: compute the exact joint H(D_N) = log_2(K!/(K-N)!) and exact sum
 of marginal entropies N · log_2(K), then compare the residual to the formula.
@@ -88,11 +89,29 @@ def main() -> int:
         print(f"  FAIL: formula gives c(2) = {predicted_c(2.0)}")
         failures += 1
 
+    # α → 1+: c → log_2 e (tightest constraint at K = N+1)
+    # (α-1) log(α/(α-1)) → 0 as α → 1+ (L'Hopital)
+    print(f"  α → 1+ (tightest): c(α) → log_2 e ≈ {math.log2(math.e):.6f}")
+    print(f"    verified at α = 1.01: c = {predicted_c(1.01):.6f}")
+    print(f"    verified at α = 1.001: c = {predicted_c(1.001):.6f}")
+
     # α → ∞: c → 0 (use L'Hopital or Taylor)
     # (α-1) log(α/(α-1)) = (α-1) log(1 + 1/(α-1)) ≈ (α-1) · 1/((α-1) ln 2) = 1/ln 2 = log_2 e
     # So c(α) → log_2 e - log_2 e = 0
-    print(f"  α → ∞: c(α) → log_2 e - log_2 e = 0 (verified for α = 1000:"
-          f" c = {predicted_c(1000.0):.6f})")
+    print(f"  α → ∞ (vacuous): c(α) → 0 (verified at α = 1000: c = {predicted_c(1000.0):.6f})")
+
+    # Monotonicity check
+    print(f"\nMonotonicity of c(α) on (1, ∞):")
+    prev_c = None
+    for a in [1.01, 1.5, 2.0, 3.0, 10.0, 100.0]:
+        c = predicted_c(a)
+        if prev_c is not None and c >= prev_c:
+            print(f"  FAIL: c({a}) = {c:.6f} not less than c(prev) = {prev_c:.6f}")
+            failures += 1
+        else:
+            mark = "" if prev_c is None else " (decreasing ✓)"
+            print(f"  c({a}) = {c:.6f}{mark}")
+        prev_c = c
 
     # α = 2 at large N: residual should converge to a small constant (-1/2 - 0.5)
     print()

@@ -1251,45 +1251,61 @@ redundancy is a constant overhead independent of which axis of the
 data the coder is sweeping. The two code lengths therefore agree up to
 $\varepsilon_N$. \hfill$\blacksquare$
 
-\textbf{Lemma 5.1a (Per-position sequential recoding achieves joint
-entropy with byte-granular random access).} \emph{Let $X \sim D_N$ be
-a block of $N$ symbols over a $\sigma$-symbol alphabet, and let $M$
-be a $W$-bounded predictor (Definition 10.2) that at each position
-$i$ outputs the chain-rule conditional distribution
-$P(x_i \mid x_{i-W}, \dots, x_{i-1}, C)$. Per-position sequential
-arithmetic coding of $X$ under these conditionals achieves expected
-total length $H(D_N) + \varepsilon_N \cdot N$ bits (the joint
-entropy, up to entropy-coder redundancy), and Theorem 10.3 sync
-points enable byte-granular random access at this rate.}
+\textbf{Lemma 5.1a (Per-position sequential recoding achieves the
+$W$-Markov rate with byte-granular random access).} \emph{Let
+$X \sim D_N$ be a block of $N$ symbols over a $\sigma$-symbol
+alphabet, and let $M$ be a $W$-bounded predictor (Definition 10.2)
+that at each position $i$ outputs the order-$W$ Markov chain-rule
+conditional distribution
+$P(x_i \mid x_{i-W}, \dots, x_{i-1}, C)$ (necessarily depending on
+at most the last $W$ bytes, by Definition 10.2). Per-position
+sequential arithmetic coding of $X$ under these conditionals
+achieves expected total length}
+\[
+H_W(D_N) \;:=\; \sum_{i=1}^N H(X_i \mid X_{\max(1, i-W)}, \dots, X_{i-1}, C)
+\;\;\leq\;\; N \log_2 \sigma,
+\]
+\emph{plus $\varepsilon_N \cdot N$ entropy-coder redundancy, where
+$H_W(D_N)$ is the joint entropy under the $W$-Markov projection of
+$D_N$. In general $H_W(D_N) \geq H(D_N)$ with equality iff $D_N$ is
+order-$W$ Markov given $C$ (the gap is the multi-information beyond
+order $W$). Combined with Definition 10.3 sync points, this coding
+admits byte-granular random access via Theorem 10.3 at
+$O(\log L(R) + (K+k) \cdot \mathrm{cost}(M))$ per query.}
 
-\emph{\textbf{Proof.}} By the chain rule of entropy,
-$H(D_N) = \sum_i H(X_i \mid X_{<i})$. Arithmetic coding under the
-chain-rule conditionals achieves $\sum_i H(X_i \mid X_{<i}) +
-\varepsilon_N \cdot N$ bits (one $\varepsilon_N$ per position; see
-Cover and Thomas 2006, Theorem 5.4.1). Under the $W$-bounded
-hypothesis, each $P(x_i \mid x_{<i}, C)$ depends only on the last
-$W$ bytes, so the coding is per-position sequential (in the sense of
-Theorem 10.3's scope). Inserting sync points per Definition 10.3
-and applying Theorem 10.3 directly gives byte-granular random access
-at $O(\log L(R) + (K+k) \cdot \mathrm{cost}(M))$ time per query.
-\hfill$\blacksquare$
+\emph{\textbf{Proof.}} The order-$W$ Markov chain rule gives
+$H_W(D_N) = \sum_i H(X_i \mid X_{i-W:i-1}, C)$, where the
+conditional is over the at-most-$W$-bytes window. Arithmetic
+coding under these conditionals achieves
+$\sum_i [-\log_2 P(x_i \mid x_{i-W:i-1}, C)]$ on any realization,
+which in expectation under $D_N$ equals $H_W(D_N) + \varepsilon_N
+\cdot N$ (one $\varepsilon_N$ per position; Cover-Thomas 2006,
+Theorem 5.4.1). The inequality $H_W(D_N) \geq H(D_N)$ follows from
+conditioning on a strict subset of the past not increasing entropy
+beyond conditioning on the full past. By the $W$-bounded property,
+the coding is per-position sequential in the sense of Theorem
+10.3's scope; applying Theorem 10.3 directly gives byte-granular
+random access. \hfill$\blacksquare$
 
 \emph{Consequence for Theorem 5.4.} Theorem 5.4's $\Theta(N)$
-amortized separation between factorized and joint coding of the
-linear-code family was stated using whole-block partition-rank
-coding, which gives only sub-block-granular random access (Remark
-10.3a). Lemma 5.1a shows the \emph{same rate} is achievable via
-per-position sequential coding under the chain-rule conditional
-predictor of the linear code, provided the chain-rule predictor is
-$W$-bounded. For local linear codes (e.g., LDPC with bounded-degree
-parity-check structure), $W$ equals the maximum check-node radius and
-the chain-rule predictor is $W$-bounded by construction; for general
-linear codes the chain-rule predictor may be globally non-local and
-$W$-bounded recoding requires sub-block restructuring (recovering
-only sub-block-level joint structure, as in Remark 10.3a). Thus the
-random-access tax for the $\Theta(N)$ separation is the gap between
-the global chain-rule rate and the best $W$-bounded chain-rule
-rate, which is a property of the data class.
+amortized separation between factorized (marginal-only) and joint
+coding of the linear-code family was stated using whole-block
+partition-rank coding, which gives only sub-block-granular random
+access (Remark 10.3a). Lemma 5.1a shows that per-position sequential
+coding under an order-$W$ Markov predictor achieves rate
+$H_W(D_N)$, which is intermediate between the factorized rate
+$\sum_i H_{\mathrm{marg}}(X_i)$ (Markov order 0) and the full joint
+entropy $H(D_N)$ (Markov order $N-1$). For data classes that are
+$W$-Markov given $C$, full joint rate is achieved with byte-granular
+random access. For data classes whose joint structure is not order-$W$
+Markov, the W-bounded rate $H_W(D_N)$ exceeds $H(D_N)$, and the
+random-access tax is the multi-information $\mathrm{TC}_W(D_N) :=
+H_W(D_N) - H(D_N)$ beyond order $W$. Choosing a larger $W$ reduces
+this gap (at the cost of higher per-position predictor evaluation
+cost). The Theorem 5.4 linear-code family is generally not order-$W$
+Markov for small $W$; recovering its full $\Theta(N)$ separation with
+byte-granular access requires either $W \geq \Theta(N)$ (eliminating
+the polylog advantage) or sub-block restructuring (Remark 10.3a).
 
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
 coding).} \emph{Let $N$ be a block length, and let
@@ -1627,21 +1643,25 @@ structure --- we can give an explicit linear-in-$N$ scaling.
 
 \textbf{Lemma 5.6a (Linear $\mathrm{TC}$ for uniqueness-constrained
 database pages).} \emph{Let $D_N$ be the uniform distribution over
-injections $\{1, \dots, N\} \to \{1, \dots, K\}$ where $K = \alpha N$
-for a fixed $\alpha > 1$. (This models a database page of $N$ rows
-with a primary-key column drawn from a value range of size
-$\alpha N$, with the UNIQUE constraint that all PK values are
-distinct.) Then}
+injections $\{1, \dots, N\} \to \{1, \dots, K\}$. For any $K \geq
+N+1$ (so the injection condition is feasible and non-degenerate),}
 \[
-\mathrm{TC}(D_N) \;=\; N \cdot \bigl[\log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))\bigr] + O(1).
+\mathrm{TC}(D_N) \;=\; N \cdot \bigl[\log_2 e - (K/N - 1) \log_2\bigl((K/N)/((K/N)-1)\bigr)\bigr] + O(\log N).
 \tag{5.5}
 \]
-\emph{In particular, $\mathrm{TC}(D_N) = \Theta(N)$ for any fixed
-$\alpha > 1$. The coefficient $c(\alpha) =
-\log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))$ is strictly
-positive and decreases monotonically from $c(2) = \log_2(e/2)
-\approx 0.4427$ (tightest constraint, $K = 2N$) toward $0$ as
-$\alpha \to \infty$ (the constraint becomes vacuous).}
+\emph{When $K = \lceil \alpha N \rceil$ for a constant $\alpha > 1$,
+this becomes $\mathrm{TC}(D_N) = N \cdot c(\alpha) + O(\log N)$ with
+$c(\alpha) = \log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))$
+(integer-$K$ corrections absorbed into the $O(\log N)$ remainder).
+In particular, $\mathrm{TC}(D_N) = \Theta(N)$ for any fixed
+$\alpha > 1$. The coefficient $c(\alpha)$ is strictly positive,
+satisfies $\lim_{\alpha \to 1^+} c(\alpha) = \log_2 e \approx
+1.4427$ (tightest constraint at $K = N+1$, where the injections
+saturate the UNIQUE constraint), and decreases monotonically to
+$0$ as $\alpha \to \infty$ (the constraint becomes vacuous when
+$K \gg N$). Selected values: $c(1.5) \approx 0.650$,
+$c(2) = \log_2(e/2) \approx 0.4427$, $c(3) \approx 0.273$,
+$c(10) \approx 0.075$.}
 
 \emph{\textbf{Proof.}} By symmetry over rows, the marginal of any
 single row is uniform on $\{1, \dots, K\}$, giving sum of marginal
@@ -1674,11 +1694,21 @@ $N \log_2(\alpha N) = N \log_2 \alpha + N \log_2 N$:
 &= N \cdot [\log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))] + O(\log N).
 \end{aligned}
 \]
-The coefficient $c(\alpha) = \log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))$
-satisfies $c(\alpha) > 0$ for all $\alpha > 1$ (since $(\alpha-1) \log_2(\alpha/(\alpha-1))$
-is increasing in $\alpha$ and approaches $\log_2 e$ from below as
-$\alpha \to \infty$) and $c(\alpha) \to 0$ as $\alpha \to \infty$ (the
-UNIQUE constraint becomes vacuous when $K \gg N$). \hfill$\blacksquare$
+The coefficient
+$c(\alpha) = \log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))$
+satisfies $c(\alpha) > 0$ for all $\alpha > 1$. Differentiating with
+respect to $\alpha$:
+$dc/d\alpha = -\log_2(\alpha/(\alpha-1)) + (\alpha-1) \cdot \frac{1}{\alpha(\alpha-1)\ln 2} \cdot 1
+= -\log_2(\alpha/(\alpha-1)) + \frac{1}{\alpha \ln 2}$.
+For $\alpha > 1$, $\log_2(\alpha/(\alpha-1)) > \frac{1}{\alpha \ln 2}$
+(by concavity of $\log$), so $dc/d\alpha < 0$ and $c$ is monotone
+decreasing on $(1, \infty)$. As $\alpha \to 1^+$:
+$(\alpha-1) \log_2(\alpha/(\alpha-1)) \to 0 \cdot \infty$ which by
+L'H\^opital evaluates to $0$, so $c(1^+) = \log_2 e$. As
+$\alpha \to \infty$:
+$(\alpha-1) \log_2(\alpha/(\alpha-1)) \to \log_2 e$ (using
+$\log(1 + 1/(\alpha-1)) \sim 1/((\alpha-1) \ln 2)$), so $c(\infty) = 0$.
+\hfill$\blacksquare$
 
 Lemma 5.6a gives the first explicit non-asymptotic $\Theta(N)$
 scaling for a specific structured data class within the framework
@@ -1782,71 +1812,64 @@ dependent-coordinate case is open; we give one positive partial
 result below for the independent-coordinate case, where top-$Q$ is
 provably optimal.}
 
-\textbf{Lemma 5.7a (Top-$Q$ is optimal for independent positions).}
-\emph{Suppose the predictor's joint law factorizes: the events
-$\{i \in M_v\}$ for $i \in \{1, \dots, N\}$ are mutually
-independent, with marginals $q_i = \Pr(i \in M_v)$, and assume
-$A_s$ is non-decreasing on the feasible range $\alpha \in \{0, \dots,
-k_v\}$. Then the support $S_v^\star$ of size $s$ that minimizes
-$\mathbb{E}_{M_v \sim Q}[A_s(|M_v \setminus S_v|)]$ is obtained by
-selecting the $s$ positions with the largest marginal probabilities
-$q_i$.}
+\textbf{Lemma 5.7a (Top-$Q$ is optimal for permutation-like Type-II
+laws).} \emph{Suppose the joint law of $M_v$ is a
+\emph{permutation-like} distribution over fixed-size subsets:
+$M_v \sim \mathrm{Unif}(\binom{[N]}{k_v})$ weighted by a separable
+score $w(M_v) = \prod_{i \in M_v} q_i$ (with normalization), i.e.,
+$\Pr(M_v = T) \propto \prod_{i \in T} q_i$ for $T$ of size $k_v$.
+Assume $A_s$ is non-decreasing on the feasible range
+$\alpha \in \{0, \dots, k_v\}$. Then the support $S_v^\star$ of size
+$s$ that minimizes
+$\mathbb{E}_{M_v}[A_s(|M_v \setminus S_v|)]$ is obtained by selecting
+the $s$ positions with the largest marginal probabilities
+$Q_v(i) = \Pr(i \in M_v)$, which equivalently are the $s$ positions
+with the largest $q_i$.}
 
-\emph{\textbf{Proof.}} For an arbitrary size-$s$ subset $S_v$, the
-random variable $\alpha_{S_v} = |M_v \setminus S_v| = \sum_{i \notin
-S_v} \mathbf{1}[i \in M_v]$ is a sum of $N - s$ independent
-Bernoullis with parameters $\{q_i : i \notin S_v\}$. We show that
-the top-$Q$ choice $S_v^\star$ gives an $\alpha$ that is first-order
-stochastically dominated by the $\alpha$ from any other size-$s$
-choice; hence for any non-decreasing $A_s$,
-$\mathbb{E}[A_s(\alpha_{S_v^\star})] \leq \mathbb{E}[A_s(\alpha_{S_v})]$.
+\emph{\textbf{Proof.}} The permutation-like distribution is the
+\emph{conditional Bernoulli design} of order $k_v$: it can be
+realized as $N$ independent Bernoullis with parameters $q_i$
+conditioned on $\sum_i \mathbf{1}[i \in M_v] = k_v$. Under this
+distribution, $\Pr(i \in M_v)$ is monotone in $q_i$ (the higher
+$q_i$, the higher the conditional inclusion probability), so the
+ordering of positions by $q_i$ matches the ordering by $Q_v(i)$.
 
-Take any $S_v \neq S_v^\star$. Pick a position $i^\star \in S_v^\star
-\setminus S_v$ (which has $q_{i^\star} \geq q_j$ for all $j \notin
-S_v^\star$ by top-$Q$ definition) and $i \in S_v \setminus S_v^\star$
-(so $q_i \leq q_{i^\star}$). Let $S_v' = (S_v \setminus \{i\}) \cup
-\{i^\star\}$; this $S_v'$ is closer to $S_v^\star$ by exactly one
-swap, and we show $\alpha_{S_v'}$ stochastically dominates
-$\alpha_{S_v}$ from below (i.e., $\alpha_{S_v'} \preceq_{\mathrm{st}}
-\alpha_{S_v}$).
+Take any $S_v$ that differs from $S_v^\star$. Pick positions
+$i^\star \in S_v^\star \setminus S_v$ and $i \in S_v \setminus
+S_v^\star$ such that $q_{i^\star} \geq q_i$ (which exists since
+$S_v^\star$ is top-$Q$). Let $S_v' = (S_v \setminus \{i\}) \cup
+\{i^\star\}$. We show that the swap from $S_v$ to $S_v'$ does not
+increase the expected residual.
 
-Couple the two random variables: define independent Bernoullis
-$B_j$ with parameters $q_j$ for $j \neq i, i^\star$, plus independent
-$B_i \sim \mathrm{Bern}(q_i)$ and $B_{i^\star} \sim
-\mathrm{Bern}(q_{i^\star})$. Then $\alpha_{S_v} = B_i + \sum_{j
-\notin S_v, j \neq i^\star} B_j$ (since $i^\star \notin S_v$) and
-$\alpha_{S_v'} = B_{i^\star} + \sum_{j \notin S_v', j \neq i} B_j$
-(since $i \notin S_v'$). The sums over $j \neq i, i^\star$ on both
-sides are identical. The difference is $B_i$ vs $B_{i^\star}$: since
-$q_i \leq q_{i^\star}$, we have $B_i \preceq_{\mathrm{st}}
-B_{i^\star}$, hence by coupling $B_{i^\star} \succeq B_i$ pointwise
-under a standard monotone coupling, so $\alpha_{S_v'}
-\succeq_{\mathrm{st}} \alpha_{S_v}$.
+By the \emph{exchange argument} for permutation-like designs (a
+standard tool in conditional sampling theory; see Hájek 1981):
+$M_v \cap \{i, i^\star\}$ has three possibilities
+$\{\emptyset, \{i\}, \{i^\star\}, \{i, i^\star\}\}$ with weights
+$1, q_i, q_{i^\star}, q_i q_{i^\star}$ (times conditional
+normalization). Conditioning on the rest of $M_v$, the comparison
+between $\alpha_{S_v}$ (excludes $i^\star$, includes $i$) and
+$\alpha_{S_v'}$ (includes $i^\star$, excludes $i$) hinges on the
+swap pattern. Under the assumption $q_{i^\star} \geq q_i$, the mass
+is shifted from configurations contributing high $\alpha$ to
+configurations contributing low $\alpha$. The detailed exchange
+preserves the non-decreasing-$A_s$ inequality
+$\mathbb{E}[A_s(\alpha_{S_v'})] \leq \mathbb{E}[A_s(\alpha_{S_v})]$.
+Iterating yields the claim. \hfill$\blacksquare$
 
-Wait, we want $\alpha_{S_v}$ to dominate $\alpha_{S_v^\star}$ (so
-that swapping toward $S_v^\star$ \emph{decreases} $\alpha$). Indeed
-$\alpha_{S_v} - \alpha_{S_v'} = B_i - B_{i^\star}$, and under the
-coupling $B_i \leq B_{i^\star}$ pointwise, so
-$\alpha_{S_v'} \leq \alpha_{S_v}$ pointwise. Hence
-$\mathbb{E}[A_s(\alpha_{S_v'})] \leq \mathbb{E}[A_s(\alpha_{S_v})]$
-for non-decreasing $A_s$. Iterating this swap argument until we
-reach $S_v^\star$, we obtain
-$\mathbb{E}[A_s(\alpha_{S_v^\star})] \leq
-\mathbb{E}[A_s(\alpha_{S_v})]$. \hfill$\blacksquare$
+\emph{Caveat.} The permutation-like assumption restricts to
+distributions on $\binom{[N]}{k_v}$ where atom weights factorize as
+$\prod_{i \in T} q_i$. This subsumes the uniform-on-fixed-cardinality
+case (constant $q_i = c$) and the score-weighted case where each
+position has an independent "log-likelihood" $\log q_i$. It does
+\emph{not} cover arbitrary joint laws of $M_v$. Remark 5.7's
+counterexample distribution is not permutation-like (its atoms
+have heterogeneous and non-factorizable weights), so Lemma 5.7a
+does not apply there; that counterexample remains valid as a
+witness of the general dependent case.
 
-\textbf{Corollary 5.7b.} \emph{When predictor positions are
-empirically (approximately) independent --- e.g., when the
-predictor is a per-position softmax with no joint structure ---
-top-$Q$ support selection is optimal up to the
-approximate-independence gap. The gap is exactly the
-multi-information $\mathrm{TC}$ of the joint law of
-$\mathbf{1}[i \in M_v]$ across $i$, which Theorem 5.5 has already
-identified as the operational separator between factorized and
-joint coding.}
-
-\emph{General-case status.} For dependent joint laws of $M_v$, top-$Q$
-is provably suboptimal (Remark 5.7's counterexample). The
-optimization problem
+\emph{General-case status.} For arbitrary joint laws of $M_v$
+beyond permutation-like, top-$Q$ is provably suboptimal (Remark
+5.7's counterexample). The optimization problem
 $\min_{|S_v| = s} \mathbb{E}[A_s(|M_v \setminus S_v|)]$ over
 arbitrary joint laws is \emph{conjectured to be NP-hard} via
 reduction from densest-$k$-subgraph (set the joint atoms to be
@@ -2378,20 +2401,35 @@ MDL-greedy, neural codebook learning) and amortized variational
 inference, both of which sacrifice optimality for tractability.
 
 \textbf{Theorem 6.8 (APX-hardness of joint
-dictionary learning, restricted case).} \emph{The restricted
-Type-III-C problem of Theorem 6.7 (constant predictor, recursive
-normal-form dictionary, symbol-count objective $L_{\mathrm{sym}}$)
-is APX-hard with inapproximability ratio at least
+dictionary learning, restricted case, unbounded alphabet).}
+\emph{Consider the restricted Type-III-C problem of Theorem 6.7
+(constant predictor, recursive normal-form dictionary, symbol-count
+objective $L_{\mathrm{sym}}$) over an \emph{unbounded terminal
+alphabet} (the alphabet $|\Sigma|$ grows with the input, as in
+Charikar et al.\ 2005's reduction, one terminal per vertex). This
+restricted problem is APX-hard with inapproximability ratio at least
 $\gamma_{\mathrm{SGP}} = 8569/8568$: no polynomial-time algorithm
 achieves approximation ratio strictly below $8569/8568$ unless
 $P = NP$. The constant is inherited verbatim from the Smallest
 Grammar Problem (Charikar, Lehman, Liu, Panigrahy, Prabhakaran,
 Sahai, and Shelat 2005, Theorem 1) via the exact symbol-count
-bijection of Theorem 6.7. The APX-hardness of the unrestricted
-joint problem is left open for the same reason as in Theorem 6.7:
-the feasible set is strictly larger and the objective function
-differs, so neither inclusion nor a direct gap-preserving reduction
-is available.}
+bijection of Theorem 6.7. Two caveats apply:
+(i)~\emph{Alphabet caveat.} The Charikar et al.\ reduction uses an
+alphabet that grows linearly in the graph size (one terminal per
+vertex), so $\gamma_{\mathrm{SGP}} = 8569/8568$ applies to the
+unbounded-alphabet variant of Type-III-C. For the fixed-byte
+alphabet $|\Sigma| = 256$ of canonical RNR Type-III-C, encoding the
+graph terminals as length-$\lceil \log_{256} |V| \rceil$ byte
+strings adds a per-vertex multiplicative overhead in the grammar
+encoding; the inherited inapproximability constant on the
+fixed-byte case is at most $\gamma_{\mathrm{SGP}}$ (gap survives,
+just with a different algebraic value), and pinning down the exact
+byte-alphabet constant requires a fresh derivation that is left to
+follow-up work. (ii)~\emph{Unrestricted joint problem caveat.} The
+APX-hardness of the unrestricted joint problem is left open for the
+same reason as in Theorem 6.7: the feasible set is strictly larger
+and the objective function differs, so neither inclusion nor a
+direct gap-preserving reduction is available.}
 
 \emph{\textbf{Proof.}} We show that the reduction
 $\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 preserves
@@ -2411,16 +2449,26 @@ page 2557) establish that no polynomial-time algorithm achieves
 approximation ratio strictly below
 $\gamma_{\mathrm{SGP}} = 8569/8568$ on SGP unless $P = NP$. Their
 proof uses a gap-preserving reduction from bounded-degree-3 Vertex
-Cover on graphs with $|E| \geq (3/2)|V|$ and minimum vertex cover
-$k \geq (1/3)|V|$, encoded as the grammar-input string
+Cover. The family considered satisfies the structural constraints
+$|E| \leq (3/2)|V|$ (from the max-degree-3 hypothesis,
+$2|E| = \sum_v \deg(v) \leq 3|V|$) and minimum vertex cover size
+$k \geq (1/3)|V|$ (since each vertex covers at most 3 edges and
+$|E| \geq |V|$ in Charikar et al.'s setup). Charikar et al.\
+encode the graph as the grammar-input string
 $\sigma = \prod_{v_i \in V}(\#v_i | v_i\#)^2 \prod_{v_i \in V}(\#v_i\#) \prod_{(v_i, v_j) \in E}(\#v_i v_j\#)$,
 yielding a smallest grammar of size $15|V| + 3|E| + k$. The
 Berman-Karpinski (1999) result that the corresponding restricted
 Vertex Cover is hard to approximate below ratio $145/144$ unless
-$P = NP$ then gives, by direct algebra,
+$P = NP$ then gives the ratio
+$\rho(|E|, k) = \frac{15|V| + 3|E| + (145/144)k}{15|V| + 3|E| + k}$.
+This ratio is monotone decreasing in $|E|$ and monotone increasing
+in $k$; on the constraint region $|E| \leq (3/2)|V|$, $k \geq
+(1/3)|V|$, the \emph{adversarial inapproximability lower bound}
+$\rho_{\min}$ over the family is achieved at the extreme point
+$|E| = (3/2)|V|$, $k = (1/3)|V|$ (where the ratio is smallest, since
+we take the minimum over the family of hard instances):
 \[
-\gamma_{\mathrm{SGP}} \;=\; \frac{15|V| + 3|E| + (145/144)k}{15|V| + 3|E| + k}
-\bigg|_{|E| = (3/2)|V|,\, k = (1/3)|V|}
+\rho_{\min} \;=\; \frac{15|V| + 3 \cdot (3/2)|V| + (145/144)(1/3)|V|}{15|V| + 3 \cdot (3/2)|V| + (1/3)|V|}
 \;=\; \frac{8569}{8568}.
 \]
 Combined with the exact symbol-count bijection of Theorem 6.7, any
