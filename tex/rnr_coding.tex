@@ -100,11 +100,14 @@ $2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
 lower bound Theorem 6.2). The framework's deployment-relevant feature is random-access decoding
 with cost
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
-$W$-bounded predictors and uniform sync-point spacing
-(Theorem 10.3), where $|X|$ is the uncompressed source length
-(non-uniform spacing replaces the direct-lookup term with binary
-search costing $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits)
---- polylogarithmic in
+$W$-bounded predictors, per-position sequential coding modes, and
+uniform sync-point spacing (Theorem 10.3), where $|X|$ is the
+uncompressed source length (non-uniform spacing replaces the
+direct-lookup term with binary search costing
+$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits;
+whole-block Type-II/III-B partition-rank modes get only
+sub-block-granular access at separate $O(K \cdot \mathrm{unrank}(K))$
+per requested sub-block, Remark 10.3a) --- polylogarithmic in
 archive size $|X|$ once the sync-point spacing $K$, read window
 $k$, predictor cost, and $\log L(R)$ are treated as fixed (or
 polylogarithmic in $|X|$) parameters. Under an additional probability-floor assumption
@@ -371,11 +374,13 @@ This article makes the following contributions.
 \item
   Random-access (seek-and-read) capability with cost
   $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for uniform
-  sync-point spacing (non-uniform spacing replaces the direct
-  lookup with binary search at cost
-  $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits, since each
-  entry carries both a source-position key and a repair-stream
-  offset)
+  sync-point spacing and \emph{per-position sequential} coding
+  modes (non-uniform spacing replaces the direct lookup with binary
+  search at cost
+  $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits;
+  whole-block Type-II/III-B partition-rank modes get only
+  sub-block-granular access with a separate
+  $O(K \cdot \mathrm{unrank}(K))$ per sub-block, Remark 10.3a)
   --- polylogarithmic in archive size $|X|$ once sync-point spacing
   $K$, read window $k$, predictor cost, and $\log L(R)$ are held
   fixed (or polylog in $|X|$) --- via Theorem 10.3 with Definitions
@@ -727,10 +732,14 @@ $\Pr(h_i = h, l_i = l \mid C)$ over high-nibble $h$ and low-nibble $l$
 of byte $i$, with $h, l \in \{0, \ldots, 15\}$ and
 $\sum_{h, l} Q_{h, l}(i) = 1$ for each position $i$. A
 decoder-reproducible mode choice, either stored as metadata or
-computed by a fixed rule from $(C, Q)$, selects direct 256-class
-partition coding or a hierarchical scheme that first encodes the
+computed by a fixed rule from $(C, Q)$, selects one of three coding
+strategies (detailed in §6.3): (i) direct 256-class partition
+coding; (ii) hierarchical partition coding that first encodes the
 high-nibble partition and then the low-nibble partition conditional
-on the high nibble.
+on the high nibble; or (iii) per-byte sequential coding, which
+encodes each byte's high-then-low nibble in source order via
+per-position arithmetic coding under $Q^H(\cdot \mid i, C)$ and
+$Q^{L \mid H}(\cdot \mid i, h_i, C)$.
 
 \textbf{Definition 3.5 (RNR Type-III-C).} An RNR Type-III-C coder is
 parameterized by a learned token dictionary
@@ -1774,15 +1783,26 @@ $\Pr(h_i = h, l_i = l \mid C)$, normalized so $\sum_{h,l} Q_{h,l}(i) =
 1$ for every $i$. The construction is exactly Type-II with a 256-symbol
 alphabet but with the alphabet structure exposed.
 
-Two coding strategies are available. Direct partition coding treats
-the alphabet as 256 flat classes and applies Theorem 5.3 with
-$A_{256}$. Hierarchical coding decomposes the byte partition along the
-high-nibble axis: first encode the high-nibble partition
-$M^H_h = \{ i : h_i = h \}$, then for each $h$ encode the low-nibble
-conditional partition
-$M^{L \mid H = h}_l = \{ i \in M^H_h : l_i = l \}$. The hierarchical
-scheme is preferred when the predictor decomposes naturally as
-$Q_{h,l}(i) = Q^H_h(i) \cdot Q^{L \mid H}_l(i, h)$.
+Three coding strategies are available. (i) \emph{Direct partition
+coding} treats the alphabet as 256 flat classes and applies
+Theorem 5.3 with $A_{256}$. (ii) \emph{Hierarchical partition
+coding} decomposes the byte partition along the high-nibble axis:
+first encode the high-nibble partition
+$M^H_h = \{ i : h_i = h \}$, then for each $h$ encode the
+low-nibble conditional partition
+$M^{L \mid H = h}_l = \{ i \in M^H_h : l_i = l \}$. The
+hierarchical scheme is preferred when the predictor decomposes
+naturally as
+$Q_{h,l}(i) = Q^H_h(i) \cdot Q^{L \mid H}_l(i, h)$. (iii)
+\emph{Per-byte sequential coding} forgoes the partition structure
+and, at each position $i$ in source order, encodes the high
+nibble of $X_i$ under $Q^H(\cdot \mid i, C)$ and then the low
+nibble under $Q^{L \mid H}(\cdot \mid i, h_i, C)$ via per-position
+arithmetic coding. Strategies (i) and (ii) achieve the
+multi-information rate of Theorem 5.5 in the limit but use
+whole-block combinatorial-rank encodings; strategy (iii) is a
+per-position sequential stream that admits Theorem 10.3's
+byte-granular random access.
 
 \textbf{Theorem 6.3 (Type-III-B mutual-information advantage).}
 \emph{Let $H$, $L$, and $C$ denote the random variables corresponding
@@ -2744,12 +2764,19 @@ effective minimum random-read granularity is large and growing with
 archive size (the first case linearly in $p$; the second
 block-by-block with no sub-block seek). This is a deployment
 blocker for archive-style use cases where partial reads are common.
-The RNR framework supports random access in per-query time that is
+RNR archives that use per-position sequential coding modes (e.g.,
+Type-I, the per-byte sequential Type-III-B strategy, or Type-III-A
+composition over per-position sequential per-tile modes) support
+byte-granular random access in per-query time that is
 polylogarithmic in $|X|$ (or even independent of $|X|$ in the
 uniform-spacing direct-lookup case), provided the predictor has
 bounded context, in a parameter regime where $K$, $k$,
 $\mathrm{cost}(M)$, and $\log L(R)$ are held fixed; the resident
-seek index is $\Theta(|X|/K)$. We make this precise.
+seek index is $\Theta(|X|/K)$. Whole-block Type-II partition-rank
+modes and Type-III-B partition modes give only sub-block-granular
+random access at a separate $O(K \cdot \mathrm{unrank}(K))$ per
+requested sub-block (Remark 10.3a). We make the per-position
+sequential case precise.
 
 \textbf{Definition 10.2 ($W$-bounded predictor).} A predictor $M$ is
 $W$-bounded if its output $Y_i = M(C_i)$ at position $i$ depends only
@@ -2778,10 +2805,17 @@ in $X$ of the $j$-th sync point is the deterministic value $j K$
 archive mapping each sync point identifier to its bit offset in $R$
 only. The seek index has size at most
 $\lceil |X|/K \rceil \cdot \lceil \log_2 L(R) \rceil$ bits.
-(Non-uniform sync-point spacing would require storing $\log_2 |X|$
-additional bits per entry, raising the seek index size to
+Definition 10.3 admits two variants: \emph{uniform spacing} (sync
+points at byte positions $j K$, byte offsets implicit, used by
+default) and \emph{non-uniform spacing} (sync points at
+encoder-chosen byte positions, byte offsets stored explicitly per
+entry, used when token-edge alignment or other encoder constraints
+require it). Under non-uniform spacing each entry additionally
+stores a $\lceil \log_2 |X| \rceil$-bit source position, raising
+the seek index size to
 $\lceil |X|/K \rceil \cdot (\lceil \log_2 L(R) \rceil + \lceil
-\log_2 |X| \rceil)$ bits; we assume uniform spacing throughout.)
+\log_2 |X| \rceil)$ bits. Both variants are referenced in
+subsequent theorems and remarks.
 The entropy-coder flush adds $O(1)$ bits of termination per sync
 point and contributes $O(|X|/K)$ bits of additional repair-stream
 overhead in total; the predictor and entropy-coder reset together
@@ -2790,13 +2824,18 @@ decoding.
 
 Each sync point forfeits some compression efficiency because the
 predictor restarts cold and cannot exploit the prior $W$ bytes of
-context. \emph{Bounded-cost assumption.} We assume the predictor's
-output distribution satisfies a probability floor $\eta > 0$: for
-every byte $b \in \{0, \dots, 255\}$ and every context $c$,
-$\Pr_M(b \mid c) \geq \eta$ (in practice enforced by mixing with a
-small uniform escape, $\eta \geq 2^{-12}$ being standard). Under
-this floor, the per-byte cold-context arithmetic-code length is
-bounded above by $\log_2(1/\eta)$. The per-sync-point excess cost
+context. \emph{Bounded-cost assumption.} We assume the entropy
+coder's per-position symbol distribution satisfies a probability
+floor $\eta > 0$ (the floor is on whichever symbol the coder
+actually emits per position: for per-position sequential Type-I
+this is the class+payload symbol distribution; for per-byte
+sequential Type-III-B this is the high-nibble distribution and
+then the low-nibble conditional distribution per byte; for direct
+byte arithmetic coding it is $\Pr_M(b \mid c)$). In practice this
+is enforced by mixing the model's distribution with a small
+uniform escape at the coder level, $\eta \geq 2^{-12}$ being
+standard. Under this floor, the per-position cold-context
+arithmetic-code length is bounded above by $\log_2(1/\eta)$. The per-sync-point excess cost
 over warm-context encoding of the same $W$ bytes is therefore
 bounded by
 \[
@@ -2835,13 +2874,21 @@ sharper assumption above.
 
 \textbf{Theorem 10.3 (Random access, output-sensitive, for
 per-position sequential coding).} \emph{Let $X$ be compressed under
-RNR using a \emph{per-position sequential} coding mode (Type-I, or
-the per-byte sequential branches of Type-III-A; explicitly
-excluding modes whose repair-stream encoding spans the entire block
-as a single combinatorial object, such as Type-II's
-multinomial/partition enumerative rank coding without
-sub-block sync, see Remark 10.3a below) with a $W$-bounded
-predictor $M$ satisfying Theorem 10.1 and with sync points placed
+RNR using a \emph{per-position sequential} coding mode: Type-I, the
+per-byte sequential Type-III-B strategy of §6.3 (strategy iii),
+Type-III-A composition over per-position sequential per-tile modes
+where additionally sync points are placed at tile boundaries (so
+no sync point lands inside a tile's framed repair stream), or any
+other coding scheme whose repair stream is read one position at a
+time. The theorem explicitly excludes modes whose repair-stream
+encoding spans an entire block as a single combinatorial object,
+such as Type-II's multinomial/partition enumerative rank coding
+without sub-block sync (Remark 10.3a) and Type-III-B's direct or
+hierarchical partition strategies (i)/(ii) of §6.3. For Type-III-A,
+the encoder must therefore choose tile and sync-point sizes such
+that $K$ is an integer multiple of (or aligned to) the tile size,
+ensuring sync-point boundaries coincide with tile boundaries. Let $M$ be a $W$-bounded predictor satisfying Theorem 10.1
+and let sync points be placed
 at uniformly spaced source positions $j K$ for $j = 0, 1, \dots$
 (Definition 10.3). Assume the entropy coder operates under a
 predictor probability floor $\eta > 0$ (Section 10.7), so each
@@ -2924,22 +2971,36 @@ independently partition-coded sub-blocks of length $K$ each
 (recovering only the sub-block-level Type-II separation, as already
 noted in §10.7's ``Type-II semi-non-factorized coding'' trade-off
 bullet). Each sub-block is then a standalone Type-II rank, and
-random access has \emph{sub-block granularity}: locating the
-sub-block containing source position $p$ costs $O(\log L(R))$
-under uniform spacing as in Theorem 10.3, but decoding it costs
-$O(K \cdot \mathrm{unrank}(K))$ (the cost of unranking the
-combinatorial object on $K$ positions) and produces all $K$ bytes
-of the sub-block rather than $k$ bytes around $p$. Byte-granular
-access within the sub-block requires decoding the whole sub-block,
-not just the prefix up to $p+k$ as in Theorem 10.3's per-position
-sequential decode. This is a strictly weaker random-access
-property than the per-position sequential case.
+random access has \emph{sub-block granularity}. For a read
+$[p, p+k)$, let $j_0 = \lfloor p/K \rfloor$ and
+$j_1 = \lfloor (p+k-1)/K \rfloor$; the request spans
+$j_1 - j_0 + 1 = \lceil k/K \rceil + O(1)$ sub-blocks (one more
+when $p$ is not aligned to a sub-block boundary). The driver looks
+up each of the affected sub-blocks' bit offsets (cost
+$O((\lceil k/K \rceil + 1) \cdot \log L(R))$ under uniform spacing)
+and decodes each in full (cost $O((\lceil k/K \rceil + 1) \cdot K
+\cdot \mathrm{unrank}(K))$), producing $(j_1 - j_0 + 1) \cdot K$
+output bytes of which only $k$ are actually requested. For
+$k \ll K$ the read costs $O(\log L(R) + K \cdot \mathrm{unrank}(K))$
+and produces $K + O(K)$ bytes (decoding overhead is one full
+sub-block per request); for $k \gg K$ the cost is
+$O((k/K) \cdot K \cdot \mathrm{unrank}(K)) = O(k \cdot
+\mathrm{unrank}(K))$, near-linear in $k$. Byte-granular access
+within a sub-block requires decoding the whole sub-block, not just
+the prefix up to $p+k$ as in Theorem 10.3's per-position sequential
+decode. This is a strictly weaker random-access property than the
+per-position sequential case.
 
-Theorem 10.3 establishes that random access in RNR archives runs in
-time with only polylogarithmic dependence on archive size (a
-$\log L(R)$ direct seek-index cost under uniform spacing, or a
+Theorem 10.3 establishes that random access in RNR archives using
+\emph{per-position sequential} coding modes runs in time with only
+polylogarithmic dependence on archive size (a $\log L(R)$ direct
+seek-index cost under uniform spacing, or a
 $\log(|X|/K) \cdot (\log |X| + \log L(R))$ binary-search cost
-under non-uniform spacing, plus a $K+k$ decode window). For $K = 64$ KiB and $k = 1$ KiB, the cost is roughly
+under non-uniform spacing, plus a $K+k$ decode window).
+Whole-block Type-II/III-B partition-rank modes give only
+sub-block-granular access at a separately analyzed
+$O(K \cdot \mathrm{unrank}(K))$ per requested sub-block (Remark
+10.3a). For $K = 64$ KiB and $k = 1$ KiB, the cost is roughly
 $K + k = 65$ KiB worth of predictor evaluations --- typically on
 the order of $650\,\text{ms}$ on a single CPU core for a small
 distilled transformer (one forward pass at $\sim 10\,\mu\text{s}$
@@ -3145,12 +3206,15 @@ For a 1 GiB archive the autoregressive case is hours of wall-clock
 time per access; the block-codec case decodes the enclosing block
 on every read.
 
-RNR with a $W$-bounded transformer predictor and sync points every
-$K$ positions: per-query random access in $O(\log L(R) + (K + k)
-\cdot \mathrm{cost}(M))$ time for uniform spacing (or with an
-extra $\log(|X|/K)$ factor for non-uniform), independent of $|X|$
-in the predictor-cost term and polylog in $|X|$ in the
-seek-index-lookup term, at a per-sync-point worst-case excess of
+RNR with a $W$-bounded transformer predictor, sync points every
+$K$ positions, and a per-position sequential coding mode (Type-I,
+per-byte sequential Type-III-B, or Type-III-A composition over
+per-position sequential per-tile modes): per-query random access
+in $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ time for uniform
+spacing (or with an extra $\log(|X|/K)$ factor for non-uniform),
+independent of $|X|$ in the predictor-cost term and polylog in
+$|X|$ in the seek-index-lookup term, at a per-sync-point
+worst-case excess of
 $W \cdot \log_2(1/\eta)$ bits (Section 10.7), giving a worst-case
 total of $(|X|/K) \cdot W \cdot \log_2(1/\eta)$ bits over the
 archive. For $K = 64$ KiB, $W = 4$ KiB,
@@ -3175,11 +3239,17 @@ feature relative to other neural compressors. The bounded-context
 architecture, the deterministic reproducibility guarantee (Theorem
 10.1), and the sync-point construction (Definition 10.3) jointly
 enable seek-and-read access at a parameter-dependent ratio
-overhead --- on the order of a few percent for natural data at
-typical $K$ and Type-I/II/III-A/III-B coders under the
+overhead. For per-position sequential modes (Type-I, the per-byte
+sequential Type-III-B strategy, and the per-tile sequential
+branches of Type-III-A) the overhead is on the order of a few
+percent for natural data at typical $K$ under the
 probability-floor assumption (a heuristic estimate; not a theorem),
-rising to a worst-case bound that depends on $K$ and $\max_\tau
-|\tau|$ for Type-III-C as detailed above --- a capability that
+and random access is byte-granular. For whole-block rank-coded
+Type-II and partition-coded Type-III-B modes, access is only
+sub-block-granular per Remark 10.3a, with a separate $O(K \cdot
+\mathrm{unrank}(K))$ per requested sub-block. For Type-III-C the
+worst-case bound depends additionally on $K$ and $\max_\tau
+|\tau|$ as detailed above. This is a capability that a capability that
 LSTM-based or state-space-based
 neural compressors can only provide with the expensive state
 snapshots of Theorem 10.4 (4 KiB or more per sync point); that
@@ -3521,9 +3591,16 @@ drivers:
 \item
   Range-decode function. Given $(p, k)$ with $p \in [0, |X|)$,
   computes $k' = \min(k, |X| - p)$, looks up the latest sync point
-  $P \leq p$ in the seek index, decodes from $P$ to $p + k'$ using
-  Theorem 10.3, and returns bytes $[p, p + k')$ (a short read when
-  $p + k > |X|$, an empty read when $p \geq |X|$).
+  $P \leq p$ in the seek index, then dispatches by the archive's
+  coding mode: per-position sequential modes use the Theorem 10.3
+  decode path (decode from $P$ to $p + k'$, return bytes $[p, p + k')$);
+  whole-block partition-rank modes use the Remark 10.3a decode
+  path (for each of the $\lceil k'/K \rceil + O(1)$ sub-blocks
+  intersecting $[p, p + k')$, look up the sub-block's bit offset
+  and unrank the full $K$-byte sub-block; assemble the requested
+  $k'$ bytes from the concatenated sub-block outputs). The mode is
+  recorded in the archive header. The function returns empty when
+  $p \geq |X|$.
 \item
   Cache. LRU or ARC cache of recently decoded regions, with eviction
   policy tuned to expected access pattern. Sits between the
@@ -3795,9 +3872,17 @@ point to the relevant theorems.
   output-sensitive cost $O(\log L(R) + (K + k) \cdot
   \mathrm{cost}(M))$ under uniform sync-point spacing (or
   $O(\log(|X|/K) \cdot (\log |X| + \log L(R)) + (K + k) \cdot \mathrm{cost}(M))$
-  under non-uniform spacing) for $W$-bounded predictors --- resolved
-  by Definitions 10.2 ($W$-bounded predictor) and 10.3 (sync point,
-  including entropy-coder flush) and Theorem 10.3. Non-$W$-bounded
+  under non-uniform spacing) for $W$-bounded predictors and
+  \emph{per-position sequential} coding modes (Type-I, per-byte
+  sequential Type-III-B, or Type-III-A composition over
+  per-position sequential per-tile modes) --- resolved by
+  Definitions 10.2 ($W$-bounded predictor) and 10.3 (sync point,
+  including entropy-coder flush) and Theorem 10.3. Whole-block
+  partition-rank coding (Type-II rank coding, Type-III-B direct or
+  hierarchical partition strategies) is excluded from Theorem 10.3
+  and gives only sub-block-granular random access at
+  $O(K \cdot \mathrm{unrank}(K))$ per requested sub-block (Remark
+  10.3a). Non-$W$-bounded
   predictors (LSTM, state-space) are covered by Theorem 10.4 via an
   augmented state snapshot of size $L(\text{state})$ per sync
   point; the corresponding cost adds $L(\text{state})$ to the
@@ -3812,11 +3897,15 @@ point to the relevant theorems.
   compressors: autoregressive byte/pixel models (NNCP, PixelCNN++,
   PixelSNAIL) as currently designed do not insert sync points or
   maintain a seek index and so do not support random access in
-  their published form (Theorem 10.3 in principle gives them
-  random access if their encoders were modified to do so), while
-  block-codec schemes (Bit-Swap, IDF++, HiLLoC) provide only
-  block-granular access (not byte-granular) due to their
-  block-coupled latent/ANS state.
+  their published form. Adding sync points to their encoders would
+  give them Theorem 10.3's random access \emph{provided} the
+  underlying predictor is $W$-bounded; for autoregressive
+  transformers with fixed context window this holds, but for
+  autoregressive RNNs/state-space models (which are not
+  $W$-bounded) Theorem 10.4's state snapshots are also required
+  per sync point. Block-codec schemes (Bit-Swap, IDF++, HiLLoC)
+  provide only block-granular access (not byte-granular) due to
+  their block-coupled latent/ANS state.
 \item
   Block-device and read-only filesystem deployment with
   hardware-target portability --- resolved by Theorem 10.5
