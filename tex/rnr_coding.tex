@@ -1867,26 +1867,37 @@ $(m-1) \cdot \delta_W$.
 \emph{(b) Information-theoretic optimality.} \emph{Lemma 5.1e
 establishes that any sub-block-based byte-granular random-access
 scheme (under conditions (i)-(iii) of Lemma 5.1e) satisfies}
-$L_{\mathrm{synced}} \geq m \cdot H(D_K)$
-\emph{by Shannon's source coding theorem per sub-block. For
-order-$W'$ Markov sources with $W' \leq W$ and $K \geq W'$, this
-equals $H(D_N) + (m-1) \cdot \delta_{W'}$ exactly (matching (a)
-ignoring the $\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ coder
-redundancy and the $N \cdot (h_W - h)$ term which vanishes for
+$L_{\mathrm{synced}} \geq m \cdot H(D_K) = N \cdot h(X) + m \cdot \delta_K$
+\emph{(by Shannon's source coding theorem per sub-block plus the
+finite identity $H(D_K) = K h(X) + \delta_K$ of Lemma 5.6c). For
+order-$W'$ Markov sources with $W' \leq W$ and $K \geq W'$, the
+lower bound becomes $H(D_N) + (m-1) \cdot \delta_{W'}$ exactly
+(matching (a) ignoring the $\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
+coder redundancy and the $N \cdot (h_W - h)$ term which vanishes for
 order-$W'$ Markov). For general exponentially mixing non-Markov
-sources, the lower bound is $m \cdot H(D_K) = H(D_N) + m \delta_K -
-\delta_N$, weakly matching (a) up to $\delta_K - \delta_W^{(h_W)}$
-slack; the achievability and lower bound coincide tightly only in
-the order-$W'$ Markov sub-case.}
+sources the relationship is more subtle: the per-block lower-vs-upper
+gap is $K (h_W - h) + \delta_W^{(h_W)} - \delta_K$, which can be
+positive or negative depending on the source (concrete example:
+$X_i = Y \oplus Z_i$ with $Y$ a hidden fair bit and $Z_i$ iid Bernoulli
+gives $m \cdot \delta_K - \delta_N > (m-1) \cdot \delta_W$ for small
+$W, K$). The achievability and lower bound coincide tightly only in
+the order-$W'$ Markov sub-case; for general exp-mixing the two
+characterize different orderings of the same per-block cost
+$L_{\mathrm{sub}} = K h_W + \delta_W^{(h_W)}$ versus its
+Shannon-minimum counterpart $H(D_K)$.}
 
-\emph{(c) Open extensions.} \emph{(i) Non-sub-block-based schemes
-(state-snapshot framework of Theorem 10.4): the lower bound (b) does
-not apply, and the trade-off between sub-block-independence excess
-$(m-1) \cdot \delta_W$ and state-snapshot storage $m \cdot
-L(\mathrm{state})$ (architecture-dependent, ranging from
-$\Theta(W \log_2 \sigma)$ for explicit context-byte storage to
-the predictor's internal hidden-state size for general models) is
-engineering-determined per use case.
+\emph{(c) Open extensions.} \emph{(i) Non-sub-block schemes:
+state-snapshot frameworks (Theorem 10.4) store predictor state at
+sync points. Such state is \emph{source-dependent} (it is a function
+of prior source bytes), violating Lemma 5.1e's source-independence
+condition (iii); the lower bound (b) therefore does not apply to
+state-snapshot schemes. Restricted to fixed-architecture predictor
+states (e.g., transformer KV cache, RNN hidden state) with
+serialized cost $L(\mathrm{state})$ accounted for explicitly, the
+trade-off becomes excess $(m-1) \cdot \delta_W$ vs storage
+$m \cdot L(\mathrm{state})$; without such restriction, ``state''
+can smuggle global source information and defeat the lower bound
+trivially.
 (ii) Non-Markov stationary sources with non-summable correlations:
 Lemma 5.1d's bound requires summable correlation; sources with
 $\delta_\infty = \infty$ require a different framework.}
