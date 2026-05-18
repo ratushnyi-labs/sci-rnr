@@ -169,8 +169,34 @@ def test_memoryless_delta_zero():
     return True
 
 
+def test_total_excess_m_minus_1():
+    """For N = mK order-W' Markov, sync excess = (m-1) * delta_{W'}, not m * delta_{W'}."""
+    print("\nTest 4b: Total sync excess = (m-1) * delta_{W'}")
+    P = [[0.7, 0.3], [0.4, 0.6]]
+    pi = stationary_distribution(P)
+    h_X = sum(pi[x] * entropy_of_dist(P[x]) for x in range(2))
+    E = entropy_of_dist(pi) - h_X
+    K_sub = 4  # sub-block size
+    all_ok = True
+    for m in [2, 3]:
+        N = m * K_sub
+        joint_full = order1_markov_joint(P, pi, N)
+        H_DN = entropy_of_dist(joint_full.values())
+        # Each sub-block of size K has length K*h + E by the lemma
+        L_synced = m * (K_sub * h_X + E)
+        excess = L_synced - H_DN
+        expected_excess = (m - 1) * E
+        print(f"  m={m}, K={K_sub}, N={N}: H(D_N)={H_DN:.6f}, "
+              f"L_synced={L_synced:.6f}, excess={excess:.6f}, "
+              f"(m-1)*E={expected_excess:.6f}, diff={excess - expected_excess:.2e}")
+        if abs(excess - expected_excess) > 1e-9:
+            print(f"    FAIL: excess should be (m-1)*delta_{{W'}}")
+            all_ok = False
+    return all_ok
+
+
 def test_sub_block_identity():
-    """For order-W' Markov, H(D_K) = K * h(X) + delta_{W'} when K > W'."""
+    """For order-W' Markov, H(D_K) = K * h(X) + delta_{W'} when K >= W'."""
     print("\nTest 4: Sub-block identity H(D_K) = K*h(X) + delta_{W'}")
     P = [[0.7, 0.3], [0.4, 0.6]]
     pi = stationary_distribution(P)
@@ -198,9 +224,10 @@ def main() -> int:
     ok2 = test_order2_markov_delta_stable()
     ok3 = test_memoryless_delta_zero()
     ok4 = test_sub_block_identity()
+    ok4b = test_total_excess_m_minus_1()
 
     print()
-    if all([ok1, ok2, ok3, ok4]):
+    if all([ok1, ok2, ok3, ok4, ok4b]):
         print("PASS: Lemma 5.1c verified for order-W' Markov hypothesis.")
         print("      delta_{W'} = H(X^{W'}) - W'*h(X) is a source-specific")
         print("      constant independent of W >= W' and K > W'.")

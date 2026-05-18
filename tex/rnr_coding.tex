@@ -1619,42 +1619,49 @@ the expected cold-context excess per sync point equals exactly}
 \tag{5.9}
 \]
 \emph{a finite source-specific constant independent of $W$ (provided
-$W \geq W'$) and independent of $K$ (provided $K > W'$). For order-1
-Markov, $\delta_{W'} = \delta_1 = H_{\mathrm{marg}} - h(X) = E$. The
-total sync overhead in the byte-granular random-access scheme is
-exactly $\Delta_{\mathrm{sync, total}} = m \cdot \delta_{W'}$, which
-strictly tightens Lemma 5.1a's worst-case bound
-$m \cdot S \cdot W \cdot \log_2(1/\eta)$ whenever the source-specific
-constant $\delta_{W'} < S \cdot W \cdot \log_2(1/\eta)$ (which holds
-in particular for any natural-data source with $\delta_{W'} = O(1)$).}
+$W \geq W'$) and independent of sub-block size $K$ (provided
+$K \geq W'$). For order-1 Markov, $\delta_{W'} = \delta_1 =
+H_{\mathrm{marg}} - h(X) = E$. The
+total sync \emph{excess over $H(D_N)$} in the byte-granular
+random-access scheme with $m$ sync points and full sub-blocks of
+size $K$ (so $N = m K$) is exactly}
+\[
+L_{\mathrm{synced}} - H(D_N) \;=\; (m - 1) \cdot \delta_{W'},
+\]
+\emph{the additional cost paid by the $m-1$ sync resets after the
+initial natural-start sub-block, which strictly tightens Lemma 5.1a's
+worst-case bound $m \cdot S \cdot W \cdot \log_2(1/\eta)$ whenever
+the source-specific constant $\delta_{W'} < S \cdot W \cdot \log_2(1/\eta)$
+(which holds in particular for any natural-data source with
+$\delta_{W'} = O(1)$).}
 
 \emph{\textbf{Proof.}} For a stationary order-$W'$ Markov source with
-$W' \leq W$, the $W$-bounded predictor's output at position $i > W$
-is the true $W$-conditional $P(X_i \mid X_{i-W:i-1})$, which by the
-order-$W'$ Markov property equals
-$P(X_i \mid X_{i-W':i-1})$. By stationarity, the conditional entropy
-$H(X_i \mid X_{i-W':i-1}) = h(X)$ is the entropy rate. Thus the warm
-region ($i > W'$ within the sub-block, where the predictor's
-$W$-byte window includes at least $W'$ relevant context bytes)
+$W' \leq W$ and the $W$-bounded predictor outputting the true
+conditional, the predictor's output at position $i > W'$ within a
+sub-block (where the $W$-byte window already includes the relevant
+$W'$ context bytes) is $P(X_i \mid X_{i-W':i-1})$ by the
+order-$W'$ Markov property. By stationarity, the conditional entropy
+$H(X_i \mid X_{i-W':i-1}) = h(X)$ is the entropy rate. Thus the
+warm region ($i > W'$ within a sub-block of size $K \geq W'$)
 contributes exactly $h(X)$ per position. The cold region
 ($i \leq W'$, where the in-block context is shorter than $W'$
-bytes) contributes $\sum_{i=1}^{W'} H(X_i \mid X_{<i})$, where the
-conditioning is the in-block history. By stationarity again, this
-sum equals $H(X^{W'}) = \sum_{i=1}^{W'} H(X_i \mid X_{<i})$. The total
-expected sub-block length is therefore
+bytes) contributes $\sum_{i=1}^{W'} H(X_i \mid X_{<i}) = H(X^{W'})$
+by the chain rule and stationarity. The expected sub-block length is
 \[
 \sum_{i=1}^{K} \mathbb{E}_X[-\log_2 P(X_i \mid X_{i-W:i-1})]
 \;=\; H(X^{W'}) + (K - W') \cdot h(X)
 \;=\; K \cdot h(X) + \delta_{W'},
 \]
-matching $H(D_K)$ on the full block (the chain rule expansion gives
-the same value), so $H(D_K) = K \cdot h(X) + \delta_{W'}$ for
-$K > W'$. The cold-context excess relative to the steady-state rate
-$K \cdot h(X)$ is exactly $\delta_{W'}$. Summing over $m$ sync points
-gives $m \cdot \delta_{W'}$. The numerical inequality
-$\delta_{W'} \leq S \cdot W \cdot \log_2(1/\eta)$ is the worst-case
-bound; the actual $\delta_{W'}$ is source-specific and typically much
-smaller. \hfill$\blacksquare$
+matching $H(D_K)$ on the full sub-block by chain-rule expansion.
+Summing over $m$ sub-blocks (with $N = m K$):
+$L_{\mathrm{synced}} = m \cdot (K \cdot h(X) + \delta_{W'}) =
+N \cdot h(X) + m \cdot \delta_{W'}$. Compare to the unsynced full-block
+joint entropy: $H(D_N) = N \cdot h(X) + \delta_{W'}$ (one $\delta_{W'}$
+correction at the natural start of the stream). The excess paid for
+sync points is therefore
+$L_{\mathrm{synced}} - H(D_N) = (m - 1) \cdot \delta_{W'}$, since the
+first sub-block's cold-context cost is shared with the natural
+stream start. \hfill$\blacksquare$
 
 \emph{Scope.} Lemma 5.1c applies to order-$W'$ Markov sources with
 predictor context bound $W \geq W'$. For general stationary mixing
