@@ -678,11 +678,19 @@ $m$, selects predicted per-tile modes
 \[
 \hat{m}(t) = \min \{ m : U_m(t) = \min_{m'} U_{m'}(t) \},
 \]
-breaking ties by lexicographic order on the mode index, and encodes
-each tile with the selected mode unless an override is present. The
-selection is deterministic and decoder-reproducible. The archive
-stores the per-tile residual streams and, when the encoder departs
-from the predicted argmin, override flags as metadata.
+breaking ties by lexicographic order on a fixed canonical mode
+index (specified by the model description as a total ordering of
+mode identifiers; e.g., the ordering in which modes are declared in
+$L(M)$). For decoder reproducibility under finite-precision
+arithmetic, the $U_m(t)$ values must be computed in the same
+deterministic representation on encoder and decoder (e.g., as the
+bit-exact integer outputs of the same conforming inference engine
+per Theorem 10.6); two encoders that produce $U_m(t)$ in
+floating-point and round differently would tie-break differently
+and break decoder reproducibility. The selection is then
+deterministic and decoder-reproducible. The archive stores the
+per-tile residual streams and, when the encoder departs from the
+predicted argmin, override flags as metadata.
 
 \textbf{Definition 3.4 (RNR Type-III-B).} An RNR Type-III-B coder
 predicts a normalized byte tensor $Q_{h, l}(i)$ approximating
@@ -1518,7 +1526,7 @@ Consider a block of $N = 1024$ nibbles with counts $k_v = 64$ for
 $v = 0, \ldots, 15$ (i.e., uniformly balanced). The multinomial
 baseline of Theorem 5.2 evaluates to
 \[
-\log_2 \!\left[\frac{1024!}{(64!)^{16}}\right] \approx 4 \cdot 1024 - \tfrac{15}{2} \log_2 1024 + O(1) = 4096 - 75 + O(1) \approx 4021 \text{ bits.}
+\log_2 \!\left[\frac{1024!}{(64!)^{16}}\right] \approx 4033.08 \text{ bits.}
 \]
 The plain per-byte raw cost is $4 \cdot 1024 = 4096$ bits. A factorized
 arithmetic coder under the uniform marginal pays approximately 4096
@@ -1543,18 +1551,17 @@ step), the Type-II residual cost is
 + \log_2 \binom{128}{64}
 + \log_2 \binom{64}{64}.
 \]
-Using
-$\log_2 \binom{N}{k} = N \cdot H_2(k/N) - \tfrac{1}{2} \log_2(2\pi N p(1-p)) + O(1/N)$,
-the four binomials evaluate to approximately $203.6$, $172.3$,
-$124.2$, and $0$ bits respectively, giving a total of
-$13 \cdot 203.6 + 172.3 + 124.2 + 0 \approx 2943$ bits. Compared to
-the multinomial baseline of $4021$ bits, the apparent gain is
-$4021 - 2943 \approx 1078$ bits per block. Adding a model cost of,
-say, $200$ bytes $= 1600$ bits amortized over $m = 8$ blocks gives
-$200$ bits per block, leaving an effective gain of approximately
-$878$ bits per block. This is a saving of roughly $110$ bytes per
-$512$-byte equivalent block, a competitive figure on structured
-positional data.
+The four binomials evaluate (exactly, to 4 decimal places) to
+$203.5669$, $172.2773$, $124.1714$, and $0$ bits respectively,
+giving a total of
+$13 \cdot 203.5669 + 172.2773 + 124.1714 + 0 \approx 2942.82$ bits.
+Compared to the multinomial baseline of $4033.08$ bits, the
+apparent gain is $4033.08 - 2942.82 \approx 1090.27$ bits per block.
+Adding a model cost of, say, $200$ bytes $= 1600$ bits amortized
+over $m = 8$ blocks gives $200$ bits per block, leaving an
+effective gain of approximately $890$ bits per block. This is a
+saving of roughly $111$ bytes per $512$-byte equivalent block, a
+competitive figure on structured positional data.
 
 \textbf{5.8 Support selection and the arithmetic-coding benchmark}
 
@@ -1574,12 +1581,19 @@ A_s(\alpha)
 \]
 the support of size $s$ minimizing the expected Theorem 5.3 residual
 is obtained by taking the top-$s$ positions sorted by $Q_v(i)$. This
-assertion is false in general (concrete counterexample at $N = 7$,
-$k = 2$, $s = 2$ verified in
-\texttt{scripts/verify/prop\_5\_7\_counterexample.py}). Even when
-$A_s(\alpha)$ is non-decreasing, the expected value of
-$A_s(|M_v \setminus S_v|)$ depends on the full joint law of the
-random set $M_v$, not only on the marginals $Q_v(i) = \Pr(i \in M_v)$.}
+assertion is false in general. Concrete counterexample at $N = 7$,
+$k = 2$, $s = 2$: let $M_v$ be the random 2-subset of $\{0, \dots, 6\}$
+distributed over the five atoms
+$\{4,5\}, \{3,4\}, \{0,4\}, \{2,4\}, \{1,2\}$ with probabilities
+$0.12, 0.04, 0.36, 0.20, 0.28$ respectively (these sum to 1, and
+$A_s(\alpha)$ is non-decreasing on the feasible $\alpha \in \{0,1,2\}$).
+The top-$s$-by-$Q_v$ support $\{4, 2\}$ has strictly higher expected
+$A_s$ residual than the support $\{4, 0\}$, exhibited in
+$\texttt{scripts/verify/prop\_5\_7\_counterexample.py}$ in the
+companion repository. Even when $A_s(\alpha)$ is non-decreasing, the
+expected value of $A_s(|M_v \setminus S_v|)$ depends on the full
+joint law of the random set $M_v$, not only on the marginals
+$Q_v(i) = \Pr(i \in M_v)$.}
 
 \emph{Thus the actual fixed-size support-selection problem is}
 \[
@@ -2603,14 +2617,22 @@ companion artifact (§13.3) on the same grounds as Theorem
 Theorems 10.1 and 10.2 concern bit-exact decoder reproduction. A
 separate, operationally important question is whether a decoder can
 extract a small portion of $X$ without decoding all of it --- the
-seek-and-read functionality of bgzip and zstd seekable mode. Existing
-neural compressors (NNCP, PixelCNN++, Bit-Swap, IDF++) lack this
-capability; decoding byte $p$ requires processing all $p$ previous
-bytes sequentially, with a wall-clock cost proportional to $p$. This
-is a deployment blocker for archive-style use cases where partial
-reads are common. The RNR framework supports random access in time
-independent of $|X|$, provided the predictor has bounded context. We
-make this precise.
+seek-and-read functionality of bgzip and zstd seekable mode.
+Existing neural compressors lack this capability for two distinct
+reasons: autoregressive byte/pixel models (NNCP, PixelCNN++,
+PixelSNAIL) require sequential evaluation of all $p$ previous bytes
+before byte $p$ is available (cost $\Theta(p)$ per random read);
+invertible-flow and bits-back block codecs (IDF++, Bit-Swap,
+HiLLoC) operate on whole blocks of statically determined size and
+state, so even a one-byte read forces decoding of the enclosing
+block and any state on which it depends. In either case the
+effective minimum random-read granularity is large and growing with
+archive size (the first case linearly in $p$; the second
+block-by-block with no sub-block seek). This is a deployment
+blocker for archive-style use cases where partial reads are common.
+The RNR framework supports random access in time independent of
+$|X|$, provided the predictor has bounded context. We make this
+precise.
 
 \textbf{Definition 10.2 ($W$-bounded predictor).} A predictor $M$ is
 $W$-bounded if its output $Y_i = M(C_i)$ at position $i$ depends only
@@ -2693,33 +2715,42 @@ sharper assumption above.
 
 \textbf{Theorem 10.3 (Random access, output-sensitive).} \emph{Let
 $X$ be compressed under RNR with a $W$-bounded predictor $M$
-satisfying Theorem 10.1 and with sync points placed every $K$
-positions. Let $|X|$ denote the archive's uncompressed source
-length. Random access to $k$ consecutive bytes starting at any
-position $p \in [0, |X|)$ requires: (i)~$O(\log(|X|/K) \cdot \log L(R))$
-bits read from the seek index, comprising $O(\log(|X|/K))$ index
-entries probed during binary search, each entry containing a
-$\lceil \log_2 L(R)\rceil$-bit repair-stream offset (or $O(\log
-L(R))$ bits to read a single entry once the index is in memory);
-(ii)~decoding of at most $K + k$ positions of $R$, of which at most
-$K$ positions are warmup (discarded output); (iii)~$K + k$ predictor
-evaluations and entropy-coder updates. Total work is
-$O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$.
-\emph{This is polylogarithmic in archive size $|X|$ only when $K$
-and $k$ are held fixed or grow at most polylogarithmically in $|X|$
-and $L(R) = \mathrm{poly}(|X|)$; for $K = \Theta(|X|)$ or $k =
-\Theta(|X|)$ the cost is $\Theta(|X| \cdot \mathrm{cost}(M))$, no
-better than full sequential decode}. When $(K+k) \cdot
-\mathrm{cost}(M) \gg \log(|X|/K) \cdot \log L(R)$ the second term
-dominates and the cost is $O((K+k) \cdot \mathrm{cost}(M))$,
-independent of $|X|$ in that parameter regime.}
+satisfying Theorem 10.1 and with sync points placed at uniformly
+spaced source positions $j K$ for $j = 0, 1, \dots$ (Definition
+10.3). Let $|X|$ denote the archive's uncompressed source length.
+Random access to $k$ consecutive bytes starting at any position
+$p \in [0, |X|)$ requires: (i)~one direct seek-index lookup at
+entry $\lfloor p/K \rfloor$, reading $O(\log L(R))$ bits to obtain
+the repair-stream bit offset of the sync point at byte position
+$P = K \lfloor p/K \rfloor$; (ii)~decoding of at most $K + k$
+positions of $R$, of which at most $K$ positions are warmup
+(discarded output); (iii)~$K + k$ predictor evaluations and
+entropy-coder updates. Total work is
+$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$. (For non-uniform
+sync-point placement, the lookup becomes a binary search costing
+$O(\log(|X|/K) \cdot \log L(R))$ bits; the rest of the analysis is
+unchanged.) \emph{This cost is polylogarithmic in archive size
+$|X|$ only when $K$ and $k$ are held fixed or grow at most
+polylogarithmically in $|X|$ and $L(R) = \mathrm{poly}(|X|)$; for
+$K = \Theta(|X|)$ or $k = \Theta(|X|)$ the cost is
+$\Theta(|X| \cdot \mathrm{cost}(M))$, no better than full sequential
+decode}. When $(K+k) \cdot
+\mathrm{cost}(M) \gg \log L(R)$ the second term dominates and the
+cost is $O((K+k) \cdot \mathrm{cost}(M))$, independent of $|X|$ in
+that parameter regime.}
 
-\emph{\textbf{Proof.}} Binary-search the seek index for the largest
-sync point $P$ with $P \leq p$; the index has at most
-$\lceil |X|/K \rceil$ entries, each of width
-$\lceil \log_2 L(R)\rceil + O(1)$ bits, so the binary search reads
-$O(\log(|X|/K) \cdot \log L(R))$ bits in total (or $O(\log L(R))$
-bits per probed entry if the index is in memory). By
+\emph{\textbf{Proof.}} Under the uniform-spacing convention of
+Definition 10.3, the byte position of the latest sync point
+$P \leq p$ is the deterministic value $P = K \cdot \lfloor p/K \rfloor$
+(a constant-time computation, no search required). Look up the
+corresponding bit offset in $R$ from the seek index: the index has
+exactly $\lceil |X|/K \rceil$ entries, each of width
+$\lceil \log_2 L(R)\rceil + O(1)$ bits, indexed by $\lfloor p/K \rfloor$
+in $O(\log L(R))$ bits per direct probe. (For non-uniform spacing,
+binary search over the index would cost
+$O(\log(|X|/K) \cdot \log L(R))$ bits in total; the uniform case
+avoids the $\log(|X|/K)$ factor at the cost of one extra
+constant-time arithmetic operation.) By
 Definition 10.3 (a, b), decoding from $R$'s bit offset at $P$
 proceeds with both the predictor state initialized to
 $Q_{\text{init}}$ and the entropy-coder state initialized to its
@@ -2767,27 +2798,36 @@ hidden state, any adaptive parameter snapshot (if Theorem 10.2 is
 in effect), and the entropy-coder boundary state (range/state for
 arithmetic coding or ANS state, if a different flush convention is
 used). Let $L(\text{state})$ be the bit length of this combined
-boundary snapshot. The seek index grows to
-$O((|X|/K) \cdot (\log L(R) + L(\text{state})))$ bits. The random-access
-cost per query (to $k$ bytes at position $p$) is
-$O\bigl(\log(|X|/K) \cdot (\log L(R) + L(\text{state})) + (K + k) \cdot
-\mathrm{cost}(M)\bigr)$, where the
-$O(\log(|X|/K)) \cdot (\log L(R) + L(\text{state}))$ term covers
-binary search through the augmented index plus loading and
-deserializing the snapshot before decoding can resume.}
+boundary snapshot. Under the uniform-spacing convention of
+Definition 10.3, the augmented seek index has exactly
+$\lceil |X|/K \rceil$ entries (one per uniform sync point), with
+total size $O((|X|/K) \cdot (\log L(R) + L(\text{state})))$ bits.
+The random-access cost per query (to $k$ bytes at position $p$) is
+$O\bigl(\log L(R) + L(\text{state}) + (K + k) \cdot
+\mathrm{cost}(M)\bigr)$ under uniform spacing (direct index lookup),
+or $O\bigl(\log(|X|/K) \cdot (\log L(R) + L(\text{state})) + (K + k)
+\cdot \mathrm{cost}(M)\bigr)$ under non-uniform spacing (binary
+search), where the index-related terms cover the entry lookup plus
+loading and deserializing the snapshot before decoding can
+resume.}
 
 \emph{\textbf{Proof.}} Augment each sync point's index entry with
 all boundary state at position $P$, serialized as a fixed-bit-width
 integer tuple as required by Theorem 10.1. The combined snapshot adds
 $L(\text{state})$ bits per sync point, multiplying the index size by
-$(1 + L(\text{state}) / \log L(R))$. To random-access bytes
-$[p, p+k)$, locate the latest sync point $P \leq p$ by binary search
-on the augmented index (cost $O(\log(|X|/K) \cdot (\log L(R) +
-L(\text{state})))$ since each probed entry is $\log L(R) +
-L(\text{state})$ bits wide), read and deserialize the boundary
-snapshot, restore the decoder's predictor, adaptive-parameter, and
-entropy-coder boundary states, and decode
-forward as in Theorem 10.3 (cost $O((K+k) \cdot \mathrm{cost}(M))$).
+$(1 + L(\text{state}) / \log L(R))$. Under uniform sync-point
+spacing (Definition 10.3), to random-access bytes $[p, p+k)$, the
+latest sync point $P \leq p$ is the deterministic value
+$P = K \lfloor p/K \rfloor$ (constant-time computation); direct
+lookup at entry $\lfloor p/K \rfloor$ reads
+$O(\log L(R) + L(\text{state}))$ bits to obtain the bit offset and
+snapshot. Under non-uniform spacing, the lookup is a binary search
+over the augmented index, costing
+$O(\log(|X|/K) \cdot (\log L(R) + L(\text{state})))$ bits in total.
+In either case, deserialize the boundary snapshot, restore the
+decoder's predictor, adaptive-parameter, and entropy-coder boundary
+states, and decode forward as in Theorem 10.3 (cost
+$O((K+k) \cdot \mathrm{cost}(M))$).
 The decoded output is bit-identical by Theorem 10.1 applied to the
 restored state. \hfill$\blacksquare$
 
@@ -2823,9 +2863,26 @@ Three trade-offs govern random-access design in RNR archives.
   block into independent $K$-length subblocks, recovering only
   $\Theta(K)$ separation per subblock. For $K = 64$ KiB and $N = 1$
   GiB, the per-subblock advantage is preserved but the cross-subblock
-  joint structure is forfeited. Type-I, Type-III-B, and Type-III-C
-  are not affected by this trade-off because their constructions are
-  already local (per-position or per-tile).
+  joint structure is forfeited. Type-I and Type-III-B are not
+  affected by this trade-off because their constructions are local
+  (per-position or per-tile within sync-bounded windows). Type-III-C
+  is affected when dictionary tokens span longer fragments or
+  grammar expansions. A token that would cross a uniform Def-10.3
+  sync-point boundary $jK$ must be split, with the affected
+  occurrence forfeiting its dictionary saving. Over $|X|/K$ sync
+  points the worst-case loss is bounded by
+  $|X| \cdot \max_\tau |\tau| / K$ bits (at most one token crosses
+  any given boundary, and the lost saving per crossed token is at
+  most $\max_\tau |\tau|$ bits), negligible for $K \gg \max_\tau
+  |\tau|$ but a real cost when $K$ is small (e.g., $K = 4$ KiB and
+  grammar tokens of $\sim 1$ KiB give a few per-cent overhead). A
+  non-uniform sync-point variant that aligns boundaries to token
+  edges instead is also available, at the cost of storing byte
+  offsets in the seek index (Definition 10.3's non-uniform spacing
+  case, adding $\lceil \log_2 |X|\rceil$ bits per entry); the
+  random-access cost then follows the non-uniform branch of
+  Theorem 10.3 ($O(\log(|X|/K) \cdot \log L(R))$ binary-search
+  bits).
 \item
   Verification under random access. Theorem 9.1's chained-hash
   verification covers sequential decoding; a random-access reader
@@ -2859,11 +2916,19 @@ Standard random-access lossless compressors:
   time.
 \end{itemize}
 
-Existing neural lossless compressors (NNCP, PixelCNN++, Bit-Swap,
-IDF++): no random access. To extract byte $N$, the decoder must
-process bytes $[0, N)$ sequentially; cost is $O(N)$ predictor
-evaluations. For a 1 GiB archive this is hours of wall-clock time per
-access.
+Existing neural lossless compressors lack sub-archive random access,
+with two distinct underlying obstructions. Autoregressive byte and
+pixel models (NNCP, PixelCNN++, PixelSNAIL) require sequential
+evaluation of bytes $[0, p)$ before byte $p$ can be decoded; cost is
+$\Theta(p)$ predictor evaluations. Block-codec bits-back and
+invertible-flow models (Bit-Swap, IDF++, HiLLoC) decode in fixed
+block/patch units, so even a one-byte read forces decoding of the
+enclosing block; effective seek granularity is the block size, not
+the byte (typical block sizes are kilobytes to megabytes). Neither
+family supports byte-resolution random access as currently designed.
+For a 1 GiB archive the autoregressive case is hours of wall-clock
+time per access; the block-codec case decodes the enclosing block
+on every read.
 
 RNR with a $W$-bounded transformer predictor and sync points every
 $K$ positions: random access in $O(K + k)$ predictor evaluations
@@ -2887,12 +2952,19 @@ is empirical and is the subject of §11.
 This is the framework\textquotesingle s deployment-grade distinguishing
 feature relative to other neural compressors. The bounded-context
 architecture, the deterministic reproducibility guarantee (Theorem
-10.1), and the sync-point construction (Definition 10.3) jointly enable
-seek-and-read access at no asymptotic ratio cost --- a capability that
-LSTM-based or state-space-based neural compressors cannot provide
-without expensive state snapshots, and that NNCP-style transformer
-compressors lack only because their encoders do not insert sync points
-or maintain a seek index.
+10.1), and the sync-point construction (Definition 10.3) jointly
+enable seek-and-read access at a small constant fractional ratio
+overhead --- a capability that LSTM-based or state-space-based
+neural compressors can only provide with the expensive state
+snapshots of Theorem 10.4 (4 KiB or more per sync point); that
+NNCP-style autoregressive transformer compressors lack only because
+their encoders do not insert sync points or maintain a seek index;
+and that bits-back / invertible-flow block codecs (Bit-Swap, IDF++,
+HiLLoC) lack because their block/ANS/latent decoding requires
+recovering the enclosing block (or vectorized batch of patches) as
+a unit, so the effective seek granularity is the block, not the
+byte; sub-block-granularity seek is not provided by the current
+designs without modifying their block structure.
 
 \textbf{10.8 Block-device and filesystem deployment}
 
@@ -3485,14 +3557,16 @@ the present paper.
   natural-data submanifolds. Theorem 5.5 establishes that the
   separation between factorized and joint coding equals
   $\mathrm{TC}(D_N)$, and Remark 5.6 predicts this is $\Theta(N)$
-  for low-dimensional natural-data manifolds. Constructing an
-  efficient (polynomial-time) membership oracle and rank coder for
-  the submanifold of a specific data class --- say, database pages
-  under a given schema, or valid x86-64 instruction streams --- is
-  open as a constructive question for each class. The existence of
-  such oracles follows from the theorem (the submanifold is
-  enumerable), but the polynomial-time construction is
-  data-class-specific.
+  for low-dimensional natural-data manifolds. Theorem 5.5 itself
+  does not identify any particular submanifold or guarantee the
+  existence of a polynomial-time membership oracle or rank coder
+  for one; for an arbitrary finite distribution $D_N$ a brute-force
+  oracle that enumerates the support exists trivially but is not
+  efficient. Constructing a polynomial-time membership oracle and
+  rank coder for the support of a specific data class --- say,
+  database pages under a given schema, or valid x86-64 instruction
+  streams --- is open as a constructive question for each class, and
+  is not implied by Theorem 5.5.
 \item
   Constant-gap inapproximability for $E_{12}$ in the
   Hamming-restricted geometry. The decision version of
