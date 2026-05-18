@@ -1581,6 +1581,75 @@ specific natural-data class $D_N$ satisfies $\mathrm{TC}(D_N) =
 constructing an efficient enumerative encoder for the corresponding
 typical set is open.
 
+For a specific structured data class --- one with explicit
+combinatorial constraints rather than learned approximate
+structure --- we can give an explicit linear-in-$N$ scaling.
+
+\textbf{Lemma 5.6a (Linear $\mathrm{TC}$ for uniqueness-constrained
+database pages).} \emph{Let $D_N$ be the uniform distribution over
+injections $\{1, \dots, N\} \to \{1, \dots, K\}$ where $K = \alpha N$
+for a fixed $\alpha > 1$. (This models a database page of $N$ rows
+with a primary-key column drawn from a value range of size
+$\alpha N$, with the UNIQUE constraint that all PK values are
+distinct.) Then}
+\[
+\mathrm{TC}(D_N) \;=\; N \cdot \bigl[\log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))\bigr] + O(1).
+\tag{5.5}
+\]
+\emph{In particular, $\mathrm{TC}(D_N) = \Theta(N)$ for any fixed
+$\alpha > 1$. The coefficient $c(\alpha) =
+\log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))$ is strictly
+positive and decreases monotonically from $c(2) = \log_2(e/2)
+\approx 0.4427$ (tightest constraint, $K = 2N$) toward $0$ as
+$\alpha \to \infty$ (the constraint becomes vacuous).}
+
+\emph{\textbf{Proof.}} By symmetry over rows, the marginal of any
+single row is uniform on $\{1, \dots, K\}$, giving sum of marginal
+entropies
+$\sum_i H(\text{row } i) = N \log_2 K = N \log_2(\alpha N)$.
+
+The joint entropy is the log of the number of valid configurations:
+$H(D_N) = \log_2 \frac{K!}{(K-N)!}$.
+Using Stirling
+$\log_2(M!) = M \log_2 M - M \log_2 e + (1/2)\log_2(2\pi M) + O(1/M)$:
+\[
+\log_2 \frac{K!}{(K-N)!}
+= K \log_2 K - (K-N) \log_2(K-N) - N \log_2 e + O(\log N).
+\]
+Substituting $K = \alpha N$ and $K-N = (\alpha-1) N$:
+\[
+\begin{aligned}
+H(D_N) &= \alpha N \log_2(\alpha N) - (\alpha-1) N \log_2((\alpha-1) N) - N \log_2 e + O(\log N) \\
+&= N \log_2 N \cdot [\alpha - (\alpha-1)] + N \cdot [\alpha \log_2 \alpha - (\alpha-1) \log_2(\alpha-1)] - N \log_2 e + O(\log N) \\
+&= N \log_2 N + N \cdot [\alpha \log_2 \alpha - (\alpha-1) \log_2(\alpha-1) - \log_2 e] + O(\log N).
+\end{aligned}
+\]
+Subtracting from the sum of marginals
+$N \log_2(\alpha N) = N \log_2 \alpha + N \log_2 N$:
+\[
+\begin{aligned}
+\mathrm{TC}(D_N) &= N \log_2 \alpha - N \cdot [\alpha \log_2 \alpha - (\alpha-1) \log_2(\alpha-1) - \log_2 e] + O(\log N) \\
+&= N \cdot [\log_2 \alpha + \log_2 e - \alpha \log_2 \alpha + (\alpha-1) \log_2(\alpha-1)] + O(\log N) \\
+&= N \cdot [\log_2 e - (\alpha-1)(\log_2 \alpha - \log_2(\alpha-1))] + O(\log N) \\
+&= N \cdot [\log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))] + O(\log N).
+\end{aligned}
+\]
+The coefficient $c(\alpha) = \log_2 e - (\alpha-1) \log_2(\alpha/(\alpha-1))$
+satisfies $c(\alpha) > 0$ for all $\alpha > 1$ (since $(\alpha-1) \log_2(\alpha/(\alpha-1))$
+is increasing in $\alpha$ and approaches $\log_2 e$ from below as
+$\alpha \to \infty$) and $c(\alpha) \to 0$ as $\alpha \to \infty$ (the
+UNIQUE constraint becomes vacuous when $K \gg N$). \hfill$\blacksquare$
+
+Lemma 5.6a gives the first explicit non-asymptotic $\Theta(N)$
+scaling for a specific structured data class within the framework
+of Theorem 5.5. The numerical verification at $N = 10000$,
+$\alpha = 2$ matches the formula to within $\approx -0.5$ bits
+absolute residual (the higher-order Stirling correction);
+see \texttt{scripts/verify/lemma\_5\_6a\_tc\_uniqueness.py}.
+The proof extends with no structural change to the multi-column
+case where each row carries $c$ independent uniqueness-constrained
+columns of varying $\alpha_j$, with TC additive across columns.
+
 \textbf{5.7 Worked numerical example}
 
 Consider a block of $N = 1024$ nibbles with counts $k_v = 64$ for
@@ -4099,14 +4168,20 @@ the present paper.
   APX-hardness with any explicit inherited constant.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
-  natural-data classes. Theorem 5.5 establishes the
-  multi-information $\mathrm{TC}(D_N)$ as the exact separation
-  between factorized and joint coding. Remark 5.6's $\Theta(N)$
+  natural-data classes --- partially resolved. Lemma 5.6a gives an
+  explicit $\Theta(N)$ scaling with closed-form constant
+  $c(\alpha) = \log_2 e - (\alpha-1)\log_2(\alpha/(\alpha-1))$ for
+  the uniqueness-constrained database-page class (uniform
+  injections $[N] \to [\alpha N]$). The same proof technique
+  extends additively to multi-column UNIQUE schemas. Theorem 5.5
+  remains the foundational identity and Remark 5.6's $\Theta(N)$
   extrapolation for low-dimensional natural-data manifolds is an
-  informal heuristic; rigorously establishing or refuting
-  $\mathrm{TC}(D_N) = \Theta(N)$ for any specific class (e.g.,
-  natural images at a given resolution, English text at a given
-  vocabulary, database pages under a given schema) is open.
+  informal heuristic; rigorously establishing
+  $\mathrm{TC}(D_N) = \Theta(N)$ for less combinatorially
+  structured classes (natural images at a given resolution,
+  English text at a given vocabulary) is open and likely requires
+  manifold-hypothesis-plus-regularity assumptions beyond the
+  intrinsic-dimension framework.
 \item
   Construction of efficient enumerative encoders for specific
   natural-data submanifolds. Theorem 5.5 establishes that the
