@@ -3415,11 +3415,20 @@ satisfies}
 $k_{\mathrm{NO}} \geq (145/144) \cdot k_{\mathrm{OPT}}$ is the
 Berman-Karpinski-inapproximability NO-instance lower bound. As
 $|V| + |E| \to \infty$ (with $K_0, \alpha$ scaling polynomially and
-$\alpha$ bounded), the log-ratio factor converges to $1$ and
-$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H) \to \gamma_{\mathrm{SGP}}$
-from above. Equivalently: bit-cost APX-hardness within the Charikar
-class with constant $\gamma_{\mathrm{SGP}} - \varepsilon$ holds for
-any $\varepsilon > 0$, for sufficiently large instances.}
+$\alpha$ bounded), the log-ratio factor converges to $1$ at rate
+$O(1/\log(|V|+|E|))$, so the displayed lower bound on
+$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H)$ converges to
+$\gamma_{\mathrm{SGP}}$ from above. The actual value of
+$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H)$ may exceed this lower
+bound (due to ceiling effects in $\lceil \log_2 \rceil$ and
+non-Charikar-format NO grammars), so the lemma does \emph{not}
+claim $\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H) \to
+\gamma_{\mathrm{SGP}}$ in the upper-bound direction. The
+asymptotic consequence is therefore:
+$(\gamma_{\mathrm{SGP}} - \varepsilon)$-inapproximability of bit-cost
+within the Charikar class for any $\varepsilon > 0$ at sufficiently
+large $|V|+|E|$, an asymptotic NP-hardness statement matching the
+symbol-count constant of Theorem 6.8 in the limit.}
 
 \emph{\textbf{Proof.}} For any two grammars $G_{\mathrm{NO}},
 G_{\mathrm{YES}} \in \mathcal{G}_{\mathrm{Char}}(H)$ in the
@@ -3439,15 +3448,19 @@ $\gamma^{\mathrm{bit}}_{\mathrm{Char}} \geq \gamma_{\mathrm{SGP}}$.
 
 For the asymptotic claim: when $K_0(H) + \alpha(H) k_{\mathrm{OPT}}
 \to \infty$ (which occurs as $|V| \to \infty$ since $K_0$ scales with
-$|V|$), the log-ratio
+$|V|$), the log-ratio (treating $\log_2$ as exact, not ceiled)
 $\log_2(|\Sigma|+K_{\mathrm{NO}})/\log_2(|\Sigma|+K_{\mathrm{YES}})
 = 1 + \log_2(1 + \alpha(k_{\mathrm{NO}} - k_{\mathrm{OPT}}) /
 (|\Sigma|+K_{\mathrm{YES}})) / \log_2(|\Sigma|+K_{\mathrm{YES}})$.
 With $k_{\mathrm{NO}} - k_{\mathrm{OPT}} = O(k_{\mathrm{OPT}}) =
 O(|V|)$ and $|\Sigma|+K_{\mathrm{YES}} = \Theta(|V|+|E|)$, the
-relative perturbation is $O(1)$ inside the inner $\log_2$ and
-$O(1/\log|V|)$ overall. Hence the log-ratio $\to 1$ as
-$|V| + |E| \to \infty$.
+relative perturbation inside the inner $\log_2$ is $O(1)$, hence the
+inner $\log_2$ contribution is $O(1)$, and the overall log-ratio
+deviation from $1$ is $O(1/\log(|V|+|E|))$. The ceiling
+$\lceil \cdot \rceil$ adds at most $1/\log_2(|\Sigma|+K)$ per
+boundary, also $O(1/\log(|V|+|E|))$. Hence the displayed lower bound
+on $\gamma^{\mathrm{bit}}_{\mathrm{Char}}$ converges to
+$\gamma_{\mathrm{SGP}}$ at rate $O(1/\log(|V|+|E|))$ as $|V|+|E| \to \infty$.
 \hfill$\blacksquare$
 
 \emph{Scope and limits.} Lemma 6.8b establishes class-restricted
