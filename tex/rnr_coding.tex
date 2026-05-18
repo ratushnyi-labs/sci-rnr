@@ -449,12 +449,14 @@ This article makes the following contributions.
   $\Theta(|X|/\mathrm{polylog}(|X|) \cdot \mathrm{cost}(M))$.
   Lemma 5.1c additionally identifies the \emph{tight} cold-context
   excess per sync for the special case of stationary order-$W'$ Markov
-  sources with predictor context $W \geq W'$: the per-sync excess
-  equals exactly $\delta_{W'} = H(X^{W'}) - W' h(X)$ (a finite
-  source-specific constant), and total sync excess over $H(D_N)$ is
-  $(m-1) \cdot \delta_{W'}$ — strictly tightening Lemma 5.1a's
-  worst-case $W \log_2(1/\eta)$ per-sync factor whenever $\delta_{W'}$
-  is smaller (typical for natural-data Markov sources).
+  sources with predictor context $W \geq W'$ and sub-block size
+  $K \geq W'$: the per-sync excess equals exactly
+  $\delta_{W'} = H(X^{W'}) - W' h(X)$ (a finite source-specific
+  constant), and total sync excess over $H(D_N)$ is exactly
+  $(m-1) \cdot \delta_{W'}$ when $N = m K$ (full sub-blocks) —
+  strictly tightening Lemma 5.1a's worst-case
+  $S \cdot W \cdot \log_2(1/\eta)$ per-sync factor whenever
+  $\delta_{W'}$ is smaller (typical for natural-data Markov sources).
   The simultaneous polylog regime (polylog per-query AND polylog
   total) does not exist within this trade-off. The per-query random-access cost
   is polylog in $|X|$ provided $K = \mathrm{polylog}(|X|)$ and the
@@ -1643,11 +1645,12 @@ initial natural-start sub-block, which strictly tightens Lemma 5.1a's
 worst-case bound $m \cdot S \cdot W \cdot \log_2(1/\eta)$ whenever
 the source-specific constant $\delta_{W'}$ is less than
 $S \cdot W \cdot \log_2(1/\eta)$. The latter is typical for
-natural-data Markov sources: e.g.\ for an order-$1$ binary Markov
-chain with $E \approx 0.7$ bits/byte (Shannon 1951 bigram estimate
-for English) and $W = O(\log N) = 20$, $S = 1$, $\eta = 2^{-12}$, the
-worst-case Lemma 5.1a bound is $\sim 240$ bits/sync versus
-Lemma 5.1c's tight value $\sim 0.7$ bits/sync, a $\sim 300\times$
+natural-data Markov sources: e.g.\ for an order-$1$ Markov source on
+the 27-letter English alphabet with $E \approx 0.71$ bits/letter
+(Shannon 1951 bigram estimate) and $W = O(\log N) = 20$, $S = 1$,
+$\eta = 2^{-12}$, the worst-case Lemma 5.1a per-sync bound is
+$S \cdot W \cdot \log_2(1/\eta) = 240$ bits/sync versus Lemma 5.1c's
+tight value $\delta_1 \approx 0.71$ bits/sync, a $\sim 340\times$
 improvement.}
 
 \emph{\textbf{Proof.}} For a stationary order-$W'$ Markov source with
@@ -5162,9 +5165,11 @@ point to the relevant theorems.
   Lemma 5.1c sharpens Lemma 5.1a's worst-case sync overhead
   $m \cdot S \cdot W \cdot \log_2(1/\eta)$ to the source-specific
   excess $(m - 1) \cdot \delta_{W'}$ for the special case of order-$W'$
-  Markov sources with predictor context $W \geq W'$, where
+  Markov sources with predictor context $W \geq W'$ and full sub-blocks
+  of size $K \geq W'$ ($N = mK$), where
   $\delta_{W'} = H(X^{W'}) - W' h(X)$ is finite and typically much
-  smaller than $W \log_2(1/\eta)$ for natural-data Markov sources.
+  smaller than $S \cdot W \cdot \log_2(1/\eta)$ for natural-data
+  Markov sources.
   Whole-block partition-rank coding (Type-II rank coding,
   Type-III-B direct or hierarchical partition strategies) is
   excluded from Theorem 10.3 and gives only sub-block-granular
@@ -5287,18 +5292,21 @@ listed below.)
   with the Baum--Petrie filter-recursion entropy rate
   $h_{\mathrm{HMM}}$, with $E_{\mathrm{HMM}} > 0$ iff the observable
   process is not iid.
-  All four proofs are verified at machine precision in
+  Lemmas 5.6a, 5.6b, 5.6c are verified at machine precision (exact
+  TC identity, $\sim 10^{-15}$); Lemma 5.6d's entropy-rate
+  characterization $h_{\mathrm{HMM}}$ is verified to Monte Carlo
+  tolerance (filter-recursion estimate matches the exact TC identity
+  at small $N$). All four scripts are in
   \texttt{scripts/verify/lemma\_5\_6\{a,b,c,d\}*}; the proofs
   generalize additively along independent column blocks.
   Theorem 5.5 remains the foundational identity and Remark 5.6's
   $\Theta(N)$ extrapolation for low-dimensional natural-data
   manifolds is an informal heuristic; rigorously establishing
-  $\mathrm{TC}(D_N) = \Theta(N)$ for less combinatorially
-  structured classes (natural images at a given resolution, general
-  hidden Markov models with non-trivial hidden state, non-stationary
-  processes) is open and likely requires
-  manifold-hypothesis-plus-regularity assumptions beyond the
-  intrinsic-dimension framework.
+  $\mathrm{TC}(D_N) = \Theta(N)$ for less combinatorially structured
+  classes (natural images at a given resolution, continuous-state
+  HMMs, non-stationary processes, factor graphs over expanders) is
+  open and likely requires manifold-hypothesis-plus-regularity
+  assumptions beyond the intrinsic-dimension framework.
 \item
   Construction of efficient enumerative encoders for specific
   natural-data submanifolds. Theorem 5.5 establishes that the
