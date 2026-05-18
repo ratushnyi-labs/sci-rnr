@@ -1473,8 +1473,9 @@ $W$-Markov given $C$, the full joint rate $H(D_N)$ is matched by the
 W-bounded rate $H_W(D_N)$ (since $H_W = H$ for $W$-Markov sources)
 and is achieved by per-position sequential coding with byte-granular
 random access \emph{plus} the sync-point overhead
-$\Delta_{\mathrm{sync,total}} = m \cdot S \cdot W \cdot \log_2(1/\eta)
-= \lceil N/K \rceil \cdot S \cdot W \cdot \log_2(1/\eta)$, which is
+$\Delta_{\mathrm{sync,total}} \leq m \cdot S \cdot W \cdot \log_2(1/\eta)
+= \lceil N/K \rceil \cdot S \cdot W \cdot \log_2(1/\eta)$ (worst-case
+upper bound; the realized cold-context excess may be smaller), which is
 $o(N)$ only when sync-point spacing $K = \omega(W)$ strictly (for
 fixed $K, W, S, \eta$ the total is $\Theta(N)$; see the asymptotic
 trade-off discussion accompanying Lemma 5.1b). For
@@ -4014,10 +4015,12 @@ per-position sequential case.
 
 Theorem 10.3 establishes that random access in RNR archives using
 \emph{per-position sequential} coding modes runs in time with only
-polylogarithmic dependence on archive size (a $\log L(R)$ direct
-seek-index cost under uniform spacing, or a
-$\log(|X|/K) \cdot (\log |X| + \log L(R))$ binary-search cost
-under non-uniform spacing, plus a $K+k$ decode window).
+polylogarithmic dependence on archive size in the parameter regime
+where $K$, $k$, $\mathrm{cost}(M)$, and $\log L(R)$ are polylog in
+$|X|$ (a $\log L(R)$ direct seek-index cost under uniform spacing,
+or a $\log(|X|/K) \cdot (\log |X| + \log L(R))$ binary-search cost
+under non-uniform spacing, plus a $(K+k) \cdot \mathrm{cost}(M)$
+decode-window cost).
 Whole-block Type-II/III-B partition-rank modes give only
 sub-block-granular access at a separately analyzed
 $O(K \cdot \mathrm{unrank}(K))$ per requested sub-block (Remark
@@ -4977,7 +4980,7 @@ point to the relevant theorems.
   (block-device interface: an OS-level driver serves LBA-indexed
   read requests with the same output-sensitive cost as Theorem 10.3,
   polylogarithmic in $|X|$ only in the same fixed/polylog $K$, $k$,
-  $\log L(R)$ parameter regime) and Theorem 10.6 (hardware-target
+  $\mathrm{cost}(M)$, $\log L(R)$ parameter regime) and Theorem 10.6 (hardware-target
   portability: bit-exact predictor execution is guaranteed across
   any pair of targets each satisfying the (a)--(g) conformance
   conditions of Theorem 10.6; whether specific named target classes
