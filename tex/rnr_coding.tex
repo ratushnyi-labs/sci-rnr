@@ -1849,9 +1849,9 @@ A_s\bigl(|M_v \setminus S_v|\bigr)
 \]
 \emph{with the remaining-universe correction of Theorem 5.3 applied
 when symbols are encoded sequentially. The general arbitrary-joint
-case is open; we give one positive partial result below for the
-permutation-like (conditional Bernoulli) case, where top-$Q$ is
-provably optimal.}
+case is NP-hard (Lemma 5.7c below), but admits a positive partial
+result for the permutation-like (conditional Bernoulli) case where
+top-$Q$ is provably optimal (Lemma 5.7a below).}
 
 \textbf{Lemma 5.7a (Top-$Q$ is optimal for permutation-like Type-II
 laws).} \emph{Suppose the joint law of $M_v$ is a
@@ -1918,100 +1918,113 @@ beyond permutation-like, top-$Q$ can be provably suboptimal (Remark
 optimization problem is NP-hard (Lemma 5.7c below).
 
 \textbf{Lemma 5.7c (NP-hardness of optimal support selection for
-general dependent joint laws).} \emph{The decision problem}
+general dependent joint laws).} \emph{The combinatorial decision problem}
 \begin{itemize}
-\item \textsc{Input}: $N \in \mathbb{N}$, integers $k_v = 2$ and
+\item \textsc{Input}: $N \in \mathbb{N}$, integer $s$ with
 $2 \leq s \leq N - 2$; a finite list of atoms
-$T_1, \ldots, T_m \in \binom{[N]}{2}$ with positive rational weights
-$w_1, \ldots, w_m$ summing to $1$ (defining the joint law $\mu$); a
-rational threshold $\tau$.
+$T_1, \ldots, T_m \in \binom{[N]}{2}$ (each a $2$-element subset of
+$[N]$); an integer target $D \geq 0$.
 \item \textsc{Question}: Does there exist $S \subseteq [N]$ with
 $|S| = s$ such that
-$\mathbb{E}_{T \sim \mu}[A_s(|T \setminus S|)] \leq \tau$, where
-$A_s(\alpha) := \log_2 \binom{s}{k_v - \alpha} + \log_2 \binom{N-s}{\alpha}$?
+$n_0(S) := |\{j : T_j \subseteq S\}| \geq D$?
 \end{itemize}
 \emph{is NP-hard.}
 
+\emph{Consequence.} The optimization version of Type-II support selection
+in the general dependent regime---namely, computing
+$\min_{|S| = s} \mathbb{E}_{T \sim \mu}[A_s(|T \setminus S|)]$
+for an arbitrary rational-weighted joint law $\mu$ on $\binom{[N]}{2}$
+specified as an atom list---is NP-hard, by the positive-affine
+correspondence established in the proof.
+
 \emph{Proof.} Reduction from CLIQUE, which is NP-complete (Karp 1972) and
-remains so when restricted to graphs with $|V_G| \leq 3k+1$ (the standard
-3-SAT-to-CLIQUE reduction produces $|V_G| = 3 \cdot (\#\text{clauses}) = 3k$
-where $k$ is the clique-size sought; padding with one isolated vertex
-yields $|V_G| = 3k+1$).
+remains so when restricted to graphs with $|V_G| \leq 3k+1$: the standard
+3-SAT-to-CLIQUE reduction produces a graph with
+$|V_G| = 3 \cdot (\#\text{clauses}) = 3k$ where $k$ is the clique-size
+sought, and padding with one isolated vertex yields $|V_G| = 3k+1$
+without affecting the clique number (for $k \geq 2$).
 
-Let $(G = (V_G, E_G), k)$ be a CLIQUE instance with $k \geq 2$ and
-$|V_G| \leq 3k+1$. Construct a support-selection instance as follows:
+Given a CLIQUE instance $(G = (V_G, E_G), k)$ with $k \geq 2$ and
+$|V_G| \leq 3k+1$ (WLOG, since the source 3-SAT-to-CLIQUE reduction
+produces $|V_G| = 3k$, requiring at most one isolated-vertex pad),
+construct a support-selection instance:
 \begin{enumerate}
-\item Set $N := 3k+1$, $s := k$, $k_v := 2$. Identify $V_G$ with the first
-$|V_G|$ elements of $[N]$ and let positions $|V_G|+1, \ldots, N$ be
-isolated padding vertices.
-\item Define $\mu$ on $\binom{[N]}{2}$ by $\mu(\{a,b\}) := 1/|E_G|$ if
-$\{a,b\} \in E_G$ (treating $E_G$ as edges in $[N]$ via the identification),
-and $\mu(T) := 0$ otherwise. Assume $|E_G| \geq 1$ (if $E_G = \emptyset$
-then CLIQUE is trivially decided for $k \geq 2$).
-\item Set the threshold
-\[
-\tau := A_s(1) - (A_s(1) - A_s(0)) \cdot \binom{k}{2} / |E_G|.
-\]
+\item If $E_G = \emptyset$, output a trivial NO-instance of the
+combinatorial problem (e.g., $N = 5, s = 2, m = 0, D = 1$); else proceed.
+\item Set $N := 3k+1$, $s := k$. Identify $V_G$ with the first
+$|V_G|$ elements of $[N]$, leaving positions $|V_G|+1, \ldots, N$
+as isolated padding (these appear in no atom).
+\item Take the atom list to be the edges $E_G$ (each as a $2$-subset of
+$[N]$ via the identification above), so $m = |E_G|$.
+\item Set $D := \binom{k}{2}$.
 \end{enumerate}
+The construction runs in time $O(|V_G| + |E_G| + \log k)$ using only
+integer arithmetic, and produces a valid combinatorial input.
 
-\emph{Key identity at $N = 3s+1$.} With $s = k$ and $N = 3k+1$, the
-binomial coefficients evaluate to
-$A_s(0) = \log_2 \binom{k}{2}$,
-$A_s(1) = \log_2(k) + \log_2(2k+1) = \log_2(k(2k+1))$,
-$A_s(2) = \log_2 \binom{2k+1}{2} = \log_2(k(2k+1))$,
-so $A_s(1) = A_s(2)$ exactly. Moreover $A_s(0) < A_s(1)$ since
-$\binom{k}{2} = k(k-1)/2 < k(2k+1)$ for $k \geq 1$.
+\emph{Forward (YES $\to$ YES).} If $G$ has a clique $S_G \subseteq V_G$
+of size $k$, then setting $S := S_G$ gives
+$n_0(S) = |\{e \in E_G : e \subseteq S_G\}| = \binom{k}{2} \geq D$.
 
-\emph{Cost formula.} For any $S \subseteq [N]$ with $|S| = s$, partition
-$E_G$ by intersection with $S$:
-$n_0(S) := |\{e \in E_G : e \subseteq S\}|$ (the densest-$k$-subgraph
-value $e_G(S \cap V_G)$),
-$n_1(S) := |\{e : |e \cap S| = 1\}|$,
-$n_2(S) := |\{e : e \cap S = \emptyset\}|$,
-with $n_0 + n_1 + n_2 = |E_G|$. Then
+\emph{Reverse (YES $\to$ YES).} If $|S| = k$ has $n_0(S) \geq \binom{k}{2}$,
+then since each atom is a $2$-subset of $S$ and there are at most
+$\binom{|S|}{2} = \binom{k}{2}$ such subsets, $n_0(S) = \binom{k}{2}$.
+That is, every $2$-subset of $S$ is an atom, i.e., an edge of $G$. In
+particular, no element of $S$ is a padding vertex (which appears in no
+atom; if $v \in S$ were padding, then for any $u \in S \setminus \{v\}$
+the pair $\{v, u\}$ is not an atom, contradicting $n_0(S) = \binom{|S|}{2}$).
+Hence $S \subseteq V_G$ and $S$ is a $k$-clique of $G$.
+
+The combinatorial decision problem is thus NP-hard.
+\hfill$\blacksquare$
+
+\emph{Proof of the consequence.}
+At $N = 3s+1$, the binomial-coefficient values are
+$A_s(0) = \log_2 \binom{s}{2}$,
+$A_s(1) = \log_2(s) + \log_2(2s+1) = \log_2(s(2s+1))$,
+$A_s(2) = \log_2 \binom{2s+1}{2} = \log_2(s(2s+1))$,
+hence $A_s(1) = A_s(2)$ exactly, and $A_s(0) < A_s(1)$ for $s \geq 2$
+(since $\binom{s}{2} = s(s-1)/2 < s(2s+1)$). For any uniform-weighted
+joint law $\mu$ with $m = |E_G| \geq 1$ atoms, partition the atoms by
+intersection with $S$ as $n_0 + n_1 + n_2 = m$. Then
 \[
 \mathbb{E}_\mu[A_s(|T \setminus S|)]
-= \frac{n_0 A_s(0) + n_1 A_s(1) + n_2 A_s(2)}{|E_G|}
-= \frac{n_0 A_s(0) + (|E_G| - n_0) A_s(1)}{|E_G|}
+= \frac{n_0 A_s(0) + n_1 A_s(1) + n_2 A_s(2)}{m}
+= A_s(1) - (A_s(1) - A_s(0)) \cdot \frac{n_0(S)}{m}.
 \]
-\[
-= A_s(1) - (A_s(1) - A_s(0)) \cdot \frac{n_0(S)}{|E_G|}.
-\]
-Thus $\mathbb{E}_\mu[A_s] \leq \tau$ \emph{iff} $n_0(S) \geq \binom{k}{2}$.
-Since $n_0(S) \leq \binom{|S|}{2} = \binom{k}{2}$ trivially, the
-condition $n_0(S) \geq \binom{k}{2}$ forces equality: every pair in
-$S$ is an edge, so $S$ is a clique in $G$ of size $k$. Conversely a
-size-$k$ clique $S_G$ in $G$ gives $n_0(S_G) = \binom{k}{2}$, hence
-$\mathbb{E}_\mu[A_s(S_G)] = \tau$.
-
-(Padding vertices play no role: if $S$ contains a padding vertex $v$,
-then for each $u \in S \setminus \{v\}$ the pair $\{v, u\}$ is not an
-atom of $\mu$, so $n_0(S) \leq \binom{k-1}{2} < \binom{k}{2}$; hence
-an optimal $S$ lies in $V_G$.)
-
-The construction has output size polynomial in $(|V_G| + |E_G| + \log k)$
-and uses only rational arithmetic (the threshold $\tau$ is a rational
-expressed via $\log_2$-of-rationals, which can be represented exactly
-as a comparison against a polynomial of integers; alternatively the
-reduction may be stated directly with rational $\tau' = (A_s(1) - \tau) \cdot |E_G| / (A_s(1) - A_s(0))$
-in place of $\tau$ and rephrased as: ``does $n_0(S) \geq \binom{k}{2}$
-hold?''---a purely combinatorial decision problem). Hence the
-support-selection decision problem is NP-hard.
+This is an affine function of $n_0(S)$ alone, strictly decreasing in
+$n_0(S)$ (the slope $-(A_s(1) - A_s(0))/m$ is negative since
+$A_s(1) - A_s(0) > 0$). Hence minimizing the expected cost is
+equivalent to maximizing $n_0(S)$, which is the optimization version
+of the combinatorial decision problem; an algorithm that computes
+$\min_{|S|=s} \mathbb{E}_\mu[A_s]$ in polynomial time would also decide
+$\max_{|S|=s} n_0(S) \geq D$ in polynomial time (compare the computed
+real-valued minimum against the constant $A_s(1) - (A_s(1) - A_s(0)) D / m$,
+which is well-defined for any algorithm that returns the minimum as an
+exact symbolic expression or to sufficient finite precision $O(\log(m \cdot k))$
+bits to distinguish the two adjacent integer values of $n_0$).
 \hfill$\blacksquare$
 
 \emph{Implications.}
 (i) The natural conjecture of §13.2 is resolved in the affirmative for
-the general dependent case (Open Problem 6).
-(ii) An $O(\log N)$-approximation or PTAS for the optimization problem
-would imply the same for densest-$k$-subgraph, whose approximability
-is a long-standing open question (the best known algorithm achieves
-$O(n^{1/4 + \varepsilon})$, Bhaskara et al.\ 2010); inapproximability
-beyond a polynomial factor follows from any inapproximability result
-for densest-$k$-subgraph under standard complexity assumptions.
-(iii) The reduction does not preserve permutation-likeness (the
-constructed atoms are not factorizable), consistent with Lemma 5.7a
-which proves polynomial-time solvability in the permutation-like
-restriction.
+the general dependent case (Open Problem 6): exact polynomial-time
+optimization of support selection over arbitrary joint laws is NP-hard.
+(ii) The reduction does not preserve permutation-likeness (the atoms
+constructed are uniform over $E_G$, which does not factorize as
+$\Pr(T) \propto \prod_{i \in T} q_i$ unless $G$ is a complete or empty
+graph), consistent with Lemma 5.7a which proves polynomial-time
+solvability under the permutation-like restriction. Whether a
+strictly larger tractable class than permutation-like exists is
+open; Lemma 5.7c only establishes that the fully unrestricted class
+is NP-hard.
+(iii) The result does not directly address approximability: the
+positive-affine relationship between $\mathbb{E}_\mu[A_s]$ and $n_0(S)$
+does not preserve multiplicative approximation ratios (since the cost
+is shifted by the constant $A_s(1)$ and scaled by a positive constant,
+multiplicative ratios are not preserved by affine maps in general). The
+approximability of either form is open and is tied to the long-standing
+open approximability of densest-$k$-subgraph (best known algorithm
+$O(n^{1/4 + \varepsilon})$, Bhaskara et al.\ 2010); we record only the
+exact-optimization hardness here.
 
 For comparison, in the factorized regime of Section 5.3, per-position
 arithmetic coding under $Q$ has expected length equal to the
@@ -4391,16 +4404,22 @@ the present paper.
   \texttt{scripts/verify/lemma\_5\_7a\_permutation\_like\_top\_q.py}).
   For joint laws beyond permutation-like (e.g., Remark 5.7's
   counterexample at $N=7, k=2, s=2$), top-$Q$ can be provably
-  suboptimal, and Lemma 5.7c establishes that the optimization
-  problem is NP-hard via reduction from CLIQUE at $N = 3s+1$,
-  where the algebraic identity $A_s(1) = A_s(2)$ collapses the
-  three-way ($n_0, n_1, n_2$) cost decomposition to a function of
-  $n_0$ alone (verified in
+  suboptimal, and Lemma 5.7c establishes that the
+  optimization problem is NP-hard. The reduction is from CLIQUE
+  on graphs with $|V_G| \leq 3k+1$ to a combinatorial decision
+  ``does some $|S|=s$ have $n_0(S) \geq D$?'' at $N = 3s+1$, then
+  to the cost-based problem via the positive-affine collapse at
+  $N = 3s+1$ where the algebraic identity $A_s(1) = A_s(2)$ reduces
+  the three-way $(n_0, n_1, n_2)$ cost decomposition to a function
+  of $n_0$ alone (verified in
   \texttt{scripts/verify/lemma\_5\_7c\_np\_hardness\_clique\_reduction.py}).
-  What remains open is the approximation side: whether a
-  polynomial-time $O(\log N)$-approximation or PTAS exists is tied
-  to the long-standing open approximability of densest-$k$-subgraph
-  (best known: $O(n^{1/4+\varepsilon})$ via Bhaskara et al.\ 2010).
+  What remains open is the approximation side: the
+  positive-affine reduction does not preserve multiplicative
+  approximation ratios, so neither hardness nor approximability of
+  approximate optimization follows directly; the question is tied
+  to the long-standing open approximability of
+  densest-$k$-subgraph (best known algorithm
+  $O(n^{1/4+\varepsilon})$ via Bhaskara et al.\ 2010).
   The arithmetic-coding benchmark under the same $Q$ is a separate,
   settled result and remains the comparison baseline.
 \item
