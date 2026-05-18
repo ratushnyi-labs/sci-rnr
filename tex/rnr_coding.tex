@@ -2432,8 +2432,8 @@ evaluation.
 
 \textbf{10.3 Verification overhead analysis}
 
-A SHA-256 per 4 KiB subblock is $32/4096 = 0.78\%$ overhead. A
-truncated 64-bit hash per 4 KiB subblock is $8/4096 = 0.20\%$. A
+A SHA-256 per 4 KiB subblock is $32/4096 = 0.78\%$ hash-only overhead.
+A truncated 64-bit hash per 4 KiB subblock is $8/4096 = 0.20\%$. A
 truncated 32-bit hash is $0.10\%$, with $2^{-32}$ \emph{per-subblock}
 collision probability; for an archive of $m$ subblocks, the
 archive-level false-accept probability is bounded by union over
@@ -2449,6 +2449,19 @@ right balance depends on the underlying error rate of the
 predictor and the size of the archive; if errors are rare and the
 archive is small, larger subblocks and shorter hashes are
 acceptable.
+
+The hash bytes are not the only verification-related overhead.
+Theorem 9.1 also requires an explicit per-subblock repair-stream
+offset table to disambiguate subblock boundaries; an entry storing
+a $\lceil \log_2 L(R) \rceil$-bit offset per subblock adds another
+$m \cdot \lceil \log_2 L(R) \rceil$ bits to the archive header. For
+$|X| = 1$ GiB at 4 KiB subblocks ($m = 2^{18}$) and a repair
+stream of comparable size ($\log_2 L(R) \approx 33$), the offset
+table is $m \cdot 33 \approx 8.4$ Mibit $\approx 1$ MiB, a further
+$\approx 0.1\%$ of $|X|$. Total verified-framed verification
+overhead is therefore the sum of (a) hash bytes, (b) per-subblock
+repair-stream offsets, and (c) any Merkle-tree authenticators if
+random-access verification is used (§10.7, third trade-off).
 
 \textbf{10.4 Fallback modes}
 
@@ -2666,9 +2679,12 @@ effective minimum random-read granularity is large and growing with
 archive size (the first case linearly in $p$; the second
 block-by-block with no sub-block seek). This is a deployment
 blocker for archive-style use cases where partial reads are common.
-The RNR framework supports random access in time independent of
-$|X|$, provided the predictor has bounded context. We make this
-precise.
+The RNR framework supports random access in per-query time that is
+polylogarithmic in $|X|$ (or even independent of $|X|$ in the
+uniform-spacing direct-lookup case), provided the predictor has
+bounded context, in a parameter regime where $K$, $k$,
+$\mathrm{cost}(M)$, and $\log L(R)$ are held fixed; the resident
+seek index is $\Theta(|X|/K)$. We make this precise.
 
 \textbf{Definition 10.2 ($W$-bounded predictor).} A predictor $M$ is
 $W$-bounded if its output $Y_i = M(C_i)$ at position $i$ depends only
@@ -2755,7 +2771,9 @@ satisfying Theorem 10.1 and with sync points placed at uniformly
 spaced source positions $j K$ for $j = 0, 1, \dots$ (Definition
 10.3). Let $|X|$ denote the archive's uncompressed source length.
 Random access to $k$ consecutive bytes starting at any position
-$p \in [0, |X|)$ requires: (i)~one direct seek-index lookup at
+$p \in [0, |X|)$ with $p + k \leq |X|$ (or, equivalently, requesting
+$k' = \min(k, |X| - p)$ bytes if $p + k$ would exceed $|X|$, as a
+short read) requires: (i)~one direct seek-index lookup at
 entry $\lfloor p/K \rfloor$, reading $O(\log L(R))$ bits to obtain
 the repair-stream bit offset of the sync point at byte position
 $P = K \lfloor p/K \rfloor$; (ii)~decoding of at most $K + k$
@@ -2906,13 +2924,21 @@ Three trade-offs govern random-access design in RNR archives.
   affected by this trade-off because their constructions are local
   (per-position or per-tile within sync-bounded windows). Type-III-C
   is affected when dictionary tokens span longer fragments or
-  grammar expansions. A token that would cross a uniform Def-10.3
-  sync-point boundary $jK$ must be split, with the affected
-  occurrence forfeiting its dictionary saving (at most $8 \cdot
-  |\tau|$ bits per crossed token, since the raw-literal baseline
-  costs $8\ell$ bits for an $\ell$-byte token). At most one token
-  crosses any given boundary, so over $|X|/K$ sync points the
-  worst-case loss is bounded by $8 \cdot |X| \cdot
+  grammar expansions. We restrict attention to the standard case
+  where the top-level parse is a flat non-overlapping cover of $X$
+  by terminal-level token instances (each occurrence is a maximal
+  expansion at source level); recursive grammar productions are
+  expanded for the purpose of counting source-byte crossings. A
+  token that would cross a uniform Def-10.3 sync-point boundary
+  $jK$ must be split, with the affected occurrence forfeiting its
+  dictionary saving (at most $8 \cdot |\tau|$ bits per crossed
+  token, since the raw-literal baseline costs $8\ell$ bits for an
+  $\ell$-byte token). Under the flat-cover restriction, at most one
+  top-level token instance crosses any given source boundary
+  (recursive expansions inside that one instance are all confined to
+  the same $\ell$-byte span and contribute no additional crossings
+  beyond their containing token's split). Over $|X|/K$ sync points
+  the worst-case loss is bounded by $8 \cdot |X| \cdot
   \overline{|\tau|_{\text{crossed}}} / K$ bits, where
   $\overline{|\tau|_{\text{crossed}}}$ is the average length of
   crossed tokens (bounded above by $\max_\tau |\tau|$). For
@@ -2979,8 +3005,11 @@ time per access; the block-codec case decodes the enclosing block
 on every read.
 
 RNR with a $W$-bounded transformer predictor and sync points every
-$K$ positions: random access in $O(K + k)$ predictor evaluations
-independent of $|X|$, at a per-sync-point worst-case excess of
+$K$ positions: per-query random access in $O(\log L(R) + (K + k)
+\cdot \mathrm{cost}(M))$ time for uniform spacing (or with an
+extra $\log(|X|/K)$ factor for non-uniform), independent of $|X|$
+in the predictor-cost term and polylog in $|X|$ in the
+seek-index-lookup term, at a per-sync-point worst-case excess of
 $W \cdot \log_2(1/\eta)$ bits (Section 10.7), giving a worst-case
 total of $(|X|/K) \cdot W \cdot \log_2(1/\eta)$ bits over the
 archive. For $K = 64$ KiB, $W = 4$ KiB, $\eta = 2^{-8}$, and a 1
@@ -3003,7 +3032,7 @@ architecture, the deterministic reproducibility guarantee (Theorem
 10.1), and the sync-point construction (Definition 10.3) jointly
 enable seek-and-read access at a parameter-dependent ratio
 overhead --- on the order of a few percent for natural data at
-typical $K$ and Type-I/II/III-B/III-B coders under the
+typical $K$ and Type-I/II/III-A/III-B coders under the
 probability-floor assumption (a heuristic estimate; not a theorem),
 rising to a worst-case bound that depends on $K$ and $\max_\tau
 |\tau|$ for Type-III-C as detailed above --- a capability that
@@ -3151,18 +3180,24 @@ implementation and by any parallel implementation that uses a
 tree-reduction with the specified schedule. Composing these properties
 layer by layer through $M$ yields bit-exact output. \hfill$\blacksquare$
 
-Conforming hardware targets include: scalar CPU implementations on any
-architecture supporting the required integer bit-widths (x86-64, ARM64,
-RISC-V, POWER); CPU SIMD implementations using integer SIMD instructions
-(AVX2, AVX-512 with VNNI and IFMA extensions, ARM NEON, RISC-V vector
-extension); GPU implementations using integer compute kernels and
-integer Tensor Cores (NVIDIA Turing or later with int8 and int4 Tensor
-Core paths, AMD CDNA with matrix accelerators); dedicated NPUs targeting
-integer inference (Apple Neural Engine, Google Edge TPU, Qualcomm
-Hexagon NPU, Huawei Ascend, AWS Inferentia, AWS Trainium in inference
-mode). The same RNR archive can be encoded on a server GPU, served from
-cloud storage, and decoded on a phone NPU, with byte-identity guaranteed
-by Theorem 10.6 plus a conformance certification of each target.
+Candidate hardware-target classes that an implementation could
+potentially make conforming under the (a)-(g) requirements include:
+scalar CPU on any architecture supporting the required integer
+bit-widths (x86-64, ARM64, RISC-V, POWER); CPU SIMD using integer
+SIMD instructions (AVX2, AVX-512 with VNNI and IFMA extensions, ARM
+NEON, RISC-V vector extension); GPU using integer compute kernels
+and integer Tensor Cores (NVIDIA Turing or later with int8 and int4
+Tensor Core paths, AMD CDNA with matrix accelerators); dedicated
+NPUs targeting integer inference (Apple Neural Engine, Google Edge
+TPU, Qualcomm Hexagon NPU, Huawei Ascend, AWS Inferentia, AWS
+Trainium in inference mode). Theorem 10.6 is conditional on a
+target satisfying (a)-(g): whether any specific named class
+\emph{actually} conforms is an engineering claim about that
+target's instruction set, kernel library, and serialization
+conventions, not a corollary of Theorem 10.6. With a conformance
+certification of each target, the same RNR archive can be encoded
+on a server GPU, served from cloud storage, and decoded on a phone
+NPU with byte-identity guaranteed by Theorem 10.6.
 
 \emph{\textbf{Cache amortization}}
 
@@ -3573,11 +3608,12 @@ point to the relevant theorems.
   read requests with the same output-sensitive cost as Theorem 10.3,
   polylogarithmic in $|X|$ only in the same fixed/polylog $K$, $k$,
   $\log L(R)$ parameter regime) and Theorem 10.6 (hardware-target
-  portability:
-  bit-exact predictor execution on CPU scalar, CPU SIMD, GPU integer
-  Tensor Cores, and integer NPUs follows from Theorem 10.1's
-  conformance specification, augmented in Theorem 10.6 with explicit
-  weight/input byte-serialization conformance). The copy-on-write
+  portability: bit-exact predictor execution is guaranteed across
+  any pair of targets each satisfying the (a)--(g) conformance
+  conditions of Theorem 10.6; whether specific named target classes
+  --- CPU scalar, CPU SIMD, GPU integer Tensor Cores, integer NPUs
+  --- actually conform is an engineering claim per target, not a
+  corollary of the theorem). The copy-on-write
   overlay pattern (§10.8) enables read-write semantics using the
   same architecture as existing compressed-filesystem deployments.
 \end{itemize}
