@@ -3395,8 +3395,8 @@ earlier draft of this paper had a different (and incorrect) Lemma
 fixed-$K$ premise (i.e., $K = 15|V| + 3|E|$); that lemma was
 retracted after adversarial review identified that Charikar's $K$
 includes cover-dependent optional rules and is of the form
-$K(\sigma) = K_0(H) + \alpha(H) \cdot |\sigma|$ for structural
-$K_0, \alpha \geq 0$. The current Lemma 6.8b establishes the correct
+$K(\sigma) = K_0(H) + \kappa(H) \cdot |\sigma|$ for structural
+$K_0, \kappa \geq 0$. The current Lemma 6.8b establishes the correct
 result via a different argument (monotonicity of cost in $|\sigma|$
 allowing bit-cost approximation to imply symbol-count approximation
 with the same ratio).
@@ -3413,9 +3413,9 @@ class, with each $G \in \mathcal{G}_{\mathrm{Char}}(H)$ encoding a
 vertex cover $\sigma \subseteq V$ and having}
 \[
 L_{\mathrm{sym}}(G) = 15|V| + 3|E| + |\sigma|, \quad
-K(G) = K_0(H) + \alpha(H) \cdot |\sigma|,
+K(G) = K_0(H) + \kappa(H) \cdot |\sigma|,
 \]
-\emph{for structural constants $K_0(H) \geq 0$, $\alpha(H) \geq 0$.
+\emph{for structural constants $K_0(H) \geq 0$, $\kappa(H) \geq 0$.
 Then bit-cost minimization over $\mathcal{G}_{\mathrm{Char}}(H)$ is
 APX-hard with the same constant $\gamma_{\mathrm{SGP}} = 8569/8568$:
 no polynomial-time $\alpha$-approximation algorithm for
@@ -3425,11 +3425,11 @@ $L^{\mathrm{bit}}$ over the class exists for $\alpha <
 \emph{\textbf{Proof.}} On $\mathcal{G}_{\mathrm{Char}}(H)$ the bit-cost
 \[
 L^{\mathrm{bit}}(\sigma) = \underbrace{(15|V| + 3|E| + |\sigma|)}_{L_{\mathrm{sym}}(\sigma)} \cdot
-\underbrace{\lceil \log_2(|\Sigma| + K_0(H) + \alpha(H) |\sigma|) \rceil}_{c(\sigma) \geq 1}
+\underbrace{\lceil \log_2(|\Sigma| + K_0(H) + \kappa(H) |\sigma|) \rceil}_{c(\sigma) \geq 1}
 \]
 is a strictly monotone non-decreasing function of $|\sigma|$: the
 first factor is strictly increasing, the second is non-decreasing
-($\alpha \geq 0$). Therefore the bit-cost-optimal cover
+($\kappa(H) \geq 0$). Therefore the bit-cost-optimal cover
 $\sigma_{\mathrm{OPT}}^{\mathrm{bit}}$ coincides with the
 symbol-count-optimal cover $\sigma_{\mathrm{OPT}}^{\mathrm{sym}}$
 (both equal the minimum vertex cover of $H$). Denote this common
