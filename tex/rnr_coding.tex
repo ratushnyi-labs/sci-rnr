@@ -1867,16 +1867,26 @@ $(m-1) \cdot \delta_W$.
 \emph{(b) Information-theoretic optimality.} \emph{Lemma 5.1e
 establishes that any sub-block-based byte-granular random-access
 scheme (under conditions (i)-(iii) of Lemma 5.1e) satisfies}
-$L_{\mathrm{synced}} \geq m \cdot H(D_K) = H(D_N) + (m-1) \cdot \delta_W$
-\emph{for order-$W'$ Markov sources, matching the achievability
-of (a) exactly. No scheme in the sub-block paradigm can do strictly
-better.}
+$L_{\mathrm{synced}} \geq m \cdot H(D_K)$
+\emph{by Shannon's source coding theorem per sub-block. For
+order-$W'$ Markov sources with $W' \leq W$ and $K \geq W'$, this
+equals $H(D_N) + (m-1) \cdot \delta_{W'}$ exactly (matching (a)
+ignoring the $\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ coder
+redundancy and the $N \cdot (h_W - h)$ term which vanishes for
+order-$W'$ Markov). For general exponentially mixing non-Markov
+sources, the lower bound is $m \cdot H(D_K) = H(D_N) + m \delta_K -
+\delta_N$, weakly matching (a) up to $\delta_K - \delta_W^{(h_W)}$
+slack; the achievability and lower bound coincide tightly only in
+the order-$W'$ Markov sub-case.}
 
 \emph{(c) Open extensions.} \emph{(i) Non-sub-block-based schemes
 (state-snapshot framework of Theorem 10.4): the lower bound (b) does
 not apply, and the trade-off between sub-block-independence excess
 $(m-1) \cdot \delta_W$ and state-snapshot storage $m \cdot
-\Theta(W \log_2 \sigma)$ is engineering-determined per use case.
+L(\mathrm{state})$ (architecture-dependent, ranging from
+$\Theta(W \log_2 \sigma)$ for explicit context-byte storage to
+the predictor's internal hidden-state size for general models) is
+engineering-determined per use case.
 (ii) Non-Markov stationary sources with non-summable correlations:
 Lemma 5.1d's bound requires summable correlation; sources with
 $\delta_\infty = \infty$ require a different framework.}
@@ -5420,7 +5430,18 @@ point to the relevant theorems.
   of size $K \geq W'$ ($N = mK$), where
   $\delta_{W'} = H(X^{W'}) - W' h(X)$ is finite and typically much
   smaller than $S \cdot W \cdot \log_2(1/\eta)$ for natural-data
-  Markov sources.
+  Markov sources. Lemma 5.1d extends this characterization to general
+  exp-mixing stationary sources with the Crutchfield--Feldman excess
+  entropy $\delta_\infty$ bounding the cold-context excess per sync.
+  Lemma 5.1e establishes a matching information-theoretic lower bound
+  $L_{\mathrm{synced}} \geq m \cdot H(D_K)$ for sub-block-independent
+  schemes (source-independent metadata, independently decodable
+  payloads), so Lemma 5.1c's $(m-1) \cdot \delta_{W'}$ excess is
+  information-theoretically optimal for order-$W'$ Markov sources
+  under the sub-block paradigm. Corollary 5.1f assembles Lemmas
+  5.1a-e into a unified resolution of OP1 (random access) within the
+  sub-block paradigm, leaving non-sub-block / state-snapshot schemes
+  (Theorem 10.4) and non-summable mixing as open extensions.
   Whole-block partition-rank coding (Type-II rank coding,
   Type-III-B direct or hierarchical partition strategies) is
   excluded from Theorem 10.3 and gives only sub-block-granular
@@ -5711,6 +5732,16 @@ International Conference on Machine Learning.
 \textbf{{[}8{]}} Charikar, M., Lehman, E., Liu, D., Panigrahy, R.,
 Prabhakaran, M., Sahai, A., and Shelat, A. (2005). The Smallest Grammar
 Problem. IEEE Transactions on Information Theory, 51(7), 2554-2576.
+
+\textbf{{[}8a{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B., and
+Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
+over Fixed Alphabets. Theory of Computing Systems, 65(1), 158-203.
+
+\textbf{{[}8b{]}} Ga\'nczorz, M. (2018). Entropy bounds for grammar
+compression. arXiv:1804.08547 (also presented at DCC 2018/2020).
+
+\textbf{{[}8c{]}} Kozma, L., and Voderholzer, J. (2024). The
+Computational Complexity of Tokenisation. arXiv:2411.08671.
 
 \textbf{{[}9{]}} Cover, T. M. (1973). Enumerative Source Encoding. IEEE
 Transactions on Information Theory, 19(1), 73-77.
