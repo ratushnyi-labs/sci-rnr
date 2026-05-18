@@ -336,13 +336,21 @@ This article makes the following contributions.
   zero on sources without joint structure). Lemma 5.6a establishes
   an explicit $\mathrm{TC}(D_N) = N \cdot c(\alpha) + O(\log N)$
   with $c(\alpha) = \log_2 e - (\alpha - 1) \log_2(\alpha/(\alpha-1))
-  > 0$ for the distinct-cardinality class (one nonzero $k_v = \alpha$
-  per row), giving a concrete family for which $\Theta(N)$ joint
-  structure is mathematically certified. Whether $\mathrm{TC}(D_N) =
-  \Theta(N)$ holds for further natural-data classes (binary tensors,
-  log-likelihood ratio sources, etc.) remains an open empirical
-  question (Remark 5.6 sketches a manifold-hypothesis intuition but
-  does not establish a rigorous entropy bound for those).
+  > 0$ for the distinct-cardinality (uniqueness-constrained) class,
+  and Lemma 5.6b establishes the exact identity
+  $\mathrm{TC}(D_N) = N \cdot I(X_1; Y) - H(Y) + H(Y \mid X^N)$ for
+  hidden-class iid sources (a single latent $Y$ with conditionally
+  iid observations), recovering $\Theta(N)$ scaling whenever the
+  per-position mutual information $I(X_1; Y) > 0$ and the latent
+  classes are mutually distinguishable. Together these two lemmas
+  cover the canonical ``natural-data'' patterns of column-permutation
+  invariance and latent-topic mixture, with explicit constants in
+  both cases. Whether $\mathrm{TC}(D_N) = \Theta(N)$ extends to
+  further natural-data classes (Markov chains beyond bigrams, hidden
+  Markov models, log-likelihood-ratio sources) remains an open
+  empirical question (Remark 5.6 sketches a manifold-hypothesis
+  intuition but does not establish a rigorous entropy bound for
+  those).
 \item
   A status remark on Type-II support selection
   (Remark 5.7): the natural marginal-$Q$-prefix heuristic is not
@@ -1764,6 +1772,112 @@ see \texttt{scripts/verify/lemma\_5\_6a\_tc\_uniqueness.py}.
 The proof extends with no structural change to the multi-column
 case where each row carries $c$ independent uniqueness-constrained
 columns of varying $\alpha_j$, with TC additive across columns.
+
+\textbf{Lemma 5.6b (Linear $\mathrm{TC}$ for hidden-class iid
+sources).} \emph{Let $Y$ be a discrete random variable on a finite
+alphabet $\mathcal{Y}$ with $|\mathcal{Y}| < \infty$, and let
+$X_1, \ldots, X_N$ be conditionally independent and identically
+distributed given $Y$ with conditional law
+$\Pr(X_i = x \mid Y = y) = p_y(x)$ for each $i$. Then}
+\[
+\mathrm{TC}(D_N) \;=\; N \cdot I(X_1; Y) - H(Y) + H(Y \mid X_1, \ldots, X_N).
+\tag{5.6}
+\]
+\emph{In particular, if $\{p_y : y \in \mathcal{Y}\}$ are mutually
+distinguishable in the sense that
+$\sup_{y \neq y'} D_{\mathrm{TV}}(p_y, p_{y'}) > 0$, then
+$H(Y \mid X_1, \ldots, X_N) \to 0$ exponentially in $N$, and}
+\[
+\mathrm{TC}(D_N) = N \cdot I(X_1; Y) - H(Y) + o(1) = \Theta(N)
+\]
+\emph{whenever $I(X_1; Y) > 0$ (equivalently, whenever $Y$ is not
+independent of any single $X_i$).}
+
+\emph{\textbf{Proof.}} The marginal of any single position is the
+mixture
+$\Pr(X_i = x) = \sum_y \Pr(Y = y) p_y(x) =: \bar p(x)$,
+independent of $i$ by the iid-given-$Y$ assumption. Hence
+$H(X_i) = H(\bar p)$ for all $i$ and
+\[
+\sum_{i=1}^N H_{\mathrm{marg}}(X_i) = N \cdot H(\bar p).
+\]
+
+For the joint entropy, expand via the chain rule on the joint
+distribution of $(Y, X_1, \ldots, X_N)$:
+\[
+\begin{aligned}
+H(Y, X_1, \ldots, X_N)
+&= H(Y) + H(X_1, \ldots, X_N \mid Y) \\
+&= H(Y) + N \cdot H(X_1 \mid Y)
+\end{aligned}
+\]
+(the second equality uses conditional iid given $Y$). Symmetrically,
+\[
+H(Y, X_1, \ldots, X_N) = H(X_1, \ldots, X_N) + H(Y \mid X_1, \ldots, X_N).
+\]
+Equating and solving for $H(X_1, \ldots, X_N)$:
+\[
+H(X_1, \ldots, X_N) = H(Y) + N \cdot H(X_1 \mid Y) - H(Y \mid X_1, \ldots, X_N).
+\]
+
+Combining with the sum of marginals:
+\[
+\begin{aligned}
+\mathrm{TC}(D_N) &= \sum_i H_{\mathrm{marg}}(X_i) - H(X_1, \ldots, X_N) \\
+&= N \cdot H(\bar p) - H(Y) - N \cdot H(X_1 \mid Y) + H(Y \mid X_1, \ldots, X_N) \\
+&= N \cdot [H(X_1) - H(X_1 \mid Y)] - H(Y) + H(Y \mid X_1, \ldots, X_N) \\
+&= N \cdot I(X_1; Y) - H(Y) + H(Y \mid X_1, \ldots, X_N).
+\end{aligned}
+\]
+
+The asymptotic behavior of the posterior $H(Y \mid X_1, \ldots, X_N)$
+follows from a standard Chernoff-type estimate. If
+$D_{\mathrm{TV}}(p_y, p_{y'}) \geq \delta > 0$ for all
+$y \neq y'$, then the Bayes-optimal classifier for $Y$ given $X^N$
+errs with probability $O(\exp(-c \delta^2 N))$ for some
+$c > 0$ depending on the prior $\Pr(Y)$ (Bretagnolle--Huber 1979,
+LeCam 1973; see also Tsybakov \emph{Introduction to Nonparametric
+Estimation} 2009, Chapter 2). Fano's inequality then bounds
+$H(Y \mid X^N) \leq h_2(P_e) + P_e \cdot \log_2(|\mathcal{Y}| - 1)
+\to 0$ as $N \to \infty$ where $P_e$ is the error probability.
+Hence the leading-order TC is $N \cdot I(X_1; Y) - H(Y)$ up to
+$o(1)$ corrections.
+\hfill$\blacksquare$
+
+\emph{Examples.}
+(i) \emph{Binary mixture}: $Y \sim \mathrm{Bern}(1/2)$,
+$p_0 = \mathrm{Bern}(0.3)$, $p_1 = \mathrm{Bern}(0.7)$. The marginal
+$\bar p = \mathrm{Bern}(0.5)$ has $H(\bar p) = 1$; the conditional
+$H(X|Y) = h_2(0.3) \approx 0.881$. So
+$I(X_1; Y) = 1 - 0.881 = 0.119$ bit, $H(Y) = 1$ bit, and for
+large $N$,
+$\mathrm{TC}(D_N) \approx 0.119 N - 1$ bits.
+(ii) \emph{Topic-model text}: a Latent Dirichlet Allocation source
+with $K$ topics, fixed per-topic vocabulary distributions, and a
+single topic per document. If the topic distributions $\{p_k\}$ are
+mutually well-separated, $\mathrm{TC}$ of $N$ tokens scales linearly
+with rate $I(X_1; Y) = H(\bar p) - H(X|Y) \in (0, \log K]$.
+(iii) \emph{Markov chain (degenerate case)}: when $Y = (X_0)$ is
+the previous symbol, conditional independence given $Y$ fails (the
+chain has correlations beyond the immediate past); the lemma does
+not apply directly but is recoverable by augmenting $Y$ to encode
+sufficient context. The simple stationary-Markov-chain analog
+$\mathrm{TC}(D_N) = (N-1) \cdot I(X_1; X_2)$ requires a separate
+argument (chain-rule decomposition) and is included in
+\texttt{scripts/verify/lemma\_5\_6b\_hidden\_class\_tc.py} as a
+companion check.
+
+\emph{Discussion.} Lemma 5.6b provides a second explicit
+$\Theta(N)$-TC class beyond the uniqueness-constrained injections
+of Lemma 5.6a, capturing the latent-variable structure characteristic
+of natural-language and document sources. Both lemmas use the
+Theorem 5.5 identity as their formal foundation; the technical
+difficulty in each case is computing the joint entropy exactly
+(Stirling for Lemma 5.6a, the chain rule with posterior correction
+for Lemma 5.6b). Further classes (Markov chains, hidden Markov
+models, factor graphs over expanders) admit similar treatments
+but with strictly more involved bookkeeping; they remain open as
+explicit lemmas.
 
 \textbf{5.7 Worked numerical example}
 
@@ -4451,20 +4565,30 @@ the present paper.
   research-scale open problems.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
-  natural-data classes --- partially resolved. Lemma 5.6a gives an
-  explicit $\Theta(N)$ scaling with closed-form constant
+  natural-data classes --- partially resolved. Two explicit
+  $\Theta(N)$-TC classes are now established:
+  Lemma 5.6a gives the closed-form coefficient
   $c(\alpha) = \log_2 e - (\alpha-1)\log_2(\alpha/(\alpha-1))$ for
   the uniqueness-constrained database-page class (uniform
-  injections $[N] \to [\alpha N]$). The same proof technique
-  extends additively to multi-column UNIQUE schemas. Theorem 5.5
-  remains the foundational identity and Remark 5.6's $\Theta(N)$
-  extrapolation for low-dimensional natural-data manifolds is an
-  informal heuristic; rigorously establishing
+  injections $[N] \to [\alpha N]$); Lemma 5.6b gives the exact
+  identity $\mathrm{TC}(D_N) = N \cdot I(X_1; Y) - H(Y)
+  + H(Y \mid X^N)$ for hidden-class iid sources (latent $Y$ with
+  conditionally iid samples), with $H(Y \mid X^N) \to 0$
+  exponentially when the per-class distributions are mutually
+  distinguishable. As a companion, the stationary Markov chain
+  has $\mathrm{TC}(D_N) = (N-1) \cdot I(X_1; X_2)$ (chain-rule
+  identity, also verified in
+  \texttt{scripts/verify/lemma\_5\_6b\_hidden\_class\_tc.py}). Both
+  proofs extend additively along independent column blocks.
+  Theorem 5.5 remains the foundational identity and Remark 5.6's
+  $\Theta(N)$ extrapolation for low-dimensional natural-data
+  manifolds is an informal heuristic; rigorously establishing
   $\mathrm{TC}(D_N) = \Theta(N)$ for less combinatorially
-  structured classes (natural images at a given resolution,
-  English text at a given vocabulary) is open and likely requires
-  manifold-hypothesis-plus-regularity assumptions beyond the
-  intrinsic-dimension framework.
+  structured classes (natural images at a given resolution, full
+  English text at a given vocabulary with long-range structure, or
+  general hidden Markov models with non-trivial hidden state) is
+  open and likely requires manifold-hypothesis-plus-regularity
+  assumptions beyond the intrinsic-dimension framework.
 \item
   Construction of efficient enumerative encoders for specific
   natural-data submanifolds. Theorem 5.5 establishes that the
