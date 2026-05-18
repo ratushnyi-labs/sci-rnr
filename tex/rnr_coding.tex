@@ -1251,6 +1251,46 @@ redundancy is a constant overhead independent of which axis of the
 data the coder is sweeping. The two code lengths therefore agree up to
 $\varepsilon_N$. \hfill$\blacksquare$
 
+\textbf{Lemma 5.1a (Per-position sequential recoding achieves joint
+entropy with byte-granular random access).} \emph{Let $X \sim D_N$ be
+a block of $N$ symbols over a $\sigma$-symbol alphabet, and let $M$
+be a $W$-bounded predictor (Definition 10.2) that at each position
+$i$ outputs the chain-rule conditional distribution
+$P(x_i \mid x_{i-W}, \dots, x_{i-1}, C)$. Per-position sequential
+arithmetic coding of $X$ under these conditionals achieves expected
+total length $H(D_N) + \varepsilon_N \cdot N$ bits (the joint
+entropy, up to entropy-coder redundancy), and Theorem 10.3 sync
+points enable byte-granular random access at this rate.}
+
+\emph{\textbf{Proof.}} By the chain rule of entropy,
+$H(D_N) = \sum_i H(X_i \mid X_{<i})$. Arithmetic coding under the
+chain-rule conditionals achieves $\sum_i H(X_i \mid X_{<i}) +
+\varepsilon_N \cdot N$ bits (one $\varepsilon_N$ per position; see
+Cover and Thomas 2006, Theorem 5.4.1). Under the $W$-bounded
+hypothesis, each $P(x_i \mid x_{<i}, C)$ depends only on the last
+$W$ bytes, so the coding is per-position sequential (in the sense of
+Theorem 10.3's scope). Inserting sync points per Definition 10.3
+and applying Theorem 10.3 directly gives byte-granular random access
+at $O(\log L(R) + (K+k) \cdot \mathrm{cost}(M))$ time per query.
+\hfill$\blacksquare$
+
+\emph{Consequence for Theorem 5.4.} Theorem 5.4's $\Theta(N)$
+amortized separation between factorized and joint coding of the
+linear-code family was stated using whole-block partition-rank
+coding, which gives only sub-block-granular random access (Remark
+10.3a). Lemma 5.1a shows the \emph{same rate} is achievable via
+per-position sequential coding under the chain-rule conditional
+predictor of the linear code, provided the chain-rule predictor is
+$W$-bounded. For local linear codes (e.g., LDPC with bounded-degree
+parity-check structure), $W$ equals the maximum check-node radius and
+the chain-rule predictor is $W$-bounded by construction; for general
+linear codes the chain-rule predictor may be globally non-local and
+$W$-bounded recoding requires sub-block restructuring (recovering
+only sub-block-level joint structure, as in Remark 10.3a). Thus the
+random-access tax for the $\Theta(N)$ separation is the gap between
+the global chain-rule rate and the best $W$-bounded chain-rule
+rate, which is a property of the data class.
+
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
 coding).} \emph{Let $N$ be a block length, and let
 $(k_0, \ldots, k_{15})$ be the symbol counts with $\sum_v k_v = N$.
