@@ -84,11 +84,14 @@ only for Type-I (Theorem 4.2). Complexity results include NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3) and of
 a restricted normal-form dictionary-only case of Type-III-C (Theorem
 6.7), plus an APX-hardness transfer for the same restricted case
-with the explicit inapproximability constant
-$\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from Charikar et al.\
-(2005, Theorem 1) via the symbol-count bijection (Theorem 6.8);
-hardness of the unrestricted joint (model, dictionary, repair)
-problem and the analogous inapproximability for $E_{12}$ are open. Worked numerical examples are
+under the unbounded-alphabet variant with explicit inapproximability
+constant $\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from Charikar
+et al.\ (2005, Theorem 1) via the symbol-count bijection (Theorem
+6.8); the fixed-byte-alphabet case ($|\Sigma| = 256$ as in canonical
+RNR) requires a separate gap-preserving construction and is open.
+Hardness of the unrestricted joint (model, dictionary, repair)
+problem and the analogous inapproximability for $E_{12}$ are also
+open. Worked numerical examples are
 given for Type-I, Type-II, and Type-III-B; III-A and III-C are
 illustrated through their composition and dictionary-construction
 sections respectively. Two structural results identify the
@@ -356,13 +359,16 @@ This article makes the following contributions.
   NP-hardness of the restricted (constant-predictor, normal-form
   recursive dictionary, symbol-count objective) dictionary-learning
   problem (Theorem 6.7), and APX-hardness of the same restricted
-  case with explicit constant $\gamma_{\mathrm{SGP}} = 8569/8568$
-  inherited from Charikar et al.\ (2005, Theorem 1) via the
-  symbol-count bijection (Theorem 6.8). The 8569/8568 constant
-  derives from the Berman-Karpinski (1999) bound on
-  Vertex-Cover-3 inapproximability propagated through the
-  $15|V|+3|E|+k$ encoding overhead. We do not claim hardness of
-  the unrestricted joint problem; both are listed as open.
+  case under the \emph{unbounded-alphabet} variant with explicit
+  constant $\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from
+  Charikar et al.\ (2005, Theorem 1) via the symbol-count bijection
+  (Theorem 6.8). The 8569/8568 constant derives from the
+  Berman-Karpinski (1999) bound on Vertex-Cover-3 inapproximability
+  propagated through the $15|V|+3|E|+k$ encoding overhead. The
+  fixed-byte-alphabet case requires a fresh gap-preserving
+  construction and we do not claim a specific constant for it;
+  neither do we claim hardness of the unrestricted joint problem.
+  Both are listed as open.
 \item
   A no-universal-dominance result (Theorem 8.1) establishing the
   framework's claim as conditional, and a verification-discipline
@@ -1807,9 +1813,9 @@ A_s\bigl(|M_v \setminus S_v|\bigr)
 \right],
 \]
 \emph{with the remaining-universe correction of Theorem 5.3 applied
-when symbols are encoded sequentially. The general
-dependent-coordinate case is open; we give one positive partial
-result below for the independent-coordinate case, where top-$Q$ is
+when symbols are encoded sequentially. The general arbitrary-joint
+case is open; we give one positive partial result below for the
+permutation-like (conditional Bernoulli) case, where top-$Q$ is
 provably optimal.}
 
 \textbf{Lemma 5.7a (Top-$Q$ is optimal for permutation-like Type-II
@@ -1826,13 +1832,16 @@ the $s$ positions with the largest marginal probabilities
 $Q_v(i) = \Pr(i \in M_v)$, which equivalently are the $s$ positions
 with the largest $q_i$.}
 
-\emph{\textbf{Proof.}} The permutation-like distribution is the
-\emph{conditional Bernoulli design} of order $k_v$: it can be
-realized as $N$ independent Bernoullis with parameters $q_i$
-conditioned on $\sum_i \mathbf{1}[i \in M_v] = k_v$. Under this
-distribution, $\Pr(i \in M_v)$ is monotone in $q_i$ (the higher
-$q_i$, the higher the conditional inclusion probability), so the
-ordering of positions by $q_i$ matches the ordering by $Q_v(i)$.
+\emph{\textbf{Proof.}} The permutation-like distribution with weights
+$\Pr(M_v = T) \propto \prod_{i \in T} q_i$ is the \emph{conditional
+Bernoulli design} of order $k_v$: it can equivalently be realized as
+$N$ independent Bernoullis with parameters $p_i = q_i / (q_i + 1)$
+(odds parametrization, so that $p_i / (1 - p_i) = q_i$) conditioned
+on $\sum_i \mathbf{1}[i \in M_v] = k_v$. Under this distribution,
+$\Pr(i \in M_v)$ is monotone increasing in $q_i$ (the higher $q_i$,
+the higher both the unconditional inclusion probability $p_i$ and
+the conditional inclusion probability), so the ordering of
+positions by $q_i$ matches the ordering by $Q_v(i)$.
 
 Take any $S_v$ that differs from $S_v^\star$. Pick positions
 $i^\star \in S_v^\star \setminus S_v$ and $i \in S_v \setminus
@@ -2417,15 +2426,15 @@ bijection of Theorem 6.7. Two caveats apply:
 (i)~\emph{Alphabet caveat.} The Charikar et al.\ reduction uses an
 alphabet that grows linearly in the graph size (one terminal per
 vertex), so $\gamma_{\mathrm{SGP}} = 8569/8568$ applies to the
-unbounded-alphabet variant of Type-III-C. For the fixed-byte
+\emph{unbounded-alphabet} variant of Type-III-C. For the fixed-byte
 alphabet $|\Sigma| = 256$ of canonical RNR Type-III-C, encoding the
 graph terminals as length-$\lceil \log_{256} |V| \rceil$ byte
-strings adds a per-vertex multiplicative overhead in the grammar
-encoding; the inherited inapproximability constant on the
-fixed-byte case is at most $\gamma_{\mathrm{SGP}}$ (gap survives,
-just with a different algebraic value), and pinning down the exact
-byte-alphabet constant requires a fresh derivation that is left to
-follow-up work. (ii)~\emph{Unrestricted joint problem caveat.} The
+strings adds a $\Theta(\log |V|)$ multiplicative overhead in the
+grammar encoding. This overhead can dilute the constant
+inapproximability gap arbitrarily close to $1$ as $|V| \to \infty$,
+unless a separate gap-preserving construction is given. We do NOT
+establish a constant gap for the fixed-byte case; whether one
+exists is an open question, listed in §13.2. (ii)~\emph{Unrestricted joint problem caveat.} The
 APX-hardness of the unrestricted joint problem is left open for the
 same reason as in Theorem 6.7: the feasible set is strictly larger
 and the objective function differs, so neither inclusion nor a
@@ -4228,16 +4237,17 @@ the present paper.
 \item
   Optimal candidate-support threshold for semi-non-factorized
   Type-II --- partially resolved. Lemma 5.7a establishes that
-  top-$Q$ is provably optimal when the predictor's position
-  indicators $\mathbf{1}[i \in M_v]$ are mutually independent
-  (verified in
+  top-$Q$ is provably optimal under the permutation-like
+  (conditional Bernoulli) joint law of $M_v$, where atom weights
+  factorize as $\Pr(M_v = T) \propto \prod_{i \in T} q_i$ for
+  $T \in \binom{[N]}{k_v}$ (verified in
   \texttt{scripts/verify/lemma\_5\_7a\_independent\_top\_q.py}).
-  Corollary 5.7b notes the gap is exactly the multi-information
-  $\mathrm{TC}$ of the joint indicator law. For dependent joint
-  laws, top-$Q$ is provably suboptimal (Remark 5.7 counterexample
-  at $N=7, k=2, s=2$). A formal NP-hardness proof for the general
-  dependent case (likely via reduction from densest-$k$-subgraph)
-  and a polynomial-time approximation algorithm are both open.
+  For joint laws beyond permutation-like (e.g., Remark 5.7's
+  counterexample at $N=7, k=2, s=2$), top-$Q$ is provably
+  suboptimal. A formal NP-hardness proof for the general
+  non-permutation-like case (likely via reduction from
+  densest-$k$-subgraph) and a polynomial-time approximation
+  algorithm are both open.
   The arithmetic-coding benchmark under the same $Q$ is a
   separate, settled result and remains the comparison baseline.
 \item
