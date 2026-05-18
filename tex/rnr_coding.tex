@@ -242,13 +242,16 @@ RNR is not a replacement for any of these. It is a taxonomy and a set
 of constructions that, in our reading, naturally organize them ---
 though the mappings below are interpretive (not theorems) and are
 included to fix the vocabulary of later sections. Per-position
-arithmetic coding over a factorized predicted distribution is
-recovered as a special case of Type-I formally (see the reduction
-sketch in §4.5). PixelCNN++ over images is autoregressive over pixels
-conditioned on prior pixels (categorical or discretized-mixture
-likelihoods, depending on the head), and the relation to Type-II is
-analogy not equivalence: Type-II as defined in §3.2 is partition-based
-and does not subsume PixelCNN++'s pixel-wise softmax. Bits-back coding
+arithmetic coding over a factorized predicted distribution
+(NNCP-style direct arithmetic coding) is \emph{rate-equivalent} to
+the ideal Type-I class+payload coder under a matching predictive
+law, but is not literally a special case of the Type-I construction
+as defined here (§4.5 gives the precise relationship). PixelCNN++
+over images is autoregressive over pixels conditioned on prior
+pixels (categorical or discretized-mixture likelihoods, depending
+on the head), and the relation to Type-II is analogy not
+equivalence: Type-II as defined in §3.2 is partition-based and does
+not subsume PixelCNN++'s pixel-wise softmax. Bits-back coding
 on a continuous latent fits into Type-III-C as the limit where the
 discrete dictionary is replaced by a variational posterior, with
 exact cross-entropy plus KL accounting (Theorem 6.6). PAQ-style
@@ -2014,11 +2017,19 @@ decomposition of §3.3.
 \textbf{Theorem 6.6 (Bits-back integration into the RNR
 decomposition).} \emph{Let $z$ be a latent variable of a variational
 model with prior $P(z \mid Y)$, conditional $P(X \mid z, Y)$, and
-variational posterior $q(z \mid X, Y)$. \emph{Quantization
-convention for continuous latents:} when $z$ is continuous, fix a
-finite-precision discretization $\Delta$ of the latent space common
-to encoder and decoder (e.g., $b$-bit fixed-point per coordinate as
-used by Townsend-Bird-Barber's BB-ANS implementation), and read all
+variational posterior $q(z \mid X, Y)$. Assume the following
+support/regularity conditions: (a) the model marginal
+$P_X(x \mid Y) = \sum_z P(z \mid Y) P(x \mid z, Y) > 0$ for every
+$x$ in the support of the data distribution $D(\cdot \mid Y)$
+(otherwise $-\log_2 P_X(X \mid Y)$ is infinite with positive
+probability under $D$); (b) for almost every $X$ under $D$, the
+variational posterior $q(z \mid X, Y)$ is absolutely continuous
+with respect to the true posterior $P(z \mid X, Y)$ (otherwise the
+posterior KL is infinite). \emph{Quantization convention for
+continuous latents:} when $z$ is continuous, fix a finite-precision
+discretization $\Delta$ of the latent space common to encoder and
+decoder (e.g., $b$-bit fixed-point per coordinate as used by
+Townsend-Bird-Barber's BB-ANS implementation), and read all
 densities below as probability masses on the discretization cells.
 With this convention $-\log_2 P(z \mid Y)$ and $-\log_2 q(z \mid X,
 Y)$ are finite code lengths and the dictionary case is the trivial
@@ -2042,10 +2053,15 @@ the cross-entropy of the data under the model. The bits-back rate
 equals the conditional entropy $H_D(X \mid Y)$ only when the model
 marginal matches the data conditional ($D = P_X$) and $q$ equals the
 true posterior; under both conditions matching the Slepian-Wolf lower
-bound. Type-III-C with quantized continuous latents is therefore a strict
-generalization of Type-III-C with a discrete dictionary, with the
-dictionary case recovered when the discretization $\Delta$ identifies
-$q$ with a point mass on a single discrete token.}
+bound. At the rate level, Type-III-C with quantized continuous
+latents recovers Type-III-C with a discrete dictionary as the
+degenerate case where the discretization $\Delta$ identifies $q$
+with a point mass on a single discrete token --- the discrete case
+is one specific limit of bits-back ANS, not a strict subset of it
+in construction. (The dictionary's interval-cover/tokenization
+problem and the bits-back latent-variable problem are formally
+different constructions; Theorem 6.6 proves the rate identity, not
+a containment relation between the constructions themselves.)}
 
 \emph{\textbf{Proof.}} Under the quantization convention $\Delta$,
 the three-stream bits-back coder transmits
@@ -2789,12 +2805,15 @@ bounded by
 \leq W \cdot \log_2(1/\eta),
 \]
 where $C_i^{\mathrm{warm}}$ denotes the warm $W$-byte context the
-encoder would have used in a sync-point-free encoding. Per-byte
-cold cost is at most $\log_2(1/\eta)$ and warm cost is at least
-$0$, so each summand is at most $\log_2(1/\eta)$ and at least
-$-\log_2(1/\eta)$ (the latter when warm cost exceeds the cold-cost
-upper bound, which can happen on very unpredictable data); the
-trivial upper bound $W \cdot \log_2(1/\eta)$ is loose and does not
+encoder would have used in a sync-point-free encoding. Under the
+probability floor, both cold and warm per-byte costs lie in $[0,
+\log_2(1/\eta)]$, so each summand
+$\log_2(1/\eta) - (-\log_2 \Pr_M(X_i \mid C_i^{\mathrm{warm}}))$
+lies in $[0, \log_2(1/\eta)]$ (non-negative because warm cost is
+bounded by $\log_2(1/\eta)$ under the floor, eliminating the
+``warm exceeds cold ceiling'' case that would otherwise allow
+negative summands). The trivial upper bound
+$W \cdot \log_2(1/\eta)$ is loose and does not
 depend on the warm rate. Sharper upper bounds require additional
 assumptions: e.g., a uniform per-byte warm-context \emph{lower}
 bound $r^{\mathrm{warm}}_{\min}$ on $-\log_2 \Pr_M(X_i \mid
@@ -2814,11 +2833,20 @@ based on empirical observations of cold-vs-warm rates for small
 distilled transformers; they are not theorems and depend on the
 sharper assumption above.
 
-\textbf{Theorem 10.3 (Random access, output-sensitive).} \emph{Let
-$X$ be compressed under RNR with a $W$-bounded predictor $M$
-satisfying Theorem 10.1 and with sync points placed at uniformly
-spaced source positions $j K$ for $j = 0, 1, \dots$ (Definition
-10.3). Let $|X|$ denote the archive's uncompressed source length.
+\textbf{Theorem 10.3 (Random access, output-sensitive, for
+per-position sequential coding).} \emph{Let $X$ be compressed under
+RNR using a \emph{per-position sequential} coding mode (Type-I, or
+the per-byte sequential branches of Type-III-A; explicitly
+excluding modes whose repair-stream encoding spans the entire block
+as a single combinatorial object, such as Type-II's
+multinomial/partition enumerative rank coding without
+sub-block sync, see Remark 10.3a below) with a $W$-bounded
+predictor $M$ satisfying Theorem 10.1 and with sync points placed
+at uniformly spaced source positions $j K$ for $j = 0, 1, \dots$
+(Definition 10.3). Assume the entropy coder operates under a
+predictor probability floor $\eta > 0$ (Section 10.7), so each
+position consumes at most $\log_2(1/\eta) = O(1)$ repair-stream
+bits. Let $|X|$ denote the archive's uncompressed source length.
 Random access to $k$ consecutive bytes starting at any position
 $p \in [0, |X|)$ with $p + k \leq |X|$ (or, equivalently, requesting
 $k' = \min(k, |X| - p)$ bytes if $p + k$ would exceed $|X|$, as a
@@ -2827,8 +2855,9 @@ entry $\lfloor p/K \rfloor$, reading $O(\log L(R))$ bits to obtain
 the repair-stream bit offset of the sync point at byte position
 $P = K \lfloor p/K \rfloor$; (ii)~decoding of at most $K + k$
 positions of $R$, of which at most $K$ positions are warmup
-(discarded output); (iii)~$K + k$ predictor evaluations and
-entropy-coder updates. Total work is
+(discarded output); (iii)~$K + k$ predictor evaluations,
+entropy-coder updates, and $O((K+k) \cdot \log_2(1/\eta))$
+repair-stream bits read. Total work is
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$. (For non-uniform
 sync-point placement, each seek-index entry stores both a
 $\lceil \log_2 |X| \rceil$-bit source position and a
@@ -2876,10 +2905,35 @@ $[P, P+W)$ see fewer than $W$ bytes), which the encoder accommodates
 by encoding those positions with reduced-context predictions; this is
 exactly the cold-context cost analyzed before. Continue decoding
 until position $p + k'$; output bytes $[p, p+k')$. By Theorem 10.1,
-all predictor evaluations are deterministic and bit-identical to a
-full decoding from position 0, so the output matches the original
-$X$ on $[p, p+k')$. Total decoded positions: $p + k' - P \leq K + k$
-since $P > p - K$. \hfill$\blacksquare$
+all predictor evaluations are deterministic and bit-identical to
+the encoder's sync-pointed full decode (i.e., the encoding produced
+under the same sync-point structure starting from position 0 and
+resetting predictor/entropy-coder state at each $jK$), so the
+output matches the original $X$ on $[p, p+k')$. Total decoded
+positions: $p + k' - P \leq K + k$ since $P > p - K$.
+\hfill$\blacksquare$
+
+\textbf{Remark 10.3a (Type-II partition modes give only
+sub-block-granular random access).} Type-II's enumerative-rank
+coding encodes a whole-block partition (Theorems 5.2--5.3) as a
+single combinatorial rank, not as a per-position sequential repair
+stream. As stated, Theorem 10.3 does not apply to a Type-II archive
+that uses a single global rank for the full block. The standard
+workaround is to subdivide the block at sync-point boundaries into
+independently partition-coded sub-blocks of length $K$ each
+(recovering only the sub-block-level Type-II separation, as already
+noted in §10.7's ``Type-II semi-non-factorized coding'' trade-off
+bullet). Each sub-block is then a standalone Type-II rank, and
+random access has \emph{sub-block granularity}: locating the
+sub-block containing source position $p$ costs $O(\log L(R))$
+under uniform spacing as in Theorem 10.3, but decoding it costs
+$O(K \cdot \mathrm{unrank}(K))$ (the cost of unranking the
+combinatorial object on $K$ positions) and produces all $K$ bytes
+of the sub-block rather than $k$ bytes around $p$. Byte-granular
+access within the sub-block requires decoding the whole sub-block,
+not just the prefix up to $p+k$ as in Theorem 10.3's per-position
+sequential decode. This is a strictly weaker random-access
+property than the per-position sequential case.
 
 Theorem 10.3 establishes that random access in RNR archives runs in
 time with only polylogarithmic dependence on archive size (a
@@ -2897,9 +2951,11 @@ speedup is roughly 16{,}000-fold and the average is roughly
 8{,}000-fold.
 
 \textbf{Theorem 10.4 (Random access for non-$W$-bounded predictors).}
-\emph{For a non-$W$-bounded predictor (RNN, LSTM, state-space model),
-the predictor-reset condition (a) of Definition 10.3 cannot be
-satisfied by cold-resetting context alone: the predictor's
+\emph{Under the same scope as Theorem 10.3 (per-position sequential
+RNR coding modes; whole-block Type-II partition-rank modes are out
+of scope), for a non-$W$-bounded predictor (RNN, LSTM, state-space
+model), the predictor-reset condition (a) of Definition 10.3 cannot
+be satisfied by cold-resetting context alone: the predictor's
 recurrent hidden state depends on arbitrarily long history. Replace
 condition (a) by an \emph{augmented sync point}: instead of
 resetting the predictor's hidden state, store its full state at
@@ -2989,9 +3045,18 @@ Three trade-offs govern random-access design in RNR archives.
   block into independent $K$-length subblocks, recovering only
   $\Theta(K)$ separation per subblock. For $K = 64$ KiB and $N = 1$
   GiB, the per-subblock advantage is preserved but the cross-subblock
-  joint structure is forfeited. Type-I and Type-III-B are not
-  affected by this trade-off because their constructions are local
-  (per-position or per-tile within sync-bounded windows). Type-III-C
+  joint structure is forfeited. Type-I is not affected by this
+  trade-off because its construction is per-position sequential
+  (Theorem 10.3 applies directly). Type-III-B \emph{is} affected
+  when it uses the direct or hierarchical partition coding modes of
+  §6.3 (which are Type-II at the 256-symbol alphabet); under those
+  modes Type-III-B requires the same sub-block sync structure as
+  Type-II and inherits the sub-block-granular random-access
+  property of Remark 10.3a. A per-byte sequential Type-III-B coder
+  --- one that codes each byte's high-then-low nibble at its own
+  position using the joint $Q_{h,l}(i)$ --- does fall under Theorem
+  10.3's per-position sequential scope and gets byte-granular
+  random access. Type-III-C
   is affected when dictionary tokens span longer fragments or
   grammar expansions. We restrict attention to the standard case
   where the top-level parse is a flat non-overlapping cover of $X$
@@ -3144,12 +3209,15 @@ prohibitive. RNR removes this obstruction. The two theorems below
 formalize the application.
 
 \textbf{Theorem 10.5 (Block-device interface, parameter-conditional).}
-\emph{Let $X$ be compressed under RNR with a $W$-bounded predictor
-$M$ satisfying Theorem 10.1 and sync points placed every $K$
-positions; let $|X|$ denote the uncompressed source length. A
-block-device driver that maps logical-block-address-indexed read
-requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR random-access
-calls can serve any read request as follows: let $p = \mathcal{L}
+\emph{Under the same scope as Theorem 10.3 (per-position sequential
+RNR coding modes; Type-II rank-coded modes give only
+sub-block-granular access per Remark 10.3a and require a separate
+unranking-cost analysis), let $X$ be compressed under RNR with a
+$W$-bounded predictor $M$ satisfying Theorem 10.1 and sync points
+placed every $K$ positions; let $|X|$ denote the uncompressed
+source length. A block-device driver that maps logical-block-
+address-indexed read requests (LBA $\mathcal{L}$, length $k$ bytes)
+to RNR random-access calls can serve any read request as follows: let $p = \mathcal{L}
 \cdot \text{sector\_size}$. If $p \geq |X|$, return an empty read
 ($0$ bytes) and the standard end-of-device indication. Otherwise
 $p \in [0, |X|)$ and the driver returns $k' = \min(k, |X| - p)
@@ -3591,13 +3659,18 @@ positional partition and byte‑tensor representations.
 \textbf{12.5 Neural lossless compression}
 
 Bellard's NNCP (2019) is the closest prior work to Type‑I: a byte‑level
-transformer drives an arithmetic coder. PixelRNN (van den Oord et al.,
+transformer drives an arithmetic coder, and the NNCP rate is
+rate-equivalent to the ideal Type-I class+payload bound under a
+matching predictive law (§4.5). PixelRNN (van den Oord et al.,
 ICML 2016) and the PixelCNN family --- Conditional PixelCNN (van den
 Oord et al., NeurIPS 2016), PixelCNN++ (Salimans et al. 2017), and
-PixelSNAIL (Chen et al. 2018) --- are factorized autoregressive image
-models that can be viewed as Type‑II coders under a factorized regime;
-PixelCNN++ uses discretized logistic mixtures rather than raw
-categoricals but the structural reduction is the same. Integer Discrete
+PixelSNAIL (Chen et al. 2018) --- are factorized autoregressive
+image models; they are \emph{analogous} to Type-II under a
+factorized regime in that both factor a joint distribution into
+per-position predictions, but Type-II as defined here is
+partition-based and does not literally subsume their pixel-wise
+softmax (§1.2). PixelCNN++ uses discretized logistic mixtures
+rather than raw categoricals. Integer Discrete
 Flows (Hoogeboom et al. 2019) and IDF++ (van den Berg et al. 2021)
 construct invertible discrete representations whose factorized form is
 closely related to Type‑III‑B. L3C (Mentzer et al. 2019) and LC-FDNet
@@ -3734,9 +3807,16 @@ point to the relevant theorems.
   sync-point spacing $K$, read window $k$, and $\log L(R)$ are held
   fixed or grow at most polylogarithmically in $|X|$; outside that
   regime (e.g., $K = \Theta(|X|)$ or $k = \Theta(|X|)$) the cost is
-  $\Theta(|X| \cdot \mathrm{cost}(M))$. This is the framework's deployment-grade
-  distinguishing feature relative to other neural compressors,
-  which lack random-access support entirely.
+  $\Theta(|X| \cdot \mathrm{cost}(M))$. This is the framework's
+  deployment-grade distinguishing feature relative to other neural
+  compressors: autoregressive byte/pixel models (NNCP, PixelCNN++,
+  PixelSNAIL) as currently designed do not insert sync points or
+  maintain a seek index and so do not support random access in
+  their published form (Theorem 10.3 in principle gives them
+  random access if their encoders were modified to do so), while
+  block-codec schemes (Bit-Swap, IDF++, HiLLoC) provide only
+  block-granular access (not byte-granular) due to their
+  block-coupled latent/ANS state.
 \item
   Block-device and read-only filesystem deployment with
   hardware-target portability --- resolved by Theorem 10.5
