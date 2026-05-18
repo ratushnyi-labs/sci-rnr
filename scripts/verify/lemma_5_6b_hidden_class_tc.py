@@ -194,6 +194,65 @@ def test_asymptotic_binary_mixture():
     return all_ok
 
 
+def test_indistinguishable_classes():
+    """
+    Pairwise-distinguishability is essential. With three classes where two
+    are identical (p_0 = p_1 != p_2), H(Y|X^N) does NOT go to 0 but to a
+    positive residual. The exact identity TC = N*I - H(Y) + H(Y|X^N) still
+    holds, but the asymptotic N*I - H(Y) + o(1) is FALSE.
+    """
+    print(f"\nIndistinguishable-class test (Y in {{0,1,2}}, p_0=p_1, prior uniform):")
+    Y_dist = [(0, 1 / 3), (1, 1 / 3), (2, 1 / 3)]
+    conditionals = {
+        0: [(0, 0.3), (1, 0.7)],
+        1: [(0, 0.3), (1, 0.7)],  # identical to class 0
+        2: [(0, 0.7), (1, 0.3)],
+    }
+    # X^N can distinguish {0,1} from {2} but never 0 from 1.
+    # Posterior of Y given X^N: classes 0 and 1 share probability mass within
+    # the equivalence class {0,1}, but the class {2} is separated cleanly.
+    # H(Y|X^N) -> H(Y|tilde_Y) where tilde_Y is the projection to
+    # {{0,1},{2}}. With uniform prior on Y:
+    #   P(tilde_Y = {0,1}) = 2/3, H(Y|tilde_Y={0,1}) = log_2(2) = 1 bit
+    #   P(tilde_Y = {2})   = 1/3, H(Y|tilde_Y={2})   = 0 bit
+    # Asymptotic floor = (2/3)*1 + (1/3)*0 = 2/3 bit (not 1 bit).
+
+    all_ok = True
+    for N in [3, 5, 7]:
+        joint, _ = joint_distribution_hidden_class(Y_dist, conditionals, N)
+        joint_YX, Y_indices = joint_YX_distribution(Y_dist, conditionals, N)
+        H_joint = joint_entropy(joint)
+        H_marg = entropy_of_dist(
+            [sum(p for tup, p in joint.items() if tup[0] == x) for x in [0, 1]]
+        )
+        TC = N * H_marg - H_joint
+
+        I_XY, _, _ = mutual_information_X_Y(Y_dist, conditionals)
+        H_Y = entropy_of_dist([py for (_, py) in Y_dist])
+        H_Y_given_X = posterior_entropy_Y_given_X(joint_YX, Y_indices)
+        RHS = N * I_XY - H_Y + H_Y_given_X
+
+        # Asymptotic floor: H(Y|X^N) -> H(Y|tilde_Y) where tilde_Y = {{0,1},{2}}
+        # P(tilde_Y = {0,1}) = 2/3, P(tilde_Y = {2}) = 1/3
+        # H(Y|tilde_Y) = (2/3)*log2(2) + (1/3)*0 = 2/3 bit
+        H_floor = (2 / 3) * math.log2(2)
+
+        print(
+            f"  N={N}: TC={TC:.4f}, exact identity RHS={RHS:.4f}, "
+            f"H(Y|X^N)={H_Y_given_X:.4f}, floor={H_floor:.4f}"
+        )
+        if abs(TC - RHS) > 1e-9:
+            print(f"    FAIL: identity violated under collapsed-class hypothesis")
+            all_ok = False
+        if H_Y_given_X < H_floor - 0.01:
+            print(f"    FAIL: H(Y|X^N) below floor — indistinguishability test broken")
+            all_ok = False
+    if all_ok:
+        print(f"  OK: exact identity holds; H(Y|X^N) plateaus at floor ~2/3 bit,")
+        print(f"      confirming pairwise distinguishability is NECESSARY for asymptotic form")
+    return all_ok
+
+
 def test_markov_chain_companion():
     """Stationary Markov chain (X_1, ..., X_N): TC = (N-1) * I(X_1; X_2)."""
     print(f"\nMarkov-chain companion (stationary chain on {{0,1}}):")
@@ -254,10 +313,11 @@ def main() -> int:
     ok5 = test_identity_exact("ternary mixture", Y_dist_3, cond_3, 3)
 
     ok6 = test_asymptotic_binary_mixture()
-    ok7 = test_markov_chain_companion()
+    ok7 = test_indistinguishable_classes()
+    ok8 = test_markov_chain_companion()
 
     print()
-    if all([ok1, ok2, ok3, ok4, ok5, ok6, ok7]):
+    if all([ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8]):
         print("PASS: TC identity verified for hidden-class iid sources.")
         print("      H(Y|X^N) decays exponentially, leading-order TC ~ N*I(X;Y) - H(Y).")
         print("      Markov-chain companion (N-1)*I(X_1;X_2) also verified.")

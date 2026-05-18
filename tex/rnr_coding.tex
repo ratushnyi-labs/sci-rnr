@@ -1777,21 +1777,29 @@ columns of varying $\alpha_j$, with TC additive across columns.
 sources).} \emph{Let $Y$ be a discrete random variable on a finite
 alphabet $\mathcal{Y}$ with $|\mathcal{Y}| < \infty$, and let
 $X_1, \ldots, X_N$ be conditionally independent and identically
-distributed given $Y$ with conditional law
+distributed given $Y$ with each $X_i$ taking values in a finite
+observation alphabet $\mathcal{X}$ under conditional law
 $\Pr(X_i = x \mid Y = y) = p_y(x)$ for each $i$. Then}
 \[
 \mathrm{TC}(D_N) \;=\; N \cdot I(X_1; Y) - H(Y) + H(Y \mid X_1, \ldots, X_N).
 \tag{5.6}
 \]
-\emph{In particular, if $\{p_y : y \in \mathcal{Y}\}$ are mutually
+\emph{In particular, if the conditional laws are pairwise
 distinguishable in the sense that
-$\sup_{y \neq y'} D_{\mathrm{TV}}(p_y, p_{y'}) > 0$, then
+$\min_{y \neq y'} D_{\mathrm{TV}}(p_y, p_{y'}) \geq \delta > 0$, then
 $H(Y \mid X_1, \ldots, X_N) \to 0$ exponentially in $N$, and}
 \[
 \mathrm{TC}(D_N) = N \cdot I(X_1; Y) - H(Y) + o(1) = \Theta(N)
 \]
-\emph{whenever $I(X_1; Y) > 0$ (equivalently, whenever $Y$ is not
-independent of any single $X_i$).}
+\emph{whenever $I(X_1; Y) > 0$ (equivalently, whenever the joint
+$(Y, X_i)$ is non-product, which by conditional iid is equivalent
+for every single $i$). The pairwise hypothesis is essential:
+collapsing two classes (say $p_y = p_{y'}$ for some $y \neq y'$)
+makes them indistinguishable to any function of $X^N$, leaving
+$H(Y \mid X^N) \to H(Y \mid \tilde Y)$ where $\tilde Y$ is the
+projection of $Y$ onto its equivalence classes under $p_\cdot$;
+the asymptotic identity then degrades to
+$\mathrm{TC}(D_N) = N \cdot I(X_1; Y) - H(Y) + H(Y \mid \tilde Y) + o(1)$.}
 
 \emph{\textbf{Proof.}} The marginal of any single position is the
 mixture
@@ -1831,17 +1839,24 @@ Combining with the sum of marginals:
 \]
 
 The asymptotic behavior of the posterior $H(Y \mid X_1, \ldots, X_N)$
-follows from a standard Chernoff-type estimate. If
-$D_{\mathrm{TV}}(p_y, p_{y'}) \geq \delta > 0$ for all
-$y \neq y'$, then the Bayes-optimal classifier for $Y$ given $X^N$
-errs with probability $O(\exp(-c \delta^2 N))$ for some
-$c > 0$ depending on the prior $\Pr(Y)$ (Bretagnolle--Huber 1979,
-LeCam 1973; see also Tsybakov \emph{Introduction to Nonparametric
-Estimation} 2009, Chapter 2). Fano's inequality then bounds
+follows from a standard Chernoff-Hellinger bound for multi-hypothesis
+testing. Under the pairwise separation hypothesis
+$\min_{y \neq y'} D_{\mathrm{TV}}(p_y, p_{y'}) \geq \delta > 0$, the
+Bayes-optimal classifier for $Y$ given $X^N$ errs with probability
+$P_e \leq O(\exp(-c \delta^2 N))$ for some constant
+$c > 0$ depending on the prior $\Pr(Y)$ and the alphabet size
+$|\mathcal{Y}|$; this is the multi-hypothesis Chernoff bound (the
+two-hypothesis case is Cover \& Thomas \emph{Elements of Information
+Theory} 2nd ed., 2006, Theorem 11.9.1; the multi-hypothesis
+extension follows by a union bound over the $\binom{|\mathcal{Y}|}{2}$
+pairwise tests, each at error $O(e^{-c \delta^2 N})$ by Theorem
+11.9.1. The two-hypothesis testing inequalities of Bretagnolle--Huber
+1979 and LeCam 1973 provide the underlying TV-to-error-probability
+estimate). Fano's inequality then gives
 $H(Y \mid X^N) \leq h_2(P_e) + P_e \cdot \log_2(|\mathcal{Y}| - 1)
-\to 0$ as $N \to \infty$ where $P_e$ is the error probability.
+= O(N \cdot e^{-c\delta^2 N}) \to 0$ as $N \to \infty$.
 Hence the leading-order TC is $N \cdot I(X_1; Y) - H(Y)$ up to
-$o(1)$ corrections.
+$o(1)$ (in fact exponentially small) corrections.
 \hfill$\blacksquare$
 
 \emph{Examples.}
