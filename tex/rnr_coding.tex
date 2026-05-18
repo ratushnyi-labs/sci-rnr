@@ -1160,53 +1160,74 @@ constant-factor guarantee in the varying-parameter regime; on the
 fixed Code12 instance they are evaluated empirically against the
 constant-size oracle of Remark 4.3a.
 
-\textbf{Remark 4.3c (Wagner-Corneil reduction gives only inverse-linear
-inapproximability).} \emph{The Theorem 4.3 reduction does not yield
-constant-gap inapproximability of $E_{12}$, only an
-$\Omega(1/n)$-additive (equivalently $1 - O(1/n)$-multiplicative)
-inapproximability gap that vanishes as $n \to \infty$.}
-
-\emph{Proof.} Recall the Theorem 4.3 reduction: given a tree
-$T = (V(T), E(T))$ with $n = |V(T)|$ and maximum degree $\Delta$,
-the constructed $E_{12}$ instance has threshold $B = 2(n-1)/\Delta$,
-and the YES case (tree embeds in $Q_m$) has $C_F(E) = B$ exactly,
-while any NO case must have $C_F(E) \geq B + 2/\Delta$ (since
-Hamming distances are integers $\geq 1$ for injective labelings,
-and any non-embedded tree edge contributes $\geq 2/\Delta$). The
-relative inapproximability ratio is therefore
+\textbf{Remark 4.3c (Wagner-Corneil reduction has an inverse-linear
+inapproximability gap, attained on a concrete star family).}
+\emph{For non-trivial tree instances $(T, m)$ with
+$n = |V(T)| \geq 3$ and $\Delta = \max_v \deg_T(v) \geq 1$, the
+Theorem 4.3 reduction yields the relative inapproximability ratio}
 \[
-\frac{\text{OPT}_{\mathrm{NO}}}{\text{OPT}_{\mathrm{YES}}}
+\frac{\mathrm{OPT}_{\mathrm{NO}}}{\mathrm{OPT}_{\mathrm{YES}}} \geq 1 + \frac{1}{n-1},
+\]
+\emph{and there exists a NO-instance family (degree-$(n-1)$ stars
+$K_{1, n-1}$ with $m = \lceil \log_2 n \rceil$ when
+$\lceil \log_2 n \rceil = n - 1$, i.e.\ $n = 2, 4$) on which the
+optimal $C_F(E)$ achieves the upper-side bound $B + 2/\Delta$
+exactly. The varying-parameter learned-code labeling problem is
+therefore NP-hard to approximate within multiplicative ratio
+$1 + 1/(n - 1)$, an inverse-linear factor that vanishes as
+$n \to \infty$.}
+
+\emph{Proof.} The lower bound $\mathrm{OPT}_{\mathrm{NO}} \geq B +
+2/\Delta$: in the Theorem 4.3 reduction the threshold is $B = 2(n-1)/\Delta$;
+the YES case (tree embeds in $Q_m$) has $C_F(E) = B$ exactly; in any
+NO case Hamming distances on tree edges are positive integers and at
+least one edge has $d_H \geq 2$ (otherwise the labeling would be a
+hypercube subgraph embedding), contributing an extra $2/\Delta$ to
+$C_F$. The ratio is therefore
+\[
+\frac{\mathrm{OPT}_{\mathrm{NO}}}{\mathrm{OPT}_{\mathrm{YES}}}
 \geq \frac{B + 2/\Delta}{B}
 = 1 + \frac{2/\Delta}{2(n-1)/\Delta}
 = 1 + \frac{1}{n-1}.
 \]
-Equivalently, $E_{12}$ is NP-hard to approximate within factor
-$(n-1)/n = 1 - 1/n$. As $n \to \infty$ this gap vanishes,
-showing that any reduction yielding \emph{constant}-gap
-$(1 + \varepsilon)$-inapproximability with $\varepsilon$ independent
-of the instance size $n$ must use additional structure beyond the
-Wagner-Corneil tree-embedding reduction. \hfill$\blacksquare$
+
+The tight NO-family witness: take $T = K_{1, n-1}$ (star with one
+center and $n-1$ leaves) at $n = 4$, $\Delta = 3$, $m = 2$. Here
+$|V(T)| = 4 = 2^m$ so an injective labeling exists, but $K_{1,3}$
+does not embed in $Q_2$ at $d_H = 1$ on every edge (only $2 = m$
+of the $3$ leaves can be at distance $1$ from a fixed center; the
+third must be at distance $\geq 2$). Direct computation:
+$\mathrm{OPT} = (2/3) \cdot (1 + 1 + 2) = 8/3$, and
+$B = 2 \cdot 3 / 3 = 2$, giving ratio $4/3 = 1 + 1/3 = 1 + 1/(n-1)$
+exactly (verified in
+\texttt{scripts/verify/remark\_4\_3c\_wagner\_corneil\_gap.py}). For
+$n = 2$ and $n = 3$ the bound is trivial or has $\Delta = 1$; for
+$n \geq 5$ the bound holds but is no longer tight on stars (some NO
+instances have a strictly larger gap). As $n \to \infty$ the gap
+ratio $1 + 1/(n-1)$ tends to $1$, so no
+\emph{constant}-gap inapproximability is obtained from the
+Theorem 4.3 reduction alone. \hfill$\blacksquare$
 
 \emph{Implications for OP4.} A constant-gap inapproximability for
-$E_{12}$ requires \emph{gap amplification} beyond what Theorem 4.3
-provides. The three research paths sketched in §13.2 are precisely
-the three known mechanisms for such amplification in linear-code /
-lattice / hypercube geometries: (a) PCP-style reduction from
-APX-hard Label Cover via the Arora-Babai-Stern-Sweedyk (1997)
-Nearest Codeword Problem framework; (b) bounded-distance decoding
-hardness (Dumer-Micciancio-Sudan 2003), which already operates at
-constant gap; (c) Closest Vector Problem hardness (Khot 2005)
-specialized to $\mathbb{F}_2^{12}$. The Wagner-Corneil reduction is
-not on this list because its core source problem
-(tree-to-hypercube subgraph isomorphism) has no known constant-gap
-inapproximability, so it cannot serve as a starting point. Closing
-OP4 therefore requires reducing from a different APX-hard source
-problem; gap-preserving reduction from any of NCP / BDD / CVP into
-the byte-alphabet $E_{12}$ geometry remains the open question.
+$E_{12}$ requires \emph{gap amplification} beyond the
+inverse-linear ratio of Theorem 4.3. The three research paths
+sketched in §13.2 are studied known mechanisms for such
+amplification in linear-code / lattice / hypercube geometries:
+(a) PCP-style reduction from APX-hard Label Cover via the
+Arora-Babai-Stern-Sweedyk (1997) Nearest Codeword Problem framework;
+(b) bounded-distance decoding hardness (Dumer-Micciancio-Sudan
+2003); (c) Closest Vector Problem hardness (Khot 2005) specialized
+to $\mathbb{F}_2^{12}$. Wagner-Corneil-based amplification via
+parallel/product repetition is also a logically valid path but the
+required composition with PCP-style verifiers does not appear in the
+literature for this source problem; if achievable, it would give
+constant-gap inapproximability directly. Closing OP4 in any of
+these directions remains research-scale open.
 
-The paper makes no inapproximability claim for $E_{12}$ beyond
-Theorem 4.3 + Remark 4.3c; a sound constant-gap reduction into the
-Hamming-restricted geometry is left as an open problem.
+The paper makes no inapproximability claim for the varying-parameter
+learned-code labeling problem beyond Theorem 4.3 + Remark 4.3c
+(inverse-linear gap of $1 + 1/(n-1)$); a sound constant-gap reduction
+into the Hamming-restricted geometry is left as an open problem.
 
 \textbf{4.7 Worked numerical example}
 

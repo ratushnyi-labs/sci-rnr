@@ -25,8 +25,10 @@ This script:
 4. Reports the relative gap (C_F(E_no_embed) / C_F(E_yes)) and confirms
    it approaches 1 as n grows
 
-PASS = relative gap matches 1 + 1/(n-1) theory at each n, decreases
-toward 1 as n grows.
+PASS = (a) the K_{1,3}, m=2 instance achieves the tight ratio 4/3 =
+1 + 1/(n-1) exactly; (b) the lower bound OPT_NO >= B + 2/Delta holds
+on all NO instances tested; (c) the asymptotic decay 1 + 1/(n-1) -> 1
+as n grows is demonstrated numerically.
 """
 
 import itertools
@@ -107,60 +109,74 @@ def test_star_n5_m2_no_embedding():
     return False
 
 
-def test_gap_scaling():
-    """Verify the (B + 2/Delta) / B = 1 + 1/(n-1) gap formula numerically.
+def test_tight_star_K13_m2():
+    """K_{1,3} (4-vertex star) with m=2: tight NO instance attaining
+    ratio = 4/3 = 1 + 1/(n-1) exactly.
 
-    For a tree that requires d_H >= 2 on at least one edge (when Q_m is
-    too small), the optimal C_F satisfies B + 2/Delta <= OPT.
+    Center has 3 leaves; in Q_2 (4 codewords), the center's 3 codeword
+    neighbors (distance 1) are exactly the 3 vertices adjacent to center
+    in the hypercube. The 4th codeword is at distance 2 from center.
+    So one leaf must be placed at distance 2 — exactly one extra unit.
     """
-    print("\nTest 3: Gap-scaling verification — predicted gap = 1 + 1/(n-1)")
-    print("  (Brute force on small star trees that need at least one d_H >= 2 edge)")
+    print("\nTest 3a: K_{1,3} with m=2 — tight ratio 4/3 = 1 + 1/(n-1)")
+    n, m = 4, 2
+    Delta = n - 1  # = 3
+    edges = make_star_tree(n)
+    B_theoretical = 2 * (n - 1) / Delta  # = 2
+    lab, opt = brute_force_optimal_labeling(list(range(n)), edges, m, Delta)
+    gap_theory = 1 + 1.0 / (n - 1)  # = 4/3
+    ratio = opt / B_theoretical
+    print(f"  n={n}, m={m}, Delta={Delta}: B={B_theoretical:.4f}, OPT={opt:.6f}")
+    print(f"  Expected ratio = 4/3 = {gap_theory:.6f}; observed = {ratio:.6f}")
+    if abs(ratio - gap_theory) > 1e-9:
+        print(f"    FAIL: ratio should equal 1 + 1/(n-1) exactly")
+        return False
+    print(f"    OK: tight gap attained at K_{{1,3}}, m=2")
+    return True
+
+
+def test_gap_lower_bound_holds():
+    """Verify the (B + 2/Delta) / B = 1 + 1/(n-1) is always a LOWER BOUND
+    on the NO-instance ratio across small stars."""
+    print("\nTest 3b: Lower-bound verification across small stars")
 
     all_ok = True
     for n in [4, 5, 6]:
-        # Star tree on n vertices, m = ceil(log2(n)) so we have JUST enough codewords
-        # but not enough for star to embed at d_H = 1 everywhere
         m = math.ceil(math.log2(n))
-        Delta = n - 1  # center degree
+        Delta = n - 1
         edges = make_star_tree(n)
-        B_theoretical = 2 * (n - 1) / Delta  # = 2
+        B_theoretical = 2 * (n - 1) / Delta
         lab, opt = brute_force_optimal_labeling(list(range(n)), edges, m, Delta)
-
-        # Star K_{1,n-1} embeds into Q_m iff m >= n-1 (each leaf at distinct
-        # codeword adjacent to center). When n-1 > m, star does NOT embed.
         embeds = (n - 1) <= m
-
         gap_theory = 1 + 1.0 / (n - 1)
         ratio = opt / B_theoretical if B_theoretical > 0 else 0
         print(
             f"  n={n}, m={m}, Delta={Delta}: B={B_theoretical:.4f}, OPT={opt:.4f}, "
-            f"ratio={ratio:.4f}, predicted-gap-if-NO={gap_theory:.4f}, embeds={embeds}"
+            f"ratio={ratio:.4f}, lower-bound={gap_theory:.4f}, embeds={embeds}"
         )
         if embeds:
-            # YES: ratio should be 1
             if abs(ratio - 1.0) > 1e-9:
                 print(f"    FAIL: should embed at d_H=1")
                 all_ok = False
         else:
-            # NO: ratio should be >= 1 + 1/(n-1)
             if ratio < gap_theory - 1e-9:
-                print(f"    FAIL: NO case should give ratio >= {gap_theory:.4f}")
+                print(f"    FAIL: NO case ratio should be >= 1 + 1/(n-1)")
                 all_ok = False
             else:
-                print(f"    OK: NO case ratio {ratio:.4f} >= predicted {gap_theory:.4f}")
+                print(f"    OK: ratio {ratio:.4f} >= lower bound {gap_theory:.4f}")
+                if ratio > gap_theory + 1e-6:
+                    print(f"        (strictly greater: this NO instance is not tight to lower bound)")
     return all_ok
 
 
 def test_asymptotic_gap_decay():
     """Show that 1 + 1/(n-1) -> 1 as n grows. This is the core observation
-    of Remark 4.3c."""
+    of Remark 4.3c: the inapproximability gap (on the minimization side,
+    i.e. ratio OPT_NO/OPT_YES >= 1) vanishes to 1."""
     print("\nTest 4: Asymptotic gap decay 1 + 1/(n-1) -> 1")
     for n in [10, 100, 1000, 10000]:
         gap = 1 + 1.0 / (n - 1)
-        rel = 1 - 1.0 / n  # equivalent statement
-        print(
-            f"  n={n}: gap = 1 + 1/(n-1) = {gap:.6f}, equivalently {rel:.6f}-multiplicative"
-        )
+        print(f"  n={n}: gap = 1 + 1/(n-1) = {gap:.6f}")
     print("  -> The gap vanishes; Wagner-Corneil gives no constant-gap inapproximability.")
     return True
 
@@ -170,14 +186,16 @@ def main() -> int:
     print("=" * 70)
     ok1 = test_path_embeds_constant_gap()
     ok2 = test_star_n5_m2_no_embedding()
-    ok3 = test_gap_scaling()
+    ok3a = test_tight_star_K13_m2()
+    ok3b = test_gap_lower_bound_holds()
     ok4 = test_asymptotic_gap_decay()
 
     print()
-    if all([ok1, ok2, ok3, ok4]):
+    if all([ok1, ok2, ok3a, ok3b, ok4]):
         print("PASS: Remark 4.3c verified.")
-        print("      Wagner-Corneil reduction gives only (1 + 1/(n-1)) gap")
-        print("      (equivalently, NP-hard to approximate within (1 - 1/n)).")
+        print("      Wagner-Corneil reduction gives only (1 + 1/(n-1))-")
+        print("      multiplicative inapproximability gap on the minimization side")
+        print("      (tight at K_{1,3} with m=2, ratio 4/3 exactly).")
         print("      The gap vanishes asymptotically; constant-gap inapproximability")
         print("      of E_12 requires a different reduction.")
         return 0
