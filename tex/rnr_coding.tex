@@ -3392,90 +3392,68 @@ correct partial result: bit-cost APX-hardness ratio approaches
 $\gamma_{\mathrm{SGP}}$ asymptotically (from above) within the Charikar
 grammar class.
 
-\textbf{Lemma 6.8b (Asymptotic bit-cost APX-hardness within Charikar
-normal form).} \emph{Let $\mathcal{G}_{\mathrm{Char}}(H)$ denote the
-class of grammars produced by Charikar's reduction on a
-bounded-degree-3 graph $H = (V, E)$: every $G \in
-\mathcal{G}_{\mathrm{Char}}(H)$ encodes a vertex cover
-$\sigma \subseteq V$ with symbol count
-$L_{\mathrm{sym}}(G) = 15|V| + 3|E| + |\sigma|$ and nonterminal count
-$K(G) = K_0(H) + \alpha(H) \cdot |\sigma|$, where $K_0(H) \geq 0$ and
-$\alpha(H) \geq 0$ are structural constants of the reduction
-(specifically, $K_0$ accounts for the rules not tied to the cover
-choice and $\alpha$ counts cover-dependent optional rules per
-selected vertex). Within this class, the bit-cost APX-hardness ratio
-satisfies}
+\textbf{Lemma 6.8b (Bit-cost APX-hardness within Charikar normal form
+on Berman-Karpinski-hard instances).} \emph{Restrict to Charikar
+reduction instances $H = (V, E)$ at the Berman-Karpinski-hard extremum:
+$|E| \leq (3/2)|V|$ and $k_{\mathrm{OPT}} \geq |V|/3$, where
+Berman-Karpinski (1999) NP-hardness of approximating Vertex-Cover-3
+within factor $145/144$ applies. Let $\mathcal{G}_{\mathrm{Char}}(H)$
+denote the class of grammars produced by Charikar's reduction on
+such $H$, every $G \in \mathcal{G}_{\mathrm{Char}}(H)$ encoding a
+vertex cover $\sigma \subseteq V$ with}
+\[
+L_{\mathrm{sym}}(G) = 15|V| + 3|E| + |\sigma|, \quad
+K(G) = K_0(H) + \alpha(H) \cdot |\sigma|,
+\]
+\emph{where $K_0(H) \geq 0$ and $\alpha(H) \geq 0$ are structural
+constants of the reduction. Within this class on BK-hard instances,
+the bit-cost APX-hardness ratio satisfies}
 \[
 \gamma^{\mathrm{bit}}_{\mathrm{Char}}(H)
-\;\geq\; \gamma_{\mathrm{SGP}} \cdot
-\frac{\lceil \log_2(|\Sigma| + K_0(H) + \alpha(H) \cdot k_{\mathrm{NO}}) \rceil}{\lceil \log_2(|\Sigma| + K_0(H) + \alpha(H) \cdot k_{\mathrm{OPT}}) \rceil}
+\;\geq\; \gamma_{\mathrm{SGP}} \cdot \frac{\lceil \log_2(|\Sigma|+K_{\mathrm{NO}}) \rceil}{\lceil \log_2(|\Sigma|+K_{\mathrm{YES}}) \rceil}
 \;\geq\; \gamma_{\mathrm{SGP}} \;=\; \frac{8569}{8568},
 \]
-\emph{where $k_{\mathrm{OPT}}$ is the optimal vertex cover size and
-$k_{\mathrm{NO}} \geq (145/144) \cdot k_{\mathrm{OPT}}$ is the
-Berman-Karpinski-inapproximability NO-instance lower bound. As
-$|V| + |E| \to \infty$ (with $K_0, \alpha$ scaling polynomially and
-$\alpha$ bounded), the log-ratio factor converges to $1$ at rate
-$O(1/\log(|V|+|E|))$, so the displayed lower bound on
-$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H)$ converges to
-$\gamma_{\mathrm{SGP}}$ from above. The actual value of
-$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H)$ may exceed this lower
-bound (due to ceiling effects in $\lceil \log_2 \rceil$ and
-non-Charikar-format NO grammars), so the lemma does \emph{not}
-claim $\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H) \to
-\gamma_{\mathrm{SGP}}$ in the upper-bound direction. The
-asymptotic consequence is therefore:
-$(\gamma_{\mathrm{SGP}} - \varepsilon)$-inapproximability of bit-cost
-within the Charikar class for any $\varepsilon > 0$ at sufficiently
-large $|V|+|E|$, an asymptotic NP-hardness statement matching the
-symbol-count constant of Theorem 6.8 in the limit.}
+\emph{since the second factor is $\geq 1$ (as $K_{\mathrm{NO}} \geq
+K_{\mathrm{YES}}$ from $\alpha \geq 0$). Equivalently: bit-cost
+APX-hardness within the Charikar class on BK-hard instances is at
+least as strong as the symbol-count APX-hardness $\gamma_{\mathrm{SGP}}
+= 8569/8568$ of Theorem 6.8.}
 
 \emph{\textbf{Proof.}} For any two grammars $G_{\mathrm{NO}},
-G_{\mathrm{YES}} \in \mathcal{G}_{\mathrm{Char}}(H)$ in the
-respective YES/NO cases of the underlying VC instance:
+G_{\mathrm{YES}} \in \mathcal{G}_{\mathrm{Char}}(H)$ on a BK-hard
+instance:
 \[
 \frac{L^{\mathrm{bit}}(G_{\mathrm{NO}})}{L^{\mathrm{bit}}(G_{\mathrm{YES}})}
 = \frac{L_{\mathrm{sym}}(G_{\mathrm{NO}})}{L_{\mathrm{sym}}(G_{\mathrm{YES}})}
 \cdot \frac{\lceil \log_2(|\Sigma| + K(G_{\mathrm{NO}})) \rceil}{\lceil \log_2(|\Sigma| + K(G_{\mathrm{YES}})) \rceil}.
 \]
-Charikar's Theorem 1 applied to the symbol-count objective gives
+Theorem 6.8 (which adapts Charikar 2005 Theorem 1 to the BK-extremal
+point $|E| = (3/2)|V|$, $k_{\mathrm{OPT}} = |V|/3$, c.f.\ the algebra
+preceding it in §6) gives the symbol-count APX-hardness ratio
 $L_{\mathrm{sym}}(G_{\mathrm{NO}}) / L_{\mathrm{sym}}(G_{\mathrm{YES}})
-\geq \gamma_{\mathrm{SGP}}$ over the class
-$\mathcal{G}_{\mathrm{Char}}(H)$. Since $\alpha(H) \geq 0$ and
-$k_{\mathrm{NO}} > k_{\mathrm{OPT}}$, we have $K(G_{\mathrm{NO}}) \geq
-K(G_{\mathrm{YES}})$, hence the log-ratio factor is $\geq 1$. Therefore
-$\gamma^{\mathrm{bit}}_{\mathrm{Char}} \geq \gamma_{\mathrm{SGP}}$.
-
-For the asymptotic claim: when $K_0(H) + \alpha(H) k_{\mathrm{OPT}}
-\to \infty$ (which occurs as $|V| \to \infty$ since $K_0$ scales with
-$|V|$), the log-ratio (treating $\log_2$ as exact, not ceiled)
-$\log_2(|\Sigma|+K_{\mathrm{NO}})/\log_2(|\Sigma|+K_{\mathrm{YES}})
-= 1 + \log_2(1 + \alpha(k_{\mathrm{NO}} - k_{\mathrm{OPT}}) /
-(|\Sigma|+K_{\mathrm{YES}})) / \log_2(|\Sigma|+K_{\mathrm{YES}})$.
-With $k_{\mathrm{NO}} - k_{\mathrm{OPT}} = O(k_{\mathrm{OPT}}) =
-O(|V|)$ and $|\Sigma|+K_{\mathrm{YES}} = \Theta(|V|+|E|)$, the
-relative perturbation inside the inner $\log_2$ is $O(1)$, hence the
-inner $\log_2$ contribution is $O(1)$, and the overall log-ratio
-deviation from $1$ is $O(1/\log(|V|+|E|))$. The ceiling
-$\lceil \cdot \rceil$ adds at most $1/\log_2(|\Sigma|+K)$ per
-boundary, also $O(1/\log(|V|+|E|))$. Hence the displayed lower bound
-on $\gamma^{\mathrm{bit}}_{\mathrm{Char}}$ converges to
-$\gamma_{\mathrm{SGP}}$ at rate $O(1/\log(|V|+|E|))$ as $|V|+|E| \to \infty$.
+\geq \gamma_{\mathrm{SGP}}$ over $\mathcal{G}_{\mathrm{Char}}(H)$
+for such $H$. Since $\alpha(H) \geq 0$ and $k_{\mathrm{NO}} \geq
+k_{\mathrm{OPT}}$, $K(G_{\mathrm{NO}}) \geq K(G_{\mathrm{YES}})$, hence
+the ceiled log-ratio is $\geq 1$. Multiplying: $\gamma^{\mathrm{bit}}_{\mathrm{Char}}
+\geq \gamma_{\mathrm{SGP}}$.
 \hfill$\blacksquare$
 
-\emph{Scope and limits.} Lemma 6.8b establishes class-restricted
-bit-cost APX-hardness within the Charikar normal-form grammar class
-$\mathcal{G}_{\mathrm{Char}}(H)$, with the asymptotic constant
-$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H) \to \gamma_{\mathrm{SGP}}
-= 8569/8568$. The class-restriction is essential: an unrestricted
-bit-cost optimizer may produce grammars $G^{\mathrm{esc}} \notin
-\mathcal{G}_{\mathrm{Char}}(H)$ with substantially different
-$K(G^{\mathrm{esc}})$ and $L_{\mathrm{sym}}(G^{\mathrm{esc}})$. The
-unrestricted bit-cost APX-hardness problem (over all valid grammars
-encoding the source, not just Charikar-format ones) remains open;
-closing it requires showing that escape grammars cannot achieve
-strictly better bit-cost ratios than Charikar's, a separate technical
-question not addressed here.
+\emph{Scope and limits.} (i) The lemma requires \emph{BK-hard
+instances} (where Theorem 6.8's $\gamma_{\mathrm{SGP}}$ inapproximability
+applies). For non-BK instances (e.g., sparse graphs with $|E| \ll |V|$),
+the symbol-count APX-hardness ratio is smaller, and the lower bound
+becomes weaker. (ii) The lemma is \emph{class-restricted} to Charikar
+normal-form grammars; non-Charikar-format escape grammars are
+out-of-scope. (iii) The lemma claims only the \emph{lower bound}
+$\gamma^{\mathrm{bit}} \geq \gamma_{\mathrm{SGP}}$, not convergence
+of $\gamma^{\mathrm{bit}}$ to $\gamma_{\mathrm{SGP}}$ from above
+(the actual $\gamma^{\mathrm{bit}}_{\mathrm{Char}}$ can spike near
+ceiling boundaries of $\lceil \log_2 \rceil$, where $K_{\mathrm{NO}}$
+and $K_{\mathrm{YES}}$ round differently; verified numerically at
+$|V| = 422928$ where $\gamma^{\mathrm{bit}} \approx 1.0436$, far
+above $\gamma_{\mathrm{SGP}} \approx 1.000117$). The unrestricted
+bit-cost APX-hardness problem (over all valid grammars and instance
+families, not just BK-hard Charikar-format ones) remains open.
 
 \textbf{Remark 6.8b (Why padding-based reduction fails for
 unrestricted-predictor APX-hardness).} \emph{The natural attempt
