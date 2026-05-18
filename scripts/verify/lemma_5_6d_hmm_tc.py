@@ -16,9 +16,11 @@ This script:
 3. Computes TC(D_N) for small N via brute-force joint distribution
    over (X_1, ..., X_N), then compares against N * E_HMM - delta_N
    per Lemma 5.6c.
-4. Verifies E_HMM > 0 iff the emission laws are non-identical.
+4. Verifies E_HMM > 0 iff observation process (X_n) is not iid.
+   Includes the codex counterexample: hidden state (A,B) with persistent
+   A and iid B can give iid X even with distinct emissions on all states.
 5. Special edge cases: identical emissions (E=0), deterministic emissions
-   (E close to H(Y)).
+   (E close to H(Y)), iid hidden chain (E=0 regardless of emissions).
 
 PASS = exact identity TC = N*E - delta_N holds at machine precision for
 small N, and Monte Carlo h_HMM matches the analytical formula in the

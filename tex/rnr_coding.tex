@@ -2304,7 +2304,8 @@ prediction filter is standard (Baum \& Petrie 1966
 \emph{Statistical Inference for Probabilistic Functions of Finite
 State Markov Chains}, Annals of Mathematical Statistics 37(6):
 1554--1563; Birch 1962 \emph{Approximations for the Entropy for
-Functions of Markov Chains}, AMS 33(3): 930--938). The filter
+Functions of Markov Chains}, Annals of Mathematical Statistics
+33(3): 930--938). The filter
 recursion is $\mu_{n+1}(y) = \frac{1}{Z}
 \sum_{y' \in \mathcal{Y}} \mu_n(y') P_{y' y} p_{y'}(X_n)$,
 where $Z$ normalizes. The entropy rate
@@ -2318,8 +2319,8 @@ i.e., the observed process $(X_n)$ is iid (in a strictly stationary
 process, this also forces independence at all block lengths). This can
 occur in several non-equivalent ways: (a) all emission laws $\{p_y\}$
 are identical, making $X_n$ iid given $Y_n$ and hence marginally;
-(b) the hidden chain $(Y_n)$ is iid (i.e., $P$ has identical rows equal
-to $\pi$); or (c) the hidden chain has non-trivial temporal structure
+(b) the hidden chain $(Y_n)$ is iid (i.e., all rows of $P$ in the
+support of $\pi$ are equal to $\pi$); or (c) the hidden chain has non-trivial temporal structure
 in components that average out in the observed prediction (e.g.,
 $Y = (A, B)$ with $A$ a persistent Markov chain and $B$ an iid
 ``filler'' that washes out $A$'s information through emission averaging).
