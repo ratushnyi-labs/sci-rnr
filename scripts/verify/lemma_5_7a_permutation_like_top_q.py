@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 Verification of CORRECTED Lemma 5.7a: top-Q optimal for permutation-like
 Type-II laws (conditional Bernoulli design / size-biased sampling).
 
@@ -158,35 +158,95 @@ def test_dependent_counterexample() -> bool:
 
 
 def check_permutation_like(atoms: dict, N: int, tol: float = 1e-6) -> bool:
-    """Check if atom probabilities factorize as Π_{i in T} q_i / Z."""
+    """Check if atom probabilities factorize as Π_{i in T} q_i / Z.
+
+    For permutation-like distributions:
+        log P(T) = sum_{i in T} log q_i - log Z
+    So for any T1, T2 with shared elements, the log-probability differences
+    factorize over the symmetric difference. We solve the linear system for
+    log q_i (relative scale) and verify consistency.
+
+    Returns True if the atoms are permutation-like (consistent), False otherwise.
+    """
     if not atoms:
         return True
-    # Try to find q_i such that P(T) = Π q_i / Z for all T
-    # If all T's have the same size k_v, then:
-    # P(T_1) / P(T_2) = Π_{i in T_1} q_i / Π_{i in T_2} q_i
-    # Pick a reference and try to back out q_i ratios.
-    # This is a quick heuristic check.
-    T_list = list(atoms.keys())
-    if not T_list:
+    T_list = [T for T, p in atoms.items() if p > 0]
+    if len(T_list) < 2:
         return True
-    T0 = T_list[0]
-    # For each pair T1, T2 that share most elements, ratio P(T1)/P(T2) = q_diff_1 / q_diff_2
-    # If the distribution is permutation-like, the q_i are consistent.
-    # For a small test, just try N=7 case: enumerate all q_i and check.
-    # Easier: count atom probabilities — if they're not a product, it's not permutation-like.
-    # For the Remark 5.7 atoms (different probabilities like 0.12, 0.04, 0.36, 0.20, 0.28),
-    # the ratios don't factorize for atoms sharing element 4.
-    # Just return False for the Remark 5.7 instance (we know it's not permutation-like).
-    p_4_5 = atoms.get(frozenset({4, 5}), 0)
-    p_3_4 = atoms.get(frozenset({3, 4}), 0)
-    p_0_4 = atoms.get(frozenset({0, 4}), 0)
-    if p_3_4 > 0 and p_0_4 > 0:
-        # For permutation-like: P(0,4)/P(3,4) = q_0/q_3
-        # Then P(?, 0)/P(?, 3) for other shared element should give same ratio.
-        # Not all pairs are present in atoms; this is just a sanity check.
-        pass
-    # Conservative: return False (not permutation-like) for safety.
-    return False
+
+    # All atoms must have the same size for permutation-like to make sense.
+    sizes = set(len(T) for T in T_list)
+    if len(sizes) != 1:
+        return False
+    k_v = next(iter(sizes))
+
+    # Try to back out log q_i for each position i appearing in some atom.
+    # Set log q_{i_0} = 0 for a reference i_0 (the position appearing most often).
+    position_in_atom = {i: [T for T in T_list if i in T] for i in range(N)}
+    active = [i for i, ts in position_in_atom.items() if len(ts) > 0]
+    if not active:
+        return True
+
+    # Reference position with most atoms
+    i_ref = max(active, key=lambda i: len(position_in_atom[i]))
+    log_q = {i_ref: 0.0}  # set log q_{i_ref} = 0
+
+    # BFS through atoms: any atom containing i_ref gives constraints on other positions
+    # For atom T containing i_ref and another position j: log P(T) = log q_{i_ref}
+    # + log q_j + sum_{i in T, i != i_ref, j} log q_i - log Z
+    # We'll use the simpler approach: pick two atoms T1, T2 with |T1 ∩ T2| = k_v - 1.
+    # Then log P(T1) - log P(T2) = log q_{T1 \ T2} - log q_{T2 \ T1}.
+    # This gives pairwise log_q differences. Build a connected graph of constraints.
+
+    # Build all pairwise constraints between atoms differing by exactly one element
+    constraints = []  # (i, j, log_q_i - log_q_j)
+    for T1 in T_list:
+        for T2 in T_list:
+            if T1 == T2:
+                continue
+            sym_diff = T1.symmetric_difference(T2)
+            if len(sym_diff) != 2:
+                continue
+            # T1 \ T2 has one element, T2 \ T1 has one element
+            elem_in_T1 = next(iter(T1 - T2))
+            elem_in_T2 = next(iter(T2 - T1))
+            log_diff = math.log(atoms[T1]) - math.log(atoms[T2])
+            # log_q_{elem_in_T1} - log_q_{elem_in_T2} = log_diff
+            constraints.append((elem_in_T1, elem_in_T2, log_diff))
+
+    # Propagate via BFS
+    while True:
+        progress = False
+        for i, j, diff in constraints:
+            if i in log_q and j not in log_q:
+                log_q[j] = log_q[i] - diff
+                progress = True
+            elif j in log_q and i not in log_q:
+                log_q[i] = log_q[j] + diff
+                progress = True
+        if not progress:
+            break
+
+    # Verify all constraints
+    for i, j, diff in constraints:
+        if i in log_q and j in log_q:
+            if abs((log_q[i] - log_q[j]) - diff) > tol:
+                return False
+
+    # Verify the factorization: P(T) ∝ exp(sum log q_i)
+    if not all(i in log_q for T in T_list for i in T):
+        # Some position has no constraint; cannot fully verify
+        return False
+
+    # Compute Z
+    weights = {T: math.exp(sum(log_q[i] for i in T)) for T in T_list}
+    Z = sum(weights.values())
+    for T in T_list:
+        predicted = weights[T] / Z
+        if abs(predicted - atoms[T]) > tol:
+            return False
+
+    return True
 
 
 def main() -> int:

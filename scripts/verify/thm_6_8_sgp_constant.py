@@ -38,11 +38,13 @@ def main() -> int:
     # The ratio between the smallest grammar (k = min-VC) and any
     # (145/144)-approximation of VC is:
     #   ρ = (15|V| + 3|E| + (145/144)k) / (15|V| + 3|E| + k)
-    # Both constraints: |E| ≥ (3/2)|V|, k ≥ (1/3)|V| (since every vertex covers
-    # at most 3 edges and |E| ≥ |V| / minimum-degree).
-    # Minimum of ρ is achieved at |E| = (3/2)|V|, k = (1/3)|V| (algebra:
-    # numerator and denominator both grow linearly in these; ratio minimized
-    # at the lower bound).
+    # Both constraints: |E| ≤ (3/2)|V| (max-degree-3 implies sum-of-degrees =
+    # 2|E| ≤ 3|V|), and k ≥ (1/3)|V| (since every vertex covers at most 3
+    # edges and |E| ≥ |V| in Charikar's setup, so k ≥ |E|/3 ≥ |V|/3).
+    # ρ is monotone DECREASING in |E| and monotone INCREASING in k. The
+    # adversarial inapproximability lower bound (minimum of ρ over the family)
+    # is achieved at the extreme point |E| = (3/2)|V| (upper bound, smaller ρ)
+    # and k = (1/3)|V| (lower bound, smaller ρ).
 
     # Compute symbolically with exact fractions
     V = Fraction(1)          # normalize |V| = 1
