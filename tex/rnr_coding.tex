@@ -1709,10 +1709,76 @@ Crutchfield--Feldman ``excess entropy'' under exponential mixing. That
 broader claim was retracted after adversarial review pointed out the
 $h$/$h_W$ conflation for non-finite-order-Markov sources. The current
 Lemma 5.1c restricts hypothesis to order-$W'$ Markov ($W' \leq W$),
-where the claim holds exactly; the general stationary case is
-left to a careful refinement of the cold-context analysis that
-properly distinguishes the entropy rate $h(X)$ from the $W$-bounded
-rate $h_W$.
+where the claim holds exactly. Lemma 5.1d below extends the
+characterization to the broader class of exponentially mixing
+stationary sources, with the Crutchfield--Feldman excess entropy
+$\delta_\infty$ replacing the Markov-stabilized $\delta_{W'}$.
+
+\textbf{Lemma 5.1d (Cold-context excess for exponentially mixing
+stationary sources).} \emph{Let $X = (X_n)_{n \geq 1}$ be a strictly
+stationary process on a finite alphabet satisfying the
+exponential conditional-MI decay (5.8) of Lemma 5.1b with constants
+$C, \rho$, and let $h_W := H(X_{W+1} \mid X_1, \ldots, X_W)$ be the
+$W$-bounded conditional rate. In the per-position sequential coding
+scheme of Lemma 5.1a on sub-blocks of size $K \geq W$ starting at
+sync points, the expected sub-block length satisfies}
+\[
+\mathbb{E}[L_{\mathrm{sub}}(K)]
+\;=\; K \cdot h_W + \delta_W^{(h_W)}
+\;\leq\; K \cdot h_W + \delta_\infty,
+\]
+\emph{where $\delta_W^{(h_W)} := \sum_{i=1}^W [H(X_i \mid X_{<i}) -
+h_W] \geq 0$ is the cold-context excess relative to $h_W$, and
+$\delta_\infty := \sum_{n=1}^\infty [H(X_n \mid X_{<n}) - h(X)]$ is
+the Crutchfield--Feldman excess entropy (finite under
+summable-correlation mixing, c.f.\ Lemma 5.6c (b)). With $m =
+\lceil N/K \rceil$ sub-blocks and $W = W_N = \lceil
+\log_{1/\rho}(N C) \rceil$ as in Lemma 5.1b, the total expected length
+satisfies}
+\[
+L_{\mathrm{synced}} \;\leq\; N \cdot h_W + m \cdot \delta_\infty,
+\quad\text{with}\quad
+L_{\mathrm{synced}} - H(D_N) \leq N \cdot (h_W - h) + (m-1) \cdot \delta_\infty + 1.
+\]
+\emph{Since $h_W - h \leq C \rho^W = O(1/N)$ at the chosen $W_N$, the
+first term is $O(1)$, and the total excess over $H(D_N)$ is
+$(m-1) \cdot \delta_\infty + O(1)$.}
+
+\emph{\textbf{Proof.}} The sub-block consists of a cold region
+($i \in [1, W]$, where the predictor's $W$-byte window is partially
+populated) and a warm region ($i \in [W+1, K]$, fully populated).
+The cold region contributes $\sum_{i=1}^W H(X_i \mid X_{<i})$ via
+arithmetic coding on the true in-block conditional. The warm region
+contributes $(K - W) \cdot h_W$, since for $i > W$, the conditioning
+window is $X_{i-W:i-1}$, a $W$-byte block, and by stationarity
+$\mathbb{E}[-\log_2 P(X_i \mid X_{i-W:i-1})] = h_W$. Adding:
+\[
+\mathbb{E}[L_{\mathrm{sub}}(K)]
+= \sum_{i=1}^W H(X_i \mid X_{<i}) + (K-W) \cdot h_W
+= K \cdot h_W + \underbrace{\sum_{i=1}^W [H(X_i \mid X_{<i}) - h_W]}_{=: \delta_W^{(h_W)}}.
+\]
+For the $\delta_W^{(h_W)} \leq \delta_\infty$ bound: since
+$H(X_i \mid X_{<i}) \geq h_W$ for $i \leq W$ (more conditioning gives
+lower entropy, and $X_{<i}$ for $i \leq W$ is a sub-context of
+$X_1^W$ used to define $h_W$), each summand is non-negative.
+Moreover, $H(X_i \mid X_{<i}) - h_W \leq H(X_i \mid X_{<i}) - h(X)$
+since $h_W \geq h(X)$. Summing: $\delta_W^{(h_W)} \leq \sum_{i=1}^W
+[H(X_i \mid X_{<i}) - h(X)] = \delta_W \leq \delta_\infty$ (by the
+summability hypothesis, Lemma 5.6c (b)). Multiplying by $m$ and
+comparing to $H(D_N) = N \cdot h(X) + \delta_\infty - o(1)$
+(asymptotic form, Lemma 5.6c): the excess is $N \cdot (h_W - h) +
+m \cdot \delta_W^{(h_W)} - \delta_\infty + o(1)$. With $W = W_N$:
+$h_W - h \leq C \rho^{W_N} \leq C / (NC) = 1/N$, so $N \cdot (h_W -
+h) \leq 1$. The total excess simplifies to $(m-1) \cdot \delta_\infty
++ O(1)$.
+\hfill$\blacksquare$
+
+\emph{Scope.} Lemma 5.1d extends Lemma 5.1c from order-$W'$ Markov
+sources (where the excess is exactly $\delta_{W'}$, a finite constant
+in the source) to exponentially mixing stationary sources (where the
+excess is at most $\delta_\infty$, a generally finite but possibly
+larger constant). Lemma 5.1c is the special case $\delta_\infty =
+\delta_{W'}$ when $X$ is order-$W'$ Markov.
 
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
 coding).} \emph{Let $N$ be a block length, and let
