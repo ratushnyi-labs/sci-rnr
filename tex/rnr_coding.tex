@@ -1258,28 +1258,35 @@ data the coder is sweeping. The two code lengths therefore agree up to
 $\varepsilon_N$. \hfill$\blacksquare$
 
 \textbf{Lemma 5.1a (Per-position sequential recoding achieves the
-$W$-Markov rate with byte-granular random access).} \emph{Let
-$X \sim D_N$ be a block of $N$ symbols over a $\sigma$-symbol
-alphabet, and let $M$ be a $W$-bounded predictor (Definition 10.2)
-that at each position $i$ outputs the order-$W$ Markov chain-rule
-conditional distribution
+$W$-Markov rate plus sync overhead, with byte-granular random
+access).} \emph{Let $X \sim D_N$ be a block of $N$ symbols over a
+$\sigma$-symbol alphabet, and let $M$ be a $W$-bounded predictor
+(Definition 10.2) that at each position $i$ outputs the order-$W$
+Markov chain-rule conditional distribution
 $P(x_i \mid x_{i-W}, \dots, x_{i-1}, C)$ (necessarily depending on
-at most the last $W$ bytes, by Definition 10.2). Per-position
-sequential arithmetic coding of $X$ under these conditionals
-achieves expected total length}
+at most the last $W$ bytes, by Definition 10.2). Without sync
+points, per-position sequential arithmetic coding of $X$ under
+these conditionals achieves expected total length}
 \[
 H_W(D_N) \;:=\; \sum_{i=1}^N H(X_i \mid X_{\max(1, i-W)}, \dots, X_{i-1}, C)
 \;\;\leq\;\; N \log_2 \sigma,
 \]
-\emph{plus $\varepsilon_N \cdot N$ entropy-coder redundancy, where
-$H_W(D_N)$ is the joint entropy under the $W$-Markov projection of
-$D_N$. In general $H_W(D_N) \geq H(D_N)$ with equality iff $D_N$ is
-order-$W$ Markov given $C$ (the gap is the multi-information beyond
-order $W$). Combined with Definition 10.3 sync points, this coding
+\emph{plus $\varepsilon_N \cdot N$ entropy-coder redundancy. With
+sync points at spacing $K$ (Definition 10.3) inserted to enable
+byte-granular random access, the coding additionally pays a
+sync-overhead term $\Delta_{\mathrm{sync, total}} \leq m \cdot S
+\cdot W \cdot \log_2(1/\eta)$ bits (the per-sync-point cold-context
+excess analyzed in §10.7, with $S$ symbols per source byte for the
+mode, $\eta$ the probability floor, and $m$ the sync-point count
+as in Definition 10.3). The total expected length is therefore
+$H_W(D_N) + \Delta_{\mathrm{sync, total}} + \varepsilon_N \cdot N$.
+In general $H_W(D_N) \geq H(D_N)$ with equality iff $D_N$ is
+order-$W$ Markov given $C$. Combined with sync points, this coding
 admits byte-granular random access via Theorem 10.3 at
 $O(\log L(R) + (K+k) \cdot \mathrm{cost}(M))$ per query.}
 
-\emph{\textbf{Proof.}} The order-$W$ Markov chain rule gives
+\emph{\textbf{Proof.}} Without sync points, the order-$W$ Markov
+chain rule gives
 $H_W(D_N) = \sum_i H(X_i \mid X_{i-W:i-1}, C)$, where the
 conditional is over the at-most-$W$-bytes window. Arithmetic
 coding under these conditionals achieves
@@ -1288,10 +1295,17 @@ which in expectation under $D_N$ equals $H_W(D_N) + \varepsilon_N
 \cdot N$ (one $\varepsilon_N$ per position; Cover-Thomas 2006,
 Theorem 5.4.1). The inequality $H_W(D_N) \geq H(D_N)$ follows from
 conditioning on a strict subset of the past not increasing entropy
-beyond conditioning on the full past. By the $W$-bounded property,
-the coding is per-position sequential in the sense of Theorem
-10.3's scope; applying Theorem 10.3 directly gives byte-granular
-random access. \hfill$\blacksquare$
+beyond conditioning on the full past. With sync points, each
+sync-point boundary resets the predictor context (Definition 10.3
+condition (a)), forcing the first $W$ positions after each sync
+point to use a shortened/cold context; this contributes the
+sync-overhead bound $\Delta_{\mathrm{sync, total}} \leq m \cdot S
+\cdot W \cdot \log_2(1/\eta)$ derived in §10.7 (per-sync excess
+bounded by $W \cdot S \cdot \log_2(1/\eta)$ times the sync count
+$m$). By the $W$-bounded property, the coding is per-position
+sequential in the sense of Theorem 10.3's scope; applying Theorem
+10.3 directly gives byte-granular random access at the stated
+per-query cost. \hfill$\blacksquare$
 
 \emph{Consequence for Theorem 5.4.} Theorem 5.4's $\Theta(N)$
 amortized separation between factorized (marginal-only) and joint
@@ -1852,10 +1866,11 @@ increase the expected residual.
 
 By the \emph{exchange argument} for permutation-like designs (a
 standard tool in conditional sampling theory; see Hájek 1981):
-$M_v \cap \{i, i^\star\}$ has three possibilities
-$\{\emptyset, \{i\}, \{i^\star\}, \{i, i^\star\}\}$ with weights
-$1, q_i, q_{i^\star}, q_i q_{i^\star}$ (times conditional
-normalization). Conditioning on the rest of $M_v$, the comparison
+$M_v \cap \{i, i^\star\}$ has four possibilities
+$\{\emptyset, \{i\}, \{i^\star\}, \{i, i^\star\}\}$ with relative
+weights $1, q_i, q_{i^\star}, q_i q_{i^\star}$ in the
+\emph{unconditional} weighted-sampling reference distribution
+(times the conditional normalization fixing $|M_v| = k_v$). Conditioning on the rest of $M_v$, the comparison
 between $\alpha_{S_v}$ (excludes $i^\star$, includes $i$) and
 $\alpha_{S_v'}$ (includes $i^\star$, excludes $i$) hinges on the
 swap pattern. Under the assumption $q_{i^\star} \geq q_i$, the mass
@@ -2230,7 +2245,8 @@ $\tau$ can change the optimal parse and the
 $\mathrm{code\_cost}$ of other tokens. The closest computational
 counterpart we prove is the restricted normal-form dictionary-only
 problem of Theorems 6.7 and 6.8 below, which is shown to be NP-hard
-and APX-hard with constant $\gamma_{\mathrm{SGP}} = 8569/8568$; the fully
+and APX-hard with constant $\gamma_{\mathrm{SGP}} = 8569/8568$ under
+the unbounded-alphabet variant; the fully
 global Type-III-C problem (with model, dictionary, parser, and
 repair stream all free) is conjectured at least as hard but its
 formal hardness is open (§13.2). For a corpus encoded across many
@@ -2508,7 +2524,8 @@ objective, since the latter problem's APX-hardness is itself open
 
 Together, Theorems 6.7 and 6.8 show that the restricted normal-form
 recursive dictionary problem under symbol-count objective is
-NP-hard and APX-hard. We do not claim this extends to all
+NP-hard and (under the unbounded-alphabet variant) APX-hard with
+constant $8569/8568$. We do not claim this extends to all
 practical dictionary learners --- BPE and WordPiece operate on a
 fixed-size flat token vocabulary with greedy merges (not a
 recursive grammar), MDL-greedy variants use bit-cost rather than
@@ -4151,13 +4168,14 @@ point to the relevant theorems.
   NP-hardness of the \emph{restricted} dictionary-only case via
   reduction from SGP; Theorem 6.8 transfers APX-hardness from
   Charikar et al.\ (2005, Theorem 1) to the same restricted case
-  with the explicit inapproximability constant
-  $\gamma_{\mathrm{SGP}} = 8569/8568$. The constant derives from
-  Berman-Karpinski's (1999) bound on Vertex-Cover-3 propagated
-  through the $15|V|+3|E|+k$ encoding overhead in the Charikar et
-  al.\ reduction; the algebra is reproduced in the verification
-  script \texttt{scripts/verify/thm\_6\_8\_sgp\_constant.py} in
-  the companion repository. Hardness of the \emph{unrestricted}
+  under the \emph{unbounded-alphabet} variant with explicit
+  inapproximability constant $\gamma_{\mathrm{SGP}} = 8569/8568$.
+  The constant derives from Berman-Karpinski's (1999) bound on
+  Vertex-Cover-3 propagated through the $15|V|+3|E|+k$ encoding
+  overhead in the Charikar et al.\ reduction; the algebra is
+  reproduced in the verification script
+  \texttt{scripts/verify/thm\_6\_8\_sgp\_constant.py} in the
+  companion repository. Hardness of the \emph{unrestricted}
   joint problem (model, dictionary, parser, and repair stream all
   free) is conjectured but not proved by the present reductions
   and is listed in §13.2.
@@ -4241,7 +4259,7 @@ the present paper.
   (conditional Bernoulli) joint law of $M_v$, where atom weights
   factorize as $\Pr(M_v = T) \propto \prod_{i \in T} q_i$ for
   $T \in \binom{[N]}{k_v}$ (verified in
-  \texttt{scripts/verify/lemma\_5\_7a\_independent\_top\_q.py}).
+  \texttt{scripts/verify/lemma\_5\_7a\_permutation\_like\_top\_q.py}).
   For joint laws beyond permutation-like (e.g., Remark 5.7's
   counterexample at $N=7, k=2, s=2$), top-$Q$ is provably
   suboptimal. A formal NP-hardness proof for the general
@@ -4303,11 +4321,22 @@ the present paper.
   from any APX-hard source into the Hamming-realizable distance
   geometry is currently known. The Type-III-C side (Theorem 6.8) is
   APX-hard with explicit inherited constant
-  $\gamma_{\mathrm{SGP}} = 8569/8568$ (Charikar et al.\ 2005);
-  the analogous constant for $E_{12}$ is open. (A sharper
-  $\gamma_{\mathrm{SGP}}$ for SGP itself --- e.g., via direct
-  reduction from MAX-3SAT-3 rather than via Vertex Cover --- is a
-  separate open question in the SGP literature.)
+  $\gamma_{\mathrm{SGP}} = 8569/8568$ (Charikar et al.\ 2005,
+  unbounded-alphabet variant); the analogous constant for $E_{12}$
+  is open. (A sharper $\gamma_{\mathrm{SGP}}$ for SGP itself ---
+  e.g., via direct reduction from MAX-3SAT-3 rather than via Vertex
+  Cover --- is a separate open question in the SGP literature.)
+\item
+  Constant-gap inapproximability for the \emph{fixed-byte-alphabet}
+  variant of restricted Type-III-C ($|\Sigma| = 256$). The
+  unbounded-alphabet variant has $\gamma_{\mathrm{SGP}} = 8569/8568$
+  inherited from Charikar et al.\ 2005. Encoding the
+  $|V|$-vertex graph terminals as length-$\lceil \log_{256}|V| \rceil$
+  byte strings adds a $\Theta(\log |V|)$ multiplicative overhead in
+  the grammar encoding, which can dilute the constant gap toward
+  $1$ as $|V| \to \infty$ unless a separate gap-preserving
+  construction is given. Establishing (or refuting) a constant
+  inapproximability gap for the fixed-byte case is open.
 \item
   Practical compatible Adam variants with full convergence
   analysis. Theorem 10.2 covers any optimizer satisfying Definition
