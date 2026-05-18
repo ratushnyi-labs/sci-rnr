@@ -1158,9 +1158,55 @@ $E_{12}$ as a stochastic mapping with simplex constraints), simulated
 annealing, and tabu search. These approximations carry no
 constant-factor guarantee in the varying-parameter regime; on the
 fixed Code12 instance they are evaluated empirically against the
-constant-size oracle of Remark 4.3a. The paper makes no
-inapproximability claim for $E_{12}$: a sound constant-gap reduction
-into the Hamming-restricted geometry is left as an open problem.
+constant-size oracle of Remark 4.3a.
+
+\textbf{Remark 4.3c (Wagner-Corneil reduction gives only inverse-linear
+inapproximability).} \emph{The Theorem 4.3 reduction does not yield
+constant-gap inapproximability of $E_{12}$, only an
+$\Omega(1/n)$-additive (equivalently $1 - O(1/n)$-multiplicative)
+inapproximability gap that vanishes as $n \to \infty$.}
+
+\emph{Proof.} Recall the Theorem 4.3 reduction: given a tree
+$T = (V(T), E(T))$ with $n = |V(T)|$ and maximum degree $\Delta$,
+the constructed $E_{12}$ instance has threshold $B = 2(n-1)/\Delta$,
+and the YES case (tree embeds in $Q_m$) has $C_F(E) = B$ exactly,
+while any NO case must have $C_F(E) \geq B + 2/\Delta$ (since
+Hamming distances are integers $\geq 1$ for injective labelings,
+and any non-embedded tree edge contributes $\geq 2/\Delta$). The
+relative inapproximability ratio is therefore
+\[
+\frac{\text{OPT}_{\mathrm{NO}}}{\text{OPT}_{\mathrm{YES}}}
+\geq \frac{B + 2/\Delta}{B}
+= 1 + \frac{2/\Delta}{2(n-1)/\Delta}
+= 1 + \frac{1}{n-1}.
+\]
+Equivalently, $E_{12}$ is NP-hard to approximate within factor
+$(n-1)/n = 1 - 1/n$. As $n \to \infty$ this gap vanishes,
+showing that any reduction yielding \emph{constant}-gap
+$(1 + \varepsilon)$-inapproximability with $\varepsilon$ independent
+of the instance size $n$ must use additional structure beyond the
+Wagner-Corneil tree-embedding reduction. \hfill$\blacksquare$
+
+\emph{Implications for OP4.} A constant-gap inapproximability for
+$E_{12}$ requires \emph{gap amplification} beyond what Theorem 4.3
+provides. The three research paths sketched in §13.2 are precisely
+the three known mechanisms for such amplification in linear-code /
+lattice / hypercube geometries: (a) PCP-style reduction from
+APX-hard Label Cover via the Arora-Babai-Stern-Sweedyk (1997)
+Nearest Codeword Problem framework; (b) bounded-distance decoding
+hardness (Dumer-Micciancio-Sudan 2003), which already operates at
+constant gap; (c) Closest Vector Problem hardness (Khot 2005)
+specialized to $\mathbb{F}_2^{12}$. The Wagner-Corneil reduction is
+not on this list because its core source problem
+(tree-to-hypercube subgraph isomorphism) has no known constant-gap
+inapproximability, so it cannot serve as a starting point. Closing
+OP4 therefore requires reducing from a different APX-hard source
+problem; gap-preserving reduction from any of NCP / BDD / CVP into
+the byte-alphabet $E_{12}$ geometry remains the open question.
+
+The paper makes no inapproximability claim for $E_{12}$ beyond
+Theorem 4.3 + Remark 4.3c; a sound constant-gap reduction into the
+Hamming-restricted geometry is left as an open problem.
 
 \textbf{4.7 Worked numerical example}
 
