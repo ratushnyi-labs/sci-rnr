@@ -439,12 +439,14 @@ This article makes the following contributions.
   \log_2(1/\eta) = O((|X|/K) \log |X| \cdot \log_2(1/\eta))$ for
   $m = \lceil |X|/K \rceil$ sync points. This overhead trades off
   with the per-query random-access cost via the sync-point spacing
-  $K$: at $K = \mathrm{polylog}(|X|)$ the per-query cost is polylog
-  but the total sync overhead is $O(|X|/\mathrm{polylog}(|X|))$
-  (sub-linear but not polylog); at $K = |X|/\mathrm{polylog}(|X|)$
-  the total overhead drops to $O(\mathrm{polylog}(|X|))$ but
-  per-query cost grows to $\Theta(|X|/\mathrm{polylog})$. The two
-  cannot be simultaneously polylog. The per-query random-access cost
+  $K$: at $K = \log^a |X|$ for $a > 1$ the total sync overhead is
+  $O(|X| \log |X|/\log^a |X|) = O(|X|/\log^{a-1} |X|)$ (sub-linear
+  in $|X|$, but not polylog; at $a = 1$ the total is $\Theta(|X|)$,
+  linear); at $K = |X|/\mathrm{polylog}(|X|)$ the total overhead
+  drops to $O(\mathrm{polylog}(|X|))$ but per-query cost grows to
+  $\Theta(|X|/\mathrm{polylog}(|X|) \cdot \mathrm{cost}(M))$.
+  The simultaneous polylog regime (polylog per-query AND polylog
+  total) does not exist within this trade-off. The per-query random-access cost
   is polylog in $|X|$ provided $K = \mathrm{polylog}(|X|)$ and the
   predictor architecture admits context $W = \Theta(\log N)$ at
   $\mathrm{poly}(\log N)$ per evaluation (transformers with windowed attention pay
@@ -1513,12 +1515,14 @@ H(D_N) + O(1) + \Delta_{\mathrm{sync,total}}(W_N) + \varepsilon_N \cdot N,
 \cdot \log_2(1/\eta) = O((N/K) \cdot S \cdot \log N \cdot \log_2(1/\eta))$
 scales with the sync-point count $m = \lceil N/K \rceil$. The total
 overhead is sub-linear in $N$ only when sync-point spacing
-$K = \omega(\log N)$: for $K = \mathrm{polylog}(N)$ the overhead is
-$O(N \log N / \mathrm{polylog}(N))$ (sub-linear but \emph{not}
-polylog); polylog total overhead would require
-$K = N/\mathrm{polylog}(N)$, which is incompatible with polylog
-per-query random-access cost. For fixed $K = O(1)$ the overhead is
-$\Theta(N \log N \log_2(1/\eta))$, linear in $N$ with a log factor.
+$K = \omega(\log N)$ strictly: for $K = \log^a N$ with $a > 1$ the
+overhead is $O(N/\log^{a-1} N)$ (sub-linear but \emph{not} polylog);
+for $K = \Theta(\log N)$ exactly the overhead is $\Theta(N
+\log_2(1/\eta))$, linear in $N$; polylog total overhead would
+require $K = N/\mathrm{polylog}(N)$, which is incompatible with
+polylog per-query random-access cost. For fixed $K = O(1)$ the
+overhead is $\Theta(N \log N \log_2(1/\eta))$, linear in $N$ with
+a log factor.
 The per-position rate gap $H_{W_N}(D_N) - H(D_N) \leq 1$ from the
 truncated window is itself $O(1)$ in $N$, independent of $K$.
 The byte-granular random-access cost from Theorem 10.3 becomes
@@ -4929,10 +4933,11 @@ point to the relevant theorems.
   the joint entropy $H(D_N)$. The total expected length is
   $H(D_N) + O(1) + \Delta_{\mathrm{sync,total}} + \varepsilon_N \cdot N$
   with $\Delta_{\mathrm{sync,total}} = O((|X|/K) \log |X| \log_2(1/\eta))$:
-  at the polylog-per-query operating point $K = \mathrm{polylog}(|X|)$,
-  the total sync overhead is $O(|X|/\mathrm{polylog}(|X|))$ — sub-linear
-  in $|X|$ but not polylog. Polylog total overhead would require
-  $K = |X|/\mathrm{polylog}(|X|)$, which makes per-query cost polynomial.
+  for $K = \log^a |X|$ with $a > 1$ the total sync overhead is
+  $O(|X|/\log^{a-1} |X|)$ (sub-linear in $|X|$ but not polylog);
+  at $K = \Theta(\log |X|)$ the total is $\Theta(|X|)$ linear.
+  Polylog total overhead would require $K = |X|/\mathrm{polylog}(|X|)$,
+  which makes per-query cost polynomial.
   Whole-block partition-rank coding (Type-II rank coding,
   Type-III-B direct or hierarchical partition strategies) is
   excluded from Theorem 10.3 and gives only sub-block-granular
