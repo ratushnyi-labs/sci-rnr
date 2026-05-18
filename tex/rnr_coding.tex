@@ -1444,9 +1444,13 @@ $H_W(D_N) = \sum_i H(X_i \mid X_{i-W:i-1}, C)$, where the
 conditional is over the at-most-$W$-bytes window. Arithmetic
 coding under these conditionals achieves
 $\sum_i [-\log_2 P(x_i \mid x_{i-W:i-1}, C)]$ on any realization,
-which in expectation under $D_N$ equals $H_W(D_N) + \varepsilon_N
-\cdot N$ (one $\varepsilon_N$ per position; Cover-Thomas 2006,
-Theorem 5.4.1). The inequality $H_W(D_N) \geq H(D_N)$ follows from
+which in expectation under $D_N$ equals
+$H_W(D_N) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ where
+$\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ is the
+arithmetic-coder total redundancy
+(at most $2$ bits per stream for canonical implementations, by
+Cover \& Thomas 2006 Theorem 5.4.1; not to be confused with $\varepsilon_n$ in
+§2.3 which is a separate per-symbol redundancy notation). The inequality $H_W(D_N) \geq H(D_N)$ follows from
 conditioning on a strict subset of the past not increasing entropy
 beyond conditioning on the full past. With sync points, each
 sync-point boundary resets the predictor context (Definition 10.3
@@ -3750,8 +3754,9 @@ RNR archives that use per-position sequential coding modes (e.g.,
 Type-I, the per-byte sequential Type-III-B strategy, or Type-III-A
 composition over per-position sequential per-tile modes) support
 byte-granular random access in per-query time that is
-polylogarithmic in $|X|$ (or even independent of $|X|$ in the
-uniform-spacing direct-lookup case), provided the predictor has
+polylogarithmic in $|X|$ (or independent of $|X|$ in the
+uniform-spacing direct-lookup case when $\log L(R)$ is also
+held fixed), provided the predictor has
 bounded context, in a parameter regime where $K$, $k$,
 $\mathrm{cost}(M)$, and $\log L(R)$ are held fixed; the resident
 seek index is $\Theta(|X|/K)$. Whole-block Type-II partition-rank
