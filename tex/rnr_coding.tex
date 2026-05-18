@@ -1473,8 +1473,11 @@ $W$-Markov given $C$, the full joint rate $H(D_N)$ is matched by the
 W-bounded rate $H_W(D_N)$ (since $H_W = H$ for $W$-Markov sources)
 and is achieved by per-position sequential coding with byte-granular
 random access \emph{plus} the sync-point overhead
-$\Delta_{\mathrm{sync,total}} = m \cdot S \cdot W \cdot \log_2(1/\eta)$
-quantified above (which is $o(N)$ for typical $W,S$ choices). For
+$\Delta_{\mathrm{sync,total}} = m \cdot S \cdot W \cdot \log_2(1/\eta)
+= \lceil N/K \rceil \cdot S \cdot W \cdot \log_2(1/\eta)$, which is
+$o(N)$ only when sync-point spacing $K = \omega(W)$ strictly (for
+fixed $K, W, S, \eta$ the total is $\Theta(N)$; see the asymptotic
+trade-off discussion accompanying Lemma 5.1b). For
 data classes whose joint structure is not order-$W$ Markov, the
 W-bounded rate $H_W(D_N)$ exceeds $H(D_N)$, and the
 random-access tax is the multi-information $\mathrm{TC}_W(D_N) :=
@@ -3926,8 +3929,9 @@ number of sync-point entries; for $|X| \geq K$ this gives
 $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits, and for
 $|X| < K$ there is a single entry and the lookup is $O(1)$. The
 rest of the analysis is unchanged.) \emph{This cost is polylogarithmic in archive size
-$|X|$ only when $K$ and $k$ are held fixed or grow at most
-polylogarithmically in $|X|$ and $L(R) = \mathrm{poly}(|X|)$; for
+$|X|$ only when $K$, $k$, and $\mathrm{cost}(M)$ are held fixed or
+grow at most polylogarithmically in $|X|$ and
+$L(R) = \mathrm{poly}(|X|)$; for
 $K = \Theta(|X|)$ or $k = \Theta(|X|)$ the cost is
 $\Theta(|X| \cdot \mathrm{cost}(M))$, no better than full sequential
 decode}. When $(K+k) \cdot
@@ -4332,10 +4336,10 @@ workspace required by the inference engine on its target hardware
 $W$ positions, layer-wise activation buffers), and
 $L(\mathrm{seek\_index})$ is the seek-index size in bits (typically
 $O((|X|/K) \log L(R))$ under uniform spacing). The cost is polylogarithmic in
-archive size $|X|$ only in the parameter regime where $K$, $k$, and
-$\log L(R)$ are held fixed or grow at most polylogarithmically in
-$|X|$; outside that regime the output-sensitive cost of Theorem 10.3
-applies.}
+archive size $|X|$ only in the parameter regime where $K$, $k$,
+$\mathrm{cost}(M)$, and $\log L(R)$ are held fixed or grow at most
+polylogarithmically in $|X|$; outside that regime the
+output-sensitive cost of Theorem 10.3 applies.}
 
 \emph{\textbf{Proof.}} Each LBA-indexed read request $(\mathcal{L},
 k)$ corresponds to a byte-range request on the underlying source $X$
@@ -4949,8 +4953,9 @@ point to the relevant theorems.
   uniform-spacing lookup term and $L(\text{state})$ to each
   non-uniform binary-search entry (full statement in Theorem 10.4). The cost is polylogarithmic in
   archive size $|X|$ only in the parameter regime where the
-  sync-point spacing $K$, read window $k$, and $\log L(R)$ are held
-  fixed or grow at most polylogarithmically in $|X|$; outside that
+  sync-point spacing $K$, read window $k$, predictor-evaluation cost
+  $\mathrm{cost}(M)$, and $\log L(R)$ are held fixed or grow at most
+  polylogarithmically in $|X|$; outside that
   regime (e.g., $K = \Theta(|X|)$ or $k = \Theta(|X|)$) the cost is
   $\Theta(|X| \cdot \mathrm{cost}(M))$. This is the framework's
   deployment-grade distinguishing feature relative to other neural
