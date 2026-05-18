@@ -1226,30 +1226,34 @@ hence the approximator's output below this threshold certifies the
 YES case. As $n \to \infty$ the gap shrinks to $1$. \hfill$\blacksquare$
 
 \emph{Implications for OP4.} A constant-gap inapproximability for
-$E_{12}$ requires \emph{gap amplification} beyond the
-inverse-linear ratio of Theorem 4.3. Studied amplification
-mechanisms in the linear-code / lattice / hypercube literature
-include: (a) PCP-style reduction from APX-hard Label Cover via the
-Arora-Babai-Stern-Sweedyk (1997) Nearest Codeword Problem framework;
-(b) bounded-distance decoding hardness (the relevant survey is
-Dumer, Micciancio, Sudan 2003 \emph{Hardness of Approximating the
-Minimum Distance of a Linear Code}, which defines BDD and leaves
-its computational complexity as an open problem; subsequent BDD
-hardness comes from Liu, Lyubashevsky, Micciancio 2008 and
-Bennett, Golovnev, Stephens-Davidowitz 2017); (c) Closest Vector
-Problem hardness in the lattice geometry: the canonical CVP
-hardness paper is Dinur, Kindler, Raz, Safra 2003 (constant-factor
-inapproximability for general lattices), with the CVP-with-preprocessing
-(CVPP) variant analyzed by Alekhnovich, Khot, Kindler, Vishnoi 2005,
-specialized to $\mathbb{F}_2^{12}$. A fourth mechanism is
-\emph{graph-powering / tensor-product amplification} in the
-Dinur (2007) PCP-style framework: if a Wagner-Corneil-like
+$E_{12}$ requires \emph{gap amplification} beyond the inverse-linear
+ratio of Theorem 4.3. Three studied amplification mechanisms in the
+linear-code / lattice / hypercube literature are candidates:
+(a) Nearest Codeword Problem (NCP) inapproximability via PCP-style
+reductions from Label Cover, established by
+Arora, Babai, Stern, Sweedyk 1997 \emph{The Hardness of Approximate
+Optima in Lattices, Codes, and Systems of Linear Equations}
+(JCSS 54(2): 317--331);
+(b) Closest Vector Problem (CVP) inapproximability for general
+lattices, established by Dinur, Kindler, Raz, Safra 2003
+\emph{Approximating CVP to within almost-polynomial factors is
+NP-hard} (Combinatorica 23(2): 205--243), specialized in subsequent
+work to small ambient dimensions like $\mathbb{F}_2^{12}$;
+(c) Bounded-Distance Decoding (BDD) hardness in the coding-theoretic
+formulation introduced by Dumer, Micciancio, Sudan 2003
+\emph{Hardness of Approximating the Minimum Distance of a Linear
+Code} (IEEE Trans.\ Inform.\ Theory 49(1): 22--37). DMS 2003 itself
+defines BDD and leaves the $\rho = 1/2$ complexity open; subsequent
+literature has established BDD hardness for various lattice
+formulations.
+A fourth mechanism is \emph{graph-powering / tensor-product
+gap amplification} in the style of Dinur 2007 \emph{The PCP theorem
+by gap amplification} (JACM 54(3): 12); if a Wagner-Corneil
 tree-embedding instance could be composed with a robust PCP
-verifier (Dinur \emph{The PCP theorem by gap amplification}, JACM
-54(3):12, 2007), the inverse-linear gap could in principle be
-amplified to a constant. None of these constructions is known to
-realize gap-preserving reduction from any APX-hard problem directly
-into the byte-alphabet $E_{12}$ geometry; closing OP4 remains open.
+verifier, the inverse-linear gap could in principle be amplified to
+a constant. None of these constructions is known to realize a
+gap-preserving reduction from any APX-hard problem directly into
+the byte-alphabet $E_{12}$ geometry; closing OP4 remains open.
 
 The paper makes no inapproximability claim for the varying-parameter
 learned-code labeling problem beyond Theorem 4.3 + Remark 4.3c
