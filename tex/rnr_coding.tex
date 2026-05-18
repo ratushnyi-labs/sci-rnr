@@ -84,7 +84,9 @@ only for Type-I (Theorem 4.2). Complexity results include NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3) and of
 a restricted normal-form dictionary-only case of Type-III-C (Theorem
 6.7), plus an APX-hardness transfer for the same restricted case
-with an inherited constant $\gamma_{\mathrm{SGP}}>1$ (Theorem 6.8);
+with the explicit inapproximability constant
+$\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from Charikar et al.\
+(2005, Theorem 1) via the symbol-count bijection (Theorem 6.8);
 hardness of the unrestricted joint (model, dictionary, repair)
 problem and the analogous inapproximability for $E_{12}$ are open. Worked numerical examples are
 given for Type-I, Type-II, and Type-III-B; III-A and III-C are
@@ -354,10 +356,12 @@ This article makes the following contributions.
   NP-hardness of the restricted (constant-predictor, normal-form
   recursive dictionary, symbol-count objective) dictionary-learning
   problem (Theorem 6.7), and APX-hardness of the same restricted
-  case inherited from the Smallest Grammar Problem (Lehman--Shelat
-  2002; Charikar et al.\ 2005) with constant $\gamma_{\mathrm{SGP}}
-  > 1$ (Theorem 6.8). We do not pin down the specific numerical
-  value of $\gamma_{\mathrm{SGP}}$, and we do not claim hardness of
+  case with explicit constant $\gamma_{\mathrm{SGP}} = 8569/8568$
+  inherited from Charikar et al.\ (2005, Theorem 1) via the
+  symbol-count bijection (Theorem 6.8). The 8569/8568 constant
+  derives from the Berman-Karpinski (1999) bound on
+  Vertex-Cover-3 inapproximability propagated through the
+  $15|V|+3|E|+k$ encoding overhead. We do not claim hardness of
   the unrestricted joint problem; both are listed as open.
 \item
   A no-universal-dominance result (Theorem 8.1) establishing the
@@ -2013,7 +2017,7 @@ $\tau$ can change the optimal parse and the
 $\mathrm{code\_cost}$ of other tokens. The closest computational
 counterpart we prove is the restricted normal-form dictionary-only
 problem of Theorems 6.7 and 6.8 below, which is shown to be NP-hard
-and APX-hard with constant $\gamma_{\mathrm{SGP}} > 1$; the fully
+and APX-hard with constant $\gamma_{\mathrm{SGP}} = 8569/8568$; the fully
 global Type-III-C problem (with model, dictionary, parser, and
 repair stream all free) is conjectured at least as hard but its
 formal hardness is open (§13.2). For a corpus encoded across many
@@ -2163,9 +2167,11 @@ L_{\mathrm{sym}}(D(G)) = |G|.
 \]
 Thus an exact polynomial-time optimizer for this restricted
 Type-III-C case would exactly solve SGP. Since SGP is NP-hard
-(Lehman and Shelat 2002; Charikar et al.\ 2005), the restricted
-Type-III-C problem is NP-hard. The reduction is computable in linear
-time in $|s|$.
+(Storer-Szymanski 1982 for the original NP-hardness; Charikar et
+al.\ 2005, Theorem 1, for the explicit $8569/8568$ APX-hardness
+constant via reduction from bounded-degree-3 Vertex Cover and
+Berman-Karpinski 1999), the restricted Type-III-C problem is
+NP-hard. The reduction is computable in linear time in $|s|$.
 
 The unrestricted-case claim is intentionally not proved by inclusion:
 the restricted feasible region is a strict subset of the unrestricted
@@ -2194,17 +2200,17 @@ inference, both of which sacrifice optimality for tractability.
 dictionary learning, restricted case).} \emph{The restricted
 Type-III-C problem of Theorem 6.7 (constant predictor, recursive
 normal-form dictionary, symbol-count objective $L_{\mathrm{sym}}$)
-is APX-hard, conditional on the established APX-hardness of the
-Smallest Grammar Problem: there exists a constant
-$\gamma_{\mathrm{SGP}} > 1$ such that no polynomial-time algorithm
-achieves approximation ratio better than $\gamma_{\mathrm{SGP}}$ on
-SGP unless $P = NP$ (Lehman and Shelat 2002; Charikar et al.\ 2005),
-and the bijection of Theorem 6.7 transfers this hardness to the
-restricted Type-III-C objective with the same constant. The
-APX-hardness of the unrestricted joint problem is left open for the
-same reason as in Theorem 6.7: the feasible set is strictly larger
-and the objective function differs, so neither inclusion nor a
-direct gap-preserving reduction is available.}
+is APX-hard with inapproximability ratio at least
+$\gamma_{\mathrm{SGP}} = 8569/8568$: no polynomial-time algorithm
+achieves approximation ratio strictly below $8569/8568$ unless
+$P = NP$. The constant is inherited verbatim from the Smallest
+Grammar Problem (Charikar, Lehman, Liu, Panigrahy, Prabhakaran,
+Sahai, and Shelat 2005, Theorem 1) via the exact symbol-count
+bijection of Theorem 6.7. The APX-hardness of the unrestricted
+joint problem is left open for the same reason as in Theorem 6.7:
+the feasible set is strictly larger and the objective function
+differs, so neither inclusion nor a direct gap-preserving reduction
+is available.}
 
 \emph{\textbf{Proof.}} We show that the reduction
 $\Phi: s \mapsto \Phi(s)$ constructed in Theorem 6.7 preserves
@@ -2218,20 +2224,28 @@ map and grammar-to-dictionary map preserve this objective exactly, so
 an $\alpha$-approximation for the restricted Type-III-C problem yields
 an $\alpha$-approximation for SGP with no additive bookkeeping slack.
 
-\emph{Transfer of APX-hardness.} Lehman and Shelat (2002) and the
-expanded line of work culminating in Charikar, Lehman, Liu,
-Panigrahy, Prabhakaran, Sahai and Shelat (2005) establish that SGP
-is APX-hard: some explicit constant $\gamma_{\mathrm{SGP}} > 1$
-exists such that no polynomial-time algorithm achieves approximation
-ratio smaller than $\gamma_{\mathrm{SGP}}$ unless $P = NP$. The
-proof routes through gap-preserving reductions from standard
-NP-hard problems (the exact source-problem and explicit numerical
-value of $\gamma_{\mathrm{SGP}}$ differ between the conference and
-journal versions of the cited papers; we do not pin down the
-specific numeric constant here). Combined with the exact bijection
-above, a polynomial-time $\alpha$-approximation for the restricted
-Type-III-C problem with $\alpha < \gamma_{\mathrm{SGP}}$ would yield
-a polynomial-time approximation to SGP below the established
+\emph{Transfer of APX-hardness.} Charikar, Lehman, Liu, Panigrahy,
+Prabhakaran, Sahai, and Shelat (2005, Theorem 1, Section V.A,
+page 2557) establish that no polynomial-time algorithm achieves
+approximation ratio strictly below
+$\gamma_{\mathrm{SGP}} = 8569/8568$ on SGP unless $P = NP$. Their
+proof uses a gap-preserving reduction from bounded-degree-3 Vertex
+Cover on graphs with $|E| \geq (3/2)|V|$ and minimum vertex cover
+$k \geq (1/3)|V|$, encoded as the grammar-input string
+$\sigma = \prod_{v_i \in V}(\#v_i | v_i\#)^2 \prod_{v_i \in V}(\#v_i\#) \prod_{(v_i, v_j) \in E}(\#v_i v_j\#)$,
+yielding a smallest grammar of size $15|V| + 3|E| + k$. The
+Berman-Karpinski (1999) result that the corresponding restricted
+Vertex Cover is hard to approximate below ratio $145/144$ unless
+$P = NP$ then gives, by direct algebra,
+\[
+\gamma_{\mathrm{SGP}} \;=\; \frac{15|V| + 3|E| + (145/144)k}{15|V| + 3|E| + k}
+\bigg|_{|E| = (3/2)|V|,\, k = (1/3)|V|}
+\;=\; \frac{8569}{8568}.
+\]
+Combined with the exact symbol-count bijection of Theorem 6.7, any
+polynomial-time $\alpha$-approximation for the restricted
+Type-III-C problem with $\alpha < 8569/8568$ would yield a
+polynomial-time approximation to SGP below the established
 threshold, contradicting $P \neq NP$. The unrestricted joint
 problem is not addressed by this argument: as in Theorem 6.7, the
 restricted feasible region is strict but the objective also
@@ -2239,17 +2253,20 @@ changes, so an unrestricted approximation does not project back to
 a restricted-objective approximation. We leave the unrestricted
 APX-hardness open. \hfill$\blacksquare$
 
-\textbf{Remark on the constant.} The numerical value of
-$\gamma_{\mathrm{SGP}}$ in the SGP literature is small (close to 1)
-and depends on the specific reduction used; we do not assert a
-specific figure here. The constant $\gamma_{\mathrm{SGP}}$ inherited
-by Theorem 6.8 applies to the \emph{restricted} symbol-count
-objective only; we do not claim that any constant $\gamma > 1$
-inherits to the unrestricted bit-cost objective, since the latter
-problem's APX-hardness is itself open (see §13.2). Pinning down a
-specific numerical value of $\gamma_{\mathrm{SGP}}$ for any
-particular encoding convention, and verifying which source paper
-establishes which exact constant, is left to follow-up work.
+\textbf{Remark on the constant.} The numerical value
+$\gamma_{\mathrm{SGP}} = 8569/8568 \approx 1.000117$ is small (very
+close to 1) and reflects the small algebraic gap inherited from
+$145/144$ Vertex Cover inapproximability via the
+$15|V| + 3|E| + k$ encoding overhead in the Charikar et al.\
+reduction. Sharper inapproximability constants for SGP under
+alternative reductions (e.g., from MAX-3SAT-3 via direct
+gap-preserving encoding rather than via Vertex Cover) are an open
+question in the SGP literature itself. The constant
+$\gamma_{\mathrm{SGP}}$ inherited by Theorem 6.8 applies to the
+\emph{restricted} symbol-count objective only; we do not claim
+that this constant inherits to the unrestricted bit-cost
+objective, since the latter problem's APX-hardness is itself open
+(see §13.2).
 
 Together, Theorems 6.7 and 6.8 show that the restricted normal-form
 recursive dictionary problem under symbol-count objective is
@@ -3894,15 +3911,18 @@ point to the relevant theorems.
   Computational complexity of joint dictionary-and-predictor
   learning --- partially resolved. Theorem 6.7 establishes
   NP-hardness of the \emph{restricted} dictionary-only case via
-  reduction from SGP; Theorem 6.8 transfers APX-hardness from the
-  SGP literature (Lehman--Shelat 2002; Charikar et al.\ 2005) to
-  the same restricted case as the existence of some
-  inapproximability constant $\gamma_{\mathrm{SGP}} > 1$. The
-  \emph{specific numerical value} of $\gamma_{\mathrm{SGP}}$ is
-  not pinned down here and is listed in §13.2; what Theorem 6.8
-  establishes is only the existence of such a constant. Hardness
-  of the \emph{unrestricted} joint problem is conjectured but not
-  proved by the present reductions and is also listed in §13.2.
+  reduction from SGP; Theorem 6.8 transfers APX-hardness from
+  Charikar et al.\ (2005, Theorem 1) to the same restricted case
+  with the explicit inapproximability constant
+  $\gamma_{\mathrm{SGP}} = 8569/8568$. The constant derives from
+  Berman-Karpinski's (1999) bound on Vertex-Cover-3 propagated
+  through the $15|V|+3|E|+k$ encoding overhead in the Charikar et
+  al.\ reduction; the algebra is reproduced in the verification
+  script \texttt{scripts/verify/thm\_6\_8\_sgp\_constant.py} in
+  the companion repository. Hardness of the \emph{unrestricted}
+  joint problem (model, dictionary, parser, and repair stream all
+  free) is conjectured but not proved by the present reductions
+  and is listed in §13.2.
 \item
   Bit-exact decoder reproduction for fixed predictors --- resolved
   by Theorem 10.1: a precision-and-determinism specification
@@ -4033,10 +4053,12 @@ the present paper.
   via an exact YES/NO threshold reduction; no constant-gap reduction
   from any APX-hard source into the Hamming-realizable distance
   geometry is currently known. The Type-III-C side (Theorem 6.8) is
-  APX-hard with an inherited constant $\gamma_{\mathrm{SGP}} > 1$
-  whose specific numerical value depends on which source-problem
-  reduction is used (the literature includes several; we do not pin
-  one down here), but the analogous constant for $E_{12}$ is open.
+  APX-hard with explicit inherited constant
+  $\gamma_{\mathrm{SGP}} = 8569/8568$ (Charikar et al.\ 2005);
+  the analogous constant for $E_{12}$ is open. (A sharper
+  $\gamma_{\mathrm{SGP}}$ for SGP itself --- e.g., via direct
+  reduction from MAX-3SAT-3 rather than via Vertex Cover --- is a
+  separate open question in the SGP literature.)
 \item
   Practical compatible Adam variants with full convergence
   analysis. Theorem 10.2 covers any optimizer satisfying Definition
@@ -4271,5 +4293,14 @@ Hardness of Approximating Minimization Problems. Journal of the ACM,
 Algorithms for Grammar-Based Compression. Proceedings of the
 Thirteenth Annual ACM-SIAM Symposium on Discrete Algorithms (SODA),
 205-212.
+
+\textbf{{[}49{]}} Berman, P., and Karpinski, M. (1999). On Some
+Tighter Inapproximability Results. Proceedings of the 26th
+International Colloquium on Automata, Languages and Programming
+(ICALP), Lecture Notes in Computer Science 1644, Springer, 200-209.
+
+\textbf{{[}50{]}} Storer, J. A., and Szymanski, T. G. (1982). Data
+Compression via Textual Substitution. Journal of the ACM, 29(4),
+928-951.
 
 \end{document}
