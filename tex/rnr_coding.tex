@@ -381,22 +381,28 @@ This article makes the following contributions.
   showing all rooted binary tree decompositions of the 256-byte
   alphabet achieve the same information-theoretic rate.
 \item
-  Four results on Type-III-C: the greedy MDL admission criterion
+  Five results on Type-III-C: the greedy MDL admission criterion
   (Theorem 6.5), the bits-back integration with an exact
   cross-entropy plus KL-divergence accounting (Theorem 6.6),
   NP-hardness of the restricted (constant-predictor, normal-form
   recursive dictionary, symbol-count objective) dictionary-learning
-  problem (Theorem 6.7), and APX-hardness of the same restricted
+  problem (Theorem 6.7), APX-hardness of the same restricted
   case under the \emph{unbounded-alphabet} variant with explicit
   constant $\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from
   Charikar et al.\ (2005, Theorem 1) via the symbol-count bijection
-  (Theorem 6.8). The 8569/8568 constant derives from the
+  (Theorem 6.8), and an extension of the same APX-hardness constant
+  to the \emph{bit-cost} objective $L^{\mathrm{bit}} =
+  L_{\mathrm{sym}} \cdot \lceil \log_2(|\Sigma|+K) \rceil$ within the
+  Charikar normal-form grammar class on Berman-Karpinski-hard
+  instances (Lemma 6.8b), via a ratio-preserving reduction exploiting
+  monotonicity of $L^{\mathrm{bit}}$ in the vertex-cover size
+  $|\sigma|$. The 8569/8568 constant derives from the
   Berman-Karpinski (1999) bound on Vertex-Cover-3 inapproximability
   propagated through the $15|V|+3|E|+k$ encoding overhead. The
   fixed-byte-alphabet case requires a fresh gap-preserving
   construction and we do not claim a specific constant for it;
-  neither do we claim hardness of the unrestricted joint problem.
-  Both are listed as open.
+  unrestricted bit-cost APX-hardness over all (non-Charikar-format)
+  grammars and unrestricted-predictor joint hardness remain open.
 \item
   A no-universal-dominance result (Theorem 8.1) establishing the
   framework's claim as conditional, and a verification-discipline
@@ -3378,19 +3384,22 @@ cover-dependent optional rules of the form $\#v_i\#$, so $K$ is
 have been verified against Charikar et al.\ 2005 (the
 $\#v_i\#$ rule accounting in their Section 3.2).
 
-The exact APX-hardness of the bit-cost objective for the restricted
-Type-III-C problem, with explicit non-asymptotic inherited constant,
-remains an open question (listed in §13.2). An earlier draft of this
-paper contained a Lemma 6.8b claiming $\gamma^{\mathrm{bit}} =
-\gamma_{\mathrm{SGP}} = 8569/8568$ exactly under a ``Charikar
-normal-form'' restriction with fixed $K = 15|V| + 3|E|$; that lemma
-was retracted after adversarial review identified that the fixed-$K$
-premise is false: Charikar's $K$ includes cover-dependent optional
-rules and is of the form $K(\sigma) = K_0(H) + \alpha(H) \cdot |\sigma|$
-for structural $K_0, \alpha \geq 0$. Lemma 6.8b (v3 below) gives the
-correct partial result: bit-cost APX-hardness ratio approaches
-$\gamma_{\mathrm{SGP}}$ asymptotically (from above) within the Charikar
-grammar class.
+Lemma 6.8b below resolves the bit-cost APX-hardness question within
+the Charikar normal-form grammar class on Berman-Karpinski-hard
+instances: bit-cost minimization is APX-hard with the \emph{same}
+constant $\gamma_{\mathrm{SGP}} = 8569/8568$ as the symbol-count
+objective, via a ratio-preserving reduction that exploits the
+monotonicity of $L^{\mathrm{bit}}$ in the cover size $|\sigma|$. An
+earlier draft of this paper had a different (and incorrect) Lemma
+6.8b claiming $\gamma^{\mathrm{bit}} = \gamma_{\mathrm{SGP}}$ via a
+fixed-$K$ premise (i.e., $K = 15|V| + 3|E|$); that lemma was
+retracted after adversarial review identified that Charikar's $K$
+includes cover-dependent optional rules and is of the form
+$K(\sigma) = K_0(H) + \alpha(H) \cdot |\sigma|$ for structural
+$K_0, \alpha \geq 0$. The current Lemma 6.8b establishes the correct
+result via a different argument (monotonicity of cost in $|\sigma|$
+allowing bit-cost approximation to imply symbol-count approximation
+with the same ratio).
 
 \textbf{Lemma 6.8b (Bit-cost APX-hardness in Charikar normal form via
 ratio-preserving reduction).} \emph{Let $\mathcal{H}_{\mathrm{BK}}$
@@ -5320,12 +5329,18 @@ listed below.)
   establish NP-hardness and APX-hardness ($\gamma = 8569/8568$ under
   unbounded alphabet) for the restricted dictionary-only case under
   the symbol-count objective $L_{\mathrm{sym}}$. Lemma 6.8b
-  establishes class-restricted bit-cost APX-hardness with constant
-  approaching $\gamma_{\mathrm{SGP}}$ from above (asymptotic equality
-  as $|V| + |E| \to \infty$) within the Charikar normal-form grammar
-  class, where the cover-dependent nonterminal count
-  $K(\sigma) = K_0 + \alpha \cdot |\sigma|$ contributes a vanishing
-  log-factor perturbation. The following remain open:
+  establishes class-restricted bit-cost APX-hardness with the
+  \emph{same} constant $\gamma_{\mathrm{SGP}} = 8569/8568$ within the
+  Charikar normal-form grammar class on Berman-Karpinski-hard
+  instances, via a ratio-preserving reduction: since
+  $L^{\mathrm{bit}}(\sigma) = L_{\mathrm{sym}}(\sigma) \cdot c(\sigma)$
+  with $c$ non-decreasing in $|\sigma|$ and the bit-cost-optimal cover
+  coinciding with the minimum cover $\sigma^*$, any bit-cost
+  $\alpha$-approximation $\sigma'$ has $|\sigma'| \geq |\sigma^*|$
+  hence $c(\sigma') \geq c(\sigma^*)$, so $L_{\mathrm{sym}}(\sigma')
+  \leq \alpha \cdot L_{\mathrm{sym}}(\sigma^*)$ — yielding a
+  symbol-count $\alpha$-approximation, NP-hard for $\alpha <
+  \gamma_{\mathrm{SGP}}$. The following remain open:
   (a) bit-cost APX-hardness over \emph{unrestricted} grammar
   structures (escape grammars outside Charikar's class may achieve
   different bit-cost ratios); (b) APX-hardness of the unrestricted joint
