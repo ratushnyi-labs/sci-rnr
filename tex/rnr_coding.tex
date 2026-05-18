@@ -112,9 +112,12 @@ archive size $|X|$ once the sync-point spacing $K$, read window
 $k$, predictor cost, and $\log L(R)$ are treated as fixed (or
 polylogarithmic in $|X|$) parameters. Under an additional probability-floor assumption
 on the predictor (Section 10.7), the sync-point compression overhead
-per sync point is bounded by $W \cdot \log_2(1/\eta)$ where $\eta$
-is the floor (a sharper bound subtracts a warm-context rate term
-under an additional uniform-warm-rate assumption); we conjecture the
+per sync point is bounded by $S \cdot W \cdot \log_2(1/\eta)$ where
+$\eta$ is the floor and $S$ is the number of floored entropy-coder
+symbols the coding mode emits per source byte ($S = 1$ for Type-I
+and direct byte arithmetic, $S = 2$ for per-byte sequential
+Type-III-B); a sharper bound subtracts a warm-context rate term
+under an additional uniform-warm-rate assumption. we conjecture the
 actual overhead is on the order of one percent for natural data at
 typical parameters, but neither a tight upper bound in general nor
 a measured value on a specific corpus is provided here. The
@@ -2808,12 +2811,22 @@ $\lceil |X|/K \rceil \cdot \lceil \log_2 L(R) \rceil$ bits.
 Definition 10.3 admits two variants: \emph{uniform spacing} (sync
 points at byte positions $j K$, byte offsets implicit, used by
 default) and \emph{non-uniform spacing} (sync points at
-encoder-chosen byte positions, byte offsets stored explicitly per
-entry, used when token-edge alignment or other encoder constraints
-require it). Under non-uniform spacing each entry additionally
-stores a $\lceil \log_2 |X| \rceil$-bit source position, raising
-the seek index size to
-$\lceil |X|/K \rceil \cdot (\lceil \log_2 L(R) \rceil + \lceil
+encoder-chosen byte positions $\Delta_0 = 0 < \Delta_1 < \cdots <
+\Delta_{m-1} < |X|$ subject to three invariants: (i) the first
+sync point $\Delta_0 = 0$ (so every query position $p \in [0, |X|)$
+has some prior sync point); (ii) maximum gap
+$\Delta_{j+1} - \Delta_j \leq K$; (iii) minimum gap
+$\Delta_{j+1} - \Delta_j \geq K/2$ between consecutive sync-point
+positions, byte offsets stored explicitly per entry, used when
+token-edge alignment or other encoder constraints require it). The max-gap invariant ensures that the latest sync
+point before any query position $p$ is within $K$ bytes of $p$, so
+the $K + k$ decode-window cost of Theorem 10.3 is preserved; the
+min-gap invariant bounds the entry count to at most
+$\lceil 2 |X|/K \rceil$ (factor of 2 over uniform spacing). Under
+non-uniform spacing each entry additionally stores a
+$\lceil \log_2 |X| \rceil$-bit source position; the
+seek-index size is at most
+$\lceil 2 |X|/K \rceil \cdot (\lceil \log_2 L(R) \rceil + \lceil
 \log_2 |X| \rceil)$ bits. Both variants are referenced in
 subsequent theorems and remarks.
 The entropy-coder flush adds $O(1)$ bits of termination per sync
@@ -2835,29 +2848,38 @@ byte arithmetic coding it is $\Pr_M(b \mid c)$). In practice this
 is enforced by mixing the model's distribution with a small
 uniform escape at the coder level, $\eta \geq 2^{-12}$ being
 standard. Under this floor, the per-position cold-context
-arithmetic-code length is bounded above by $\log_2(1/\eta)$. The per-sync-point excess cost
-over warm-context encoding of the same $W$ bytes is therefore
-bounded by
+arithmetic-code length is bounded above by $S \cdot \log_2(1/\eta)$,
+where $S$ is the number of floored symbols the coder emits per
+source byte: $S = 1$ for Type-I (one class+payload symbol per
+byte) and direct byte arithmetic, $S = 2$ for per-byte sequential
+Type-III-B (high nibble + low nibble), and more generally
+$S = $ (symbols-emitted-per-source-byte) for the chosen mode. The
+per-sync-point excess cost over warm-context encoding of the same
+$W$ source bytes is therefore bounded by
 \[
 \Delta_{\mathrm{sync}} \leq \sum_{i=P}^{P+W-1}
-\bigl[\log_2(1/\eta) - (-\log_2 \Pr_M(X_i \mid C_i^{\mathrm{warm}}))\bigr]
-\leq W \cdot \log_2(1/\eta),
+S \cdot \bigl[\log_2(1/\eta) - (-\log_2 \Pr_M(\text{symbols}_i \mid C_i^{\mathrm{warm}}))/S\bigr]
+\leq S \cdot W \cdot \log_2(1/\eta),
 \]
 where $C_i^{\mathrm{warm}}$ denotes the warm $W$-byte context the
-encoder would have used in a sync-point-free encoding. Under the
-probability floor, both cold and warm per-byte costs lie in $[0,
-\log_2(1/\eta)]$, so each summand
-$\log_2(1/\eta) - (-\log_2 \Pr_M(X_i \mid C_i^{\mathrm{warm}}))$
-lies in $[0, \log_2(1/\eta)]$ (non-negative because warm cost is
-bounded by $\log_2(1/\eta)$ under the floor, eliminating the
-``warm exceeds cold ceiling'' case that would otherwise allow
-negative summands). The trivial upper bound
-$W \cdot \log_2(1/\eta)$ is loose and does not
-depend on the warm rate. Sharper upper bounds require additional
-assumptions: e.g., a uniform per-byte warm-context \emph{lower}
-bound $r^{\mathrm{warm}}_{\min}$ on $-\log_2 \Pr_M(X_i \mid
-C_i^{\mathrm{warm}})$ valid at all positions, yielding
-$\Delta_{\mathrm{sync}} \leq W \cdot (\log_2(1/\eta) - r^{\mathrm{warm}}_{\min})$.
+encoder would have used in a sync-point-free encoding, and the
+inner term is averaged over the $S$ symbols emitted at position
+$i$. Under the probability floor, both cold and warm per-position
+symbol costs lie in $[0, \log_2(1/\eta)]$, so both per-byte costs
+lie in $[0, S \cdot \log_2(1/\eta)]$, and each summand of
+$\Delta_{\mathrm{sync}}$ lies in $[-S \cdot \log_2(1/\eta), S
+\cdot \log_2(1/\eta)]$. (A pointwise negative summand is possible
+when the cold/initial context happens to predict $X_i$ better
+than the warm $W$-byte context --- empirically rare but
+permitted by the floor alone; the floor caps both costs above
+without enforcing cold $\geq$ warm.) The trivial upper bound
+$S \cdot W \cdot \log_2(1/\eta)$ is therefore an upper bound on
+$\Delta_{\mathrm{sync}}$ from above, even if some summands are
+negative. It is loose and does not depend on the warm rate. Sharper upper
+bounds require additional assumptions: e.g., a uniform per-byte
+warm-context \emph{lower} bound $r^{\mathrm{warm}}_{\min}$ on the
+per-byte warm cost valid at all positions, yielding
+$\Delta_{\mathrm{sync}} \leq W \cdot (S \cdot \log_2(1/\eta) - r^{\mathrm{warm}}_{\min})$.
 (An upper bound on warm cost would give a lower, not an upper,
 bound on $\Delta_{\mathrm{sync}}$, so the warm-rate assumption must
 be a lower bound to yield a useful overhead ceiling.) Without the
@@ -2865,7 +2887,15 @@ probability-floor assumption (e.g., a predictor that can place
 arbitrarily small mass on the true byte after reset), the
 per-sync-point cost is unbounded. The total compression cost of
 sync points under the floor assumption is at most
-$(|X|/K) \cdot W \cdot \log_2(1/\eta)$ bits.
+$m \cdot S \cdot W \cdot \log_2(1/\eta)$ bits, where $m$ is the
+total number of sync points: $m = \lceil |X|/K \rceil$ for uniform
+spacing and $m \leq \lceil 2|X|/K \rceil$ for non-uniform spacing
+(Definition 10.3). So the worst-case total is at most
+$(|X|/K) \cdot S \cdot W \cdot \log_2(1/\eta)$ bits under uniform
+spacing or $(2|X|/K) \cdot S \cdot W \cdot \log_2(1/\eta)$ bits
+under non-uniform spacing, with $S$ as defined above ($S = 1$ for
+Type-I and direct byte arithmetic, $S = 2$ for per-byte sequential
+Type-III-B).
 Concrete-number estimates in the abstract and §11 (e.g., the
 ``approximately one percent'' figure) are heuristic conjectures
 based on empirical observations of cold-vs-warm rates for small
@@ -2891,9 +2921,12 @@ ensuring sync-point boundaries coincide with tile boundaries. Let $M$ be a $W$-b
 and let sync points be placed
 at uniformly spaced source positions $j K$ for $j = 0, 1, \dots$
 (Definition 10.3). Assume the entropy coder operates under a
-predictor probability floor $\eta > 0$ (Section 10.7), so each
-position consumes at most $\log_2(1/\eta) = O(1)$ repair-stream
-bits. Let $|X|$ denote the archive's uncompressed source length.
+predictor probability floor $\eta > 0$ (Section 10.7) on its
+per-position emitted symbol distribution, so each source byte
+consumes at most $S \cdot \log_2(1/\eta) = O(1)$ repair-stream
+bits, where $S$ is the number of floored entropy-coder symbols per
+source byte for the chosen mode ($S = 1$ for Type-I and direct byte
+arithmetic, $S = 2$ for per-byte sequential Type-III-B). Let $|X|$ denote the archive's uncompressed source length.
 Random access to $k$ consecutive bytes starting at any position
 $p \in [0, |X|)$ with $p + k \leq |X|$ (or, equivalently, requesting
 $k' = \min(k, |X| - p)$ bytes if $p + k$ would exceed $|X|$, as a
@@ -3214,16 +3247,21 @@ in $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ time for uniform
 spacing (or with an extra $\log(|X|/K)$ factor for non-uniform),
 independent of $|X|$ in the predictor-cost term and polylog in
 $|X|$ in the seek-index-lookup term, at a per-sync-point
-worst-case excess of
-$W \cdot \log_2(1/\eta)$ bits (Section 10.7), giving a worst-case
-total of $(|X|/K) \cdot W \cdot \log_2(1/\eta)$ bits over the
-archive. For $K = 64$ KiB, $W = 4$ KiB,
-$\eta = 2^{-12}$ (standard small uniform escape mixed with the
-predictor's main distribution; $\eta = 2^{-8}$ would force a
-uniform predictor and contradict any cold-vs-warm gap below), and
-a 1 GiB source, the worst-case bound evaluates to
-$16384 \cdot 4096 \cdot 12$ bits $= 96$ MiB, or roughly $9.4\%$ of
-the source size. The realistic overhead is smaller because the
+worst-case excess of $S \cdot W \cdot \log_2(1/\eta)$ bits
+(Section 10.7), giving a worst-case total of $(|X|/K) \cdot S \cdot
+W \cdot \log_2(1/\eta)$ bits over the archive for uniform spacing
+(or $(2|X|/K) \cdot S \cdot W \cdot \log_2(1/\eta)$ for non-uniform
+under Definition 10.3, where $S$ is
+symbols-emitted-per-source-byte; $S = 1$ for Type-I/direct byte
+arithmetic, $S = 2$ for per-byte sequential Type-III-B). For
+$K = 64$ KiB, $W = 4$ KiB, $\eta = 2^{-12}$ (standard small
+uniform escape mixed with the predictor's main distribution;
+$\eta = 2^{-8}$ would force a uniform predictor and contradict
+any cold-vs-warm gap below), $S = 1$ (Type-I), and a 1 GiB source,
+the worst-case bound evaluates to $16384 \cdot 4096 \cdot 12$
+bits $= 96$ MiB, or roughly $9.4\%$ of the source size; for $S = 2$
+(per-byte Type-III-B) the worst-case bound doubles to $\approx
+19\%$. The realistic overhead is smaller because the
 per-byte excess in practice is the cold-vs-warm \emph{rate gap}
 $\delta$ (typically a few tenths of a bit per byte for natural
 data) rather than the full $\log_2(1/\eta) = 12$ bits. With
