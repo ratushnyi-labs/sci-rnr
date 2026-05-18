@@ -329,19 +329,31 @@ This article makes the following contributions.
   construction, with the exact information-theoretic quantity
   governing factorized-versus-joint coding identified as
   multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5; the gap may be
-  zero on sources without joint structure). Whether
-  $\mathrm{TC}(D_N) = \Theta(N)$ holds for specific natural-data
-  classes is an open empirical question (Remark 5.6 sketches a
-  manifold-hypothesis intuition but does not establish a rigorous
-  entropy bound).
+  zero on sources without joint structure). Lemma 5.6a establishes
+  an explicit $\mathrm{TC}(D_N) = N \cdot c(\alpha) + O(\log N)$
+  with $c(\alpha) = \log_2 e - (\alpha - 1) \log_2(\alpha/(\alpha-1))
+  > 0$ for the distinct-cardinality class (one nonzero $k_v = \alpha$
+  per row), giving a concrete family for which $\Theta(N)$ joint
+  structure is mathematically certified. Whether $\mathrm{TC}(D_N) =
+  \Theta(N)$ holds for further natural-data classes (binary tensors,
+  log-likelihood ratio sources, etc.) remains an open empirical
+  question (Remark 5.6 sketches a manifold-hypothesis intuition but
+  does not establish a rigorous entropy bound for those).
 \item
   A status remark on Type-II support selection
   (Remark 5.7): the natural marginal-$Q$-prefix heuristic is not
-  provably optimal in the semi-non-factorized regime --- expected cost
-  depends on the full joint law of the partition sets, not just
-  marginals --- and a concrete counterexample is included in the
-  paper's verification scripts. Optimal fixed-size support selection
-  for general predictors remains open.
+  provably optimal in the semi-non-factorized regime in general ---
+  expected cost depends on the full joint law of the partition sets,
+  not just marginals --- and a concrete counterexample (at $N=7$,
+  $k_v=2$, $s=2$) is included in the paper's verification scripts.
+  Lemma 5.7a recovers optimality of top-$Q$ for the
+  \emph{permutation-like} (conditional Bernoulli) class of joint laws
+  where atom weights factorize as $\Pr(M_v = T) \propto
+  \prod_{i \in T} q_i$ (covering the uniform-on-fixed-cardinality
+  and log-likelihood-weighted regimes), via a stochastic dominance
+  coupling. Optimal fixed-size support selection for joint laws
+  outside this class (where Remark 5.7's counterexample lives)
+  remains open and is conjectured NP-hard via densest-$k$-subgraph.
 \item
   An approximate-oracle mode-selection bound for Type-III-A (Theorem
   6.1) and a tight matching lower bound (Theorem 6.2) showing the
@@ -1316,9 +1328,14 @@ coding under an order-$W$ Markov predictor achieves rate
 $H_W(D_N)$, which is intermediate between the factorized rate
 $\sum_i H_{\mathrm{marg}}(X_i)$ (Markov order 0) and the full joint
 entropy $H(D_N)$ (Markov order $N-1$). For data classes that are
-$W$-Markov given $C$, full joint rate is achieved with byte-granular
-random access. For data classes whose joint structure is not order-$W$
-Markov, the W-bounded rate $H_W(D_N)$ exceeds $H(D_N)$, and the
+$W$-Markov given $C$, the full joint rate $H(D_N)$ is matched by the
+W-bounded rate $H_W(D_N)$ (since $H_W = H$ for $W$-Markov sources)
+and is achieved by per-position sequential coding with byte-granular
+random access \emph{plus} the sync-point overhead
+$\Delta_{\mathrm{sync,total}} = m \cdot S \cdot W \cdot \log_2(1/\eta)$
+quantified above (which is $o(N)$ for typical $W,S$ choices). For
+data classes whose joint structure is not order-$W$ Markov, the
+W-bounded rate $H_W(D_N)$ exceeds $H(D_N)$, and the
 random-access tax is the multi-information $\mathrm{TC}_W(D_N) :=
 H_W(D_N) - H(D_N)$ beyond order $W$. Choosing a larger $W$ reduces
 this gap (at the cost of higher per-position predictor evaluation
@@ -1892,8 +1909,8 @@ does not apply there; that counterexample remains valid as a
 witness of the general dependent case.
 
 \emph{General-case status.} For arbitrary joint laws of $M_v$
-beyond permutation-like, top-$Q$ is provably suboptimal (Remark
-5.7's counterexample). The optimization problem
+beyond permutation-like, top-$Q$ can be provably suboptimal (Remark
+5.7's counterexample exhibits a concrete instance). The optimization problem
 $\min_{|S_v| = s} \mathbb{E}[A_s(|M_v \setminus S_v|)]$ over
 arbitrary joint laws is \emph{conjectured to be NP-hard} via
 reduction from densest-$k$-subgraph (set the joint atoms to be
@@ -4278,7 +4295,7 @@ the present paper.
   $T \in \binom{[N]}{k_v}$ (verified in
   \texttt{scripts/verify/lemma\_5\_7a\_permutation\_like\_top\_q.py}).
   For joint laws beyond permutation-like (e.g., Remark 5.7's
-  counterexample at $N=7, k=2, s=2$), top-$Q$ is provably
+  counterexample at $N=7, k=2, s=2$), top-$Q$ can be provably
   suboptimal. A formal NP-hardness proof for the general
   non-permutation-like case (likely via reduction from
   densest-$k$-subgraph) and a polynomial-time approximation
