@@ -1732,9 +1732,9 @@ h_W] \geq 0$ is the cold-context excess relative to $h_W$, and
 $\delta_\infty := \sum_{n=1}^\infty [H(X_n \mid X_{<n}) - h(X)]$ is
 the Crutchfield--Feldman excess entropy (finite under
 summable-correlation mixing, c.f.\ Lemma 5.6c (b)). With $m =
-\lceil N/K \rceil$ sub-blocks and $W = W_N = \lceil
-\log_{1/\rho}(N C) \rceil$ as in Lemma 5.1b, the total expected length
-satisfies}
+\lceil N/K \rceil$ sub-blocks and $W = W_N := \max(1, \lceil
+\log_{1/\rho}(N C) \rceil)$ as in Lemma 5.1b (clamped at $W \geq 1$),
+the total expected length satisfies}
 \[
 L_{\mathrm{synced}} \;\leq\; N \cdot h_W + m \cdot \delta_\infty,
 \quad\text{with}\quad
@@ -1757,16 +1757,21 @@ $\mathbb{E}[-\log_2 P(X_i \mid X_{i-W:i-1})] = h_W$. Adding:
 = \sum_{i=1}^W H(X_i \mid X_{<i}) + (K-W) \cdot h_W
 = K \cdot h_W + \underbrace{\sum_{i=1}^W [H(X_i \mid X_{<i}) - h_W]}_{=: \delta_W^{(h_W)}}.
 \]
-For the $\delta_W^{(h_W)} \leq \delta_\infty$ bound: since
-$H(X_i \mid X_{<i}) \geq h_W$ for $i \leq W$ (more conditioning gives
-lower entropy, and $X_{<i}$ for $i \leq W$ is a sub-context of
-$X_1^W$ used to define $h_W$), each summand is non-negative.
+For the $\delta_W^{(h_W)} \leq \delta_\infty$ bound: by stationarity,
+$H(X_i \mid X_{<i})$ for $i \leq W$ equals $H(X_W \mid X_1^{W-1+i-W})$,
+which conditions on $i-1 \leq W-1$ symbols of recent past, a strict
+sub-context of the $W$-byte window used to define $h_W = H(X_{W+1}
+\mid X_1^W)$ (by stationarity, $H(X_{W+1} \mid X_1^W) =
+H(X_W \mid X_0^{W-1})$, a $W$-symbol conditioning). Conditioning on
+fewer past symbols gives weakly higher entropy, so $H(X_i \mid X_{<i})
+\geq h_W$ for $i \leq W$; each summand is non-negative.
 Moreover, $H(X_i \mid X_{<i}) - h_W \leq H(X_i \mid X_{<i}) - h(X)$
 since $h_W \geq h(X)$. Summing: $\delta_W^{(h_W)} \leq \sum_{i=1}^W
 [H(X_i \mid X_{<i}) - h(X)] = \delta_W \leq \delta_\infty$ (by the
-summability hypothesis, Lemma 5.6c (b)). Multiplying by $m$ and
-comparing to $H(D_N) = N \cdot h(X) + \delta_\infty - o(1)$
-(asymptotic form, Lemma 5.6c): the excess is $N \cdot (h_W - h) +
+summability hypothesis, Lemma 5.6c (b)). Multiplying by $m$ and comparing to the finite identity
+$H(D_N) = N \cdot h(X) + \delta_N$ from Lemma 5.6c, with
+$\delta_N \to \delta_\infty$ as $N \to \infty$ under summable
+correlation: the excess is $N \cdot (h_W - h) +
 m \cdot \delta_W^{(h_W)} - \delta_\infty + o(1)$. With $W = W_N$:
 $h_W - h \leq C \rho^{W_N} \leq C / (NC) = 1/N$, so $N \cdot (h_W -
 h) \leq 1$. The total excess simplifies to $(m-1) \cdot \delta_\infty
