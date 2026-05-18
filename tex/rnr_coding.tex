@@ -2277,15 +2277,21 @@ the prediction filter and the conditional entropy is computed
 under $X_n \sim \sum_y \mu_n(y) p_y$. The HMM has
 $E_{\mathrm{HMM}} > 0$ if and only if the observation process
 $(X_n)$ is not iid (under its own marginal law, with $Y$ marginalized
-out). A sufficient condition for $E_{\mathrm{HMM}} > 0$ is that
-(i) the hidden chain $(Y_n)$ has non-trivial temporal structure
-(some transition probability $P_{y y'} \neq \pi_{y'}$) and (ii) the
-emission laws are not all identical, so that observations
-distinguish hidden states. Identical emissions or iid hidden chain
-with each emission depending only on the current state can each give
-iid observations and $E_{\mathrm{HMM}} = 0$ (counterexample: take
-$P = \pi \mathbf{1}^T$, i.e., $Y_n$ is iid with distribution $\pi$,
-combined with any emission law: the marginal $(X_n)$ is then iid).}
+out). Equivalently, letting $K_{y,x} := p_y(x)$ denote the emission
+matrix, $E_{\mathrm{HMM}} > 0$ iff the observable prediction
+$q_n := \mu_n K \in \Delta(\mathcal{X})$ does not stay almost surely
+equal to the stationary marginal output law $m := \pi K$. Sufficient
+conditions for $E_{\mathrm{HMM}} > 0$ are subtle: neither
+``hidden chain non-trivial'' nor ``emissions distinguish states''
+alone suffices, nor their conjunction (counterexample: hidden state
+$(A_n, B_n)$ with $A_n$ a persistent Markov chain, $B_n$ iid, and
+emission distinct for all four state pairs but
+$\mathbb{E}_{B_n}[p_{(A_n, B_n)}] = \text{const in } A_n$, yielding
+$X_n$ iid despite both conditions). The cleanest necessary-and-sufficient
+condition is that the observation process is not iid; verifying this
+from the HMM parameters $(P, \pi, \{p_y\})$ reduces to checking
+that the observable prediction $\mu_n K$ moves under the
+filter recursion.}
 
 \emph{\textbf{Proof.}} Stationarity of $(X_n)$: from stationarity
 of $(Y_n)$, the joint distribution of any block
@@ -2308,15 +2314,20 @@ output under the stationary measure of $(\mu_n)$.
 Informativeness: $E_{\mathrm{HMM}} = H(X_1) - h_{\mathrm{HMM}} \geq 0$ in
 all cases (Cover \& Thomas 2006 Theorem 4.2.2). Equality
 $E_{\mathrm{HMM}} = 0$ holds iff $H(X_n \mid X_{<n}) = H(X_n)$ for all $n$,
-i.e., the observed process $(X_n)$ is iid. This can occur in several
-non-equivalent ways: (a) all emission laws $\{p_y\}$ are identical,
-making $X_n$ iid given $Y_n$ and hence marginally; (b) the hidden
-chain $(Y_n)$ is iid (i.e., $P$ has identical rows equal to $\pi$),
-making the joint $(Y_n, X_n)$ iid in $n$ and hence $X_n$ iid; or
-(c) more generally, the filter $\mu_n$ remains constant in $n$ so
-that observations carry no temporal information. The lemma claims
-the equivalence with iid $(X_n)$ only; it does not claim that
-non-identical emissions alone suffice. \hfill$\blacksquare$
+i.e., the observed process $(X_n)$ is iid (in a strictly stationary
+process, this also forces independence at all block lengths). This can
+occur in several non-equivalent ways: (a) all emission laws $\{p_y\}$
+are identical, making $X_n$ iid given $Y_n$ and hence marginally;
+(b) the hidden chain $(Y_n)$ is iid (i.e., $P$ has identical rows equal
+to $\pi$); or (c) the hidden chain has non-trivial temporal structure
+in components that average out in the observed prediction (e.g.,
+$Y = (A, B)$ with $A$ a persistent Markov chain and $B$ an iid
+``filler'' that washes out $A$'s information through emission averaging).
+The cleanest necessary-and-sufficient condition for
+$E_{\mathrm{HMM}} = 0$ is that the observable prediction
+$\mu_n K \equiv \pi K = m$ almost surely (the filter may still move
+within the affine fiber $\{\mu : \mu K = m\}$, but the observable output
+prediction is stuck at the stationary marginal). \hfill$\blacksquare$
 
 \emph{Example: binary-state binary-observation HMM.} Take
 $\mathcal{Y} = \mathcal{X} = \{0, 1\}$, symmetric hidden chain

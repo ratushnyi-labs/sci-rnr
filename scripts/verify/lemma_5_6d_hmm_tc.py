@@ -231,6 +231,54 @@ def test_E_close_to_H_Y_for_deterministic_emissions():
     return True  # treat as warn, not fail
 
 
+def test_persistent_Y_with_avg_emissions_gives_iid_X():
+    """Counterexample to a 'sufficient condition': hidden chain has
+    persistent temporal structure AND emissions distinguish states,
+    yet observable X is iid because emissions average out.
+
+    Hidden state Y = (A, B), A persistent Markov, B iid filler.
+    Emissions distinct for all 4 (a,b) but conditional on a, the
+    average over B is constant, so marginally X is iid.
+    """
+    print("\nTest 4c: Persistent hidden chain + distinct emissions but iid X (codex counterexample)")
+    # 4-state hidden: indices 0=(0,0), 1=(0,1), 2=(1,0), 3=(1,1).
+    # A_n persistent (transition 0->0 prob 0.9), B_n iid Bernoulli(0.5).
+    # Joint (A,B) transition: independent of B from previous, given A.
+    # P[(a,b)][(a',b')] = P_A[a][a'] * 0.5 (B' iid fair).
+    P_A = [[0.9, 0.1], [0.1, 0.9]]
+    P_Y = [[0.0] * 4 for _ in range(4)]
+    for a_old in range(2):
+        for b_old in range(2):
+            for a_new in range(2):
+                for b_new in range(2):
+                    src = 2 * a_old + b_old
+                    dst = 2 * a_new + b_new
+                    P_Y[src][dst] = P_A[a_old][a_new] * 0.5
+    pi_Y = [0.25, 0.25, 0.25, 0.25]
+
+    # Emissions: distinct for all 4 states, but conditional on a, average over b
+    # gives constant. Specifically: state 0=(0,0)->0.1, 1=(0,1)->0.9, 2=(1,0)->0.2, 3=(1,1)->0.8.
+    # E[p_X=1 | A=0] = 0.5 * (0.1 + 0.9) = 0.5
+    # E[p_X=1 | A=1] = 0.5 * (0.2 + 0.8) = 0.5
+    emission = {
+        0: {0: 0.9, 1: 0.1},
+        1: {0: 0.1, 1: 0.9},
+        2: {0: 0.8, 1: 0.2},
+        3: {0: 0.2, 1: 0.8},
+    }
+
+    h_est = h_HMM_filter_recursion(P_Y, pi_Y, emission, num_steps=3000, num_chains=25, seed=42)
+    H_X1 = 1.0  # marginal Ber(0.5)
+    E_HMM = H_X1 - h_est
+    print(f"  Y=(A,B), A persistent (P_AA=0.9), B iid: h_HMM ≈ {h_est:.4f}, E ≈ {E_HMM:.4f}")
+    if abs(E_HMM) < 0.05:
+        print(f"  OK: E ≈ 0 despite persistent hidden chain + distinct emissions")
+        print(f"      (emissions average out, observable prediction stays at marginal)")
+        return True
+    print(f"  FAIL: E should be ≈ 0 (codex counterexample to 'sufficient condition' claim)")
+    return False
+
+
 def test_iid_Y_gives_iid_X():
     """When hidden chain Y is iid (P rows identical to pi), X is iid
     regardless of emission distinctness. E_HMM = 0."""
@@ -278,10 +326,11 @@ def main() -> int:
     ok3 = test_E_zero_for_identical_emissions()
     ok4 = test_E_close_to_H_Y_for_deterministic_emissions()
     ok4b = test_iid_Y_gives_iid_X()
+    ok4c = test_persistent_Y_with_avg_emissions_gives_iid_X()
     ok5 = test_published_E_values()
 
     print()
-    if all([ok1, ok2, ok3, ok4, ok4b, ok5]):
+    if all([ok1, ok2, ok3, ok4, ok4b, ok4c, ok5]):
         print("PASS: Lemma 5.6d HMM TC formula verified.")
         print("      Stationary HMM is a special case of Lemma 5.6c.")
         print("      E_HMM > 0 for informative HMMs, = 0 for identical emissions.")
