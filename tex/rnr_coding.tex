@@ -98,8 +98,9 @@ with cost
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
 $W$-bounded predictors and uniform sync-point spacing
 (Theorem 10.3), where $|X|$ is the uncompressed source length
-(non-uniform spacing adds a binary-search factor
-$\log(|X|/K)$ to the index-lookup term) --- polylogarithmic in
+(non-uniform spacing replaces the direct-lookup term with binary
+search costing $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits)
+--- polylogarithmic in
 archive size $|X|$ once the sync-point spacing $K$, read window
 $k$, predictor cost, and $\log L(R)$ are treated as fixed (or
 polylogarithmic in $|X|$) parameters. Under an additional probability-floor assumption
@@ -363,8 +364,11 @@ This article makes the following contributions.
 \item
   Random-access (seek-and-read) capability with cost
   $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for uniform
-  sync-point spacing (non-uniform spacing adds a binary-search
-  factor $\log(|X|/K)$ to the lookup term)
+  sync-point spacing (non-uniform spacing replaces the direct
+  lookup with binary search at cost
+  $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits, since each
+  entry carries both a source-position key and a repair-stream
+  offset)
   --- polylogarithmic in archive size $|X|$ once sync-point spacing
   $K$, read window $k$, predictor cost, and $\log L(R)$ are held
   fixed (or polylog in $|X|$) --- via Theorem 10.3 with Definitions
@@ -2781,9 +2785,12 @@ positions of $R$, of which at most $K$ positions are warmup
 (discarded output); (iii)~$K + k$ predictor evaluations and
 entropy-coder updates. Total work is
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$. (For non-uniform
-sync-point placement, the lookup becomes a binary search costing
-$O(\log(|X|/K) \cdot \log L(R))$ bits; the rest of the analysis is
-unchanged.) \emph{This cost is polylogarithmic in archive size
+sync-point placement, each seek-index entry stores both a
+$\lceil \log_2 |X| \rceil$-bit source position and a
+$\lceil \log_2 L(R) \rceil$-bit repair-stream offset, so the
+binary-search lookup costs
+$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits; the rest of
+the analysis is unchanged.) \emph{This cost is polylogarithmic in archive size
 $|X|$ only when $K$ and $k$ are held fixed or grow at most
 polylogarithmically in $|X|$ and $L(R) = \mathrm{poly}(|X|)$; for
 $K = \Theta(|X|)$ or $k = \Theta(|X|)$ the cost is
@@ -2801,16 +2808,20 @@ corresponding bit offset in $R$ from the seek index: the index has
 exactly $\lceil |X|/K \rceil$ entries, each of width
 $\lceil \log_2 L(R)\rceil + O(1)$ bits, indexed by $\lfloor p/K \rfloor$
 in $O(\log L(R))$ bits per direct probe. (For non-uniform spacing,
-binary search over the index would cost
-$O(\log(|X|/K) \cdot \log L(R))$ bits in total; the uniform case
-avoids the $\log(|X|/K)$ factor at the cost of one extra
-constant-time arithmetic operation.) By
+each entry is $\lceil \log_2|X|\rceil + \lceil \log_2 L(R)\rceil + O(1)$
+bits wide, and binary search over the index costs
+$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits in total; the
+uniform case avoids both the $\log(|X|/K)$ factor and the
+$\log |X|$ per-entry term at the cost of one extra constant-time
+arithmetic operation.) By
 Definition 10.3 (a, b), decoding from $R$'s bit offset at $P$
 proceeds with both the predictor state initialized to
 $Q_{\text{init}}$ and the entropy-coder state initialized to its
 post-flush starting value; no prior bits of $R$ are required to
 parse the bits following the sync-point offset. Decode forward one
-position at a time: at each position $i \in \{P, P+1, \ldots, p+k-1\}$,
+position at a time: let $k' = \min(k, |X| - p)$ (the actual number
+of output bytes, equal to $k$ when $p + k \leq |X|$, less when
+$p + k > |X|$). At each position $i \in \{P, P+1, \ldots, p+k'-1\}$,
 compute $Y_i = M(C_i)$ where $C_i$ is the context built from
 previously decoded positions $[P, i)$. By the $W$-bounded property
 (Definition 10.2), $Y_i$ depends only on bytes $[i-W, i)$, which are
@@ -2819,17 +2830,17 @@ first $W$ positions after $P$ may have shortened context (positions
 $[P, P+W)$ see fewer than $W$ bytes), which the encoder accommodates
 by encoding those positions with reduced-context predictions; this is
 exactly the cold-context cost analyzed before. Continue decoding
-until position $p + k$; output bytes $[p, p+k)$. By Theorem 10.1, all
-predictor evaluations are deterministic and bit-identical to a full
-decoding from position 0, so the output matches the original $X$ on
-$[p, p+k)$. Total decoded positions: $p + k - P \leq K + k$ since
-$P > p - K$. \hfill$\blacksquare$
+until position $p + k'$; output bytes $[p, p+k')$. By Theorem 10.1,
+all predictor evaluations are deterministic and bit-identical to a
+full decoding from position 0, so the output matches the original
+$X$ on $[p, p+k')$. Total decoded positions: $p + k' - P \leq K + k$
+since $P > p - K$. \hfill$\blacksquare$
 
 Theorem 10.3 establishes that random access in RNR archives runs in
 time with only polylogarithmic dependence on archive size (a
 $\log L(R)$ direct seek-index cost under uniform spacing, or a
-$\log(|X|/K) \cdot \log L(R)$ binary-search cost under non-uniform
-spacing, plus a $K+k$ decode window). For $K = 64$ KiB and $k = 1$ KiB, the cost is roughly
+$\log(|X|/K) \cdot (\log |X| + \log L(R))$ binary-search cost
+under non-uniform spacing, plus a $K+k$ decode window). For $K = 64$ KiB and $k = 1$ KiB, the cost is roughly
 $K + k = 65$ KiB worth of predictor evaluations --- typically on
 the order of $650\,\text{ms}$ on a single CPU core for a small
 distilled transformer (one forward pass at $\sim 10\,\mu\text{s}$
@@ -2862,10 +2873,12 @@ total size $O((|X|/K) \cdot (\log L(R) + L(\text{state})))$ bits.
 The random-access cost per query (to $k$ bytes at position $p$) is
 $O\bigl(\log L(R) + L(\text{state}) + (K + k) \cdot
 \mathrm{cost}(M)\bigr)$ under uniform spacing (direct index lookup),
-or $O\bigl(\log(|X|/K) \cdot (\log L(R) + L(\text{state})) + (K + k)
+or $O\bigl(\log(|X|/K) \cdot (\log |X| + \log L(R) + L(\text{state})) + (K + k)
 \cdot \mathrm{cost}(M)\bigr)$ under non-uniform spacing (binary
-search), where the index-related terms cover the entry lookup plus
-loading and deserializing the snapshot before decoding can
+search, with each entry containing a $\log |X|$ source-position
+key, a $\log L(R)$ repair-stream offset, and the $L(\text{state})$
+snapshot), where the index-related terms cover the entry lookup
+plus loading and deserializing the snapshot before decoding can
 resume.}
 
 \emph{\textbf{Proof.}} Augment each sync point's index entry with
@@ -2878,9 +2891,13 @@ latest sync point $P \leq p$ is the deterministic value
 $P = K \lfloor p/K \rfloor$ (constant-time computation); direct
 lookup at entry $\lfloor p/K \rfloor$ reads
 $O(\log L(R) + L(\text{state}))$ bits to obtain the bit offset and
-snapshot. Under non-uniform spacing, the lookup is a binary search
-over the augmented index, costing
-$O(\log(|X|/K) \cdot (\log L(R) + L(\text{state})))$ bits in total.
+snapshot. Under non-uniform spacing, each entry is
+$\lceil \log |X| \rceil + \lceil \log L(R) \rceil + L(\text{state})
++ O(1)$ bits wide (source-position key plus repair offset plus
+snapshot), and the lookup is a binary search over the augmented
+index, costing
+$O(\log(|X|/K) \cdot (\log |X| + \log L(R) + L(\text{state})))$
+bits in total.
 In either case, deserialize the boundary snapshot, restore the
 decoder's predictor, adaptive-parameter, and entropy-coder boundary
 states, and decode forward as in Theorem 10.3 (cost
@@ -2895,10 +2912,14 @@ per-component bit-width. For modern state-space models with
 structured state-transition matrices, $L(\text{state})$ can be
 $O(d^2)$. With $d = 1024$ and $b = 16$, an LSTM state snapshot is
 $2 \cdot 1024 \cdot 16 = 32{,}768$ bits $= 4$ KiB; placing one
-snapshot per $K = 64$ KiB sync point adds approximately $6.25\%$
-index overhead. State-space models
-with $d = 256$ and structured-state representation can require 64 KiB
-snapshots, doubling the seek index. This motivates the $W$-bounded
+snapshot per $K = 64$ KiB sync point adds $4 / 64 = 6.25\%$ of the
+source size as augmented seek-index overhead (a $\sim$1000$\times$
+increase over the offset-only index, which is only $\sim$8 bytes
+per entry). State-space models with $d = 256$ and structured-state
+representation can require 64 KiB snapshots per sync point, giving
+$64 / 64 = 100\%$ of source size as index overhead at $K = 64$ KiB
+--- effectively doubling the on-disk archive size, which is
+deployment-prohibitive without raising $K$. This motivates the $W$-bounded
 design choice for deployable RNR codecs, particularly for archive
 formats where the seek index is co-located with the data and
 contributes to its size.
@@ -2955,16 +2976,23 @@ Three trade-offs govern random-access design in RNR archives.
   offsets in the seek index (Definition 10.3's non-uniform spacing
   case, adding $\lceil \log_2 |X|\rceil$ bits per entry); the
   random-access cost then follows the non-uniform branch of
-  Theorem 10.3 ($O(\log(|X|/K) \cdot \log L(R))$ binary-search
-  bits).
+  Theorem 10.3 ($O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$
+  binary-search bits, including the per-entry source-position
+  width).
 \item
   Verification under random access. Theorem 9.1's chained-hash
   verification covers sequential decoding; a random-access reader
   cannot verify bytes $[0, p)$ it never decoded. Three solutions
   exist: (a)~per-sync-point hashes that allow local verification,
   costing $O((|X|/K) \cdot |\text{hash}|)$ bits; (b)~a Merkle tree
-  over the repair stream allowing verified random access with
-  $O(\log |X|)$ hash overhead per read; (c)~explicitly unverified random access for
+  over \emph{all} archive-mounted bytes --- the repair stream,
+  seek index, sync-point metadata, predictor parameters, and
+  per-subblock source hashes --- so that any tampering with index
+  entries (which would otherwise let a corrupted seek-index entry
+  point a valid repair-stream region to the wrong source range)
+  is also detected; this still gives $O(\log |X|)$ hash overhead
+  per read but requires that the Merkle root be supplied via a
+  trusted channel; (c)~explicitly unverified random access for
   trusted-source archives. The Merkle-tree option is standard in
   content-addressable storage and is the recommended default for
   archive deployments.
@@ -3012,16 +3040,19 @@ in the predictor-cost term and polylog in $|X|$ in the
 seek-index-lookup term, at a per-sync-point worst-case excess of
 $W \cdot \log_2(1/\eta)$ bits (Section 10.7), giving a worst-case
 total of $(|X|/K) \cdot W \cdot \log_2(1/\eta)$ bits over the
-archive. For $K = 64$ KiB, $W = 4$ KiB, $\eta = 2^{-8}$, and a 1
-GiB source, the worst-case bound evaluates to
-$16384 \cdot 4096 \cdot 8$ bits $= 64$ MiB, or roughly 6.25\% of
+archive. For $K = 64$ KiB, $W = 4$ KiB,
+$\eta = 2^{-12}$ (standard small uniform escape mixed with the
+predictor's main distribution; $\eta = 2^{-8}$ would force a
+uniform predictor and contradict any cold-vs-warm gap below), and
+a 1 GiB source, the worst-case bound evaluates to
+$16384 \cdot 4096 \cdot 12$ bits $= 96$ MiB, or roughly $9.4\%$ of
 the source size. The realistic overhead is smaller because the
 per-byte excess in practice is the cold-vs-warm \emph{rate gap}
 $\delta$ (typically a few tenths of a bit per byte for natural
-data) rather than the full $\log_2(1/\eta) = 8$ bits. With
+data) rather than the full $\log_2(1/\eta) = 12$ bits. With
 $\delta \approx 0.5$ bit/byte, $(|X|/K) \cdot W \cdot \delta =
 16384 \cdot 4096 \cdot 0.5$ bits $\approx 32$ Mibits $\approx 4$
-MiB, or roughly 0.4\% of the source size; this estimate is
+MiB, or roughly $0.4\%$ of the source size; this estimate is
 heuristic and is not a theorem. The ratio comparison
 against bgzip and zstd seekable (typically 2--7 percent overhead)
 is empirical and is the subject of §11.
@@ -3070,15 +3101,29 @@ $M$ satisfying Theorem 10.1 and sync points placed every $K$
 positions; let $|X|$ denote the uncompressed source length. A
 block-device driver that maps logical-block-address-indexed read
 requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR random-access
-calls can serve any read request in time
+calls can serve any read request as follows: let $p = \mathcal{L}
+\cdot \text{sector\_size}$. If $p \geq |X|$, return an empty read
+($0$ bytes) and the standard end-of-device indication. Otherwise
+$p \in [0, |X|)$ and the driver returns $k' = \min(k, |X| - p)
+\geq 1$ bytes from byte range $[p, p+k')$ (a full read when
+$p+k \leq |X|$, a short read when $p+k > |X|$, mirroring POSIX
+\texttt{pread}). The boundary condition is inherited from Theorem
+10.3. The read is served in time
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ under uniform
-sync-point spacing (Theorem 10.3; non-uniform spacing adds a
-$\log(|X|/K)$ binary-search factor) and
-working memory $O((K + k) \cdot 8 + L(M) + L(\mathrm{seek\_index}))$
-\emph{bits}, equivalently $O(K + k + L(M)/8 + L(\mathrm{seek\_index})/8)$
-\emph{bytes}, where $L(M)$ is the predictor description size in bits
-(kept resident in the driver) and $L(\mathrm{seek\_index})$ is the
-seek-index size in bits (typically $O((|X|/K) \log L(R))$). The cost is polylogarithmic in
+sync-point spacing (Theorem 10.3; non-uniform spacing replaces the
+direct lookup with binary search at
+$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits) and
+working memory $O((K + k) \cdot 8 + L(M) + L(\mathrm{workspace}(M))
++ L(\mathrm{seek\_index}))$ \emph{bits}, equivalently
+$O(K + k + L(M)/8 + L(\mathrm{workspace}(M))/8 +
+L(\mathrm{seek\_index})/8)$ \emph{bytes}, where $L(M)$ is the
+predictor description size in bits (kept resident in the driver),
+$L(\mathrm{workspace}(M))$ is the per-inference activation/KV/scratch
+workspace required by the inference engine on its target hardware
+(architecture-specific; e.g., transformer KV-cache for the last
+$W$ positions, layer-wise activation buffers), and
+$L(\mathrm{seek\_index})$ is the seek-index size in bits (typically
+$O((|X|/K) \log L(R))$ under uniform spacing). The cost is polylogarithmic in
 archive size $|X|$ only in the parameter regime where $K$, $k$, and
 $\log L(R)$ are held fixed or grow at most polylogarithmically in
 $|X|$; outside that regime the output-sensitive cost of Theorem 10.3
@@ -3119,7 +3164,9 @@ same order of magnitude as a slow random-read of a multi-MB region
 from local NVMe (single-block NVMe random-read latency is
 $\sim 100\,\mu\text{s}$, so RNR-NPU is about $65 \times$ slower per
 request, comparable to a server-side decompressor); the CPU end
-matches spinning-disk seek latency. Hardware-batching multiple
+($\sim 650$ ms per cold read) is two orders of magnitude slower
+than HDD seek latency (single-digit ms) and is in the range of
+disk-network or multi-second offline-access workloads. Hardware-batching multiple
 forward passes per kernel invocation can improve effective
 throughput by a factor of 10--100 on GPU/NPU when access patterns
 are sequential, narrowing the cold-read latency proportionally.
@@ -3203,12 +3250,21 @@ NPU with byte-identity guaranteed by Theorem 10.6.
 
 A read-cache of size $C$ placed between the driver and the OS page
 cache permits steady-state throughput exceeding the per-access bound
-of Theorem 10.5. For sequential reads over any region of size up to
-$C$, the amortized cost per byte is $O(\mathrm{cost}(M))$: one
-predictor evaluation per byte, with no per-access warmup. For random
-reads with spatial locality smaller than $C$, the cache hit rate
-approaches one and the amortized cost per byte approaches
-$O(\mathrm{memcpy})$ speed, dominated by main memory bandwidth. For
+of Theorem 10.5. For sequential reads over a region of size $R \gg
+K$ (so a single $K$-byte warmup is amortized over many output
+bytes) up to cache size $C$, the amortized cost per byte approaches
+$O(\mathrm{cost}(M))$: one predictor evaluation per byte once the
+warmup pays back, with $(K + R)/R$ amortization factor (asymptotic
+in $R/K$). For small sequential reads $R \lesssim K$ the
+per-access $K + R$ warmup still dominates and the per-byte cost is
+$O((K + R) \cdot \mathrm{cost}(M) / R)$. For random read \emph{re-access patterns} where the same regions
+of size $\lesssim C$ are revisited many times (the working-set fits
+in cache), the cache hit rate approaches one on repeated accesses,
+and the amortized cost per byte after warmup approaches
+$O(\mathrm{memcpy})$ speed, dominated by main memory bandwidth.
+A single forward scan over a region of size $\lesssim C$ without
+re-access pays the cold cost on every byte (the cache helps only
+prefetch, not the decoded-region hit rate). For
 uniformly random reads at distance larger than $C$, the amortized
 cost per byte equals the Theorem 10.5 bound divided by $k$, that is,
 $O((K + k) \cdot \mathrm{cost}(M) / k)$, which approaches
@@ -3232,11 +3288,25 @@ support read-write deployments.
   squashfs-plus-overlayfs pattern that container runtimes (Docker,
   Podman, containerd) and live Linux distributions use today.
 \item
-  Region rewrite. A modification within sync-point region
-  $[P, P + K)$ re-encodes only that region: re-runs the predictor on
-  the modified bytes starting from $P$, re-encodes the repair stream
-  for the region, and updates the seek index entry for the affected
-  sync point. Cost: $O(K \cdot \mathrm{cost}(M))$ per modification.
+  Region rewrite (fixed-predictor case only). A modification within
+  sync-point region $[P, P + K)$ re-encodes only that region:
+  re-runs the predictor on the modified bytes starting from $P$,
+  re-encodes the repair stream for the region, and updates the seek
+  index entry for the affected sync point. This is well-defined
+  \emph{only when the predictor's behaviour at every subsequent
+  position is independent of the bytes in $[P, P+K)$}, i.e., for a
+  fixed-parameter predictor with no online adaptation. For adaptive
+  predictors (Theorem 10.2) the parameter trajectory after $P + K$
+  depends on the bytes in $[P, P+K)$; for non-$W$-bounded
+  predictors (Theorem 10.4) the state snapshot at the \emph{next}
+  sync point also depends on those bytes. In those cases the
+  region rewrite must cascade through all sync points that read
+  modified-region bytes into their context, and the cost is
+  $O(|X| \cdot \mathrm{cost}(M))$ in the worst case (essentially a
+  full re-encoding), not $O(K \cdot \mathrm{cost}(M))$. The
+  fixed-predictor case below is the only one that supports cheap
+  local rewrite. Cost (fixed predictor): $O(K \cdot \mathrm{cost}(M))$
+  per modification.
   The naive append-in-place form is well-defined only if the
   re-encoded region's bit length is bounded by a pre-reserved slot
   size; otherwise the rewritten region shifts every subsequent
@@ -3329,9 +3399,11 @@ drivers:
   conforming to Theorem 10.6. The path is selected at driver load
   time based on hardware availability.
 \item
-  Range-decode function. Given $(p, k)$, looks up the latest sync
-  point $P \leq p$ in the seek index, decodes from $P$ to $p + k$
-  using Theorem 10.3, returns bytes $[p, p + k)$.
+  Range-decode function. Given $(p, k)$ with $p \in [0, |X|)$,
+  computes $k' = \min(k, |X| - p)$, looks up the latest sync point
+  $P \leq p$ in the seek index, decodes from $P$ to $p + k'$ using
+  Theorem 10.3, and returns bytes $[p, p + k')$ (a short read when
+  $p + k > |X|$, an empty read when $p \geq |X|$).
 \item
   Cache. LRU or ARC cache of recently decoded regions, with eviction
   policy tuned to expected access pattern. Sits between the
@@ -3589,7 +3661,7 @@ point to the relevant theorems.
   Random access (seek-and-read) into a compressed archive with
   output-sensitive cost $O(\log L(R) + (K + k) \cdot
   \mathrm{cost}(M))$ under uniform sync-point spacing (or
-  $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$
+  $O(\log(|X|/K) \cdot (\log |X| + \log L(R)) + (K + k) \cdot \mathrm{cost}(M))$
   under non-uniform spacing) --- resolved by Definitions 10.2
   ($W$-bounded predictor) and 10.3 (sync point, including
   entropy-coder flush) and Theorem 10.3, with Theorem 10.4 covering
