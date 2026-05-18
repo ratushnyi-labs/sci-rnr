@@ -95,12 +95,14 @@ vanish on sources without joint structure). Type-III-A admits a tight
 $2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
 lower bound Theorem 6.2). The framework's deployment-relevant feature is random-access decoding
 with cost
-$O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
-$W$-bounded predictors (Theorem 10.3), where $|X|$ is the
-uncompressed source length --- polylogarithmic in archive size
-$|X|$ once the sync-point spacing $K$, read window $k$, predictor
-cost, and $\log L(R)$ are treated as fixed (or polylogarithmic in
-$|X|$) parameters. Under an additional probability-floor assumption
+$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
+$W$-bounded predictors and uniform sync-point spacing
+(Theorem 10.3), where $|X|$ is the uncompressed source length
+(non-uniform spacing adds a binary-search factor
+$\log(|X|/K)$ to the index-lookup term) --- polylogarithmic in
+archive size $|X|$ once the sync-point spacing $K$, read window
+$k$, predictor cost, and $\log L(R)$ are treated as fixed (or
+polylogarithmic in $|X|$) parameters. Under an additional probability-floor assumption
 on the predictor (Section 10.7), the sync-point compression overhead
 per sync point is bounded by $W \cdot \log_2(1/\eta)$ where $\eta$
 is the floor (a sharper bound subtracts a warm-context rate term
@@ -280,8 +282,16 @@ This article makes the following contributions.
   $32 \times 32$ token-tensor constructions (Section 6).
 \item
   Achievability and converse bounds for Type-I (Theorems 4.1, 4.2):
-  the Type-I rate matches the conditional source-coding lower bound
-  $H(X \mid Y)$ to first order in $N$.
+  the \emph{ideal} Type-I rate (true conditional class+payload
+  model, Theorem 4.2 part (A)) matches the conditional source-coding
+  lower bound $H(X \mid Y)$ to first order in $N$; the concrete
+  Theorem 4.1 construction, which uses a fixed $H(P_E)$ class model
+  and a uniform within-class payload, achieves
+  $N \cdot H(P_E) + N \cdot \ell_{\text{cond}} + \varepsilon_N$
+  bits and matches $H(X \mid Y)$ only when both the class model and
+  payload model match the true conditional law on $(C_E, Y)$ and
+  $(E \mid C_E, Y)$ respectively; otherwise the gap is the
+  cross-entropy excess plus KL, which can be $\Theta(N)$.
 \item
   Complexity boundary for Type-I codeword selection: the fixed
   Code12 selection at $n_0 = 256, m_0 = 12$ is a finite constant-size
@@ -352,7 +362,9 @@ This article makes the following contributions.
   and testing.
 \item
   Random-access (seek-and-read) capability with cost
-  $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$
+  $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for uniform
+  sync-point spacing (non-uniform spacing adds a binary-search
+  factor $\log(|X|/K)$ to the lookup term)
   --- polylogarithmic in archive size $|X|$ once sync-point spacing
   $K$, read window $k$, predictor cost, and $\log L(R)$ are held
   fixed (or polylog in $|X|$) --- via Theorem 10.3 with Definitions
@@ -366,12 +378,18 @@ This article makes the following contributions.
 \item
   Block-device and read-only filesystem deployment as direct
   corollaries (Theorems 10.5 and 10.6 in §10.8): an OS-level driver
-  can serve LBA-indexed read requests with cost polylogarithmic in
-  archive size $|X|$ in the parameter regime where the sync-point
-  spacing $K$, read window $k$, predictor cost $\mathrm{cost}(M)$,
-  and seek-index entry width $\log L(R)$ are fixed or grow at most
-  polylogarithmically in $|X|$, and additionally
-  $L(R) = \mathrm{poly}(|X|)$ (Theorem 10.5); and the predictor can
+  can serve LBA-indexed read requests with \emph{per-query} cost
+  polylogarithmic in archive size $|X|$ in the parameter regime
+  where the sync-point spacing $K$, read window $k$, predictor cost
+  $\mathrm{cost}(M)$, and seek-index entry width $\log L(R)$ are
+  fixed or grow at most polylogarithmically in $|X|$, and
+  additionally $L(R) = \mathrm{poly}(|X|)$ (Theorem 10.5). Note
+  that the driver's resident memory still includes the seek index
+  itself, which is $\Theta(|X|/K)$ entries for any fixed $K$ ---
+  linear in $|X|$, not polylogarithmic; for $|X| = 1$ GiB and
+  $K = 64$ KiB this is 16384 entries (a few hundred KiB total),
+  small in absolute terms but not asymptotically negligible. The
+  predictor can
   be required to
   run bit-exactly on any hardware target satisfying the conformance
   specification of Theorem 10.1 (Theorem 10.6). Specific target
@@ -860,15 +878,20 @@ $Y = M_I(C)$ be decoder-reproducible side information. Fix an
 $E_{12} : \{0, \ldots, 255\} \to \{0, 1\}^{12}$ so that, given $Y$,
 the error variable $E = E_{12}(X) \oplus Y$ stands in bijection with
 $X$ (the decoder recovers $X$ from $(Y, E)$ via
-$X = E_{12}^{-1}(E \oplus Y)$). Then any uniquely decodable lossless
-code for $X$ whose decoder uses only the codeword and $Y$ has expected
-length at least $H(X \mid Y)$. Conversely, an \emph{ideal} Type-I
-class-and-payload coder driven by the true conditional law of $E$
-achieves expected length $H(X \mid Y) + \varepsilon_N$, plus the
-constant headers $L(M_I) + L(V) + L(\Theta)$. A concrete coder using
-an approximate class model or a uniform within-class payload pays the
-corresponding cross-entropy, which matches the bound only when those
-models match the true conditional law. Non-injective $E_{12}$ would
+$X = E_{12}^{-1}(E \oplus Y)$). Then:
+\begin{itemize}
+\item[\textbf{(C)}] (\emph{Converse}) Any uniquely decodable lossless
+code for $X$ whose decoder uses only the codeword and $Y$ has
+expected length at least $H(X \mid Y)$.
+\item[\textbf{(A)}] (\emph{Ideal achievability}) An \emph{ideal}
+Type-I class-and-payload coder driven by the true conditional law
+of $E$ achieves expected length $H(X \mid Y) + \varepsilon_N$, plus
+the constant headers $L(M_I) + L(V) + L(\Theta)$.
+\end{itemize}
+A concrete coder using an approximate class model or a uniform
+within-class payload pays the corresponding cross-entropy, which
+matches the bound only when those models match the true
+conditional law. Non-injective $E_{12}$ would
 collapse the bijection: e.g., if $E_{12}(0) = E_{12}(1) = 0$ and
 $Y \equiv 0$, then $E \equiv 0$ for $X \sim \mathrm{Unif}\{0, 1\}$
 while $H(X \mid Y) = 1$, so no decoder can recover $X$ from $(Y, E)$.}
@@ -1069,11 +1092,11 @@ The expected within-class payload per position is
 \ell_{\text{cond}} = 0.25 \log_2 12 + 0.10 \log_2 66 + 0.04 \log_2 4
 + 0.01 \cdot 8 \approx 0.896 + 0.604 + 0.080 + 0.080 = 1.660 \text{ bits.}
 \]
-Per-position total is therefore $1.527 + 1.660 \approx 3.19$ bits, or
-$3.19 \cdot 4096 \approx 13063$ bits $= 1633$ bytes for the repair
-stream. Adding $L(V) = 32$ bytes (a SHA-256 per 4 KiB subblock) and
-$L(\Theta) = 16$ bytes of metadata gives 1681 bytes plus the amortized
-model cost. For comparison, a 4096-byte block at 8 bits per byte raw
+Per-position total is therefore $1.527 + 1.660 \approx 3.187$ bits,
+or $3.187 \cdot 4096 \approx 13055$ bits $\approx 1632$ bytes for
+the repair stream. Adding $L(V) = 32$ bytes (a SHA-256 per 4 KiB
+subblock) and $L(\Theta) = 16$ bytes of metadata gives approximately
+$1680$ bytes plus the amortized model cost. For comparison, a 4096-byte block at 8 bits per byte raw
 is 4096 bytes; LZMA on structured text typically achieves 1500--2000
 bytes. The Type-I coder is competitive whenever the amortized $L(M_I)$
 per block is below approximately 100--300 bytes, which is achievable
@@ -1528,10 +1551,13 @@ baseline of Theorem 5.2 evaluates to
 \[
 \log_2 \!\left[\frac{1024!}{(64!)^{16}}\right] \approx 4033.08 \text{ bits.}
 \]
-The plain per-byte raw cost is $4 \cdot 1024 = 4096$ bits. A factorized
-arithmetic coder under the uniform marginal pays approximately 4096
-bits. The multinomial coder saves 75 bits just from the count
-constraint alone.
+The plain per-nibble raw cost is $4 \cdot 1024 = 4096$ bits ($4$
+bits per nibble $\times$ $N = 1024$ nibbles, i.e., $4096$ bits per
+block of $512$ bytes when nibbles are packed two per byte). A
+factorized arithmetic coder under the uniform marginal pays
+approximately $4096$ bits. The multinomial coder saves about $63$
+bits just from the count constraint alone
+($4096 - 4033.08 \approx 63$).
 
 Suppose a positional predictor narrows each symbol's candidate
 support to $s_v \leq 256$ with no escapes ($\alpha_v = 0$).
@@ -2408,11 +2434,21 @@ evaluation.
 
 A SHA-256 per 4 KiB subblock is $32/4096 = 0.78\%$ overhead. A
 truncated 64-bit hash per 4 KiB subblock is $8/4096 = 0.20\%$. A
-truncated 32-bit hash is $0.10\%$, but with a $2^{-32}$ collision
-probability that may be acceptable in some applications. Reducing the
-subblock size to 1 KiB increases overhead proportionally. The right
-balance depends on the underlying error rate of the predictor; if
-errors are rare, larger subblocks are acceptable.
+truncated 32-bit hash is $0.10\%$, with $2^{-32}$ \emph{per-subblock}
+collision probability; for an archive of $m$ subblocks, the
+archive-level false-accept probability is bounded by union over
+subblocks at $m \cdot 2^{-32}$, which is non-negligible for large
+$m$ (e.g., $m = 2^{18}$ subblocks at 4 KiB each --- a 1 GiB archive
+--- gives archive-level false-accept probability up to $2^{-14}
+\approx 6 \cdot 10^{-5}$, comparable to typical disk uncorrectable
+read error rates). For archives in the GiB+ range, 64-bit
+truncation gives archive-level false-accept $\leq m \cdot 2^{-64}
+\approx 10^{-14}$, which is negligible. Reducing the subblock size
+to 1 KiB increases overhead proportionally and quadruples $m$. The
+right balance depends on the underlying error rate of the
+predictor and the size of the archive; if errors are rare and the
+archive is small, larger subblocks and shorter hashes are
+acceptable.
 
 \textbf{10.4 Fallback modes}
 
@@ -2773,15 +2809,18 @@ $P > p - K$. \hfill$\blacksquare$
 
 Theorem 10.3 establishes that random access in RNR archives runs in
 time with only polylogarithmic dependence on archive size (a
-$\log(|X|/K) \cdot \log L(R)$ seek-index cost plus a $K+k$ decode
-window). For $K = 64$ KiB and $k = 1$ KiB, the cost is roughly
+$\log L(R)$ direct seek-index cost under uniform spacing, or a
+$\log(|X|/K) \cdot \log L(R)$ binary-search cost under non-uniform
+spacing, plus a $K+k$ decode window). For $K = 64$ KiB and $k = 1$ KiB, the cost is roughly
 $K + k = 65$ KiB worth of predictor evaluations --- typically on
 the order of $650\,\text{ms}$ on a single CPU core for a small
 distilled transformer (one forward pass at $\sim 10\,\mu\text{s}$
-per byte; faster on GPU/NPU). This is asymptotically a
-factor of $|X|/(K + k)$ faster than full sequential decoding, which for
-archive sizes of 1 GiB and $K = 64$ KiB is a roughly 16{,}000-fold
-speedup.
+per byte; faster on GPU/NPU). This is asymptotically a worst-case (end-of-archive read)
+factor of $|X|/(K + k)$ faster than full sequential decoding, or
+about $|X| / (2(K + k))$ for an average random read at position
+$|X|/2$. For $|X| = 1$ GiB and $K = 64$ KiB the worst-case
+speedup is roughly 16{,}000-fold and the average is roughly
+8{,}000-fold.
 
 \textbf{Theorem 10.4 (Random access for non-$W$-bounded predictors).}
 \emph{For a non-$W$-bounded predictor (RNN, LSTM, state-space model),
@@ -2869,13 +2908,22 @@ Three trade-offs govern random-access design in RNR archives.
   is affected when dictionary tokens span longer fragments or
   grammar expansions. A token that would cross a uniform Def-10.3
   sync-point boundary $jK$ must be split, with the affected
-  occurrence forfeiting its dictionary saving. Over $|X|/K$ sync
-  points the worst-case loss is bounded by
-  $|X| \cdot \max_\tau |\tau| / K$ bits (at most one token crosses
-  any given boundary, and the lost saving per crossed token is at
-  most $\max_\tau |\tau|$ bits), negligible for $K \gg \max_\tau
-  |\tau|$ but a real cost when $K$ is small (e.g., $K = 4$ KiB and
-  grammar tokens of $\sim 1$ KiB give a few per-cent overhead). A
+  occurrence forfeiting its dictionary saving (at most $8 \cdot
+  |\tau|$ bits per crossed token, since the raw-literal baseline
+  costs $8\ell$ bits for an $\ell$-byte token). At most one token
+  crosses any given boundary, so over $|X|/K$ sync points the
+  worst-case loss is bounded by $8 \cdot |X| \cdot
+  \overline{|\tau|_{\text{crossed}}} / K$ bits, where
+  $\overline{|\tau|_{\text{crossed}}}$ is the average length of
+  crossed tokens (bounded above by $\max_\tau |\tau|$). For
+  $K \gg \max_\tau |\tau|$ this is negligible; for $K$ comparable to
+  $\max_\tau |\tau|$ the worst-case fractional overhead approaches
+  $8 \cdot \max_\tau|\tau| / K$ bits per source byte, which can be
+  substantial. Specifically, $K = 4$ KiB and a worst-case
+  $\max_\tau|\tau| = 1$ KiB give a worst-case overhead bound of
+  $2$ bits per source byte (25\% of an 8 bits/byte raw source);
+  in practice the average crossed token is shorter than the maximum,
+  and the typical overhead is a few per-cent on natural data. A
   non-uniform sync-point variant that aligns boundaries to token
   edges instead is also available, at the cost of storing byte
   offsets in the seek index (Definition 10.3's non-uniform spacing
@@ -2953,8 +3001,13 @@ This is the framework\textquotesingle s deployment-grade distinguishing
 feature relative to other neural compressors. The bounded-context
 architecture, the deterministic reproducibility guarantee (Theorem
 10.1), and the sync-point construction (Definition 10.3) jointly
-enable seek-and-read access at a small constant fractional ratio
-overhead --- a capability that LSTM-based or state-space-based
+enable seek-and-read access at a parameter-dependent ratio
+overhead --- on the order of a few percent for natural data at
+typical $K$ and Type-I/II/III-B/III-B coders under the
+probability-floor assumption (a heuristic estimate; not a theorem),
+rising to a worst-case bound that depends on $K$ and $\max_\tau
+|\tau|$ for Type-III-C as detailed above --- a capability that
+LSTM-based or state-space-based
 neural compressors can only provide with the expensive state
 snapshots of Theorem 10.4 (4 KiB or more per sync point); that
 NNCP-style autoregressive transformer compressors lack only because
@@ -2989,7 +3042,9 @@ positions; let $|X|$ denote the uncompressed source length. A
 block-device driver that maps logical-block-address-indexed read
 requests (LBA $\mathcal{L}$, length $k$ bytes) to RNR random-access
 calls can serve any read request in time
-$O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$ and
+$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ under uniform
+sync-point spacing (Theorem 10.3; non-uniform spacing adds a
+$\log(|X|/K)$ binary-search factor) and
 working memory $O((K + k) \cdot 8 + L(M) + L(\mathrm{seek\_index}))$
 \emph{bits}, equivalently $O(K + k + L(M)/8 + L(\mathrm{seek\_index})/8)$
 \emph{bytes}, where $L(M)$ is the predictor description size in bits
@@ -3005,7 +3060,8 @@ k)$ corresponds to a byte-range request on the underlying source $X$
 starting at byte position
 $p = \mathcal{L} \cdot \text{sector\_size}$ and continuing for $k$
 bytes. By Theorem 10.3, RNR random access to $k$ bytes at position
-$p$ runs in $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$ time and
+$p$ runs in $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ time
+(under uniform spacing) and
 requires $O(K + k)$ bytes (equivalently $O((K+k) \cdot 8)$ bits) of
 decode-window working memory (warmup buffer plus output buffer).
 The driver additionally keeps the predictor weights ($L(M)$ bits)
@@ -3171,9 +3227,14 @@ For the disk-image use case named at the start of this section (compress
 an ISO or block-device image, mount through a driver, use without full
 decompression), the read-only base plus copy-on-write overlay pattern is
 the natural deployment. It matches the architecture used today for
-compressed container images and live system images, replacing the
-dictionary-based compressed filesystem in the base layer with an RNR
-archive of higher compression ratio at identical access semantics.
+compressed container images and live system images. RNR would
+replace the dictionary-based compressed filesystem in the base
+layer; whether the resulting archive achieves a higher compression
+ratio than the dictionary-based baseline at identical access
+semantics is conjectured but is not derived in this paper (the
+ratio claim is empirical and conditional on the predictor
+calibration; see §11 for conjectural predictions and §13.3 for the
+empirical validation deferral).
 
 \emph{\textbf{Comparison with existing compressed filesystems}}
 
@@ -3414,9 +3475,17 @@ point to the relevant theorems.
 
 \begin{itemize}
 \item
-  Type-I converse bound --- resolved by Theorem 4.2: the
-  achievability bound of Theorem 4.1 matches the conditional
-  source-coding lower bound $H(X \mid Y)$ to first order in $N$.
+  Type-I converse bound --- resolved by Theorem 4.2. Part (C) of
+  Theorem 4.2 establishes the converse lower bound
+  $\geq H(X \mid Y)$ for any uniquely-decodable Type-I code (a
+  Shannon-source-coding consequence). Part (A) shows that the
+  \emph{ideal} class+payload coder driven by the true conditional
+  laws achieves $H(X \mid Y) + \varepsilon_N + O(1)$ headers, so
+  the ideal Type-I rate matches the converse to first order in $N$.
+  The concrete construction of Theorem 4.1 matches this only when
+  the empirical class model $P_E$ and uniform within-class payload
+  match the true conditional laws; under model misspecification the
+  gap is cross-entropy plus KL, which can be $\Theta(N)$.
 \item
   Computational complexity of optimal $E_{12}$ --- partially
   resolved by Theorem 4.3 (NP-hardness of the varying-parameter
@@ -3483,11 +3552,13 @@ point to the relevant theorems.
   the compatible class.
 \item
   Random access (seek-and-read) into a compressed archive with
-  output-sensitive cost $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot
-  \mathrm{cost}(M))$ --- resolved by Definitions 10.2 ($W$-bounded
-  predictor) and 10.3 (sync point, including entropy-coder flush)
-  and Theorem 10.3, with Theorem 10.4 covering non-$W$-bounded
-  predictors via state snapshots. The cost is polylogarithmic in
+  output-sensitive cost $O(\log L(R) + (K + k) \cdot
+  \mathrm{cost}(M))$ under uniform sync-point spacing (or
+  $O(\log(|X|/K) \cdot \log L(R) + (K + k) \cdot \mathrm{cost}(M))$
+  under non-uniform spacing) --- resolved by Definitions 10.2
+  ($W$-bounded predictor) and 10.3 (sync point, including
+  entropy-coder flush) and Theorem 10.3, with Theorem 10.4 covering
+  non-$W$-bounded predictors via state snapshots. The cost is polylogarithmic in
   archive size $|X|$ only in the parameter regime where the
   sync-point spacing $K$, read window $k$, and $\log L(R)$ are held
   fixed or grow at most polylogarithmically in $|X|$; outside that
