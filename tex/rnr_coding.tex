@@ -1161,29 +1161,38 @@ fixed Code12 instance they are evaluated empirically against the
 constant-size oracle of Remark 4.3a.
 
 \textbf{Remark 4.3c (Wagner-Corneil reduction has an inverse-linear
-inapproximability gap, attained on a concrete star family).}
-\emph{For non-trivial tree instances $(T, m)$ with
-$n = |V(T)| \geq 3$ and $\Delta = \max_v \deg_T(v) \geq 1$, the
-Theorem 4.3 reduction yields the relative inapproximability ratio}
-\[
-\frac{\mathrm{OPT}_{\mathrm{NO}}}{\mathrm{OPT}_{\mathrm{YES}}} \geq 1 + \frac{1}{n-1},
-\]
-\emph{and there exists a NO-instance family (degree-$(n-1)$ stars
-$K_{1, n-1}$ with $m = \lceil \log_2 n \rceil$ when
-$\lceil \log_2 n \rceil = n - 1$, i.e.\ $n = 2, 4$) on which the
-optimal $C_F(E)$ achieves the upper-side bound $B + 2/\Delta$
-exactly. The varying-parameter learned-code labeling problem is
-therefore NP-hard to approximate within multiplicative ratio
-$1 + 1/(n - 1)$, an inverse-linear factor that vanishes as
-$n \to \infty$.}
+inapproximability gap).}
+\emph{Let $n \geq 4$ and consider Theorem 4.3 instances $(T, m)$ with
+$n = |V(T)|$, $\Delta = \max_v \deg_T(v)$. The reduction gives:}
 
-\emph{Proof.} The lower bound $\mathrm{OPT}_{\mathrm{NO}} \geq B +
-2/\Delta$: in the Theorem 4.3 reduction the threshold is $B = 2(n-1)/\Delta$;
-the YES case (tree embeds in $Q_m$) has $C_F(E) = B$ exactly; in any
-NO case Hamming distances on tree edges are positive integers and at
-least one edge has $d_H \geq 2$ (otherwise the labeling would be a
-hypercube subgraph embedding), contributing an extra $2/\Delta$ to
-$C_F$. The ratio is therefore
+\emph{(i) Lower bound on NO-instance ratio:}
+\[
+\frac{\mathrm{OPT}_{\mathrm{NO}}}{\mathrm{OPT}_{\mathrm{YES}}} \geq 1 + \frac{1}{n-1}.
+\]
+
+\emph{(ii) Tight NO-family witness: for every $n \geq 4$, the star
+$T = K_{1, n-1}$ with $m = n - 2$ is a NO instance attaining
+$\mathrm{OPT} = B + 2/(n - 1)$ exactly, so the ratio bound (i) is
+tight on this family.}
+
+\emph{(iii) Consequence: the varying-parameter learned-code labeling
+problem is NP-hard to approximate (on the minimization side) within
+any multiplicative factor strictly less than $1 + 1/(n - 1)$.
+Equivalently: any polynomial-time minimization approximator with
+guarantee $\alpha < 1 + 1/(n - 1)$ would decide tree-to-hypercube
+subgraph embedding, contradicting Wagner-Corneil NP-hardness. The
+gap $1 + 1/(n - 1)$ is inverse-linear in $n$ and vanishes as
+$n \to \infty$; the Theorem 4.3 reduction alone does not establish
+constant-gap inapproximability.}
+
+\emph{Proof.} (i) In the Theorem 4.3 reduction, the YES case has
+$C_F(E) = B = 2(n-1)/\Delta$ exactly (each tree edge maps to $d_H = 1$).
+In any NO case, Hamming distances on tree edges are positive integers
+$\geq 1$ for injective labelings; at least one edge has $d_H \geq 2$
+(otherwise the labeling embeds $T$ as a subgraph of $Q_m$, contradicting
+NO), contributing an extra $\geq 2/\Delta$ to $C_F$. Hence
+$\mathrm{OPT}_{\mathrm{NO}} \geq B + 2/\Delta = (2/\Delta) \cdot
+(n-1 + 1) = (2n)/\Delta$. The ratio:
 \[
 \frac{\mathrm{OPT}_{\mathrm{NO}}}{\mathrm{OPT}_{\mathrm{YES}}}
 \geq \frac{B + 2/\Delta}{B}
@@ -1191,38 +1200,56 @@ $C_F$. The ratio is therefore
 = 1 + \frac{1}{n-1}.
 \]
 
-The tight NO-family witness: take $T = K_{1, n-1}$ (star with one
-center and $n-1$ leaves) at $n = 4$, $\Delta = 3$, $m = 2$. Here
-$|V(T)| = 4 = 2^m$ so an injective labeling exists, but $K_{1,3}$
-does not embed in $Q_2$ at $d_H = 1$ on every edge (only $2 = m$
-of the $3$ leaves can be at distance $1$ from a fixed center; the
-third must be at distance $\geq 2$). Direct computation:
-$\mathrm{OPT} = (2/3) \cdot (1 + 1 + 2) = 8/3$, and
-$B = 2 \cdot 3 / 3 = 2$, giving ratio $4/3 = 1 + 1/3 = 1 + 1/(n-1)$
-exactly (verified in
-\texttt{scripts/verify/remark\_4\_3c\_wagner\_corneil\_gap.py}). For
-$n = 2$ and $n = 3$ the bound is trivial or has $\Delta = 1$; for
-$n \geq 5$ the bound holds but is no longer tight on stars (some NO
-instances have a strictly larger gap). As $n \to \infty$ the gap
-ratio $1 + 1/(n-1)$ tends to $1$, so no
-\emph{constant}-gap inapproximability is obtained from the
-Theorem 4.3 reduction alone. \hfill$\blacksquare$
+(ii) For the star $K_{1, n-1}$ with $\Delta = n - 1$ and $m = n - 2$,
+we have $|V(T)| = n \leq 2^{n-2}$ for $n \geq 4$ (so injective
+labeling exists). The center has $m = n - 2$ codeword neighbors at
+$d_H = 1$ in $Q_m$, so at most $n - 2$ of the $n - 1$ leaves can be
+at $d_H = 1$ from the center; the remaining leaf must be at $d_H = 2$.
+This labeling is feasible (place center and $n - 2$ neighbors at
+$d_H = 1$, then the remaining leaf at any $d_H = 2$ codeword). The
+$C_F$ value:
+\[
+\mathrm{OPT} = \frac{2}{\Delta} \bigl((n - 2) \cdot 1 + 1 \cdot 2\bigr)
+= \frac{2n}{n - 1} = B + \frac{2}{n - 1} = B + \frac{2}{\Delta}.
+\]
+Ratio $\mathrm{OPT} / B = (2n / (n-1)) / (2 \cdot (n-1) / (n-1)) =
+n / (n - 1) = 1 + 1/(n-1)$ exactly. The smallest such instance is
+$K_{1, 3}$ with $m = 2$ (n=4), giving ratio $4/3$. The next is
+$K_{1, 4}$ with $m = 3$ (n=5), giving ratio $5/4$. Both are verified
+in \texttt{scripts/verify/remark\_4\_3c\_wagner\_corneil\_gap.py}.
+
+(iii) follows from (i) and (ii): any minimization approximator with
+guarantee strictly less than $1 + 1/(n-1)$ would output cost
+$\leq \alpha \cdot \mathrm{OPT}_{\mathrm{YES}} = \alpha \cdot B
+< B + 2/\Delta$, which is strictly less than $\mathrm{OPT}_{\mathrm{NO}}$,
+hence the approximator's output below this threshold certifies the
+YES case. As $n \to \infty$ the gap shrinks to $1$. \hfill$\blacksquare$
 
 \emph{Implications for OP4.} A constant-gap inapproximability for
 $E_{12}$ requires \emph{gap amplification} beyond the
-inverse-linear ratio of Theorem 4.3. The three research paths
-sketched in §13.2 are studied known mechanisms for such
-amplification in linear-code / lattice / hypercube geometries:
-(a) PCP-style reduction from APX-hard Label Cover via the
+inverse-linear ratio of Theorem 4.3. Studied amplification
+mechanisms in the linear-code / lattice / hypercube literature
+include: (a) PCP-style reduction from APX-hard Label Cover via the
 Arora-Babai-Stern-Sweedyk (1997) Nearest Codeword Problem framework;
-(b) bounded-distance decoding hardness (Dumer-Micciancio-Sudan
-2003); (c) Closest Vector Problem hardness (Khot 2005) specialized
-to $\mathbb{F}_2^{12}$. Wagner-Corneil-based amplification via
-parallel/product repetition is also a logically valid path but the
-required composition with PCP-style verifiers does not appear in the
-literature for this source problem; if achievable, it would give
-constant-gap inapproximability directly. Closing OP4 in any of
-these directions remains research-scale open.
+(b) bounded-distance decoding hardness (the relevant survey is
+Dumer, Micciancio, Sudan 2003 \emph{Hardness of Approximating the
+Minimum Distance of a Linear Code}, which defines BDD and leaves
+its computational complexity as an open problem; subsequent BDD
+hardness comes from Liu, Lyubashevsky, Micciancio 2008 and
+Bennett, Golovnev, Stephens-Davidowitz 2017); (c) Closest Vector
+Problem hardness in the lattice geometry: the canonical CVP
+hardness paper is Dinur, Kindler, Raz, Safra 2003 (constant-factor
+inapproximability for general lattices), with the CVP-with-preprocessing
+(CVPP) variant analyzed by Alekhnovich, Khot, Kindler, Vishnoi 2005,
+specialized to $\mathbb{F}_2^{12}$. A fourth mechanism is
+\emph{graph-powering / tensor-product amplification} in the
+Dinur (2007) PCP-style framework: if a Wagner-Corneil-like
+tree-embedding instance could be composed with a robust PCP
+verifier (Dinur \emph{The PCP theorem by gap amplification}, JACM
+54(3):12, 2007), the inverse-linear gap could in principle be
+amplified to a constant. None of these constructions is known to
+realize gap-preserving reduction from any APX-hard problem directly
+into the byte-alphabet $E_{12}$ geometry; closing OP4 remains open.
 
 The paper makes no inapproximability claim for the varying-parameter
 learned-code labeling problem beyond Theorem 4.3 + Remark 4.3c
