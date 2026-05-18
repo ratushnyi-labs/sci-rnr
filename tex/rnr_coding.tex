@@ -1846,6 +1846,41 @@ independence (e.g., share state across sync points via Theorem 10.4
 state snapshots) operate outside this framework and are not bounded
 by this lemma.
 
+\textbf{Corollary 5.1f (Open Problem 1 resolution within sub-block
+paradigm).} \emph{Combining Lemmas 5.1a, 5.1b, 5.1c, 5.1d, 5.1e: for
+strictly stationary finite-alphabet sources satisfying exponential
+conditional-MI decay (5.8), under the sub-block-based byte-granular
+random-access framework (source-independent metadata, independently
+decodable sub-blocks per Lemma 5.1e (ii)-(iii)):}
+
+\emph{(a) Achievability.} \emph{The per-position sequential
+arithmetic-coding scheme of Lemma 5.1a, with window choice
+$W = W_N = O(\log N)$ from Lemma 5.1b and sub-block size $K \geq W$,
+achieves total expected length}
+\[
+L_{\mathrm{synced}}^{\mathrm{achieve}} \;\leq\; H(D_N) + (m-1) \cdot \delta_{W} + N \cdot (h_W - h(X)) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}},
+\]
+\emph{with the $(h_W - h)$ term bounded by $O(N^{-c})$ at $W = W_N$
+(Lemma 5.1d), so the leading-order excess over $H(D_N)$ is}
+$(m-1) \cdot \delta_W$.
+
+\emph{(b) Information-theoretic optimality.} \emph{Lemma 5.1e
+establishes that any sub-block-based byte-granular random-access
+scheme (under conditions (i)-(iii) of Lemma 5.1e) satisfies}
+$L_{\mathrm{synced}} \geq m \cdot H(D_K) = H(D_N) + (m-1) \cdot \delta_W$
+\emph{for order-$W'$ Markov sources, matching the achievability
+of (a) exactly. No scheme in the sub-block paradigm can do strictly
+better.}
+
+\emph{(c) Open extensions.} \emph{(i) Non-sub-block-based schemes
+(state-snapshot framework of Theorem 10.4): the lower bound (b) does
+not apply, and the trade-off between sub-block-independence excess
+$(m-1) \cdot \delta_W$ and state-snapshot storage $m \cdot
+\Theta(W \log_2 \sigma)$ is engineering-determined per use case.
+(ii) Non-Markov stationary sources with non-summable correlations:
+Lemma 5.1d's bound requires summable correlation; sources with
+$\delta_\infty = \infty$ require a different framework.}
+
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
 coding).} \emph{Let $N$ be a block length, and let
 $(k_0, \ldots, k_{15})$ be the symbol counts with $\sum_v k_v = N$.
@@ -5474,8 +5509,16 @@ listed below.)
   symbol-count $\alpha$-approximation, NP-hard for $\alpha <
   \gamma_{\mathrm{SGP}}$. The following remain open:
   (a) bit-cost APX-hardness over \emph{unrestricted} grammar
-  structures (escape grammars outside Charikar's class may achieve
-  different bit-cost ratios); (b) APX-hardness of the unrestricted joint
+  structures: an arbitrary grammar deriving Charikar's source string
+  may trade larger $L_{\mathrm{sym}}$ for smaller nonterminal count
+  $K$ (different functional form than $K_0 + \kappa \cdot |\sigma|$),
+  potentially achieving lower bit-cost than the Charikar-format optimum.
+  A literature search (Casel et al.\ 2021, Kozma \&
+  Voderholzer 2024, Ga\'nczorz 2018/2020) confirms that no
+  Pareto-frontier structural theorem is currently known that would
+  rule out such ``escape grammars'' from beating Charikar's bit-cost
+  Pareto point; this remains genuinely open. (b) APX-hardness of the
+  unrestricted joint
   problem with free predictor $M$, which adds the dimension of paying
   $L(M)$ bits to gain $L(R \mid Y)$
   savings. Remark 6.8b formalizes the failure of the
