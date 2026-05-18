@@ -432,10 +432,15 @@ This article makes the following contributions.
   $W'$, and plausible under additional positivity assumptions for
   hidden Markov models with geometrically ergodic hidden chains).
   For these, choosing $W = O(\log N)$ brings the per-position
-  sequential rate $H_W(D_N)$ within $O(1)$ of $H(D_N)$, so the
-  total length is $H(D_N) + O(1) + \Delta_{\mathrm{sync,total}} =
-  H(D_N) + O(\log N \cdot \log_2(1/\eta))$ — a logarithmic, not
-  linear, rate gap. The per-query random-access cost is still
+  sequential rate $H_W(D_N)$ within $O(1)$ of $H(D_N)$. The total
+  expected length is $H(D_N) + O(1) + \Delta_{\mathrm{sync,total}} +
+  \varepsilon_N N$, where the $O(1)$ is the truncated-window rate
+  gap and $\Delta_{\mathrm{sync,total}} = m \cdot S \cdot W \cdot
+  \log_2(1/\eta) = O((|X|/K) \log N \cdot \log_2(1/\eta))$ for
+  $m = \lceil |X|/K \rceil$ sync points; this overhead is sub-linear
+  in $|X|$ only when sync-point spacing $K = \omega(\log N)$
+  (e.g., $K = \mathrm{polylog}(|X|)$ gives $\Delta_{\mathrm{sync,total}}
+  = \mathrm{polylog}(|X|)$). The per-query random-access cost is
   polylog in $|X|$ provided the predictor architecture admits
   context $W = \Theta(\log N)$ at $\mathrm{poly}(\log N)$ per
   evaluation (transformers with windowed attention pay
@@ -1501,10 +1506,16 @@ achieves total expected length}
 H(D_N) + O(1) + \Delta_{\mathrm{sync,total}}(W_N) + \varepsilon_N \cdot N,
 \]
 \emph{where $\Delta_{\mathrm{sync,total}}(W_N) = m \cdot S \cdot W_N
-\cdot \log_2(1/\eta) = O(m \cdot S \cdot \log N \cdot \log_2(1/\eta))$
-is a logarithmic, not linear, function of $N$. The byte-granular
-random-access cost from Theorem 10.3 becomes $O(\log L(R) + (K + k)
-\cdot \mathrm{cost}(M_{W_N}))$ per query. The per-position
+\cdot \log_2(1/\eta) = O((N/K) \cdot S \cdot \log N \cdot \log_2(1/\eta))$
+scales with the sync-point count $m = \lceil N/K \rceil$. The total
+overhead is sub-linear in $N$ only when sync-point spacing
+$K = \omega(\log N)$: for $K = \mathrm{polylog}(N)$ the overhead is
+$\mathrm{polylog}(N)$; for fixed $K = O(1)$ the overhead is
+$\Theta(N \log N \log_2(1/\eta))$, linear in $N$ with a log factor.
+The per-position rate gap $H_{W_N}(D_N) - H(D_N) \leq 1$ from the
+truncated window is itself $O(1)$ in $N$, independent of $K$.
+The byte-granular random-access cost from Theorem 10.3 becomes
+$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M_{W_N}))$ per query. The per-position
 predictor-evaluation cost $\mathrm{cost}(M_{W_N})$ depends on the
 architecture: a transformer with context $W_N$ requires
 $\Omega(W_N)$ attention operations per token (so $\Omega(\log N)$ at
@@ -4814,12 +4825,34 @@ point to the relevant theorems.
   --- partially resolved. Theorem 5.5 is a theorem: the
   multi-information $\mathrm{TC}(D_N)$ is the exact
   information-theoretic quantity governing factorized-versus-joint
-  separation. Remark 5.6, which extrapolates this to $\Theta(N)$
-  separation under the manifold hypothesis for natural data, is an
-  informal heuristic (not a theorem) supported by but not implied by
-  the cited empirical estimates of intrinsic dimension $d$; the
-  precise scaling of $\mathrm{TC}(D_N)$ for any specific natural
-  data class is an empirical question and is also listed in §13.2.
+  separation. Three explicit $\Theta(N)$-TC classes are now
+  established as theorems: Lemma 5.6a for uniqueness-constrained
+  injections (database-page schemas), Lemma 5.6b for hidden-class
+  iid sources (latent-topic mixtures), and Lemma 5.6c for stationary
+  processes (order-$W$ Markov chains and any process with summable
+  conditional-entropy excess; Ces\`aro form for general stationary).
+  Remark 5.6's extrapolation to low-dimensional natural-data
+  manifolds remains an informal heuristic. Establishing
+  $\mathrm{TC}(D_N) = \Theta(N)$ for less combinatorially structured
+  classes (natural images, general hidden Markov models with
+  non-trivial hidden state) is open and listed in §13.2.
+\item
+  Exact optimal candidate-support threshold for semi-non-factorized
+  Type-II support selection --- resolved by Lemmas 5.7a and 5.7c
+  jointly as a polynomial-time vs.\ NP-hard dichotomy along the
+  permutation-like boundary. Lemma 5.7a shows top-$Q$ is provably
+  optimal under any permutation-like (conditional Bernoulli) joint
+  law via a stochastic dominance coupling; Lemma 5.7c shows the
+  general unrestricted-dependence case is NP-hard via reduction
+  from CLIQUE at $N = 3s + 1$ (where the algebraic identity
+  $A_s(1) = A_s(2)$ collapses the cost to a function of $n_0(S)$
+  alone). Together this characterizes the exact complexity
+  threshold of the support-selection problem. The complementary
+  approximation question --- whether a polynomial-time
+  $\alpha$-approximation exists for $\alpha < O(N^{1/4 +
+  \varepsilon})$ on general dependent joint laws --- is tied to
+  the long-standing open approximability of densest-$k$-subgraph
+  and is listed in §13.2.
 \item
   Tightness of the $2\varepsilon$ mode-selection bound --- resolved
   by Theorem 6.2: the $2\varepsilon$ factor in Theorem 6.1 cannot be
@@ -4879,12 +4912,18 @@ point to the relevant theorems.
   sequential Type-III-B, or Type-III-A composition over
   per-position sequential per-tile modes) --- resolved by
   Definitions 10.2 ($W$-bounded predictor) and 10.3 (sync point,
-  including entropy-coder flush) and Theorem 10.3. Whole-block
-  partition-rank coding (Type-II rank coding, Type-III-B direct or
-  hierarchical partition strategies) is excluded from Theorem 10.3
-  and gives only sub-block-granular random access at
-  $O(K \cdot \mathrm{unrank}(K))$ per requested sub-block (Remark
-  10.3a). Non-$W$-bounded
+  including entropy-coder flush) and Theorem 10.3. The achievable
+  rate for byte-granular random access is the $W$-truncated
+  conditional rate $H_W(D_N)$ (Lemma 5.1a), strengthened by
+  Lemma 5.1b for exponentially conditional-MI-decaying stationary
+  sources: choosing $W = O(\log N)$ brings $H_W$ within $O(1)$ of
+  the joint entropy $H(D_N)$, giving total length
+  $H(D_N) + O(1) + \mathrm{polylog}(|X|)$ at $K = \mathrm{polylog}(|X|)$.
+  Whole-block partition-rank coding (Type-II rank coding,
+  Type-III-B direct or hierarchical partition strategies) is
+  excluded from Theorem 10.3 and gives only sub-block-granular
+  random access at $O(K \cdot \mathrm{unrank}(K))$ per requested
+  sub-block (Remark 10.3a). Non-$W$-bounded
   predictors (LSTM, state-space) are covered by Theorem 10.4 via an
   augmented state snapshot of size $L(\text{state})$ per sync
   point; the corresponding cost adds $L(\text{state})$ to the
@@ -4928,38 +4967,26 @@ point to the relevant theorems.
 \textbf{13.2 Remaining mathematical open problems}
 
 A small number of mathematical questions remain genuinely open after
-the present paper.
+the present paper. (Optimal exact support selection for
+semi-non-factorized Type-II was previously listed here; it has been
+relocated to §13.1, since Lemmas 5.7a and 5.7c together establish
+the polynomial-time vs.\ NP-hard dichotomy on the permutation-like
+boundary. Only the approximation side remains research-scale open,
+listed below.)
 
 \begin{itemize}
 \item
-  Optimal candidate-support threshold for semi-non-factorized
-  Type-II --- complexity dichotomy fully established. Lemma 5.7a
-  establishes that top-$Q$ is provably optimal under the
-  permutation-like (conditional Bernoulli) joint law of $M_v$,
-  where atom weights factorize as
-  $\Pr(M_v = T) \propto \prod_{i \in T} q_i$ for
-  $T \in \binom{[N]}{k_v}$ (verified in
-  \texttt{scripts/verify/lemma\_5\_7a\_permutation\_like\_top\_q.py}).
-  For joint laws beyond permutation-like (e.g., Remark 5.7's
-  counterexample at $N=7, k=2, s=2$), top-$Q$ can be provably
-  suboptimal, and Lemma 5.7c establishes that the
-  optimization problem is NP-hard. The reduction is from CLIQUE
-  on graphs with $|V_G| \leq 3k+1$ to a combinatorial decision
-  ``does some $|S|=s$ have $n_0(S) \geq D$?'' at $N = 3s+1$, then
-  to the cost-based problem via the positive-affine collapse at
-  $N = 3s+1$ where the algebraic identity $A_s(1) = A_s(2)$ reduces
-  the three-way $(n_0, n_1, n_2)$ cost decomposition to a function
-  of $n_0$ alone (verified in
-  \texttt{scripts/verify/lemma\_5\_7c\_np\_hardness\_clique\_reduction.py}).
-  What remains open is the approximation side: the
-  positive-affine reduction does not preserve multiplicative
-  approximation ratios, so neither hardness nor approximability of
-  approximate optimization follows directly; the question is tied
-  to the long-standing open approximability of
-  densest-$k$-subgraph (best known algorithm
-  $O(n^{1/4+\varepsilon})$ via Bhaskara et al.\ 2010).
-  The arithmetic-coding benchmark under the same $Q$ is a separate,
-  settled result and remains the comparison baseline.
+  Approximability of optimal support selection for general
+  dependent joint laws of $M_v$ (the complementary direction to
+  Lemma 5.7c's NP-hardness). The positive-affine reduction
+  $\mathbb{E}_\mu[A_s] = A_s(1) - (A_s(1) - A_s(0)) \cdot n_0(S)/m$
+  does not preserve multiplicative approximation ratios, so neither
+  $O(\log N)$-approximation nor PTAS inapproximability follows
+  directly from Lemma 5.7c. The question is tied to the
+  long-standing open approximability of densest-$k$-subgraph (best
+  known algorithm $O(n^{1/4+\varepsilon})$ via Bhaskara et al.\
+  2010); closing either direction would be a research-scale
+  contribution.
 \item
   Hardness of the unrestricted joint Type-III-C problem
   $(M, D, R \mid Y)$ --- open. Theorems 6.7 and 6.8 establish
@@ -4977,12 +5004,13 @@ the present paper.
   vertex cover $\sigma$); (b) APX-hardness of the unrestricted joint
   problem with free predictor $M$, which adds the dimension of paying
   $L(M)$ bits to gain $L(R \mid Y)$
-  savings (a padding-based reduction strategy is plausible but
-  must control how a non-trivial predictor exploits structure in
-  the corpus, which standard incompressibility arguments do not
-  directly address, since an unrestricted predictor can specialize
-  to the SGP-encoded prefix and gain unbounded compression there
-  while ignoring an incompressible suffix). The inherited constant
+  savings. Remark 6.8b formalizes the failure of the
+  natural padding-based reduction: an unrestricted predictor can
+  pay $L(M) \geq |s|$ bits to encode the SGP-format prefix directly,
+  yielding $L(R \mid Y) = O(1)$ on the prefix while still paying
+  Kolmogorov-complexity bits for the incompressible suffix, so the
+  $\gamma_{\mathrm{SGP}}$ structure of the prefix is absorbed into
+  $L(M)$ rather than reflected in the joint bit-cost. The inherited constant
   for either open case is not necessarily $8569/8568$; the actual
   bit-cost / free-predictor constants could be strictly less than
   $8569/8568$ due to objective-function dilution and remain
@@ -5040,9 +5068,12 @@ the present paper.
   Constant-gap inapproximability for $E_{12}$ in the
   Hamming-restricted geometry. The decision version of
   varying-parameter learned-code labeling is NP-hard (Theorem 4.3)
-  via an exact YES/NO threshold reduction; no constant-gap reduction
-  from any APX-hard source into the Hamming-realizable distance
-  geometry is currently known. The Type-III-C side (Theorem 6.8) is
+  via an exact YES/NO threshold reduction. Remark 4.3c establishes
+  that the Wagner-Corneil reduction yields only an inverse-linear
+  inapproximability gap of $1 + 1/(n-1)$, tight on the star family
+  $K_{1, n-1}$ with $m = n - 2$, which vanishes as $n \to \infty$;
+  no constant-gap reduction from any APX-hard source into the
+  Hamming-realizable distance geometry is currently known. The Type-III-C side (Theorem 6.8) is
   APX-hard with explicit inherited constant
   $\gamma_{\mathrm{SGP}} = 8569/8568$ (Charikar et al.\ 2005,
   unbounded-alphabet variant); the analogous constant for $E_{12}$
