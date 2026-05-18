@@ -1893,10 +1893,16 @@ sync points. Such state is source-dependent (a function of prior
 source bytes), so the scheme violates Lemma 5.1e condition (ii) ---
 the sub-block payload is no longer decoded from its own data alone
 but from $(\mathrm{state}, \mathrm{payload})$ together. Lemma 5.1e
-applies instead to the combined $(\mathrm{state}, \mathrm{payload})$
-object: the total charged archive length is still bounded below by
-$m \cdot H(D_K)$, but the payload alone can be smaller than $H(D_K)$
-because the state carries cross-block context. The engineering
+itself does not literally apply to state-snapshot schemes (its
+hypotheses exclude source-dependent state); a more general
+charged-object converse — for each sub-block $j$,
+$\mathbb{E}[\ell(\mathrm{state}_j, \mathrm{payload}_j)] \geq H(D_K)$
+since the sub-block data is a deterministic function of
+$(\mathrm{state}_j, \mathrm{payload}_j)$ — gives the analogous bound
+that the total charged archive length (state plus payload, summed
+over sync points) is at least $m \cdot H(D_K)$. The payload alone
+can be smaller than $H(D_K)$ because the state carries cross-block
+context. The engineering
 trade-off is between payload excess $(m-1) \cdot \delta_W$ (with
 state size zero) and combined state-plus-payload allocation
 (reducing payload but adding $m \cdot L(\mathrm{state})$ bits of
