@@ -2251,12 +2251,89 @@ slope of TC and determines whether $\mathrm{TC}(D_N) = \Theta(N)$,
 while $\delta_\infty = \mathbf{E}_{\mathrm{CF}}$ is an asymptotic
 correction constant and does not change the leading $N$-scaling.
 
-Together Lemmas 5.6a, 5.6b, 5.6c constitute Open Problem 5's
-resolution for the three structurally cleanest natural-data
-patterns. Further classes (general non-stationary Markov chains,
-hidden Markov models, factor graphs over expanders) admit similar
-treatments but with strictly more involved bookkeeping; they remain
-open as explicit lemmas.
+\textbf{Lemma 5.6d (Linear $\mathrm{TC}$ for hidden Markov models).}
+\emph{Let $(Y_n)_{n \geq 1}$ be a stationary irreducible aperiodic
+Markov chain on a finite hidden state space $\mathcal{Y}$ with
+transition matrix $P$ and stationary distribution $\pi$, and let
+$(X_n)_{n \geq 1}$ be observations on a finite alphabet
+$\mathcal{X}$ conditionally independent given $(Y_n)$ with emission
+laws $p_y(x) = \Pr(X_n = x \mid Y_n = y)$. The observation process
+$(X_n)$ is strictly stationary; Lemma 5.6c applies with
+$E_{\mathrm{HMM}} := H(X_1) - h_{\mathrm{HMM}}$, where}
+\[
+H(X_1) = H\!\left(\sum_{y \in \mathcal{Y}} \pi(y) p_y\right)
+\quad\text{and}\quad
+h_{\mathrm{HMM}} = \lim_{n \to \infty} H(X_n \mid X_1, \ldots, X_{n-1})
+\]
+\emph{is the entropy rate of the observation process. The
+filter recursion of Baum--Petrie (1966) /
+Birch (1962) gives}
+\[
+h_{\mathrm{HMM}} = \lim_{n \to \infty} \mathbb{E}_{X^{n-1}}
+\bigl[H(X_n \mid \mu_n)\bigr],
+\]
+\emph{where $\mu_n(y) := \Pr(Y_n = y \mid X_1, \ldots, X_{n-1})$ is
+the prediction filter and the conditional entropy is computed
+under $X_n \sim \sum_y \mu_n(y) p_y$. The HMM is informative
+(equivalently, $E_{\mathrm{HMM}} > 0$) if and only if the
+emission laws $\{p_y\}$ are not all identical; in that case
+$\mathrm{TC}(D_N) = \Theta(N)$ with slope $E_{\mathrm{HMM}}$.}
+
+\emph{\textbf{Proof.}} Stationarity of $(X_n)$: from stationarity
+of $(Y_n)$, the joint distribution of any block
+$(Y_{j+1:j+N}, X_{j+1:j+N})$ is shift-invariant in $j$;
+marginalizing over the hidden states preserves stationarity in
+$(X_n)$. Apply Lemma 5.6c with this $E$ and $h(X) = h_{\mathrm{HMM}}$.
+
+The entropy rate $h_{\mathrm{HMM}}$ formula in terms of the
+prediction filter is standard (Baum \& Petrie 1966
+\emph{Statistical Inference for Probabilistic Functions of Finite
+State Markov Chains}, Annals of Mathematical Statistics 37(6):
+1554--1563; Birch 1962 \emph{Approximations for the Entropy for
+Functions of Markov Chains}, AMS 33(3): 930--938). The filter
+recursion is $\mu_{n+1}(y) = \frac{1}{Z}
+\sum_{y' \in \mathcal{Y}} \mu_n(y') P_{y' y} p_{y'}(X_n)$,
+where $Z$ normalizes. The entropy rate
+is the asymptotic per-position entropy of the prediction-filter
+output under the stationary measure of $(\mu_n)$.
+
+Informativeness: $E_{\mathrm{HMM}} = H(X_1) - h_{\mathrm{HMM}} \geq 0$ in
+all cases (Cover \& Thomas 2006 Theorem 4.2.2). Equality
+$E_{\mathrm{HMM}} = 0$ holds iff $H(X_n \mid X_{<n}) = H(X_n)$ for all $n$,
+i.e., $(X_n)$ is iid, which under conditional iid given $(Y_n)$
+forces all $\{p_y\}$ identical (otherwise the prior over $Y$ shifts
+based on observations, creating dependence). \hfill$\blacksquare$
+
+\emph{Example: binary-state binary-observation HMM.} Take
+$\mathcal{Y} = \mathcal{X} = \{0, 1\}$, symmetric hidden chain
+with transition probability $p \in (0, 1/2)$ (so the hidden state
+flips with probability $p$ at each step), and emission $p_y =
+\mathrm{Bern}(q_y)$ with $q_0 = \alpha$ and $q_1 = 1 - \alpha$
+for $\alpha \in (0, 1/2)$. The stationary distribution of $Y$ is
+uniform; the marginal of $X_n$ is $\mathrm{Bern}(1/2)$, so
+$H(X_1) = 1$. The entropy rate $h_{\mathrm{HMM}}$ does not admit a
+closed form for general $(p, \alpha)$ but is computable by
+filter-recursion Monte Carlo. Selected values verified in
+\texttt{scripts/verify/lemma\_5\_6d\_hmm\_tc.py} using 50 chains of
+length $10^4$:
+$h_{\mathrm{HMM}}(p = 0.1, \alpha = 0.2) \approx 0.910$ bits,
+so $E_{\mathrm{HMM}} \approx 0.090$ bits/position.
+$h_{\mathrm{HMM}}(p = 0.3, \alpha = 0.3) \approx 0.997$ bits,
+so $E_{\mathrm{HMM}} \approx 0.003$ bits/position. These are
+strictly between the iid-extreme ($E = 0$ when emission carries
+no information about state) and the deterministic-extreme
+($E = 1$ when state perfectly determines emission and chain
+is non-mixing).
+
+\emph{Scope.} Lemma 5.6d completes Open Problem 5's resolution for
+the four structurally cleanest natural-data patterns:
+combinatorial column constraints (5.6a), shared latent variable
+(5.6b), temporal correlation (5.6c), and combined hidden-and-temporal
+(5.6d). Further classes (factor graphs over expanders, general
+non-stationary processes, continuous-state HMMs) admit similar
+treatments but with strictly more involved bookkeeping or
+non-trivial functional-analytic content; they remain open as
+explicit lemmas.
 
 \textbf{5.7 Worked numerical example}
 
