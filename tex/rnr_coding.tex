@@ -74,9 +74,13 @@ classes; Type-III performs multi-dimensional tensor entropy-field
 coding, divided into III-A (entropy-field meta-prediction), III-B
 (byte-tensor coding of joint nibble structure), and III-C
 (token-tensor coding over a learned hierarchically indexed
-dictionary). For each subtype we give a concrete construction and an
-achievability bound; a matching converse is given only for Type-I
-(Theorem 4.2). Complexity results include NP-hardness of the
+dictionary). For Types I, II, III-A, and III-B we give concrete
+constructions and achievability bounds; for Type-III-C we give a
+greedy marginal-MDL admission criterion (Theorem 6.5) and a
+bits-back rate analysis (Theorem 6.6) but no standalone
+achievability bound for the learned hierarchical
+dictionary/token-cover construction. A matching converse is given
+only for Type-I (Theorem 4.2). Complexity results include NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3) and of
 a restricted normal-form dictionary-only case of Type-III-C (Theorem
 6.7), plus an APX-hardness transfer for the same restricted case
@@ -919,18 +923,29 @@ equals the bound only when those models match the true conditional
 law. The constant headers $L(M_I) + L(V) + L(\Theta)$ are $O(1)$
 independent of $N$. \hfill$\blacksquare$
 
-\textbf{4.5 Reduction to NNCP}
+\textbf{4.5 Relationship to NNCP-style direct arithmetic coding}
 
-Consider the degenerate Code12 mapping in which $c$ is simply the byte
-$b$ zero-padded to 12 bits, and the model predicts a probability
-distribution $Q_i$ over the next byte rather than a single damaged
-codeword. Then the optimal Code12 repair is to discard the predicted
-codeword and encode each position via arithmetic coding under $Q_i$,
-achieving expected per-position cost equal to the categorical
-cross-entropy plus $\varepsilon/N$. This recovers NNCP exactly. Type-I
-therefore generalizes NNCP by allowing (a) non-trivial $E_{12}$
-mappings whose error distribution is more concentrated than a flat
-softmax, and (b) class-based entropy coding that can be cheaper than
+The NNCP-style autoregressive byte coder treats the model output as
+a full probability distribution $Q_i$ over the next byte and
+arithmetic-codes the byte directly under $Q_i$; this is not a
+special case of Type-I as defined in this paper, since Type-I
+specifically requires a deterministic damaged codeword
+$Y = M_I(C)$ and a repair stream encoded via the Code12 error
+variable $E = E_{12}(X) \oplus Y$. The two schemes are however
+\emph{rate-equivalent} in a precise sense: given the same predictor
+state, the NNCP-style direct arithmetic coder achieves expected
+per-position cost equal to the categorical cross-entropy plus
+$\varepsilon/N$, while the ideal class+payload Type-I coder
+(Theorem 4.2 part A) driven by the true conditional law of $E$
+achieves $H(X \mid Y) + \varepsilon_N$. When $Y$ encodes a
+deterministic predicted codeword and the true predictive
+distribution induces the same conditional $P(E \mid Y)$, both
+expected rates match the same source-coding bound, so neither
+construction is strictly more powerful in expected rate. Type-I as
+defined generalizes the deterministic-prediction architecture by
+allowing (a) non-trivial $E_{12}$ mappings whose error distribution
+is more concentrated than a flat softmax, and (b) class-based
+entropy coding that can be cheaper than
 arithmetic coding for sharply peaked predictors.
 
 \textbf{4.6 Variants of $E_{12}$}
@@ -1899,8 +1914,8 @@ approximating $\Pr(\tau_k \text{ begins at position } i \text{ at
 scale } s \mid C)$, where $s$ is a length or scale class.
 
 The dictionary is structured hierarchically as a grid of $K = a \cdot
-b$ classes, with $\text{token\_id} = a \cdot \text{family} +
-\text{variant}$. For $K = 1024$, the canonical grid is
+b$ classes, with $\text{token\_id} = b \cdot \text{family} +
+\text{variant}$ (matching Definition 3.5). For $K = 1024$, the canonical grid is
 $32 \times 32$; for $K = 4096$, the grid is $64 \times 64$. The
 hierarchical factorization
 $Q(k, i, s) = P(\text{family} \mid i, C) \cdot
@@ -1981,14 +1996,20 @@ $\mathrm{dictionary\_cost}$ is amortized and the greedy admission
 criterion grows more permissive.
 
 When tokens are continuous latent variables of a variational model
-rather than discrete byte fragments, the appropriate encoding tool is
-bits-back coding (Townsend, Bird, Barber 2019). The encoder uses an
-auxiliary bit string to sample the latent, encodes the latent and the
-data conditional on the latent via ANS, and the decoder recovers both
-and extracts the auxiliary bits. The effective rate is the marginal
-$H(X)$, not the joint $H(X, Z)$. The next theorem makes this rigorous
-and shows how bits-back fits into the $L(R \mid Y)$ decomposition of
-§3.3.
+rather than discrete byte fragments, the appropriate encoding tool
+is bits-back coding (Townsend, Bird, Barber 2019). The encoder uses
+an auxiliary bit string to sample the latent, encodes the latent
+and the data conditional on the latent via ANS, and the decoder
+recovers both and extracts the auxiliary bits. Under ideal coding
+with the true model marginal and the true posterior, the effective
+rate equals the conditional source-coding lower bound
+$H_D(X \mid Y)$ on the data distribution, not the joint
+$H_D(X, Z \mid Y)$. In general (model marginal $\neq$ data
+conditional, or $q \neq $ true posterior), the rate is the
+cross-entropy under the model marginal plus the posterior KL gap,
+which can exceed $H_D(X \mid Y)$. The next theorem makes this
+rigorous and shows how bits-back fits into the $L(R \mid Y)$
+decomposition of §3.3.
 
 \textbf{Theorem 6.6 (Bits-back integration into the RNR
 decomposition).} \emph{Let $z$ be a latent variable of a variational
@@ -2191,12 +2212,17 @@ specific numerical value of $\gamma_{\mathrm{SGP}}$ for any
 particular encoding convention, and verifying which source paper
 establishes which exact constant, is left to follow-up work.
 
-Together, Theorems 6.7 and 6.8 confirm that the heuristic nature of
-practical dictionary learners (BPE, WordPiece, MDL-greedy variants)
-is not a deficiency of those algorithms but a necessary consequence of
-complexity-theoretic limits. Even with unbounded compute applied to
-the dictionary search, polynomial-time algorithms cannot close the
-approximation gap unless $P = NP$.
+Together, Theorems 6.7 and 6.8 show that the restricted normal-form
+recursive dictionary problem under symbol-count objective is
+NP-hard and APX-hard. We do not claim this extends to all
+practical dictionary learners --- BPE and WordPiece operate on a
+fixed-size flat token vocabulary with greedy merges (not a
+recursive grammar), MDL-greedy variants use bit-cost rather than
+symbol-count objectives, and many production tokenizers solve
+different problem variants. The heuristic nature of those
+algorithms is consistent with the restricted hardness result but
+is not formally derived from it; the unrestricted bit-cost and
+flat-vocabulary cases are open.
 
 \textbf{7. Composition and mode selection}
 
@@ -2210,25 +2236,38 @@ encoding to that mode.
 \textbf{Theorem 7.1 (Composition correctness, with explicit framing).}
 \emph{Let $M$ be a finite set of RNR mode coders, each producing a
 uniquely decodable repair stream conditional on its mode flag.
-Assume further that the per-tile repair streams are \emph{framed} ---
-either each carries an explicit byte-length prefix in the metadata
-$L(\Theta)$, or the per-tile encoding is itself prefix-free as a
-binary string --- so that the decoder, after parsing the mode flag,
-can isolate the bits belonging to tile $t$'s repair stream before
-applying the mode-specific decoder. Under this framing assumption,
-the Type-III-A composition with mode set $M$, deterministic mode
-selection $\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ (with
-fixed lexicographic tie-breaking from Definition 3.3), and a
-uniquely decodable mode-flag stream produces a uniquely decodable
-codeword for $X$.}
+Assume the per-tile repair streams are \emph{framed} --- either each
+carries an explicit byte-length prefix in the metadata $L(\Theta)$,
+or the per-tile encoding is itself prefix-free as a binary string
+--- so that the decoder, after parsing the mode flag, can isolate
+the bits belonging to tile $t$'s repair stream before applying the
+mode-specific decoder. Fix a mechanism by which the decoder
+recovers the mode of tile $t$:
+\begin{itemize}
+\item[\textbf{(F)}] (\emph{Explicit flag}) The mode of every tile
+is stored as a uniquely decodable flag in metadata; the decoder
+reads the flag and decodes the tile under that mode.
+\item[\textbf{(A)}] (\emph{Argmin reproduction}) The cost field
+$U_*(t)$ is decoder-reproducible (computable from public state and
+the verified prefix of $X$), and the encoder commits to
+$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ with fixed
+lexicographic tie-breaking from Definition 3.3; the decoder
+reproduces $U_*(t)$ and recomputes the same argmin. Stored mode
+flags are then required only on tiles where the encoder departs
+from the predicted argmin (override flags).
+\end{itemize}
+Under framing and either (F) or (A), the Type-III-A composition
+produces a uniquely decodable codeword for $X$.}
 
 \emph{\textbf{Proof.}} The decoder reads the metadata (including the
 per-tile length prefixes, if present, that fix the bit boundaries
-between successive tiles), reconstructs $U_*(t)$ deterministically
-from public state, recovers $\hat{m}(t)$ by the same argmin, isolates
-the repair-stream bits belonging to tile $t$ using the framing
-information, and applies the decoder of mode $\hat{m}(t)$ to recover
-the tile. Each step is uniquely determined; the concatenation is
+between successive tiles). It recovers $\hat{m}(t)$ either from the
+stored flag (mechanism F) or by reproducing $U_*(t)$ from public
+state and recomputing the deterministic argmin (mechanism A,
+together with the override flag when the encoder departed from the
+predicted argmin). It then isolates the repair-stream bits
+belonging to tile $t$ using the framing information, and applies
+the decoder of mode $\hat{m}(t)$ to recover the tile. Each step is uniquely determined; the concatenation is
 therefore an injection from $X$ to codewords. \emph{Caveat:} without
 the framing assumption, per-mode unique decodability alone is
 insufficient: e.g., mode-A codewords $\{0, 01\}$ and mode-B
@@ -2349,11 +2388,17 @@ H_v(\hat{X}_j) = v_j\}$ together with any public boundary state in
 the header; the rule permits but does not require a hard
 \emph{context-reset boundary} (i.e., dropping the verified-bytes
 context at each subblock break). Finally, suppose $H_v$ is a
-cryptographic hash with negligible collision probability $\delta$
-on the considered set of candidate subblocks. Then the probability
-that an incorrect $\hat{X}_i$ (one with $\hat{X}_i \neq X_i$) is
-used to update the predictor context or repair-stream parsing for
-subblock $i + 1$ is at most $\delta$.}
+cryptographic hash modeled as either (a)~a keyed hash with a
+uniformly random secret key sampled per archive, or
+(b)~a random-oracle abstraction of a fixed unkeyed hash. Let
+$\delta$ denote a uniform upper bound on the collision probability
+$\Pr_{H_v}[H_v(y) = H_v(X_i)]$ for any $y \neq X_i$ in the
+candidate set the decoder considers (probability over the choice of
+key in case (a) or over the random-oracle responses in case (b);
+for SHA-256 truncated to $t$ bits, $\delta \leq 2^{-t}$). Then the
+probability that an incorrect $\hat{X}_i$ (one with $\hat{X}_i \neq
+X_i$) is used to update the predictor context or repair-stream
+parsing for subblock $i + 1$ is at most $\delta$.}
 
 \emph{\textbf{Proof.}} The framing assumption guarantees that
 subblock $i + 1$'s repair-stream bits are isolated by the header
@@ -2917,9 +2962,12 @@ source size as augmented seek-index overhead (a $\sim$1000$\times$
 increase over the offset-only index, which is only $\sim$8 bytes
 per entry). State-space models with $d = 256$ and structured-state
 representation can require 64 KiB snapshots per sync point, giving
-$64 / 64 = 100\%$ of source size as index overhead at $K = 64$ KiB
---- effectively doubling the on-disk archive size, which is
-deployment-prohibitive without raising $K$. This motivates the $W$-bounded
+$64 / 64 = 100\%$ of source size as augmented-index overhead at
+$K = 64$ KiB. Since the underlying compressed archive is typically
+$\sim$10--50\% of source size for the data classes RNR targets, an
+augmented index this large adds at least $2 \times$--$10 \times$
+to the on-disk archive size, which is deployment-prohibitive
+without raising $K$ to amortize the snapshot cost. This motivates the $W$-bounded
 design choice for deployable RNR codecs, particularly for archive
 formats where the seek index is co-located with the data and
 contributes to its size.
@@ -3138,10 +3186,12 @@ $p$ runs in $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ time
 (under uniform spacing) and
 requires $O(K + k)$ bytes (equivalently $O((K+k) \cdot 8)$ bits) of
 decode-window working memory (warmup buffer plus output buffer).
-The driver additionally keeps the predictor weights ($L(M)$ bits)
-and the seek index ($L(\mathrm{seek\_index})$ bits) resident for
-constant-time per-query lookup; these are fixed at archive-mount
-time, not per-query. The translation from $(\mathcal{L}, k)$ to
+The driver additionally keeps the predictor weights ($L(M)$ bits),
+the predictor inference workspace ($L(\mathrm{workspace}(M))$ bits;
+e.g., a $W$-position KV-cache for a transformer plus layer-wise
+activation buffers), and the seek index ($L(\mathrm{seek\_index})$
+bits) resident; these are fixed at archive-mount time, not
+per-query. The translation from $(\mathcal{L}, k)$ to
 $(p, k)$ is a constant-time arithmetic operation. The total
 per-request cost is therefore as stated, with the parameter regime
 caveat inherited from Theorem 10.3. \hfill$\blacksquare$
@@ -3262,9 +3312,11 @@ of size $\lesssim C$ are revisited many times (the working-set fits
 in cache), the cache hit rate approaches one on repeated accesses,
 and the amortized cost per byte after warmup approaches
 $O(\mathrm{memcpy})$ speed, dominated by main memory bandwidth.
-A single forward scan over a region of size $\lesssim C$ without
-re-access pays the cold cost on every byte (the cache helps only
-prefetch, not the decoded-region hit rate). For
+A single forward scan over a region without re-access amortizes
+its $K$-byte warmup over the scan as covered above (one warmup
+per access, not one per byte), but does not benefit from the
+re-access caching effect; the relevant benefit is the
+$R/K$-amortized cost of Theorem 10.3, not a hit-rate near one. For
 uniformly random reads at distance larger than $C$, the amortized
 cost per byte equals the Theorem 10.5 bound divided by $k$, that is,
 $O((K + k) \cdot \mathrm{cost}(M) / k)$, which approaches
@@ -3463,12 +3515,18 @@ predicted to dominate.
 \textbf{11.3 Type-III-A composition on heterogeneous archives}
 
 Type-III-A scheduling across Type-I, Type-II, and raw fallback is
-predicted to dominate any single mode on archives with heterogeneous
-content (mixed text/binary, containers, database dumps with
-header/payload structure). The per-mode prediction error
-$\varepsilon_t$ determines the closeness to the oracle: for
-well-calibrated $U$, the composition is within a few percent of the
-per-tile oracle best mode.
+predicted to outperform any single fixed mode on archives with
+heterogeneous content (mixed text/binary, containers, database
+dumps with header/payload structure), provided the per-mode
+prediction error $\sum_t \varepsilon_t$ and the per-tile mode-flag
+overhead together remain smaller than the heterogeneity advantage
+of the per-tile oracle over the best fixed single coder.
+Theorem 6.1 only gives an approximate-oracle bound, not a strict
+dominance guarantee; on archives where the heterogeneity advantage
+is small relative to $\sum_t \varepsilon_t$ plus mode-flag
+overhead, the composition can be worse than the best fixed single
+coder. Empirical validation is required to determine which side
+wins on specific data classes.
 
 \textbf{11.4 Type-III-B on ASCII text and instruction streams}
 
@@ -3640,12 +3698,14 @@ point to the relevant theorems.
   learning --- partially resolved. Theorem 6.7 establishes
   NP-hardness of the \emph{restricted} dictionary-only case via
   reduction from SGP; Theorem 6.8 transfers APX-hardness from the
-  SGP literature (Lehman--Shelat 2002; Charikar et al.\ 2005) to the
-  same restricted case with the same inherited constant
-  $\gamma_{\mathrm{SGP}} > 1$ (we do not pin down a specific
-  numerical value). Hardness of the \emph{unrestricted} joint
-  problem is conjectured but not proved by the present reductions
-  and is listed in \S13.2.
+  SGP literature (Lehman--Shelat 2002; Charikar et al.\ 2005) to
+  the same restricted case as the existence of some
+  inapproximability constant $\gamma_{\mathrm{SGP}} > 1$. The
+  \emph{specific numerical value} of $\gamma_{\mathrm{SGP}}$ is
+  not pinned down here and is listed in §13.2; what Theorem 6.8
+  establishes is only the existence of such a constant. Hardness
+  of the \emph{unrestricted} joint problem is conjectured but not
+  proved by the present reductions and is also listed in §13.2.
 \item
   Bit-exact decoder reproduction for fixed predictors --- resolved
   by Theorem 10.1: a precision-and-determinism specification
@@ -3662,10 +3722,14 @@ point to the relevant theorems.
   output-sensitive cost $O(\log L(R) + (K + k) \cdot
   \mathrm{cost}(M))$ under uniform sync-point spacing (or
   $O(\log(|X|/K) \cdot (\log |X| + \log L(R)) + (K + k) \cdot \mathrm{cost}(M))$
-  under non-uniform spacing) --- resolved by Definitions 10.2
-  ($W$-bounded predictor) and 10.3 (sync point, including
-  entropy-coder flush) and Theorem 10.3, with Theorem 10.4 covering
-  non-$W$-bounded predictors via state snapshots. The cost is polylogarithmic in
+  under non-uniform spacing) for $W$-bounded predictors --- resolved
+  by Definitions 10.2 ($W$-bounded predictor) and 10.3 (sync point,
+  including entropy-coder flush) and Theorem 10.3. Non-$W$-bounded
+  predictors (LSTM, state-space) are covered by Theorem 10.4 via an
+  augmented state snapshot of size $L(\text{state})$ per sync
+  point; the corresponding cost adds $L(\text{state})$ to the
+  uniform-spacing lookup term and $L(\text{state})$ to each
+  non-uniform binary-search entry (full statement in Theorem 10.4). The cost is polylogarithmic in
   archive size $|X|$ only in the parameter regime where the
   sync-point spacing $K$, read window $k$, and $\log L(R)$ are held
   fixed or grow at most polylogarithmically in $|X|$; outside that
