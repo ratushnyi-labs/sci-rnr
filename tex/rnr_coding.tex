@@ -3159,7 +3159,11 @@ $(s, \tau_0)$ with $L_{\mathrm{sym}}^*$ the optimal symbol-count under
 the constant-predictor restriction, append an incompressible suffix
 $z$ of length $|z| = \mathrm{poly}(|s|)$ with Kolmogorov complexity
 $K(z) \geq |z| - O(\log |z|)$ (such a $z$ exists for each input
-length by a counting argument). Form the joint Type-III-C instance
+length by a counting argument; turning this into a polynomial-time
+reduction requires \emph{constructible} or \emph{conditional}
+incompressibility relative to $s$ and $M$, e.g.\ via Yao's
+incompressibility theorem against polynomial-time computable
+predictors, which is non-trivial in general). Form the joint Type-III-C instance
 $(M, D, R \mid Y)$ on the concatenation $s z$. Naively, an
 $\alpha$-approximation for the joint bit-cost would translate to an
 $\alpha$-approximation for the restricted symbol-count, since the
@@ -3183,7 +3187,11 @@ is lost in the trade-off.
 \emph{What would close OP2(b).} A successful reduction would need to
 either (i) bound $L(M)$ \emph{a priori} below the threshold at which
 specialization becomes profitable, restricting the class of
-predictors; or (ii) construct a source family such that any
+predictors (note that ``polynomial-size predictors'' alone is
+insufficient: a deterministic lookup table for $s$ has size
+$O(|s| \log |\Sigma|) = \mathrm{poly}(|s|)$, so polynomial-size
+predictors can already specialize; a tighter bound such as
+$L(M) \ll L_{\mathrm{sym}}^*$ would be needed); or (ii) construct a source family such that any
 near-optimal predictor description $M$ \emph{must} encode the SGP
 structure faithfully, preventing escape via specialization; or
 (iii) use an entirely different gap-amplification framework
