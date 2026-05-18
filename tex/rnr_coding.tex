@@ -2336,8 +2336,12 @@ $E_{\mathrm{bigram}} \approx 4.03 - 3.32 = 0.71$ bits/letter, and
 asymptotically $E_{\mathrm{en}} \approx 4.03 - 0.95 \approx 3.08$
 bits/letter (using the midpoint of Shannon's bounds). For
 $N = 2^{20}$ letters of English text, a per-position factorized
-coder leaves $\approx 0.7$ Mbit (order-$1$ bigram approximation) to
-$\approx 2.9$ Mbit (long-range) of joint structure unexploited. The
+coder leaves $\approx 0.74$ Mbit (order-$1$ bigram approximation,
+using $E_{\mathrm{bigram}} = 0.71$ bits/letter) to $\approx 3.23$
+Mbit (asymptotic, using midpoint $E_{\mathrm{en}} = 3.08$
+bits/letter; ranging from $2.86$ Mbit at Shannon's upper bound
+$1.3$ to $3.59$ Mbit at lower bound $0.6$) of joint structure
+unexploited. The
 verification script
 \texttt{scripts/verify/lemma\_5\_6c\_stationary\_markov\_tc.py}
 exercises identity (5.7) for stationary order-$1$ and order-$2$
@@ -2453,9 +2457,10 @@ so $E_{\mathrm{HMM}} \approx 0.090$ bits/position.
 $h_{\mathrm{HMM}}(p = 0.3, \alpha = 0.3) \approx 0.997$ bits,
 so $E_{\mathrm{HMM}} \approx 0.003$ bits/position. These are
 strictly between the iid-extreme ($E = 0$ when emission carries
-no information about state) and the deterministic-extreme
-($E = 1$ when state perfectly determines emission and chain
-is non-mixing).
+no information about state) and the deterministic-emission case
+($E = H_{\mathrm{marg}} - h(Y) = 1 - h(Y)$ for binary symmetric
+emissions onto a mixing hidden chain, with $E$ approaching $1$
+only in the non-mixing limit where $h(Y) \to 0$).
 
 \emph{Scope.} Lemma 5.6d completes Open Problem 5's resolution for
 the four structurally cleanest natural-data patterns:
