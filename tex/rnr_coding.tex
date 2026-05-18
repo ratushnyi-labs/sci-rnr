@@ -333,22 +333,24 @@ This article makes the following contributions.
   construction, with the exact information-theoretic quantity
   governing factorized-versus-joint coding identified as
   multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5; the gap may be
-  zero on sources without joint structure). Three explicit
+  zero on sources without joint structure). Four explicit
   $\Theta(N)$-TC classes are established within the §5.6 framework:
   Lemma 5.6a gives $\mathrm{TC} = N \cdot c(\alpha) + O(\log N)$ for
   the uniqueness-constrained class (column-permutation invariance);
   Lemma 5.6b gives the exact identity
   $\mathrm{TC} = N \cdot I(X_1; Y) - H(Y) + H(Y \mid X^N)$ for
-  hidden-class iid sources (latent-topic mixture); and Lemma 5.6c
+  hidden-class iid sources (latent-topic mixture); Lemma 5.6c
   gives $\mathrm{TC} = N \cdot E - \delta_N$ for stationary
   processes, where $E = H_{\mathrm{marg}} - h(X)$ is the per-position
   excess entropy and $\delta_N$ is bounded for order-$W$ Markov
-  chains (temporal correlation). Together these three lemmas cover
-  the three foundational mechanisms by which natural data
-  accumulates linear TC. Whether $\mathrm{TC}(D_N) = \Theta(N)$
-  extends to further classes (non-stationary chains, hidden Markov
-  models, factor graphs over expanders) remains an open empirical
-  question.
+  chains (temporal correlation); and Lemma 5.6d extends to hidden
+  Markov models with the Baum--Petrie filter-recursion entropy rate
+  $h_{\mathrm{HMM}}$ (combined hidden-and-temporal structure).
+  Together these four lemmas cover the principal mechanisms by which
+  natural data accumulates linear TC. Whether $\mathrm{TC}(D_N) =
+  \Theta(N)$ extends to further classes (factor graphs over
+  expanders, continuous-state HMMs, non-stationary processes)
+  remains an open empirical question.
 \item
   A status remark on Type-II support selection
   (Remark 5.7): the natural marginal-$Q$-prefix heuristic is not
@@ -445,6 +447,14 @@ This article makes the following contributions.
   linear); at $K = |X|/\mathrm{polylog}(|X|)$ the total overhead
   drops to $O(\mathrm{polylog}(|X|))$ but per-query cost grows to
   $\Theta(|X|/\mathrm{polylog}(|X|) \cdot \mathrm{cost}(M))$.
+  Lemma 5.1c additionally identifies the \emph{tight} cold-context
+  excess per sync for the special case of stationary order-$W'$ Markov
+  sources with predictor context $W \geq W'$: the per-sync excess
+  equals exactly $\delta_{W'} = H(X^{W'}) - W' h(X)$ (a finite
+  source-specific constant), and total sync excess over $H(D_N)$ is
+  $(m-1) \cdot \delta_{W'}$ — strictly tightening Lemma 5.1a's
+  worst-case $W \log_2(1/\eta)$ per-sync factor whenever $\delta_{W'}$
+  is smaller (typical for natural-data Markov sources).
   The simultaneous polylog regime (polylog per-query AND polylog
   total) does not exist within this trade-off. The per-query random-access cost
   is polylog in $|X|$ provided $K = \mathrm{polylog}(|X|)$ and the
@@ -1631,9 +1641,14 @@ L_{\mathrm{synced}} - H(D_N) \;=\; (m - 1) \cdot \delta_{W'},
 \emph{the additional cost paid by the $m-1$ sync resets after the
 initial natural-start sub-block, which strictly tightens Lemma 5.1a's
 worst-case bound $m \cdot S \cdot W \cdot \log_2(1/\eta)$ whenever
-the source-specific constant $\delta_{W'} < S \cdot W \cdot \log_2(1/\eta)$
-(which holds in particular for any natural-data source with
-$\delta_{W'} = O(1)$).}
+the source-specific constant $\delta_{W'}$ is less than
+$S \cdot W \cdot \log_2(1/\eta)$. The latter is typical for
+natural-data Markov sources: e.g.\ for an order-$1$ binary Markov
+chain with $E \approx 0.7$ bits/byte (Shannon 1951 bigram estimate
+for English) and $W = O(\log N) = 20$, $S = 1$, $\eta = 2^{-12}$, the
+worst-case Lemma 5.1a bound is $\sim 240$ bits/sync versus
+Lemma 5.1c's tight value $\sim 0.7$ bits/sync, a $\sim 300\times$
+improvement.}
 
 \emph{\textbf{Proof.}} For a stationary order-$W'$ Markov source with
 $W' \leq W$ and the $W$-bounded predictor outputting the true
@@ -1677,6 +1692,18 @@ to characterize) quantity. Lemma 5.1b's choice $W = O(\log N)$ makes
 $(h_W - h) \to 0$ via the conditional-MI decay (5.8), so the difference
 to the entropy rate $h(X)$ contributes only $O(1)$ in total over the
 block.
+
+\emph{History.} An earlier draft contained a Lemma 5.1c claiming
+$\Delta_{\mathrm{sync, per-pt}} = \delta_W$ for \emph{arbitrary}
+stationary processes, with $\delta_W$ bounded by the
+Crutchfield--Feldman ``excess entropy'' under exponential mixing. That
+broader claim was retracted after adversarial review pointed out the
+$h$/$h_W$ conflation for non-finite-order-Markov sources. The current
+Lemma 5.1c restricts hypothesis to order-$W'$ Markov ($W' \leq W$),
+where the claim holds exactly; the general stationary case is
+left to a careful refinement of the cold-context analysis that
+properly distinguishes the entropy rate $h(X)$ from the $W$-bounded
+rate $h_W$.
 
 \textbf{Theorem 5.2 (Multinomial baseline for unconstrained partition
 coding).} \emph{Let $N$ be a block length, and let
@@ -5029,17 +5056,20 @@ point to the relevant theorems.
   --- partially resolved. Theorem 5.5 is a theorem: the
   multi-information $\mathrm{TC}(D_N)$ is the exact
   information-theoretic quantity governing factorized-versus-joint
-  separation. Three explicit $\Theta(N)$-TC classes are now
+  separation. Four explicit $\Theta(N)$-TC classes are now
   established as theorems: Lemma 5.6a for uniqueness-constrained
   injections (database-page schemas), Lemma 5.6b for hidden-class
-  iid sources (latent-topic mixtures), and Lemma 5.6c for stationary
+  iid sources (latent-topic mixtures), Lemma 5.6c for stationary
   processes (order-$W$ Markov chains and any process with summable
-  conditional-entropy excess; Ces\`aro form for general stationary).
-  Remark 5.6's extrapolation to low-dimensional natural-data
-  manifolds remains an informal heuristic. Establishing
+  conditional-entropy excess; Ces\`aro form for general stationary),
+  and Lemma 5.6d for hidden Markov models with the Baum--Petrie
+  filter-recursion entropy rate (combined hidden-and-temporal
+  structure). Remark 5.6's extrapolation to low-dimensional
+  natural-data manifolds remains an informal heuristic. Establishing
   $\mathrm{TC}(D_N) = \Theta(N)$ for less combinatorially structured
-  classes (natural images, general hidden Markov models with
-  non-trivial hidden state) is open and listed in §13.2.
+  classes (natural images at a given resolution, continuous-state
+  HMMs, non-stationary processes, factor graphs over expanders) is
+  open and listed in §13.2.
 \item
   Exact optimal candidate-support threshold for semi-non-factorized
   Type-II support selection --- resolved by Lemmas 5.7a and 5.7c
@@ -5129,6 +5159,12 @@ point to the relevant theorems.
   at $K = \Theta(\log |X|)$ the total is $\Theta(|X|)$ linear.
   Polylog total overhead would require $K = |X|/\mathrm{polylog}(|X|)$,
   which makes per-query cost polynomial.
+  Lemma 5.1c sharpens Lemma 5.1a's worst-case sync overhead
+  $m \cdot S \cdot W \cdot \log_2(1/\eta)$ to the source-specific
+  excess $(m - 1) \cdot \delta_{W'}$ for the special case of order-$W'$
+  Markov sources with predictor context $W \geq W'$, where
+  $\delta_{W'} = H(X^{W'}) - W' h(X)$ is finite and typically much
+  smaller than $W \log_2(1/\eta)$ for natural-data Markov sources.
   Whole-block partition-rank coding (Type-II rank coding,
   Type-III-B direct or hierarchical partition strategies) is
   excluded from Theorem 10.3 and gives only sub-block-granular
@@ -5228,7 +5264,7 @@ listed below.)
   research-scale open problems.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
-  natural-data classes --- partially resolved. Three explicit
+  natural-data classes --- partially resolved. Four explicit
   $\Theta(N)$-TC classes are now established:
   Lemma 5.6a gives the closed-form coefficient
   $c(\alpha) = \log_2 e - (\alpha-1)\log_2(\alpha/(\alpha-1))$ for
@@ -5236,7 +5272,7 @@ listed below.)
   injections $[N] \to [\alpha N]$); Lemma 5.6b gives the exact
   identity $\mathrm{TC}(D_N) = N \cdot I(X_1; Y) - H(Y)
   + H(Y \mid X^N)$ for hidden-class iid sources (latent $Y$ with
-  conditionally iid samples); and Lemma 5.6c gives
+  conditionally iid samples); Lemma 5.6c gives
   $\mathrm{TC}(D_N) = N \cdot E - \delta_N$ for stationary
   processes, where $E = H_{\mathrm{marg}} - h(X) \geq 0$ is the
   per-position excess entropy and $\delta_N$ is bounded constant
@@ -5247,10 +5283,13 @@ listed below.)
   text Shannon's 1951 measurements give $E \approx 0.71$ bits/letter
   at the bigram level and $E \approx 3.08$ bits/letter at the
   long-range limit using the midpoint of Shannon's $0.6$ to $1.3$
-  asymptotic bounds).
-  All three proofs are verified at machine precision in
-  \texttt{scripts/verify/lemma\_5\_6\{a,b,c\}*}; the proofs extend
-  additively along independent column blocks.
+  asymptotic bounds); and Lemma 5.6d extends to hidden Markov models
+  with the Baum--Petrie filter-recursion entropy rate
+  $h_{\mathrm{HMM}}$, with $E_{\mathrm{HMM}} > 0$ iff the observable
+  process is not iid.
+  All four proofs are verified at machine precision in
+  \texttt{scripts/verify/lemma\_5\_6\{a,b,c,d\}*}; the proofs
+  generalize additively along independent column blocks.
   Theorem 5.5 remains the foundational identity and Remark 5.6's
   $\Theta(N)$ extrapolation for low-dimensional natural-data
   manifolds is an informal heuristic; rigorously establishing
