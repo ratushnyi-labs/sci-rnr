@@ -1891,8 +1891,10 @@ for Lemma 5.6b).
 
 \textbf{Lemma 5.6c (Linear $\mathrm{TC}$ for stationary processes
 with positive entropy-rate gap).} \emph{Let $(X_n)_{n \geq 1}$ be a
-stationary discrete-time random process on a finite alphabet
-$\mathcal{X}$. Define the marginal entropy
+strictly stationary discrete-time random process on a finite
+alphabet $\mathcal{X}$ (so the joint law of any block
+$(X_{j+1}, \ldots, X_{j+N})$ is independent of the shift $j \geq 0$).
+Define the marginal entropy
 $H_{\mathrm{marg}} := H(X_1)$, the entropy rate
 $h(X) := \lim_{n \to \infty} H(X_n \mid X_1, \ldots, X_{n-1})$
 (which exists by stationarity, Cover \& Thomas 2006 Thm 4.2.1),
@@ -1923,12 +1925,24 @@ of Lemma 5.6b.
 conditional entropy convergence is summable
 ($\sum_{n=1}^\infty [H(X_n \mid \mathrm{past}) - h(X)] < \infty$,
 a standard mixing assumption; see Crutchfield \& Feldman 2003
-\emph{Chaos} 13(1):25 for ``excess entropy'' in this sense), then
-$\delta_N \to \delta_\infty < \infty$ as $N \to \infty$ and
+\emph{Chaos} 13(1):25--54 for ``excess entropy'' in this sense),
+then $\delta_N \to \delta_\infty < \infty$ as $N \to \infty$ and
 \[
 \mathrm{TC}(D_N) = N \cdot E - \delta_\infty + o(1).
 \]
 Hence $\mathrm{TC}(D_N) = \Theta(N)$ whenever $E > 0$.
+
+\emph{(c) General stationary processes (Ces\`aro limit).} For any
+strictly stationary process, $H(X_n \mid X_1, \ldots, X_{n-1}) \to h(X)$
+as $n \to \infty$ (Cover \& Thomas 2006 Thm 4.2.2), so by the Ces\`aro
+averaging
+$\delta_N / N \to 0$
+as $N \to \infty$. Consequently
+\[
+\mathrm{TC}(D_N) / N \to E,
+\]
+i.e.\ $\mathrm{TC}(D_N) = N \cdot E + o(N)$ whenever $E > 0$, even
+without summability of the excess terms.
 
 \emph{\textbf{Proof.}} By the chain rule for entropy,
 $H(X_1, \ldots, X_N) = \sum_{n=1}^N H(X_n \mid X_1, \ldots, X_{n-1})$
@@ -1958,17 +1972,40 @@ Together the three lemmas cover the three foundational structural
 mechanisms by which natural sources accumulate linear
 $\mathrm{TC}$: combinatorial column constraints (Lemma 5.6a),
 shared latent variable across positions (Lemma 5.6b), and temporal
-dependence (Lemma 5.6c). Specific applications:
-text-byte-streams with English-language bigram structure realize
-$\mathrm{TC}(D_N) \approx N \cdot (H_{\mathrm{marg}} - h_{\mathrm{en}})$
-with $H_{\mathrm{marg}} - h_{\mathrm{en}} \approx 4.7$ bits/byte
-(Shannon 1951 estimate); $1$ MiB English text accumulates
-$\approx 4.7 \times 2^{20} \approx 4.9$ Mbits of joint structure
-inaccessible to a per-position factorized coder. The verification
-script
+dependence (Lemma 5.6c). Numerical illustration on English text (Shannon 1951
+\emph{Bell System Technical Journal} 30(1):50, 27-letter alphabet
+including space): Shannon's Table 1 gives the letter-frequency rate
+$F_1 \approx 4.03$ bits/letter and the bigram-conditional rate
+$F_2 \approx 3.32$ bits/letter, plus experimental bounds on the
+asymptotic entropy rate from Shannon's 100-letter prediction
+experiment ($0.6$ bits/letter lower bound, $1.3$ bits/letter upper
+bound, with explicit sampling-error caveats). Taking
+$H_{\mathrm{marg}} = F_1$, the per-position excess entropy at the
+bigram level is
+$E_{\mathrm{bigram}} \approx 4.03 - 3.32 = 0.71$ bits/letter, and
+asymptotically $E_{\mathrm{en}} \approx 4.03 - 0.95 \approx 3.08$
+bits/letter (using the midpoint of Shannon's bounds). For
+$N = 2^{20}$ letters of English text, a per-position factorized
+coder leaves $\approx 0.7$ Mbit (order-$1$ bigram approximation) to
+$\approx 2.9$ Mbit (long-range) of joint structure unexploited. The
+verification script
 \texttt{scripts/verify/lemma\_5\_6c\_stationary\_markov\_tc.py}
 exercises identity (5.7) for stationary order-$1$ and order-$2$
 chains, including non-trivial transition matrices.
+
+\emph{Terminology note.} Our per-position excess entropy
+$E := H_{\mathrm{marg}} - h(X)$ is the \emph{slope} of TC as a
+function of $N$ and should not be conflated with Crutchfield \&
+Feldman's (2003) ``excess entropy'' $\mathbf{E}_{\mathrm{CF}}$,
+which is defined via the block-entropy asymptote
+$H(X^L) \sim h(X) \cdot L + \mathbf{E}_{\mathrm{CF}}$ as $L \to \infty$.
+In our notation $\mathbf{E}_{\mathrm{CF}} = \lim_{N \to \infty}
+[N \cdot H_{\mathrm{marg}} - N \cdot E - H(X^N)] = \delta_\infty$
+(i.e., $\mathbf{E}_{\mathrm{CF}}$ corresponds to $\delta_\infty$).
+The two are distinct non-negative quantities: $E$ is the per-position
+slope of TC and determines whether $\mathrm{TC}(D_N) = \Theta(N)$,
+while $\delta_\infty = \mathbf{E}_{\mathrm{CF}}$ is an asymptotic
+correction constant and does not change the leading $N$-scaling.
 
 Together Lemmas 5.6a, 5.6b, 5.6c constitute Open Problem 5's
 resolution for the three structurally cleanest natural-data
@@ -4676,9 +4713,13 @@ the present paper.
   processes, where $E = H_{\mathrm{marg}} - h(X) \geq 0$ is the
   per-position excess entropy and $\delta_N$ is bounded constant
   for order-$W$ Markov chains (covering bigrams, $W$-grams, and
-  any mixing process with summable correlations; covers natural
-  text-byte streams with $E \approx 4.7$ bits/byte by Shannon's
-  1951 estimate).
+  any mixing process with $\sum_n [H(X_n \mid \mathrm{past}) - h(X)]
+  < \infty$; the general stationary case has the Ces\`aro form
+  $\mathrm{TC}(D_N)/N \to E$ even without summability; for English
+  text Shannon's 1951 measurements give $E \approx 0.71$ bits/letter
+  at the bigram level and $E \approx 3.08$ bits/letter at the
+  long-range limit using the midpoint of Shannon's $0.6$ to $1.3$
+  asymptotic bounds).
   All three proofs are verified at machine precision in
   \texttt{scripts/verify/lemma\_5\_6\{a,b,c\}*}; the proofs extend
   additively along independent column blocks.
@@ -4899,11 +4940,18 @@ Coding. IBM Journal of Research and Development, 23(2), 149-162.
 P. (2017). PixelCNN++: Improving the PixelCNN with Discretized Logistic
 Mixture Likelihood and Other Modifications. ICLR.
 
+\textbf{{[}29a{]}} Crutchfield, J. P., and Feldman, D. P. (2003).
+Regularities Unseen, Randomness Observed: Levels of Entropy
+Convergence. Chaos, 13(1), 25-54. DOI: 10.1063/1.1530990.
+
 \textbf{{[}30{]}} Sahni, S., and Gonzalez, T. (1976). P-Complete
 Approximation Problems. Journal of the ACM, 23(3), 555-565.
 
 \textbf{{[}31{]}} Shannon, C. E. (1948). A Mathematical Theory of
 Communication. Bell System Technical Journal, 27, 379-423 and 623-656.
+
+\textbf{{[}31a{]}} Shannon, C. E. (1951). Prediction and Entropy of
+Printed English. Bell System Technical Journal, 30(1), 50-64.
 
 \textbf{{[}32{]}} Slepian, D., and Wolf, J. K. (1973). Noiseless Coding
 of Correlated Information Sources. IEEE Transactions on Information

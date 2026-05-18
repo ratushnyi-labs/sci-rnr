@@ -12,9 +12,9 @@ Tests:
    (special case of (a) with W=1, delta_W = E)
 2. Order-2 stationary Markov on {0,1}: TC(D_N) = N*E - delta_2 (exact for N>=2)
 3. Three-state order-1 chain: numerical check against general identity
-4. Non-stationary chain: confirm the identity FAILS (companion check)
+4. Memoryless iid (E=0 boundary case): TC must equal 0 exactly
 
-PASS = exact identity holds at machine precision for all stationary tests.
+PASS = exact identity holds at machine precision for all four tests.
 """
 
 import itertools
