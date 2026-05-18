@@ -2522,49 +2522,27 @@ that this constant inherits to the \emph{fully unrestricted}
 (free-predictor, free-dictionary, free-repair) bit-cost objective,
 since that problem's APX-hardness is itself open (see §13.2).
 
-\textbf{Lemma 6.8a (Bit-cost APX-hardness for restricted
-Type-III-C, fixed predictor).} \emph{Consider the restricted
-Type-III-C problem of Theorem 6.7 (constant predictor, recursive
-normal-form dictionary) with the \emph{bit-cost objective}
+\emph{Remark on the bit-cost objective.} A natural attempt is to
+transfer Theorem 6.8's APX-hardness from the symbol-count
+objective $L_{\mathrm{sym}}$ to the bit-cost objective
 $L^{\mathrm{bit}}(D) = L_{\mathrm{sym}}(D) \cdot
-\lceil \log_2(|\Sigma|+K) \rceil$ in place of $L_{\mathrm{sym}}$,
-where $|\Sigma|$ is the terminal alphabet size and $K$ is the
-number of nonterminals in $D$. Under the unbounded-alphabet
-variant (Theorem 6.8), the bit-cost objective is APX-hard with
-the same inapproximability constant
-$\gamma_{\mathrm{SGP}}^{\mathrm{bit}} \geq \gamma_{\mathrm{SGP}}
-= 8569/8568$.}
+\lceil \log_2(|\Sigma|+K) \rceil$ by arguing that the
+multiplicative $\log$ factor cancels in the ratio
+$L^{\mathrm{bit}}(G^{\mathrm{alg}})/L^{\mathrm{bit}}(G^*)$. This
+naive transfer is unsound: a bit-cost approximation algorithm need
+not produce a grammar that approximates $L_{\mathrm{sym}}$, since
+the algorithm can trade off $L_{\mathrm{sym}}$ against $K$ (which
+affects the log factor) in ways that minimize bit-cost without
+minimizing $L_{\mathrm{sym}}$. The exact APX-hardness of the
+bit-cost objective for the restricted Type-III-C problem, with
+any explicit inherited constant, is therefore an open question
+(listed in §13.2), distinct from the symbol-count result of
+Theorem 6.8.
 
-\emph{\textbf{Proof.}} For any restricted-case grammar $G$ produced
-by Charikar et al.'s reduction, $K \leq L_{\mathrm{sym}}(G)$ (each
-new nonterminal is introduced by at most one rule, contributing at
-least one symbol). So $\lceil \log_2(|\Sigma|+K) \rceil \leq
-\lceil \log_2(|\Sigma| + L_{\mathrm{sym}}(G)) \rceil$. Both the
-optimal grammar $G^*$ and any $\alpha$-approximation $G^{\mathrm{alg}}$
-on the same reduction instance have $L_{\mathrm{sym}}$ within a
-$\Theta(1)$ multiplicative factor of each other (by the
-$\alpha$-approximation hypothesis), hence the same
-$\lceil \log_2(|\Sigma|+K) \rceil$ up to a $\Theta(1)$ factor on
-the argument of the $\log$, which is $O(1)$ inside the
-$\lceil \log_2 \cdot \rceil$.
-
-Concretely, with $K_{\mathrm{alg}} \leq \alpha K^*$ and both
-within $[1, L_{\mathrm{sym}}^{\mathrm{alg}}]$:
-\[
-\frac{L^{\mathrm{bit}}(G^{\mathrm{alg}})}{L^{\mathrm{bit}}(G^*)}
-= \frac{L_{\mathrm{sym}}(G^{\mathrm{alg}}) \lceil \log_2(|\Sigma|+K_{\mathrm{alg}}) \rceil}
-       {L_{\mathrm{sym}}(G^*)        \lceil \log_2(|\Sigma|+K^*) \rceil}
-\;\geq\; \frac{L_{\mathrm{sym}}(G^{\mathrm{alg}})}{L_{\mathrm{sym}}(G^*)} \cdot (1 - o(1))
-\;\geq\; \gamma_{\mathrm{SGP}} \cdot (1 - o(1)).
-\]
-Taking the asymptotic limit gives bit-cost APX-hardness with the
-same $\gamma_{\mathrm{SGP}} = 8569/8568$ in the leading constant.
-\hfill$\blacksquare$
-
-Together, Theorems 6.7 and 6.8 plus Lemma 6.8a show that the
-restricted normal-form recursive dictionary problem under symbol-
-count or bit-cost objective is NP-hard and (under the
-unbounded-alphabet variant) APX-hard with constant $8569/8568$. We do not claim this extends to all
+Together, Theorems 6.7 and 6.8 show that the restricted normal-form
+recursive dictionary problem under the symbol-count objective is
+NP-hard and (under the unbounded-alphabet variant) APX-hard with
+constant $8569/8568$. We do not claim this extends to all
 practical dictionary learners --- BPE and WordPiece operate on a
 fixed-size flat token vocabulary with greedy merges (not a
 recursive grammar), MDL-greedy variants use bit-cost rather than
@@ -4309,23 +4287,26 @@ the present paper.
   separate, settled result and remains the comparison baseline.
 \item
   Hardness of the unrestricted joint Type-III-C problem
-  $(M, D, R \mid Y)$ --- partially resolved. Theorems 6.7 and 6.8
-  establish NP-hardness and APX-hardness ($\gamma = 8569/8568$ under
-  unbounded alphabet) for the restricted dictionary-only case;
-  Lemma 6.8a extends APX-hardness to the bit-cost objective with
-  the same constant for the restricted case. The unrestricted joint
-  problem with free predictor $M$ adds a non-trivial dimension:
-  the encoder can pay an additional $L(M)$ bits to gain unbounded
-  data savings, depending on the corpus structure.
-  \emph{Conjecture}: the unrestricted joint problem is APX-hard
-  with the same constant $\gamma_{\mathrm{SGP}} = 8569/8568$
-  inherited from Theorem 6.8, via a padding reduction in which the
-  corpus contains a sufficiently large incompressible suffix that
-  any non-trivial predictor pays more in $L(M)$ than it saves in
-  $L(R \mid Y)$, forcing the optimal joint solver to use the
-  trivial predictor. The required incompressibility argument is
-  closely related to known results in resource-bounded Kolmogorov
-  complexity and remains a research-scale open problem.
+  $(M, D, R \mid Y)$ --- open. Theorems 6.7 and 6.8 establish
+  NP-hardness and APX-hardness ($\gamma = 8569/8568$ under unbounded
+  alphabet) for the restricted dictionary-only case under the
+  symbol-count objective $L_{\mathrm{sym}}$. The following remain
+  open: (a) bit-cost APX-hardness for the restricted case (the
+  naive transfer fails because bit-cost approximation algorithms can
+  trade off $L_{\mathrm{sym}}$ against the nonterminal count $K$
+  appearing in the multiplicative $\log$ factor); (b) APX-hardness
+  of the unrestricted joint problem with free predictor $M$, which
+  adds the dimension of paying $L(M)$ bits to gain $L(R \mid Y)$
+  savings (a padding-based reduction strategy is plausible but
+  must control how a non-trivial predictor exploits structure in
+  the corpus, which standard incompressibility arguments do not
+  directly address, since an unrestricted predictor can specialize
+  to the SGP-encoded prefix and gain unbounded compression there
+  while ignoring an incompressible suffix). The inherited constant
+  for either open case is not necessarily $8569/8568$; the actual
+  bit-cost / free-predictor constants could be strictly less than
+  $8569/8568$ due to objective-function dilution and remain
+  research-scale open problems.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
   natural-data classes --- partially resolved. Lemma 5.6a gives an
