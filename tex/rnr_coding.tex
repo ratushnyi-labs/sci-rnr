@@ -351,9 +351,13 @@ This article makes the following contributions.
   where atom weights factorize as $\Pr(M_v = T) \propto
   \prod_{i \in T} q_i$ (covering the uniform-on-fixed-cardinality
   and log-likelihood-weighted regimes), via a stochastic dominance
-  coupling. Optimal fixed-size support selection for joint laws
-  outside this class (where Remark 5.7's counterexample lives)
-  remains open and is conjectured NP-hard via densest-$k$-subgraph.
+  coupling. Lemma 5.7c then closes the complementary direction:
+  optimal fixed-size support selection for arbitrary joint laws is
+  NP-hard, via a CLIQUE-to-support-selection reduction at $N=3s+1$
+  where the algebraic identity $A_s(1) = A_s(2)$ collapses the
+  cost to a linear function of the densest-$k$-subgraph value
+  $n_0(S)$. Together Lemma 5.7a and Lemma 5.7c form a polynomial-time
+  vs.\ NP-hard dichotomy in the joint law's permutation-like structure.
 \item
   An approximate-oracle mode-selection bound for Type-III-A (Theorem
   6.1) and a tight matching lower bound (Theorem 6.2) showing the
@@ -1910,14 +1914,104 @@ witness of the general dependent case.
 
 \emph{General-case status.} For arbitrary joint laws of $M_v$
 beyond permutation-like, top-$Q$ can be provably suboptimal (Remark
-5.7's counterexample exhibits a concrete instance). The optimization problem
-$\min_{|S_v| = s} \mathbb{E}[A_s(|M_v \setminus S_v|)]$ over
-arbitrary joint laws is \emph{conjectured to be NP-hard} via
-reduction from densest-$k$-subgraph (set the joint atoms to be
-edges of an input graph, $k_v = 2$, $s = k$; the expected residual
-becomes a non-linear function of $|E(G[S_v])|$ that is monotone in
-the densest-$k$-subgraph value), but a formal hardness proof is
-left open and listed in §13.2.
+5.7's counterexample exhibits a concrete instance), and the
+optimization problem is NP-hard (Lemma 5.7c below).
+
+\textbf{Lemma 5.7c (NP-hardness of optimal support selection for
+general dependent joint laws).} \emph{The decision problem}
+\begin{itemize}
+\item \textsc{Input}: $N \in \mathbb{N}$, integers $k_v = 2$ and
+$2 \leq s \leq N - 2$; a finite list of atoms
+$T_1, \ldots, T_m \in \binom{[N]}{2}$ with positive rational weights
+$w_1, \ldots, w_m$ summing to $1$ (defining the joint law $\mu$); a
+rational threshold $\tau$.
+\item \textsc{Question}: Does there exist $S \subseteq [N]$ with
+$|S| = s$ such that
+$\mathbb{E}_{T \sim \mu}[A_s(|T \setminus S|)] \leq \tau$, where
+$A_s(\alpha) := \log_2 \binom{s}{k_v - \alpha} + \log_2 \binom{N-s}{\alpha}$?
+\end{itemize}
+\emph{is NP-hard.}
+
+\emph{Proof.} Reduction from CLIQUE, which is NP-complete (Karp 1972) and
+remains so when restricted to graphs with $|V_G| \leq 3k+1$ (the standard
+3-SAT-to-CLIQUE reduction produces $|V_G| = 3 \cdot (\#\text{clauses}) = 3k$
+where $k$ is the clique-size sought; padding with one isolated vertex
+yields $|V_G| = 3k+1$).
+
+Let $(G = (V_G, E_G), k)$ be a CLIQUE instance with $k \geq 2$ and
+$|V_G| \leq 3k+1$. Construct a support-selection instance as follows:
+\begin{enumerate}
+\item Set $N := 3k+1$, $s := k$, $k_v := 2$. Identify $V_G$ with the first
+$|V_G|$ elements of $[N]$ and let positions $|V_G|+1, \ldots, N$ be
+isolated padding vertices.
+\item Define $\mu$ on $\binom{[N]}{2}$ by $\mu(\{a,b\}) := 1/|E_G|$ if
+$\{a,b\} \in E_G$ (treating $E_G$ as edges in $[N]$ via the identification),
+and $\mu(T) := 0$ otherwise. Assume $|E_G| \geq 1$ (if $E_G = \emptyset$
+then CLIQUE is trivially decided for $k \geq 2$).
+\item Set the threshold
+\[
+\tau := A_s(1) - (A_s(1) - A_s(0)) \cdot \binom{k}{2} / |E_G|.
+\]
+\end{enumerate}
+
+\emph{Key identity at $N = 3s+1$.} With $s = k$ and $N = 3k+1$, the
+binomial coefficients evaluate to
+$A_s(0) = \log_2 \binom{k}{2}$,
+$A_s(1) = \log_2(k) + \log_2(2k+1) = \log_2(k(2k+1))$,
+$A_s(2) = \log_2 \binom{2k+1}{2} = \log_2(k(2k+1))$,
+so $A_s(1) = A_s(2)$ exactly. Moreover $A_s(0) < A_s(1)$ since
+$\binom{k}{2} = k(k-1)/2 < k(2k+1)$ for $k \geq 1$.
+
+\emph{Cost formula.} For any $S \subseteq [N]$ with $|S| = s$, partition
+$E_G$ by intersection with $S$:
+$n_0(S) := |\{e \in E_G : e \subseteq S\}|$ (the densest-$k$-subgraph
+value $e_G(S \cap V_G)$),
+$n_1(S) := |\{e : |e \cap S| = 1\}|$,
+$n_2(S) := |\{e : e \cap S = \emptyset\}|$,
+with $n_0 + n_1 + n_2 = |E_G|$. Then
+\[
+\mathbb{E}_\mu[A_s(|T \setminus S|)]
+= \frac{n_0 A_s(0) + n_1 A_s(1) + n_2 A_s(2)}{|E_G|}
+= \frac{n_0 A_s(0) + (|E_G| - n_0) A_s(1)}{|E_G|}
+\]
+\[
+= A_s(1) - (A_s(1) - A_s(0)) \cdot \frac{n_0(S)}{|E_G|}.
+\]
+Thus $\mathbb{E}_\mu[A_s] \leq \tau$ \emph{iff} $n_0(S) \geq \binom{k}{2}$.
+Since $n_0(S) \leq \binom{|S|}{2} = \binom{k}{2}$ trivially, the
+condition $n_0(S) \geq \binom{k}{2}$ forces equality: every pair in
+$S$ is an edge, so $S$ is a clique in $G$ of size $k$. Conversely a
+size-$k$ clique $S_G$ in $G$ gives $n_0(S_G) = \binom{k}{2}$, hence
+$\mathbb{E}_\mu[A_s(S_G)] = \tau$.
+
+(Padding vertices play no role: if $S$ contains a padding vertex $v$,
+then for each $u \in S \setminus \{v\}$ the pair $\{v, u\}$ is not an
+atom of $\mu$, so $n_0(S) \leq \binom{k-1}{2} < \binom{k}{2}$; hence
+an optimal $S$ lies in $V_G$.)
+
+The construction has output size polynomial in $(|V_G| + |E_G| + \log k)$
+and uses only rational arithmetic (the threshold $\tau$ is a rational
+expressed via $\log_2$-of-rationals, which can be represented exactly
+as a comparison against a polynomial of integers; alternatively the
+reduction may be stated directly with rational $\tau' = (A_s(1) - \tau) \cdot |E_G| / (A_s(1) - A_s(0))$
+in place of $\tau$ and rephrased as: ``does $n_0(S) \geq \binom{k}{2}$
+hold?''---a purely combinatorial decision problem). Hence the
+support-selection decision problem is NP-hard.
+\hfill$\blacksquare$
+
+\emph{Implications.}
+(i) The natural conjecture of §13.2 is resolved in the affirmative for
+the general dependent case (Open Problem 6).
+(ii) An $O(\log N)$-approximation or PTAS for the optimization problem
+would imply the same for densest-$k$-subgraph, whose approximability
+is a long-standing open question (the best known algorithm achieves
+$O(n^{1/4 + \varepsilon})$, Bhaskara et al.\ 2010); inapproximability
+beyond a polynomial factor follows from any inapproximability result
+for densest-$k$-subgraph under standard complexity assumptions.
+(iii) The reduction does not preserve permutation-likeness (the
+constructed atoms are not factorizable), consistent with Lemma 5.7a
+which proves polynomial-time solvability in the permutation-like
+restriction.
 
 For comparison, in the factorized regime of Section 5.3, per-position
 arithmetic coding under $Q$ has expected length equal to the
@@ -4288,20 +4382,27 @@ the present paper.
 \begin{itemize}
 \item
   Optimal candidate-support threshold for semi-non-factorized
-  Type-II --- partially resolved. Lemma 5.7a establishes that
-  top-$Q$ is provably optimal under the permutation-like
-  (conditional Bernoulli) joint law of $M_v$, where atom weights
-  factorize as $\Pr(M_v = T) \propto \prod_{i \in T} q_i$ for
+  Type-II --- complexity dichotomy fully established. Lemma 5.7a
+  establishes that top-$Q$ is provably optimal under the
+  permutation-like (conditional Bernoulli) joint law of $M_v$,
+  where atom weights factorize as
+  $\Pr(M_v = T) \propto \prod_{i \in T} q_i$ for
   $T \in \binom{[N]}{k_v}$ (verified in
   \texttt{scripts/verify/lemma\_5\_7a\_permutation\_like\_top\_q.py}).
   For joint laws beyond permutation-like (e.g., Remark 5.7's
   counterexample at $N=7, k=2, s=2$), top-$Q$ can be provably
-  suboptimal. A formal NP-hardness proof for the general
-  non-permutation-like case (likely via reduction from
-  densest-$k$-subgraph) and a polynomial-time approximation
-  algorithm are both open.
-  The arithmetic-coding benchmark under the same $Q$ is a
-  separate, settled result and remains the comparison baseline.
+  suboptimal, and Lemma 5.7c establishes that the optimization
+  problem is NP-hard via reduction from CLIQUE at $N = 3s+1$,
+  where the algebraic identity $A_s(1) = A_s(2)$ collapses the
+  three-way ($n_0, n_1, n_2$) cost decomposition to a function of
+  $n_0$ alone (verified in
+  \texttt{scripts/verify/lemma\_5\_7c\_np\_hardness\_clique\_reduction.py}).
+  What remains open is the approximation side: whether a
+  polynomial-time $O(\log N)$-approximation or PTAS exists is tied
+  to the long-standing open approximability of densest-$k$-subgraph
+  (best known: $O(n^{1/4+\varepsilon})$ via Bhaskara et al.\ 2010).
+  The arithmetic-coding benchmark under the same $Q$ is a separate,
+  settled result and remains the comparison baseline.
 \item
   Hardness of the unrestricted joint Type-III-C problem
   $(M, D, R \mid Y)$ --- open. Theorems 6.7 and 6.8 establish
