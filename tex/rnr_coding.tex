@@ -3379,18 +3379,90 @@ have been verified against Charikar et al.\ 2005 (the
 $\#v_i\#$ rule accounting in their Section 3.2).
 
 The exact APX-hardness of the bit-cost objective for the restricted
-Type-III-C problem, with any explicit inherited constant, is
-therefore an open question (listed in §13.2), distinct from the
-symbol-count result of Theorem 6.8. An earlier draft of this paper
-contained a Lemma 6.8b claiming $\gamma^{\mathrm{bit}} =
+Type-III-C problem, with explicit non-asymptotic inherited constant,
+remains an open question (listed in §13.2). An earlier draft of this
+paper contained a Lemma 6.8b claiming $\gamma^{\mathrm{bit}} =
 \gamma_{\mathrm{SGP}} = 8569/8568$ exactly under a ``Charikar
 normal-form'' restriction with fixed $K = 15|V| + 3|E|$; that lemma
-was retracted after an adversarial review identified the
-nonterminal-count miscount: the fixed-$K$ premise is false in
-Charikar's actual reduction. A correct partial result would have to
-account for cover-dependent $K(\sigma)$ and quantify the resulting
-log-factor variation; this remains open and is recorded as such in
-§13.2.
+was retracted after adversarial review identified that the fixed-$K$
+premise is false: Charikar's $K$ includes cover-dependent optional
+rules and is of the form $K(\sigma) = K_0(H) + \alpha(H) \cdot |\sigma|$
+for structural $K_0, \alpha \geq 0$. Lemma 6.8b (v3 below) gives the
+correct partial result: bit-cost APX-hardness ratio approaches
+$\gamma_{\mathrm{SGP}}$ asymptotically (from above) within the Charikar
+grammar class.
+
+\textbf{Lemma 6.8b (Asymptotic bit-cost APX-hardness within Charikar
+normal form).} \emph{Let $\mathcal{G}_{\mathrm{Char}}(H)$ denote the
+class of grammars produced by Charikar's reduction on a
+bounded-degree-3 graph $H = (V, E)$: every $G \in
+\mathcal{G}_{\mathrm{Char}}(H)$ encodes a vertex cover
+$\sigma \subseteq V$ with symbol count
+$L_{\mathrm{sym}}(G) = 15|V| + 3|E| + |\sigma|$ and nonterminal count
+$K(G) = K_0(H) + \alpha(H) \cdot |\sigma|$, where $K_0(H) \geq 0$ and
+$\alpha(H) \geq 0$ are structural constants of the reduction
+(specifically, $K_0$ accounts for the rules not tied to the cover
+choice and $\alpha$ counts cover-dependent optional rules per
+selected vertex). Within this class, the bit-cost APX-hardness ratio
+satisfies}
+\[
+\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H)
+\;\geq\; \gamma_{\mathrm{SGP}} \cdot
+\frac{\lceil \log_2(|\Sigma| + K_0(H) + \alpha(H) \cdot k_{\mathrm{NO}}) \rceil}{\lceil \log_2(|\Sigma| + K_0(H) + \alpha(H) \cdot k_{\mathrm{OPT}}) \rceil}
+\;\geq\; \gamma_{\mathrm{SGP}} \;=\; \frac{8569}{8568},
+\]
+\emph{where $k_{\mathrm{OPT}}$ is the optimal vertex cover size and
+$k_{\mathrm{NO}} \geq (145/144) \cdot k_{\mathrm{OPT}}$ is the
+Berman-Karpinski-inapproximability NO-instance lower bound. As
+$|V| + |E| \to \infty$ (with $K_0, \alpha$ scaling polynomially and
+$\alpha$ bounded), the log-ratio factor converges to $1$ and
+$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H) \to \gamma_{\mathrm{SGP}}$
+from above. Equivalently: bit-cost APX-hardness within the Charikar
+class with constant $\gamma_{\mathrm{SGP}} - \varepsilon$ holds for
+any $\varepsilon > 0$, for sufficiently large instances.}
+
+\emph{\textbf{Proof.}} For any two grammars $G_{\mathrm{NO}},
+G_{\mathrm{YES}} \in \mathcal{G}_{\mathrm{Char}}(H)$ in the
+respective YES/NO cases of the underlying VC instance:
+\[
+\frac{L^{\mathrm{bit}}(G_{\mathrm{NO}})}{L^{\mathrm{bit}}(G_{\mathrm{YES}})}
+= \frac{L_{\mathrm{sym}}(G_{\mathrm{NO}})}{L_{\mathrm{sym}}(G_{\mathrm{YES}})}
+\cdot \frac{\lceil \log_2(|\Sigma| + K(G_{\mathrm{NO}})) \rceil}{\lceil \log_2(|\Sigma| + K(G_{\mathrm{YES}})) \rceil}.
+\]
+Charikar's Theorem 1 applied to the symbol-count objective gives
+$L_{\mathrm{sym}}(G_{\mathrm{NO}}) / L_{\mathrm{sym}}(G_{\mathrm{YES}})
+\geq \gamma_{\mathrm{SGP}}$ over the class
+$\mathcal{G}_{\mathrm{Char}}(H)$. Since $\alpha(H) \geq 0$ and
+$k_{\mathrm{NO}} > k_{\mathrm{OPT}}$, we have $K(G_{\mathrm{NO}}) \geq
+K(G_{\mathrm{YES}})$, hence the log-ratio factor is $\geq 1$. Therefore
+$\gamma^{\mathrm{bit}}_{\mathrm{Char}} \geq \gamma_{\mathrm{SGP}}$.
+
+For the asymptotic claim: when $K_0(H) + \alpha(H) k_{\mathrm{OPT}}
+\to \infty$ (which occurs as $|V| \to \infty$ since $K_0$ scales with
+$|V|$), the log-ratio
+$\log_2(|\Sigma|+K_{\mathrm{NO}})/\log_2(|\Sigma|+K_{\mathrm{YES}})
+= 1 + \log_2(1 + \alpha(k_{\mathrm{NO}} - k_{\mathrm{OPT}}) /
+(|\Sigma|+K_{\mathrm{YES}})) / \log_2(|\Sigma|+K_{\mathrm{YES}})$.
+With $k_{\mathrm{NO}} - k_{\mathrm{OPT}} = O(k_{\mathrm{OPT}}) =
+O(|V|)$ and $|\Sigma|+K_{\mathrm{YES}} = \Theta(|V|+|E|)$, the
+relative perturbation is $O(1)$ inside the inner $\log_2$ and
+$O(1/\log|V|)$ overall. Hence the log-ratio $\to 1$ as
+$|V| + |E| \to \infty$.
+\hfill$\blacksquare$
+
+\emph{Scope and limits.} Lemma 6.8b establishes class-restricted
+bit-cost APX-hardness within the Charikar normal-form grammar class
+$\mathcal{G}_{\mathrm{Char}}(H)$, with the asymptotic constant
+$\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H) \to \gamma_{\mathrm{SGP}}
+= 8569/8568$. The class-restriction is essential: an unrestricted
+bit-cost optimizer may produce grammars $G^{\mathrm{esc}} \notin
+\mathcal{G}_{\mathrm{Char}}(H)$ with substantially different
+$K(G^{\mathrm{esc}})$ and $L_{\mathrm{sym}}(G^{\mathrm{esc}})$. The
+unrestricted bit-cost APX-hardness problem (over all valid grammars
+encoding the source, not just Charikar-format ones) remains open;
+closing it requires showing that escape grammars cannot achieve
+strictly better bit-cost ratios than Charikar's, a separate technical
+question not addressed here.
 
 \textbf{Remark 6.8b (Why padding-based reduction fails for
 unrestricted-predictor APX-hardness).} \emph{The natural attempt
@@ -5246,19 +5318,19 @@ listed below.)
   contribution.
 \item
   Hardness of the unrestricted joint Type-III-C problem
-  $(M, D, R \mid Y)$ --- open. Theorems 6.7 and 6.8 establish
-  NP-hardness and APX-hardness ($\gamma = 8569/8568$ under unbounded
-  alphabet) for the restricted dictionary-only case under the
-  symbol-count objective $L_{\mathrm{sym}}$. The following remain
-  open: (a) bit-cost APX-hardness for the restricted case (the
-  naive transfer fails because bit-cost approximation algorithms can
-  trade off $L_{\mathrm{sym}}$ against the nonterminal count $K$
-  appearing in the multiplicative $\log$ factor; a previous Lemma
-  6.8b attempting to fix $K = 15|V| + 3|E|$ within a ``Charikar
-  normal form'' was retracted after review pointed out that
-  $15|V|+3|E|$ in Charikar's reduction is the grammar size, not the
-  nonterminal count, and the actual $K$ depends on the encoded
-  vertex cover $\sigma$); (b) APX-hardness of the unrestricted joint
+  $(M, D, R \mid Y)$ --- partially resolved. Theorems 6.7 and 6.8
+  establish NP-hardness and APX-hardness ($\gamma = 8569/8568$ under
+  unbounded alphabet) for the restricted dictionary-only case under
+  the symbol-count objective $L_{\mathrm{sym}}$. Lemma 6.8b
+  establishes class-restricted bit-cost APX-hardness with constant
+  approaching $\gamma_{\mathrm{SGP}}$ from above (asymptotic equality
+  as $|V| + |E| \to \infty$) within the Charikar normal-form grammar
+  class, where the cover-dependent nonterminal count
+  $K(\sigma) = K_0 + \alpha \cdot |\sigma|$ contributes a vanishing
+  log-factor perturbation. The following remain open:
+  (a) bit-cost APX-hardness over \emph{unrestricted} grammar
+  structures (escape grammars outside Charikar's class may achieve
+  different bit-cost ratios); (b) APX-hardness of the unrestricted joint
   problem with free predictor $M$, which adds the dimension of paying
   $L(M)$ bits to gain $L(R \mid Y)$
   savings. Remark 6.8b formalizes the failure of the
