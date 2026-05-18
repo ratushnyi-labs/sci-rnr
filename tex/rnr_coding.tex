@@ -3724,6 +3724,29 @@ operates on the unrestricted Type-III-C objective directly. None of
 these is currently known; the unrestricted joint Type-III-C
 APX-hardness problem remains a research-scale open question.
 
+\emph{Failed attempt at OP2(b) closure (retracted Lemma 6.8c).}
+An earlier draft introduced a Lemma 6.8c claiming joint Type-III-C
+APX-hardness under a ``CFG-format predictor restriction'' (i.e., $M$
+itself a CFG concatenable with $D, R$). The proof used a Kolmogorov
+complexity lower bound $L^*_{\mathrm{total}} \geq L^*_{\mathrm{sym}}
+- O(\log |s|)$ and a concatenation reduction to SGP. Adversarial review
+identified four structural breaks: (i) the Kolmogorov bound was
+applied in the wrong direction (invariance only gives upper bounds on
+$K(s)$, not lower bounds); (ii) the approximation algebra confused
+$L^*_{\mathrm{total}} \leq L^*_{\mathrm{sym}}$ (which holds, achievable
+by constant $M$) with $L^*_{\mathrm{total}} \geq L^*_{\mathrm{sym}}
+- O(\log)$ (which does not have a clean justification); (iii) the
+``concatenation $M \cup D \cup R$ is a valid CFG'' step requires
+explicit specification of disjoint nonterminal namespaces, start
+symbols, and rule ordering, none of which the lemma fixed formally;
+and (iv) the CFG-format restriction collapses the problem to SGP
+itself (with rules repartitioned among buckets), so the lemma reduces
+to Theorem 6.8 with relabeled variables rather than a new APX-hardness
+statement. The lemma was retracted; OP2(b) under arbitrary
+computational $M$ remains genuinely open as a research-scale problem,
+per Remark 6.8b's characterization of why naive padding-based
+reductions fail.
+
 Together, Theorems 6.7 and 6.8 show that the restricted normal-form
 recursive dictionary problem under the symbol-count objective is
 NP-hard and (under the unbounded-alphabet variant) APX-hard with
