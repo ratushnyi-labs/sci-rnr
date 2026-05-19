@@ -5675,9 +5675,21 @@ listed below.)
   Label Cover; (b)~Dumer-Micciancio-Sudan (2003) bounded-distance
   decoding reductions; (c)~Khot-style Closest Vector Problem
   reductions specialized to the $\mathbb{F}_2^{12}$ ambient
-  space. All three require non-trivial adaptation to the fixed
-  source-alphabet (256-byte) constraint of the $E_{12}$ problem and
-  remain research-scale open.
+  space; (d)~adaptation of $0$-extension / metric labeling on
+  Hamming metrics (which admits constant-gap APX-hardness via
+  Karzanov 1998 SICOMP and subsequent gap-amplification by
+  Schwartz \& Tur 2021/2023, arXiv:2104.11670), to handle the
+  injective bijection requirement of $E_{12}$; (e)~quadratic
+  assignment with hypercube Hamming distance matrices (Mittelmann \&
+  Peng, recent SDP / heuristic literature), suitably restricted to
+  yield constant-gap. A literature search through 2024 found no
+  direct constant-gap inapproximability result for the exact $E_{12}$
+  pairwise-Hamming objective (closest related: NP-hardness only for
+  the border minimization problem of Li et al.\ 2017, APX-hardness
+  for Hamming \emph{clustering} but not \emph{labeling} per
+  Lossy Kernelization 2023). All five paths require non-trivial
+  adaptation to the fixed source-alphabet (256-byte) constraint of
+  the $E_{12}$ problem and remain research-scale open.
 \item
   Constant-gap inapproximability for the \emph{fixed-byte-alphabet}
   variant of restricted Type-III-C ($|\Sigma| = 256$). The
