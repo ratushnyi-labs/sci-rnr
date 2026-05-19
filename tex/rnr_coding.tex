@@ -5613,6 +5613,21 @@ listed below.)
   occupies a \emph{theory-gap} regime where the gap between known
   upper and lower bounds is unbounded; closing it from either
   direction would be a research-scale contribution.
+
+  \emph{Conjecture 6.8d (Unrestricted bit-cost SGP APX-hardness).}
+  We conjecture that for every fixed $\delta > 0$, no polynomial-time
+  $(8569/8568 - \delta)$-approximation algorithm exists for
+  unrestricted bit-cost SGP on sufficiently large
+  Berman-Karpinski / Charikar-hard instances, unless
+  $\mathrm{P} = \mathrm{NP}$. Motivation: Lemma 6.8b establishes
+  this for the Charikar normal-form class; the unrestricted case
+  differs only in admitting escape grammars with cover-independent
+  nonterminal structure, but no such escape grammar is known to
+  break the symbol-count APX-hardness bound, and the multiplicative
+  $\log_2(|\Sigma| + K)$ bit-cost weight is slowly varying with $K$
+  in the hardness regime. A polynomial-time
+  $(\gamma_{\mathrm{SGP}} - \delta)$-approximation algorithm for any
+  $\delta > 0$ would refute this conjecture.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
   natural-data classes --- partially resolved. Four explicit
@@ -5724,6 +5739,24 @@ listed below.)
   constant-factor upper bound nor inapproximability lower bound is
   known, leaving room for novel proof strategies (or new hypotheses
   about the actual approximability class).
+
+  \emph{Conjecture 4.3e (Varying-parameter $E_{12}$ constant-gap
+  inapproximability).} We conjecture that there exists a constant
+  $\varepsilon > 0$ such that the varying-parameter $E_{12}$
+  learned-code labeling problem is NP-hard to approximate within
+  factor $1 + \varepsilon$. Motivation: Remark 4.3c proves
+  NP-hardness with vanishing gap $1 + 1/(n-1)$; analogous
+  combinatorial problems (NCP per Arora-Babai-Stern-Sweedyk 1997,
+  CVP per Dinur-Kindler-Raz-Safra 2003) admit constant-gap
+  inapproximability via PCP-style gap amplification, suggesting
+  that a similar argument may apply to $E_{12}$ once a suitable
+  source problem with the right structural properties is identified.
+  The conjecture is restricted to the \emph{varying-parameter} case
+  (both $n$ and $m$ part of the input); the fixed practical instance
+  $n = 256$, $m = 12$ is constant-size and not asymptotically
+  NP-hard. A PTAS for varying-parameter $E_{12}$ (polynomial-time
+  $(1 + \varepsilon)$-approximation for every $\varepsilon > 0$)
+  would refute this conjecture.
 \item
   Constant-gap inapproximability for the \emph{fixed-byte-alphabet}
   variant of restricted Type-III-C ($|\Sigma| = 256$). The
