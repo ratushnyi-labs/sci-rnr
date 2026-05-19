@@ -5753,7 +5753,20 @@ listed below.)
   --- without it, assigning all vertices to the same codeword gives
   objective $0$ trivially; injectivity (a one-to-one map of $n$
   vertices to distinct $\{0,1\}^m$ codewords) is what makes the
-  problem combinatorially non-trivial. $E_{12}$ therefore occupies
+  problem combinatorially non-trivial. A multi-LLM brainstorming
+  session further identified two convergent structural obstacles:
+  (i) the row-stochastic normalization of $F$ prevents the ``isolated,
+  massive-weight gadget bottleneck'' constructions that typically
+  establish constant-gap APX-hardness in unconstrained graph
+  labeling; (ii) the injective-labeling requirement forces all $n$
+  vertices into distinct codewords, injecting a ``packing noise''
+  / ``gadget leakage'' background cost that can dwarf any
+  constant-$\varepsilon$ gap a multiway-cut or 0-extension reduction
+  might transfer. These two structural constraints together suggest
+  that proving Conjecture 4.3e may require either a reduction from
+  a source problem that is APX-hard on row-stochastic instances
+  specifically, or a continuous / spectral relaxation argument that
+  survives normalization. $E_{12}$ therefore occupies
   the same theory-gap regime as OP2(a): neither algorithmic
   constant-factor upper bound nor inapproximability lower bound is
   known, leaving room for novel proof strategies (or new hypotheses
