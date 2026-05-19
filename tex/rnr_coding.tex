@@ -5598,6 +5598,21 @@ listed below.)
   bit-cost / free-predictor constants could be strictly less than
   $8569/8568$ due to objective-function dilution and remain
   research-scale open problems.
+
+  \emph{Two-sided status (epistemic gap).} A literature scan
+  (2015--2024) confirms that for OP2(a), \emph{neither} a polynomial-time
+  constant-factor approximation for unrestricted bit-cost SGP \emph{nor}
+  APX-hardness is known. The best approximation in the symbol-count
+  setting is the $O(\log(N/m^*))$ algorithm of Charikar et al.\ 2005 /
+  Rytter 2003; the recompression line (Je\.z 2015) maintains
+  $O(g \log(N/g))$ grammar size, not constant factor. Casel et al.\
+  (2020) \emph{Theory of Computing Systems} 65(1):158--203 explicitly
+  list constant-factor SGP approximation as an open question. The
+  bit-cost variant has neither a stronger upper bound nor a tighter
+  lower bound than this symbol-count baseline. The problem therefore
+  occupies a \emph{theory-gap} regime where the gap between known
+  upper and lower bounds is unbounded; closing it from either
+  direction would be a research-scale contribution.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
   natural-data classes --- partially resolved. Four explicit
@@ -5690,6 +5705,25 @@ listed below.)
   Lossy Kernelization 2023). All five paths require non-trivial
   adaptation to the fixed source-alphabet (256-byte) constraint of
   the $E_{12}$ problem and remain research-scale open.
+
+  \emph{Two-sided status (epistemic gap).} As with OP2(a), a 2015--2024
+  literature scan confirms that for $E_{12}$ \emph{neither} a
+  polynomial-time constant-factor approximation \emph{nor} constant-gap
+  APX-hardness is currently known. The closest published results give
+  upper bounds via SDP / ILP relaxations on QAP with hypercube Hamming
+  distance matrices (Mittelmann \& Peng), heuristics
+  (Hamming-Mallows-style local search), and exact solutions for special
+  graph families, but no constant-factor approximation guarantee for
+  general $E_{12}$ instances. We note also a definitional point: the
+  injective (non-collapsing) constraint on the labeling is essential
+  --- without it, assigning all vertices to the same codeword gives
+  objective $0$ trivially; injectivity (a one-to-one map of $n$
+  vertices to distinct $\{0,1\}^m$ codewords) is what makes the
+  problem combinatorially non-trivial. $E_{12}$ therefore occupies
+  the same theory-gap regime as OP2(a): neither algorithmic
+  constant-factor upper bound nor inapproximability lower bound is
+  known, leaving room for novel proof strategies (or new hypotheses
+  about the actual approximability class).
 \item
   Constant-gap inapproximability for the \emph{fixed-byte-alphabet}
   variant of restricted Type-III-C ($|\Sigma| = 256$). The
@@ -5799,6 +5833,16 @@ compression. arXiv:1804.08547 (also presented at DCC 2018/2020).
 
 \textbf{{[}8c{]}} Kozma, L., and Voderholzer, J. (2024). The
 Computational Complexity of Tokenisation. arXiv:2411.08671.
+
+\textbf{{[}8d{]}} Je\.z, A. (2015). A really simple approximation of
+smallest grammar. Theoretical Computer Science, 616, 141-150.
+
+\textbf{{[}8e{]}} Karzanov, A. V. (1998). Minimum 0-Extensions of Graph
+Metrics. European Journal of Combinatorics, 19(1), 71-101.
+
+\textbf{{[}8f{]}} Schwartz, R., and Tur, S. (2023). Improved hardness
+of approximation for graph problems via Boolean PCPs.
+arXiv:2104.11670 (also conference version, ICALP 2023).
 
 \textbf{{[}9{]}} Cover, T. M. (1973). Enumerative Source Encoding. IEEE
 Transactions on Information Theory, 19(1), 73-77.
