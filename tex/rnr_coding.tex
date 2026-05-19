@@ -5614,20 +5614,39 @@ listed below.)
   upper and lower bounds is unbounded; closing it from either
   direction would be a research-scale contribution.
 
-  \emph{Conjecture 6.8d (Unrestricted bit-cost SGP APX-hardness).}
-  We conjecture that for every fixed $\delta > 0$, no polynomial-time
-  $(8569/8568 - \delta)$-approximation algorithm exists for
-  unrestricted bit-cost SGP on sufficiently large
+  \emph{Conjecture 6.8d (Unrestricted bit-cost SGP APX-hardness:
+  some constant gap).} We conjecture there exists a constant
+  $\varepsilon_{\mathrm{bit}} > 0$ such that no polynomial-time
+  $(1 + \varepsilon_{\mathrm{bit}})$-approximation algorithm exists
+  for unrestricted bit-cost SGP on sufficiently large
   Berman-Karpinski / Charikar-hard instances, unless
-  $\mathrm{P} = \mathrm{NP}$. Motivation: Lemma 6.8b establishes
-  this for the Charikar normal-form class; the unrestricted case
-  differs only in admitting escape grammars with cover-independent
-  nonterminal structure, but no such escape grammar is known to
-  break the symbol-count APX-hardness bound, and the multiplicative
-  $\log_2(|\Sigma| + K)$ bit-cost weight is slowly varying with $K$
-  in the hardness regime. A polynomial-time
-  $(\gamma_{\mathrm{SGP}} - \delta)$-approximation algorithm for any
-  $\delta > 0$ would refute this conjecture.
+  $\mathrm{P} = \mathrm{NP}$. We deliberately do \emph{not} claim
+  that $\varepsilon_{\mathrm{bit}}$ matches the symbol-count
+  $\gamma_{\mathrm{SGP}} = 8569/8568$ ratio, since the ceiling
+  $\lceil \log_2(|\Sigma| + K(G)) \rceil$ multiplier in the
+  bit-cost objective has discontinuous behavior near
+  power-of-two boundaries of $|\Sigma| + K$: an escape grammar
+  may drop one bit-width unit by adjusting $K$ across a power-of-two
+  threshold, saving a fractional $1/\log_2(|\Sigma|+K) \approx
+  1/\log |V|$ in bit-cost weight while paying only a smaller
+  fractional excess in $L_{\mathrm{sym}}$. For typical
+  $|V|$ with $\log |V| < 8568$, this ceiling-drop fraction can
+  exceed the $\gamma_{\mathrm{SGP}} = 1 + 1/8568$ gap, so the
+  unrestricted bit-cost APX-hardness ratio may be strictly less
+  than $\gamma_{\mathrm{SGP}}$. (Two independent LLM-based
+  adversarial reviewers split on this point: one accepted the
+  stronger ``$\gamma_{\mathrm{SGP}} - \delta$'' form, the other
+  flagged the ceiling-discontinuity attack as a structural concern.
+  We adopt the conservative ``some $\varepsilon_{\mathrm{bit}} > 0$''
+  form to remain honest about what the existing evidence
+  supports.) Motivation: Lemma 6.8b establishes a positive
+  APX-hardness ratio within the Charikar normal-form class, and
+  escape grammars cannot reduce $L_{\mathrm{sym}}$ below the SGP
+  minimum, so some positive gap is plausible even if the exact
+  constant is smaller than $\gamma_{\mathrm{SGP}}$. A polynomial-time
+  PTAS for unrestricted bit-cost SGP (poly-time $(1 + \varepsilon)$-
+  approximation for every $\varepsilon > 0$) would refute this
+  conjecture.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
   natural-data classes --- partially resolved. Four explicit
