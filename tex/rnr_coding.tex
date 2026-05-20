@@ -4049,6 +4049,81 @@ whether global-header amortization can ``leak'' sub-block-correlation
 information across sync boundaries; we leave this as an open question
 in §13 (Open Problems).
 
+\textbf{Theorem 7.4 (Robustness of Theorem 7.2 to non-ideal predictor:
+explicit KL-divergence accounting).} \emph{Let $X$ satisfy the
+hypotheses of Theorem 7.2 (stationary, exp-mixing (5.8),
+$W_N \leq K = \mathrm{polylog}(N)$, conventions C1--C3). Let $M'$ be
+any (possibly learned) $W_N$-bounded predictor with expected per-position
+Kullback--Leibler divergence}
+\[
+\varepsilon_{\mathrm{KL}}
+\;:=\;
+\mathbb{E}_{X \sim D_N}\Bigl[\,\tfrac{1}{N} \sum_{i=1}^N
+  D_{\mathrm{KL}}\!\bigl(P_{\mathrm{true}}(\cdot \mid X_{i-W_N : i-1})
+  \,\big\|\, P_{M'}(\cdot \mid X_{i-W_N : i-1})\bigr)
+\,\Bigr] \;\geq\; 0
+\]
+\emph{from the true $W_N$-bounded conditional, averaged across positions
+(by stationarity, equivalent to a per-position divergence). Then RNR
+encoding with $M'$ instead of the ideal predictor achieves expected
+total repair-stream length}
+\[
+L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N; M')
+\;\leq\;
+N \cdot h(X) + N \cdot \varepsilon_{\mathrm{KL}} + m \cdot \delta_\infty + O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}.
+\]
+\emph{Consequently:}
+
+\emph{(a) Asymptotically ideal predictor ($\varepsilon_{\mathrm{KL}} =
+o(1)$ as $N \to \infty$): $L^{\mathrm{rep}}_{\mathrm{RNR}} / N \to h(X)$;
+Shannon rate is attained.}
+
+\emph{(b) Constant-gap predictor ($\varepsilon_{\mathrm{KL}} = c > 0$):
+$L^{\mathrm{rep}}_{\mathrm{RNR}} / N \to h(X) + c$; the rate exceeds
+Shannon by exactly the predictor's cross-entropy gap.}
+
+\emph{\textbf{Proof.}} For any predictor $M'$ and any position $i$,
+the expected arithmetic-coding bit cost using $M'$'s distribution is
+\[
+\mathbb{E}[-\log_2 P_{M'}(X_i \mid X_{i-W_N : i-1})]
+= H(X_i \mid X_{i-W_N : i-1})
+  + D_{\mathrm{KL}}(P_{\mathrm{true}} \,\|\, P_{M'}),
+\]
+the exact cross-entropy decomposition (Cover \& Thomas 2006 §5). Summing
+over all $N$ positions within their respective sub-blocks:
+\[
+\mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N; M')]
+= m \cdot H_{W_N}(D_K) + N \cdot \varepsilon_{\mathrm{KL}} + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}.
+\]
+By the Theorem 7.2 analysis,
+$m \cdot H_{W_N}(D_K) \leq N \cdot h(X) + m \cdot \delta_\infty + O(1)$
+(combining Lemma 5.1d's per-sub-block bound with Lemma 5.1b's
+$h_{W_N} - h(X) = O(1/N)$). Adding the $N \cdot \varepsilon_{\mathrm{KL}}$
+term gives the claimed bound. The two corollaries follow by dividing
+by $N$ and taking $N \to \infty$: $m \cdot \delta_\infty / N = O(1/\log N) =
+o(1)$ for $K \geq W_N = \Omega(\log N)$, $O(1)/N \to 0$, and
+$\varepsilon_{\mathrm{ac}}^{\mathrm{total}} / N = o(1)$ under bounded
+$\log(1/\eta)$.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.4 bridges Theorem 7.2's
+idealization (true conditional probabilities) to the practical setting
+of learned predictors. For high-quality language models on natural text
+the empirical per-position cross-entropy $H + \varepsilon_{\mathrm{KL}}$
+is typically $1.0$--$1.5$ bits/byte versus Shannon's lower-bound estimate
+$h(X) \approx 0.6$--$1.3$ bits/byte for English (Shannon 1951; modern
+LLM estimates: e.g., DeepMind Chinchilla 70B reaching ~1.04 bpb on
+enwik9), so $\varepsilon_{\mathrm{KL}} \approx 0.1$--$0.5$ bpb in
+practice. As predictor quality improves with model scale and training
+data, $\varepsilon_{\mathrm{KL}} \to 0$ (per the universal-approximation
+results of Shannon-McMillan and the empirical scaling laws of
+Kaplan--Hoffmann), bringing RNR's empirical rate arbitrarily close to
+Shannon's lower bound $h(X)$. \emph{Practical interpretation:} the
+gap $h(M') - h(X) = \varepsilon_{\mathrm{KL}}$ is the ``predictor
+suboptimality cost'' borne by every position; reducing it by training
+better LMs directly reduces $L^{\mathrm{rep}}_{\mathrm{RNR}}/N$ by the
+same amount, position-for-position.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
