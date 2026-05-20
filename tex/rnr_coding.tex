@@ -2936,11 +2936,127 @@ is NP-hard.
 positive-affine relationship between $\mathbb{E}_\mu[A_s]$ and $n_0(S)$
 does not preserve multiplicative approximation ratios (since the cost
 is shifted by the constant $A_s(1)$ and scaled by a positive constant,
-multiplicative ratios are not preserved by affine maps in general). The
-approximability of either form is open and is tied to the long-standing
-open approximability of densest-$k$-subgraph (best known algorithm
-$O(n^{1/4 + \varepsilon})$, Bhaskara et al.\ 2010); we record only the
-exact-optimization hardness here.
+multiplicative ratios are not preserved by affine maps in general).
+Lemma 5.7d below makes the connection to densest-$k$-subgraph
+explicit and characterizes the gap-transfer dilution.
+
+\textbf{Lemma 5.7d (Densest-$k$-subgraph as combinatorial substructure
+of Type-II; conditional approximation lower bounds).}
+\emph{The combinatorial sub-objective controlling the Type-II
+expected cost via the affine identity of Lemma 5.7c,}
+\[
+\max_{|S| = s, S \subseteq [N]} \;
+n_0(S) \;=\; \bigl|\{\, j : T_j \subseteq S \,\}\bigr|,
+\]
+\emph{on input atoms $T_1, \ldots, T_m \in \binom{[N]}{2}$, is
+identical to the \emph{densest-$k$-subgraph (DkS) problem} on the
+graph $G = ([N], \{T_j\})$ with $k := s$ (each atom $T_j$ is an
+edge; $n_0(S)$ counts induced edges on $S$). Consequently:}
+
+\emph{(a) [Combinatorial-substructure approximation hardness]}
+\emph{Polynomial-time approximation of $\max n_0(S)$ within factor
+$\alpha < n^{1/(\log \log n)^c}$ is NP-hard under the
+Exponential Time Hypothesis (Manurangsi, STOC 2017,
+arXiv:1611.05991), with $c$ an absolute constant; under the
+Small Set Expansion Hypothesis, no $(2 - \varepsilon)$-approximation
+exists for densest-at-least-$k$-subgraph variants
+(arXiv:1705.03581).}
+
+\emph{(b) [Transfer to information-theoretic Type-II objective; dilution
+formula]}
+\emph{The gap-transfer from a DkS instance with $\max n_0 \in
+\{D_{\mathrm{YES}}, D_{\mathrm{NO}}\}$ ($D_{\mathrm{YES}} > D_{\mathrm{NO}}$,
+DkS gap factor $f := D_{\mathrm{YES}} / D_{\mathrm{NO}}$) to the
+Type-II objective $\min E_\mu[A_s]$ produces a multiplicative ratio}
+\[
+\rho_{\mathrm{Type\text{-}II}}
+\;=\; \frac{A_s(1) - (A_s(1) - A_s(0)) \cdot D_{\mathrm{NO}}/m}
+           {A_s(1) - (A_s(1) - A_s(0)) \cdot D_{\mathrm{YES}}/m}
+\;=\;
+1 + \frac{(D_{\mathrm{YES}} - D_{\mathrm{NO}})/m}
+         {\frac{A_s(1)}{A_s(1) - A_s(0)} - D_{\mathrm{YES}}/m}.
+\]
+\emph{Two regimes:}
+
+\emph{(b1) [Sparse DkS instances, $D_{\mathrm{YES}}/m = o(1)$]:
+$\rho_{\mathrm{Type\text{-}II}} = 1 + O((D_{\mathrm{YES}} - D_{\mathrm{NO}})/m)
+= 1 + O(D_{\mathrm{YES}}/m)$, which can be near $1$ even when the DkS gap
+$f = D_{\mathrm{YES}}/D_{\mathrm{NO}}$ is super-polylogarithmic. This is
+the regime of Manurangsi's ETH-hardness reduction (Manurangsi 2017
+STOC, arXiv:1611.05991; sparse $D_{\mathrm{YES}} = O(k^2)$, $m = \Theta(n^2)$,
+so $D_{\mathrm{YES}}/m = O(k^2/n^2) = o(1)$). \emph{Sparse-DkS hardness
+does not transfer with the DkS gap factor intact}.}
+
+\emph{(b2) [Dense DkS instances, $D_{\mathrm{YES}}/m \to 1$]:
+$\rho_{\mathrm{Type\text{-}II}} \to A_s(1)/A_s(0)$ as
+$D_{\mathrm{YES}}/m \to 1 - O(1)$, saturating at the natural log-binomial
+ratio $A_s(1)/A_s(0) = 1 + O(1/\log s)$, which is itself a constant
+gap independent of DkS gap. For \emph{normalised} $A_s$ with
+$A_s(1) - A_s(0) = A_s(1)$ (e.g.\ $A_s(0) = 0, A_s(1) = 1$),
+$\rho_{\mathrm{Type\text{-}II}} = (1 - D_{\mathrm{NO}}/m)/(1 - D_{\mathrm{YES}}/m)$,
+which can be polynomial in $1/(1 - D_{\mathrm{YES}}/m)$ when
+$D_{\mathrm{YES}} \to m$.}
+
+\emph{Hence Type-II inherits DkS hardness with two qualitative caveats:
+the DECISION-level NP-hardness (Lemma 5.7c) transfers directly,
+unaffected by the dilution; the MULTIPLICATIVE-approximation gap
+suffers a regime-dependent dilution determined by the formula above.
+Manurangsi's ETH-hardness in the sparse-DkS regime does not transfer
+its full $n^{1/(\log\log n)^c}$ gap to Type-II under natural log-binomial
+$A_s$; only the dense-DkS regime preserves polynomial gap (open whether
+any natural Type-II family lies in this regime).}
+
+\emph{\textbf{Proof.}} The combinatorial identification of (a) follows
+directly from $n_0(S) = |\{j : T_j \subseteq S\}|$ when each atom
+$T_j = \{u, v\}$ is identified with edge $\{u, v\} \in E(G)$; then
+$n_0(S)$ equals the count of edges $\{u, v\}$ with both endpoints in
+$S$, which is the induced-edge count $e_G(S)$ that DkS maximises. The
+DkS NP-hardness and approximation lower bounds (Manurangsi STOC 2017
+\emph{Almost-polynomial ratio ETH-hardness of densest $k$-subgraph};
+SSE-conditional lower bounds for densest-at-least-$k$-subgraph,
+arXiv:1705.03581) transfer to $\max n_0$ exactly.
+
+For (b), the affine identity from Lemma 5.7c gives
+$E_\mu[A_s] = A_s(1) - (A_s(1) - A_s(0)) \cdot n_0(S)/m$. The YES and
+NO branches give $\min E_\mu[A_s]$ values
+$A_s(1) - (A_s(1) - A_s(0)) D_{\cdot}/m$ for $\cdot \in \{Y, N\}$,
+yielding the stated $\rho_{\mathrm{Type\text{-}II}}$. The reformulation as
+$1 + \frac{(D_Y - D_N)/m}{A_s(1)/(A_s(1)-A_s(0)) - D_Y/m}$ exposes the
+dilution: the deviation from $1$ is proportional to $(D_Y - D_N)/m$
+divided by the (positive) denominator. For $D_Y/m \to 0$ (sparse
+regime), denominator $\to A_s(1)/(A_s(1)-A_s(0))$, so dilution
+$\rho \to 1$. For $D_Y/m \to 1$ (dense regime), denominator $\to
+A_s(0)/(A_s(1)-A_s(0))$ (for natural log-binomial this is $\Theta(\log s)$,
+saturating $\rho$ at $A_s(1)/A_s(0) = 1 + O(1/\log s)$).
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Lemma 5.7d partially closes OP1.5
+(approximability of Type-II support selection) by identifying the
+combinatorial obstacle: Type-II's substructure \emph{is} DkS, so the
+long-standing DkS approximability question is the bottleneck at the
+decision level. However, the multiplicative-approximation gap from
+DkS to Type-II suffers a regime-dependent dilution given by the formula
+in part (b). Two specific consequences:
+
+\emph{(I)} In the sparse-DkS regime (Manurangsi's ETH-hardness setting),
+the polynomial DkS gap factor does \emph{not} transfer to Type-II
+multiplicative gap under natural log-binomial $A_s$ --- the dilution
+collapses the gap to $1 + o(1)$. \emph{Type-II is therefore approximation-
+robust against sparse-instance hardness inflation}; the information-
+theoretic cost flattens the gap.
+
+\emph{(II)} In the dense-DkS regime with normalised $A_s$ ($A_s(0) = 0$),
+the gap survives, but it is open whether natural Type-II problem families
+have this density structure. For the Lemma 5.7c construction (atoms = edges
+of a CLIQUE-derived graph), the natural density regime is sparse.
+
+Closing OP1.5 fully requires either (a) improving DkS upper bound
+(currently $O(n^{1/4 + \varepsilon})$ Bhaskara et al.\ 2010,
+arXiv:1001.2891), (b) identifying a natural Type-II family in the
+dense-DkS-transferable regime, or (c) developing a Type-II-specific
+hardness reduction that bypasses the DkS dilution by a different
+information-theoretic structure (e.g., entropy of the support
+distribution rather than affine cost).
 
 For comparison, in the factorized regime of Section 5.3, per-position
 arithmetic coding under $Q$ has expected length equal to the
