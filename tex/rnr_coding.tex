@@ -4124,6 +4124,93 @@ suboptimality cost'' borne by every position; reducing it by training
 better LMs directly reduces $L^{\mathrm{rep}}_{\mathrm{RNR}}/N$ by the
 same amount, position-for-position.
 
+\textbf{Theorem 7.5 (Optimal sub-block spacing: storage--access
+trade-off).} \emph{Under the Theorem 7.2 hypotheses, with the
+polylog$(N)$ upper bound on $K$ relaxed to $K \geq W_N$ (the bit-cost
+analysis of T7.2 holds without this upper bound; per-query cost
+becomes $O(\log L(R) + K)$ rather than polylog). Let $Q \geq 1$ be
+the expected number of byte-granular random-access queries against
+the archive over its lifetime, $\alpha > 0$ the cost-weight of query
+operations relative to storage bits, and let}
+$\gamma := \delta_\infty + \log(1/\eta)$
+\emph{denote the per-sub-block overhead constant (Crutchfield--Feldman
+excess plus arithmetic-coding floor). The total expected operational
+cost}
+\[
+C(K) \;:=\; \mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}(K)]
+        + \alpha \cdot Q \cdot \mathrm{cost}_{\mathrm{query}}(K)
+       \;=\; N \cdot h(X) + \frac{\gamma \cdot N}{K} + \alpha \cdot Q \cdot K + O(1) + N \cdot \varepsilon_{\mathrm{KL}}
+\]
+\emph{is minimized at}
+\[
+K^* \;=\; \sqrt{\frac{\gamma \cdot N}{\alpha \cdot Q}},
+\]
+\emph{yielding optimal cost}
+\[
+C(K^*) \;=\; N \cdot h(X) + 2 \sqrt{\gamma \cdot N \cdot \alpha \cdot Q}
+            + N \cdot \varepsilon_{\mathrm{KL}} + O(1).
+\]
+\emph{For balanced storage--access weight ($\alpha \cdot Q = \Theta(1)$),
+$K^* = \Theta(\sqrt{N})$ and the storage overhead $C(K^*) - N \cdot h(X) -
+N \cdot \varepsilon_{\mathrm{KL}} = \Theta(\sqrt{N})$; the per-query cost
+is also $\Theta(\sqrt{N})$. This is the classical
+$\sqrt{N}$ time--space trade-off of indexed search structures
+(Bentley \& Yao 1976, Manber \& Myers 1993 for suffix arrays;
+Belazzougui--Navarro 2014 for compressed indexes), now expressed in
+the RNR-compression setting.}
+
+\emph{\textbf{Proof.}} The bit-cost component of $C(K)$ follows from
+the proof of Theorem 7.2 with $m = N/K$ sub-blocks: $L^{\mathrm{rep}}_{\mathrm{RNR}}
+\leq N h(X) + m \delta_\infty + N \varepsilon_{\mathrm{KL}} + O(1) +
+\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = N h(X) + \gamma N/K +
+N \varepsilon_{\mathrm{KL}} + O(1)$, absorbing $\varepsilon_{\mathrm{ac}}^{\mathrm{total}}
+= O(N/K \cdot \log(1/\eta))$ into $\gamma N/K$. The per-query cost
+$O(\log L(R) + K)$ from Theorem 10.3 contributes $\alpha Q (\log L(R) + K)$.
+The $\alpha Q \log L(R)$ term is independent of $K$ (a $K$-independent
+constant in the minimization), and the $\alpha Q \cdot K$ term is what
+trades off against $\gamma N / K$.
+
+Setting $\partial C / \partial K = 0$:
+$-\gamma N / K^2 + \alpha Q = 0$, so $K^* = \sqrt{\gamma N / (\alpha Q)}$.
+Second-order: $\partial^2 C / \partial K^2 = 2 \gamma N / K^3 > 0$ at
+$K^*$, confirming a true minimum. Substituting:
+$\gamma N / K^* + \alpha Q \cdot K^* = \sqrt{\gamma N \alpha Q} +
+\sqrt{\gamma N \alpha Q} = 2 \sqrt{\gamma N \alpha Q}$, hence
+$C(K^*) = N h(X) + 2 \sqrt{\gamma N \alpha Q} + N \varepsilon_{\mathrm{KL}} +
+\alpha Q \log L(R) + O(1)$. The $\alpha Q \log L(R)$ is a $K$-independent
+overhead from indexing into the repair stream; for $L(R) = \mathrm{poly}(N)$
+it grows as $\alpha Q \log N$, which is lower-order than the
+$\sqrt{N \alpha Q}$ trade-off term whenever $\alpha Q = o(N / (\log N)^2)$,
+i.e., for all but extremely query-saturated regimes.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.5 is the operational-cost
+companion to Theorems 7.2--7.4. It establishes that RNR's natural
+parameter $K$ is governed by a $\sqrt{N}$ time--space trade-off, with
+the constant of proportionality determined by the source's
+Crutchfield--Feldman excess $\delta_\infty$ and the operational
+$\alpha \cdot Q$ ratio. Three regimes:
+
+\emph{(a) Storage-dominated ($\alpha \cdot Q \ll 1$, archival writes
+once, rarely read):} $K^* \gg \sqrt{N}$, sync overhead $\gamma N /
+K^* \to 0$, near-Shannon-rate storage; tolerates slow RA.
+
+\emph{(b) Access-dominated ($\alpha \cdot Q \gg 1$, hot data, many
+queries):} $K^* \ll \sqrt{N}$, fast RA at cost of larger sync overhead;
+storage rate $h(X) + \gamma / K^*$ exceeds Shannon by a constant.
+
+\emph{(c) Balanced ($\alpha \cdot Q = \Theta(1)$):} $K^* = \Theta(\sqrt{N})$,
+both storage overhead and per-query cost are $\Theta(\sqrt{N})$ ---
+the classical sub-linear trade-off.
+
+The polylog$(N)$ upper bound on $K$ in Theorem 7.2 corresponds to
+$K^* = \mathrm{polylog}(N)$, which from the formula above requires
+$\alpha \cdot Q = \Theta(N / \mathrm{polylog}^2(N))$; this is the
+``query-heavy'' regime where the user expects $\Omega(N / \mathrm{polylog})$
+queries to a roughly $N$-byte archive. The $\sqrt{N}$ regime
+$K^* = \Theta(\sqrt{N})$ is the balanced setting most appropriate for
+typical archive use.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
