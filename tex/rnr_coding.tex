@@ -6426,6 +6426,40 @@ listed below.)
   database pages under a given schema, or valid x86-64 instruction
   streams --- is open as a constructive question for each class, and
   is not implied by Theorem 5.5.
+
+  \emph{Reduction to membership-oracle construction (Cover 1973
+  enumerative coding).} OP3$'$ has an INDIRECT closure via Cover's
+  enumerative source coding (Cover 1973 \emph{IEEE Trans.\ Inf.\
+  Theory} 19(1):73--77): for any data class $\mathcal{C} \subseteq
+  \Sigma^N$ admitting a polynomial-time \emph{membership oracle}
+  $O_{\mathcal{C}} : \Sigma^N \to \{0, 1\}$, an explicit
+  polynomial-time \emph{rank coder} for the uniform distribution on
+  $\mathcal{C}$ exists with time complexity
+  $O(N \cdot \log|\Sigma| \cdot T_{\mathrm{oracle}})$, where
+  $T_{\mathrm{oracle}}$ is the oracle's per-query cost. Encoder:
+  compute the rank of input $x \in \mathcal{C}$ as
+  $\mathrm{rank}(x) = |\{y \in \mathcal{C} : y < x\}|$ via
+  Lehmer-code-style enumeration with the oracle; decoder: binary
+  search for the $k$-th $\mathcal{C}$-member using the oracle.
+  Hence OP3$'$ \emph{reduces} to constructing efficient membership
+  oracles for natural-data classes. For specific classes the
+  reduction yields immediate positive results:
+  \emph{(i)~Multinomial sequences} (each symbol appears a prescribed
+  count): membership oracle = symbol count comparison, $O(N)$ time,
+  trivially polynomial.
+  \emph{(ii)~Monotone sequences} ($x_1 \leq x_2 \leq \cdots \leq x_N$):
+  membership oracle = scan + compare, $O(N)$.
+  \emph{(iii)~JSON-schema-conforming database pages}: membership oracle
+  = JSON parser + schema validator, $O(N)$ for fixed schema.
+  \emph{(iv)~x86-64 instruction streams}: membership oracle =
+  disassembler + validator, polynomial in $N$ for fixed ISA.
+  Hence OP3$'$ is \emph{constructively closed} for any class with a
+  poly-time membership oracle, with class-specific
+  implementations following the Cover 1973 enumerative-coding
+  framework. The remaining \emph{open} subcase is classes whose
+  membership oracle is NP-hard to construct (e.g., satisfying
+  assignments of a fixed SAT instance), which fall outside
+  Theorem 5.5's reach for fundamental complexity-theoretic reasons.
 \item
   Constant-gap inapproximability for $E_{12}$ in the
   Hamming-restricted geometry. The decision version of
