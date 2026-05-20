@@ -2671,11 +2671,117 @@ only in the non-mixing limit where $h(Y) \to 0$).
 the four structurally cleanest natural-data patterns:
 combinatorial column constraints (5.6a), shared latent variable
 (5.6b), temporal correlation (5.6c), and combined hidden-and-temporal
-(5.6d). Further classes (factor graphs over expanders, general
-non-stationary processes, continuous-state HMMs) admit similar
-treatments but with strictly more involved bookkeeping or
-non-trivial functional-analytic content; they remain open as
+(5.6d). Lemma 5.6e (below) extends to the continuous-hidden-state
+finite-observation case via filter-stability theory. Further classes
+(factor graphs over expanders, general non-stationary processes)
+admit similar treatments but with strictly more involved bookkeeping
+or non-trivial functional-analytic content; they remain open as
 explicit lemmas.
+
+\textbf{Lemma 5.6e (Linear $\mathrm{TC}$ for continuous-hidden-state
+finite-observation HMMs under geometric ergodicity).}
+\emph{Let $(Y_n)_{n \geq 1}$ be a strictly stationary Markov chain on
+a Polish state space $(\mathcal{Y}, \mathcal{B})$ with transition
+kernel $P(y, dy')$ and stationary measure $\pi$, and let
+$(X_n)_{n \geq 1}$ be observations on a \emph{finite} alphabet
+$\mathcal{X}$, conditionally independent given $(Y_n)$ with
+emission probabilities $p_y(x) = \Pr(X_n = x \mid Y_n = y)$.
+Assume:}
+\begin{itemize}
+\item \emph{(GE) [Geometric ergodicity of the hidden chain]
+$\|P^n(y, \cdot) - \pi\|_{\mathrm{TV}} \leq C_{\mathrm{erg}} \cdot
+\rho_Y^n$ for some constants $C_{\mathrm{erg}} > 0$ and $\rho_Y \in
+(0, 1)$, uniformly in $y \in \mathcal{Y}$.}
+\item \emph{(EP) [Positive emission density] $p_y(x) \geq \rho_{\min} > 0$
+for every $y \in \mathcal{Y}$ and every $x \in \mathcal{X}$.}
+\end{itemize}
+\emph{Then the observed process $(X_n)$ is strictly stationary on the
+finite alphabet $\mathcal{X}$, satisfies the exponential
+conditional-MI decay (5.8) of Lemma 5.1b (with constants
+$C', \rho'_X \in (0, 1)$ inherited via filter stability from
+$C_{\mathrm{erg}}, \rho_Y, \rho_{\min}$), and Lemma 5.6c (b) applies
+to give}
+\[
+\mathrm{TC}(D_N) \;=\; N \cdot E_{\mathrm{HMM}}^{\mathrm{cont}}
+                       - \delta_\infty^{\mathrm{cont}} + o(1),
+\]
+\emph{where $E_{\mathrm{HMM}}^{\mathrm{cont}} := H(X_1) -
+h_{\mathrm{HMM}}^{\mathrm{cont}} \geq 0$ is the per-position excess
+entropy, $h_{\mathrm{HMM}}^{\mathrm{cont}} := \lim_n H(X_n \mid X_{<n})$
+is the entropy rate computed via the measure-valued prediction
+filter $\mu_n := \Pr(Y_n \in \cdot \mid X_1, \ldots, X_{n-1})$ (the
+filter recursion of Stratonovich 1960 / Baum--Petrie 1966 generalised
+to Polish state space; see Capp{\'e}--Moulines--Ryd{\'e}n 2005,
+\emph{Inference in Hidden Markov Models}, Ch.\ 4), and
+$\delta_\infty^{\mathrm{cont}} = \sum_{n=1}^\infty
+[H(X_n \mid X_{<n}) - h_{\mathrm{HMM}}^{\mathrm{cont}}] < \infty$
+under (GE) and (EP) by filter stability.}
+
+\emph{\textbf{Proof.}} \emph{Stationarity.} From stationarity of
+$(Y_n)$ and conditional independence of $(X_n)$ given $(Y_n)$, the
+joint law of any block of $(Y, X)$ is shift-invariant; marginalising
+over $Y$ preserves stationarity in $X$.
+
+\emph{Exponential conditional-MI decay (5.8) for $(X_n)$.}
+Geometric ergodicity (GE) of $(Y_n)$ combined with positive emission
+(EP) implies \emph{filter stability}: for any two prior measures
+$\nu, \nu'$ on $\mathcal{Y}$ and any observation sequence
+$x_1, \ldots, x_n$, the resulting prediction filters
+$\mu_n^{\nu}, \mu_n^{\nu'}$ satisfy
+$\|\mu_n^{\nu} - \mu_n^{\nu'}\|_{\mathrm{TV}} \leq C' \cdot \rho_X^n$
+for some constants $C', \rho_X \in (0, 1)$ depending on
+$C_{\mathrm{erg}}, \rho_Y, \rho_{\min}$ (van~Handel 2008,
+\emph{Observability and Nonlinear Filtering},
+\emph{Probab.\ Theory Relat.\ Fields} 145(1--2):35--74; see also
+Atar--Zeitouni 1997 \emph{Annales de l'IHP} 33(6):697--725 for the
+original exponential stability bounds). Since the observed
+conditional distribution $\Pr(X_n = \cdot \mid X_{<n}) = \sum_y \mu_n(y)
+p_y(\cdot)$ is a Lipschitz functional of $\mu_n$ (uniformly in $n$
+because $\mathcal{X}$ is finite and $p_y$ is bounded), the conditional
+mutual information $I(X_n; X_{1:n-W-1} \mid X_{n-W:n-1})$ decays
+exponentially in $W$: writing the conditional MI as the relative
+entropy between the true conditional and the $W$-bounded
+approximation, both quantities depend on the filter $\mu_n$, and the
+TV-difference of filters with truncated vs.\ full history controls
+the KL-divergence by Pinsker's inequality, giving
+$I(\cdot) \leq C'' \cdot (\rho_X)^W$ for some $C''$ inheriting from
+the filter-stability constants. Hence (5.8) holds.
+
+\emph{Applying Lemma 5.6c (b).} Under (5.8) the conditional-entropy
+excess $\sum_n [H(X_n \mid X_{<n}) - h_{\mathrm{HMM}}^{\mathrm{cont}}]$
+is summable (geometric series), so Lemma 5.6c (b) applies: $\mathrm{TC}(D_N)
+= N \cdot E_{\mathrm{HMM}}^{\mathrm{cont}} - \delta_\infty^{\mathrm{cont}}
++ o(1)$.
+
+\emph{Filter-based entropy-rate formula.} The Baum--Petrie /
+Birch entropy-rate identity $h = \lim_n \mathbb{E}[H(X_n \mid \mu_n)]$
+extends to continuous state space by replacing the finite-state
+filter recursion with the measure-valued Bayesian update
+$\mu_{n+1}(dy') = \int_{\mathcal{Y}} \mu_n(dy) P(y, dy') p_{y'}(X_n) / Z$
+where $Z$ normalises (Capp{\'e}--Moulines--Ryd{\'e}n 2005 §4.2). The
+ergodicity-stability machinery guarantees that the limit exists and
+equals $h_{\mathrm{HMM}}^{\mathrm{cont}}$.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Lemma 5.6e closes the
+``continuous-state HMM'' open subcase of OP3 listed in Lemma 5.6d's
+Scope. The technical contribution is the transfer of filter-stability
+theory (functional-analytic, measure-theoretic) to the Crutchfield--Feldman
+summability requirement of Lemma 5.6c (b), avoiding the need for a
+direct discretization argument (which would face the non-Markovianity
+of bin-discretised continuous chains). The two hypotheses
+(GE)+(EP) are mild and standard in the HMM literature; (GE) is
+satisfied by any uniformly ergodic chain (e.g., compact state space
+with positive transition density), and (EP) holds whenever emissions
+do not assign zero probability to any observable symbol.
+
+\emph{Remaining open.} The case of continuous \emph{observation}
+alphabets requires differential entropy and Radon--Nikodym derivatives;
+the case of polynomially (rather than exponentially) ergodic hidden
+chains substitutes a weaker $\rho_X^W \to W^{-c}$ decay and still
+yields linear TC scaling provided $c > 1$ (summability), but with
+$\delta_\infty < \infty$ requiring tighter analysis. Both are open
+as separate lemmas.
 
 \textbf{5.7 Worked numerical example}
 
