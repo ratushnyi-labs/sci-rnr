@@ -2843,7 +2843,87 @@ subcases of OP3 remain open: (a) genuinely non-stationary processes
 without AMS structure (e.g., natural images at given resolution,
 where pixel-level statistics are spatially non-stationary);
 (b) factor graphs over expander families, requiring graph-theoretic
-+ information-theoretic combined analysis.
++ information-theoretic combined analysis. Lemma 5.6g (below) closes
+the tree-structured factor-graph subcase of (b) via the classical
+Pearl decomposition; the genuine expander case (cycles with constant
+girth) remains open.
+
+\textbf{Lemma 5.6g (Linear $\mathrm{TC}$ for tree-structured Markov
+random fields via Pearl decomposition).}
+\emph{Let $G = (V, E)$ be a tree on $|V| = N$ vertices ($|E| = N - 1$),
+and let $X = (X_v)_{v \in V}$ be a Markov random field on $G$ with
+strictly positive pairwise factors $\psi_{u, v} : \mathcal{X} \times
+\mathcal{X} \to \mathbb{R}_{>0}$ for each edge $(u, v) \in E$, joint
+law $p(X) = Z^{-1} \prod_{(u, v) \in E} \psi_{u, v}(X_u, X_v)$ over
+finite alphabet $\mathcal{X}$. Then}
+\[
+\mathrm{TC}(D_N) \;=\; \sum_{(u, v) \in E} I(X_u; X_v),
+\]
+\emph{the total correlation equals exactly the sum of edge pairwise
+mutual informations. In particular, if every edge has positive MI
+$I(X_u; X_v) \geq \varepsilon > 0$, then
+$\mathrm{TC}(D_N) \geq (N-1) \cdot \varepsilon = \Theta(N)$.}
+
+\emph{\textbf{Proof.}} For a tree-structured MRF with strictly
+positive joint, the joint distribution admits the symmetric
+edge-marginal factorisation of Lauritzen \& Spiegelhalter (1988
+\emph{J.\ Roy.\ Statist.\ Soc.\ B} 50(2):157--224 ``Local Computations
+with Probabilities on Graphical Structures'') / Lauritzen (1996
+\emph{Graphical Models}, Oxford Univ.\ Press, §4.4 ``Decomposable
+graphs and chain graphs''); see also Pearl (1988
+\emph{Probabilistic Reasoning in Intelligent Systems}, Morgan
+Kaufmann §3.2) for the directed-tree Bayes-net form, equivalent on
+a tree by Bayes' rule, and Wainwright \& Jordan (2008
+\emph{Graphical Models, Exponential Families, and Variational
+Inference}, Foundations and Trends in Machine Learning
+1(1--2):1--305, Prop.\ 2.1):
+\[
+p(X) \;=\; \prod_{v \in V} p(X_v) \cdot \prod_{(u, v) \in E}
+\frac{p(X_u, X_v)}{p(X_u) p(X_v)}.
+\]
+Taking logarithms and expectations:
+\[
+H(D_N)
+\;=\; \mathbb{E}\bigl[-\log p(X)\bigr]
+\;=\; \sum_v H(X_v) - \sum_{(u, v) \in E} I(X_u; X_v).
+\]
+Hence
+\[
+\mathrm{TC}(D_N) \;=\; \sum_v H(X_v) - H(D_N)
+\;=\; \sum_{(u, v) \in E} I(X_u; X_v).
+\]
+Under positivity $I(X_u; X_v) \geq \varepsilon$ on each edge,
+$\mathrm{TC}(D_N) \geq |E| \cdot \varepsilon = (N - 1) \varepsilon =
+\Theta(N)$ for $\varepsilon > 0$ fixed.
+\hfill$\blacksquare$
+
+\emph{Scope.} Lemma 5.6g closes the tree-structured factor-graph
+subcase of OP3 listed in Lemma 5.6d's Scope. The proof is the
+classical Pearl tree-MRF identity, applied directly to the TC
+definition. Three immediate corollaries:
+
+\emph{(a) Order-$1$ Markov chain on a finite alphabet} is a special
+case (path graph, $N - 1$ chain edges); the lemma recovers
+$\mathrm{TC}(D_N) = (N - 1) \cdot I(X_1; X_2)$ from Lemma 5.6b's
+companion identity.
+
+\emph{(b) Balanced binary tree of depth $\log_2 N$}: edges connect
+each non-leaf to its two children. Both subtypes follow.
+
+\emph{(c) Star graph $K_{1, N-1}$}: $N - 1$ edges from one center
+to all leaves. $\mathrm{TC}(D_N) = (N - 1) \cdot I(X_{\mathrm{center}};
+X_{\mathrm{leaf}})$ if all leaf-center MIs equal.
+
+\emph{Beyond trees.} For loopy graphs (cycles present), the
+Pearl identity fails: the Bethe approximation
+$H \approx \sum_v H(X_v) - \sum_e I(X_u; X_v)$ is no longer exact
+but bounds the joint entropy from below (Pakzad--Anantharam 2002
+\emph{IEEE Trans.\ Inf.\ Theory} 48(7):2061; Yedidia--Freeman--Weiss
+2005 \emph{IEEE Trans.\ Inf.\ Theory} 51(7):2282 on Bethe-free-energy
+bounds). For high-girth graphs (girth $g = \omega(1)$), local
+tree-likeness gives Lemma 5.6g approximately, with error $O(1/g)$;
+formalising this is the natural next step toward closing the
+``factor graphs over expanders'' subcase of OP3 fully.
 
 \textbf{5.7 Worked numerical example}
 
