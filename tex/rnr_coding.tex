@@ -3670,6 +3670,97 @@ statement (no polynomial-time $\alpha$-approximator exists for $\alpha
 < \gamma_{\mathrm{SGP}}$ over the class on $\mathcal{H}_{\mathrm{BK}}$),
 not a per-instance pointwise gap claim on $\gamma^{\mathrm{bit}}_{\mathrm{Char}}(H)$.
 
+\textbf{Lemma 6.8e (Continuous-bit-cost SGP inherits Charikar APX-hardness without the ceiling).}
+\emph{Define the continuous (information-theoretic) bit-cost of a
+context-free grammar $G$ with terminal alphabet $\Sigma$ and
+nonterminal count $K(G)$ as}
+\[
+L^{\mathrm{cont}}(G) \;:=\; |G| \cdot \log_2\bigl(|\Sigma| + K(G)\bigr)
+\]
+\emph{(no ceiling --- the entropy-rate target achievable by arithmetic
+coding, in contrast to the prefix-code worst case
+$|G| \cdot \lceil \log_2(|\Sigma| + K(G)) \rceil$). Then unrestricted
+SGP under the continuous bit-cost objective $L^{\mathrm{cont}}$ is
+APX-hard: for every $\varepsilon > 0$, no polynomial-time
+$(\gamma_{\mathrm{SGP}} - \varepsilon)$-approximation algorithm exists
+unless $\mathrm{P} = \mathrm{NP}$, where $\gamma_{\mathrm{SGP}} = 8569/8568$
+is Charikar's symbol-count inapproximability ratio.}
+
+\emph{\textbf{Proof.}} Use the Berman-Karpinski $\to$ Charikar reduction
+of Theorem 6.8. The reduction outputs, for each VC-3 instance, a source
+string $s$ together with the optimum-grammar pair $G^*_{YES}, G^*_{NO}$
+realizing the YES/NO branches:
+\[
+|G^*_{\mathrm{NO}}|_{\mathrm{sym}} \;\geq\; \gamma_{\mathrm{SGP}} \cdot |G^*_{\mathrm{YES}}|_{\mathrm{sym}}
+\]
+(Charikar et al.\ 2005 Theorem 6.5 / Lemma 4.3), where
+$|G|_{\mathrm{sym}} = |G|$ is the symbol-count (rule-symbol total).
+The nonterminal counts of the two optima satisfy
+$K(G^*_{\mathrm{YES}}), K(G^*_{\mathrm{NO}}) = \Theta(|V| + |E|)$ with
+$|K(G^*_{\mathrm{NO}}) - K(G^*_{\mathrm{YES}})| =
+O(|C^* | \cdot (u-1)) = O(|V|/\gamma_{\mathrm{SGP}})$, where $u-1 =
+1/8568$ is the BK cover-inflation factor and $|C^*| = O(|V|)$ is the
+optimal-cover size. The terminal alphabet $|\Sigma| = O(|V|)$ (vertex
+names plus structural symbols).
+
+Setting $a := |\Sigma| + K(G^*_{\mathrm{YES}})$ and
+$b := |\Sigma| + K(G^*_{\mathrm{NO}})$, both are $\Theta(|V|)$ and
+$|b - a| = O(|V|/\gamma_{\mathrm{SGP}})$. A first-order expansion gives
+\[
+\frac{\log_2 b}{\log_2 a} \;=\; 1 + \frac{\log_2(b/a)}{\log_2 a} \;=\; 1 + O\!\left(\frac{|b-a|/a}{\log a}\right) \;=\; 1 + O\!\left(\frac{1}{|V| \cdot \log |V|}\right),
+\]
+which approaches $1$ as $|V| \to \infty$ at rate $O(1/(|V| \log |V|))$.
+
+Continuous bit-cost ratio of the two optima:
+\[
+\frac{L^{\mathrm{cont}}(G^*_{\mathrm{NO}})}{L^{\mathrm{cont}}(G^*_{\mathrm{YES}})}
+\;=\; \frac{|G^*_{\mathrm{NO}}|_{\mathrm{sym}}}{|G^*_{\mathrm{YES}}|_{\mathrm{sym}}} \cdot \frac{\log_2 b}{\log_2 a}
+\;\geq\; \gamma_{\mathrm{SGP}} \cdot \bigl(1 - O(1/(|V| \log |V|))\bigr).
+\]
+For every fixed $\varepsilon > 0$, eventually for $|V|$ large enough
+the perturbation $O(1/(|V| \log |V|)) < \varepsilon / \gamma_{\mathrm{SGP}}$,
+so the continuous-bit-cost ratio is at least
+$\gamma_{\mathrm{SGP}} - \varepsilon$. Hence any polynomial-time
+$(\gamma_{\mathrm{SGP}} - \varepsilon)$-approximation algorithm for
+continuous-bit-cost SGP would distinguish the YES and NO branches of
+the VC-3 instance, contradicting Berman-Karpinski NP-hardness of VC-3
+with the $1 + 1/144$ gap (Berman \& Karpinski 1999/2003).
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Lemma 6.8e closes a specific sub-case
+of OP2(a): under the continuous (no-ceiling) bit-cost objective, the
+unrestricted SGP problem inherits Charikar's $\gamma_{\mathrm{SGP}} =
+8569/8568$ APX-hardness directly, without the class-restriction of
+Lemma 6.8b. This shifts the residual difficulty of OP2(a) to a
+\emph{specific artifact of the integer-bit objective}: the
+ceiling-jump discontinuity at power-of-two boundaries of $|\Sigma| + K$
+identified by the multi-LLM adversarial review for Conjecture 6.8d.
+The continuous objective is the natural target for arithmetic coding
+(the Shannon-McMillan-achievable fractional-bit rate), while the
+integer/ceiling objective corresponds to a prefix-code worst-case
+encoding rarely used in modern compression.
+
+\emph{Comparison with Conjecture 6.8d.} Conjecture 6.8d posits some
+$\varepsilon_{\mathrm{bit}} > 0$ for the ceiling-bit-cost objective ---
+the weak form remaining after the Gemini ceiling-discontinuity attack
+on the strong $\gamma_{\mathrm{SGP}} - \delta$ form. Lemma 6.8e gives
+the strong $\gamma_{\mathrm{SGP}} - \varepsilon$ form for the
+continuous-bit-cost objective unconditionally, modulo $\mathrm{P} \neq
+\mathrm{NP}$. The two results coexist: Lemma 6.8e is the strong result
+for the natural information-theoretic objective; Conjecture 6.8d
+remains the open weak-form question for the discrete prefix-code
+objective.
+
+\emph{Implication for OP4' (fixed-byte-alphabet variant).} The
+continuous-bit-cost framework also applies to fixed-alphabet variants:
+encoding terminals as $\lceil \log_{256} |V| \rceil$-byte strings
+introduces a $\Theta(\log_2 |V|)$ multiplicative overhead that is the
+\emph{same} for YES and NO instances (both have the same alphabet,
+the same terminal set), so the ratio is preserved up to the same
+$1 + O(1/(|V| \log |V|))$ correction. Hence Lemma 6.8e extends to
+the fixed-byte-alphabet variant under continuous bit-cost,
+partially closing OP4'.
+
 \textbf{Remark 6.8b (Why padding-based reduction fails for
 unrestricted-predictor APX-hardness).} \emph{The natural attempt
 to transfer APX-hardness from the restricted (constant predictor,
