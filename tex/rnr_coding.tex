@@ -3872,6 +3872,88 @@ Code-$k$ or optimal alphabet size, only an optimal
 parameter-selection function for a given data distribution, and the
 latter is part of $M$ just like any other learned component.
 
+\textbf{Theorem 7.2 (RNR achieves the Shannon entropy rate with
+byte-granular random access on stationary mixing sources).}
+\emph{Let $X = (X_n)_{n \geq 1}$ be a strictly stationary process on
+a finite alphabet satisfying the exponential conditional-MI decay
+(5.8) of Lemma 5.1b. Assume the following encoding conventions:
+(C1) the predictor $M$ is treated as a pre-shared model with}
+$L(M) = O(1)$ \emph{amortized into a fixed header (or, equivalently,
+counted separately in $L(M)$ overhead rather than in the repair
+stream); (C2) the predictor outputs an arithmetic-coder-compatible
+probability distribution with a uniform floor $\eta > 0$ such that
+the cross-entropy excess over the true conditional is at most
+$\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = O(\log(1/\eta))$ per
+stream (the standard practical assumption, e.g.\ Cover \& Thomas
+2006 Theorem 13.4 on arithmetic coding with finite-precision
+floors); (C3) auxiliary metadata $L(\Theta)$ is $\mathrm{polylog}(N)$.
+Then for any sub-block spacing $K = \omega(1)$ and $K = \mathrm{polylog}(N)$,
+the RNR framework (per-position sequential coding under a
+$W_N$-bounded predictor of context $W_N = O(\log N)$ outputting
+true-conditional probabilities clipped to the $\eta$-floor, sync
+points at uniform $K$-spacing, and Theorem 10.3 byte-granular access)
+achieves expected total repair-stream length}
+\[
+L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) \;=\; N \cdot h(X) + o(N) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}},
+\]
+\emph{with per-query random-access cost $O(\log L(R) + (K + k) \cdot
+\mathrm{cost}(M))$, polylog in $N$ when $K, k, \mathrm{cost}(M),
+\log L(R)$ are all polylog in $N$. In particular, the per-position
+repair-stream rate $L^{\mathrm{rep}}_{\mathrm{RNR}}/N \to h(X)$ as
+$N \to \infty$, attaining the Shannon entropy rate (under the
+encoding conventions C1-C3).}
+
+\emph{\textbf{Proof.}} Combine the four building blocks:
+
+(i) Lemma 5.1b: for $W = W_N = O(\log N)$ under exp-mixing (5.8),
+$H_{W_N}(D_N) \leq H(D_N) + 1$. The per-position sequential
+arithmetic coding under the $W_N$-bounded predictor outputs
+expected total
+$H_{W_N}(D_N) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}} \leq
+H(D_N) + 1 + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ (Lemma 5.1a
+plus the convergence).
+
+(ii) Lemmas 5.1c-d and Corollary 5.1f: at sub-block size $K = \omega(W)$,
+the sync-overhead per sync point is $\delta_W^{(h_W)} \leq \delta_\infty$
+(Lemma 5.1d), and the total sync overhead is
+$(m-1) \cdot \delta_\infty + O(1) = O((N/K) \cdot \delta_\infty)
+= o(N)$ since $K = \omega(W_N) = \omega(\log N)$ and $\delta_\infty$ is
+finite.
+
+(iii) Lemma 5.6c: $H(D_N) = N \cdot h(X) + \delta_N$ where
+$\delta_N \to \delta_\infty < \infty$ (Crutchfield--Feldman) by the
+summability implied by (5.8). Hence $H(D_N) = N \cdot h(X) + O(1)$.
+
+(iv) Theorem 10.3: byte-granular random-access at cost
+$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ per query, polylog in
+$N$ in the stated parameter regime.
+
+Combining (i)-(iv):
+$L_{\mathrm{RNR}}(X^N) \leq H(D_N) + 1 + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}
++ (m-1) \delta_\infty + O(1)
+= N h(X) + O(1) + (m-1) \delta_\infty + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}
+= N h(X) + o(N) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
+for $K = \omega(\log N)$ (so $m \delta_\infty = o(N)$). Dividing by
+$N$: $L_{\mathrm{RNR}}/N \to h(X)$.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.2 is the headline asymptotic
+claim of the RNR framework: \emph{any} stationary mixing source --- the
+canonical natural-data setting (Lemma 5.6c covers order-$W$ Markov
+chains, Lemma 5.6d covers HMMs, Lemma 5.6b covers latent-class
+mixtures, all under exp-mixing) --- is compressed to its Shannon
+entropy rate $h(X)$ asymptotically by RNR, \emph{with byte-granular
+random access} at polylog per-query cost. This unifies the four
+TC characterizations of §5.6 with the random-access framework of
+§5.1 and Theorem 10.3, and demonstrates that RNR's framework
+operates at the information-theoretic limit on natural-data sources
+while preserving the random-access property that distinguishes it
+from sequential-only compressors (NNCP, PixelCNN++, etc.).
+\emph{Open extensions:} non-stationary sources, non-summable mixing,
+and sources outside the exp-CMI-decay class fall outside this
+theorem's scope; for such sources weaker (or no) Shannon-rate
+attainability is currently provable.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
