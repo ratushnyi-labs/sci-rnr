@@ -4660,10 +4660,25 @@ is information-theoretically irreducible --- it cannot be removed by
 any byte-granular RA scheme satisfying Lemma 5.1e's independence
 conditions. \emph{Open question:} if source-dependent shared metadata
 is allowed (relaxing Lemma 5.1e (iii)), can the sync overhead be
-reduced below $(m-1) \cdot \delta_\infty$? The answer depends on
-whether global-header amortization can ``leak'' sub-block-correlation
-information across sync boundaries; we leave this as an open question
-in §13 (Open Problems).
+reduced below $(m-1) \cdot \delta_\infty$?
+
+\emph{Attempted closure (Theorem 7.3a), retracted.} A natural Shannon-converse
+attempt would lower-bound $L^{\mathrm{rep}}$ by $m \cdot H(D_K) -
+L(\Theta)$ via the sub-additivity claim $\sum_j I(X_{\text{sub-block } j};
+\Theta) \leq I(D_N; \Theta) \leq L(\Theta)$. \emph{This sub-additivity
+of mutual information FAILS for general dependent sub-blocks}: e.g.,
+$D_N = (X_1, X_2)$ independent bits and $\Theta = X_1 \oplus X_2$
+gives $I(X_1; \Theta) = I(X_2; \Theta) = 0$ but $I(D_N; \Theta) =
+H(\Theta) = 1$ --- the SUM is strictly LESS than the joint MI, not
+$\leq$. Using the alternative trivial bound $\sum_j I(D_K^j; \Theta)
+\leq m \cdot L(\Theta) = \Theta(N)$ for $K = \mathrm{polylog}(N)$
+makes the resulting lower bound vacuous (negative). The
+Shannon-converse route does not close the question; the answer
+remains \emph{genuinely open} whether source-dependent metadata
+can reduce sync overhead from $m \cdot \delta_\infty$ to a smaller
+quantity. We document the failed attempt here to prevent recurrence
+of the same approach by future readers, and leave the question for
+§13.2.
 
 \textbf{Theorem 7.4 (Robustness of Theorem 7.2 to non-ideal predictor:
 explicit KL-divergence accounting).} \emph{Let $X$ satisfy the
