@@ -2783,6 +2783,68 @@ yields linear TC scaling provided $c > 1$ (summability), but with
 $\delta_\infty < \infty$ requiring tighter analysis. Both are open
 as separate lemmas.
 
+\textbf{Lemma 5.6f (Linear $\mathrm{TC}$ for asymptotically mean
+stationary (AMS) processes via Cesaro time-averaging).}
+\emph{Let $(X_n)_{n \geq 1}$ be a (possibly non-stationary) stochastic
+process on a finite alphabet $\mathcal{X}$. Suppose it is
+\emph{asymptotically mean stationary}: there exists a stationary
+measure $\bar{\mu}$ on $\mathcal{X}^{\mathbb{Z}_+}$ such that for
+every measurable cylinder event $A \in \sigma(X_1, \ldots, X_k)$
+(any $k$),}
+\[
+\bar{\mu}(A) \;=\; \lim_{N \to \infty} \tfrac{1}{N} \sum_{n=1}^N
+  \Pr(\sigma^n \omega \in A),
+\]
+\emph{where $\sigma$ is the shift map (Gray 1990 \emph{Entropy and
+Information Theory}, Springer, Ch.\ 7 ``AMS Random Processes''). Then
+the joint entropy $H(D_N) = H(X_1, \ldots, X_N)$ satisfies the
+$\mathrm{AMS}$ Shannon--McMillan--Breiman theorem
+(Barron 1985 \emph{Ann.\ Probab.}\ 13(4):1292--1303,
+\emph{The Strong Ergodic Theorem for Densities}; Gray 1990 Ch.\ 8)
+$\lim_N H(D_N)/N = h(\bar{\mu})$ and the average per-position
+marginal entropy converges to $H_{\mathrm{marg}}(\bar{\mu})$. Hence}
+\[
+\mathrm{TC}(D_N) \;=\; N \cdot E_{\bar{\mu}} + o(N),
+\]
+\emph{where $E_{\bar{\mu}} = H_{\mathrm{marg}}(\bar{\mu}) -
+h(\bar{\mu}) \geq 0$ is the AMS-limit per-position excess entropy.
+In particular, $\mathrm{TC}(D_N) = \Theta(N)$ whenever
+$E_{\bar{\mu}} > 0$ (equivalently, the AMS-limit process is not iid).}
+
+\emph{\textbf{Proof.}} The total correlation is
+$\mathrm{TC}(D_N) = \sum_n H(X_n) - H(D_N)$. The first sum
+divided by $N$ is the average per-position marginal entropy
+$\bar{H}_N := \tfrac{1}{N} \sum_n H(X_n)$. By the AMS hypothesis
+applied to single-position events,
+$\bar{H}_N \to H_{\mathrm{marg}}(\bar{\mu})$ as $N \to \infty$ (Gray
+1990 Theorem 7.3.1; entropy is a continuous functional of cylinder
+probabilities on the finite alphabet, so AMS cylinder convergence
+implies entropy convergence). The joint entropy
+$H(D_N)/N \to h(\bar{\mu})$ is the AMS Shannon--McMillan--Breiman
+identity (Barron 1985; Gray 1990 Theorem 8.7.1). Hence
+$\mathrm{TC}(D_N)/N = \bar{H}_N - H(D_N)/N \to H_{\mathrm{marg}}(\bar{\mu})
+- h(\bar{\mu}) = E_{\bar{\mu}}$ as $N \to \infty$, and
+$\mathrm{TC}(D_N) = N \cdot E_{\bar{\mu}}(1 + o(1)) = N \cdot E_{\bar{\mu}}
++ o(N)$.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Lemma 5.6f extends Lemma 5.6c (c)
+(Cesaro form for stationary processes) to the strictly larger class
+of AMS processes, closing the ``non-stationary processes'' subcase
+of OP3 listed in Lemma 5.6d's Scope. AMS includes processes that
+are strictly non-stationary but converge in time average: burn-in
+followed by stationarity; periodic and quasi-periodic processes;
+processes with transient initial conditions converging to a stable
+regime. The framework does \emph{not} cover processes without any
+time-averaged limit (e.g., processes with growing variance,
+non-recurrent transient processes, or content-dependent natural-image
+distributions where pixel statistics vary across regions). Two
+subcases of OP3 remain open: (a) genuinely non-stationary processes
+without AMS structure (e.g., natural images at given resolution,
+where pixel-level statistics are spatially non-stationary);
+(b) factor graphs over expander families, requiring graph-theoretic
++ information-theoretic combined analysis.
+
 \textbf{5.7 Worked numerical example}
 
 Consider a block of $N = 1024$ nibbles with counts $k_v = 64$ for
