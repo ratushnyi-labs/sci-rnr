@@ -3882,11 +3882,13 @@ $L(M) = O(1)$ \emph{amortized into a fixed header (or, equivalently,
 counted separately in $L(M)$ overhead rather than in the repair
 stream); (C2) the predictor outputs an arithmetic-coder-compatible
 probability distribution with a uniform floor $\eta > 0$ such that
-the cross-entropy excess over the true conditional is at most
-$\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = O(\log(1/\eta))$ per
-stream (the standard practical assumption, e.g.\ Cover \& Thomas
-2006 Theorem 13.4 on arithmetic coding with finite-precision
-floors); (C3) auxiliary metadata $L(\Theta)$ is $\mathrm{polylog}(N)$.
+the per-sub-block-stream cross-entropy excess over the true conditional
+is at most $\varepsilon_{\mathrm{ac}}^{(j)} = O(\log(1/\eta))$ for each
+of the $m$ independently-coded sub-block streams (the standard practical
+assumption under high-quality predictors, e.g.\ Cover \& Thomas 2006
+Theorem 13.4 on arithmetic coding with finite-precision floors), so the
+total $\varepsilon_{\mathrm{ac}}^{\mathrm{total}} := \sum_j \varepsilon_{\mathrm{ac}}^{(j)}
+= O((N/K) \cdot \log(1/\eta))$; (C3) auxiliary metadata $L(\Theta)$ is $\mathrm{polylog}(N)$.
 Then for any sub-block spacing $K$ in the range
 $W_N \leq K = \mathrm{polylog}(N)$ (with
 $W_N = O(\log N)$ chosen per Lemma 5.1b), the RNR framework
@@ -4012,14 +4014,17 @@ $m \cdot H(D_K) = N \cdot h(X) + m \cdot \delta_K$.
 \emph{Convergence rate.} Under exp-mixing (5.8), by Crutchfield--Feldman
 summability $\delta_K \to \delta_\infty < \infty$ at exponential rate:
 $\delta_\infty - \delta_K = \sum_{n > K} [H(X_n \mid X_{<n}) - h(X)]
-\leq C \rho^K / (1 - \rho)$ for some $C, \rho \in (0, 1)$ (Lemma 5.6c (b)
-plus exp-decay (5.8)). With $K \geq W_N = \Omega(\log N)$,
-$\rho^K = O(N^{-c})$ for some $c > 0$, hence
-$m \cdot (\delta_\infty - \delta_K) = O(m \cdot N^{-c}) =
-O(N^{1-c} / K) = O(N^{1-c} / \log N) = o(1)$
-(in fact $o(N^{1-c})$, which is $o(1)$ when $c \geq 1$ and otherwise
-$o(N^{1-c})$; in either case dominated by the $O(1)$ term below for
-the matching claim).
+\leq C \rho^K / (1 - \rho)$ for the same constants $C, \rho \in (0, 1)$
+of (5.8) (the tail of the Crutchfield--Feldman series inherits the
+exp-mixing rate). At $K \geq W_N$ with Lemma 5.1b's choice
+$W_N = \lceil \log_{1/\rho}(N C) \rceil$, $\rho^K \leq \rho^{W_N} \leq
+1/(N C)$, hence
+\[
+m \cdot (\delta_\infty - \delta_K)
+\;\leq\; (N/K) \cdot \tfrac{1}{N (1 - \rho)}
+\;=\; \tfrac{1}{K (1 - \rho)}
+\;=\; O(1/\log N) \;=\; o(1).
+\]
 
 \emph{Match.} Theorem 7.2 gives the upper bound
 $L^{\mathrm{rep}}_{\mathrm{RNR}} \leq N \cdot h(X) + m \cdot \delta_\infty +
@@ -4064,7 +4069,10 @@ Kullback--Leibler divergence}
 \,\Bigr] \;\geq\; 0
 \]
 \emph{from the true $W_N$-bounded conditional, averaged across positions
-(by stationarity, equivalent to a per-position divergence). Then RNR
+(by stationarity, equivalent to a per-position divergence; we additionally
+require $\varepsilon_{\mathrm{KL}} < \infty$, ensured in practice by
+$M'$ inheriting convention C2's uniform $\eta$-floor so that
+$P_{M'}(x \mid \cdot) \geq \eta > 0$ for every symbol). Then RNR
 encoding with $M'$ instead of the ideal predictor achieves expected
 total repair-stream length}
 \[
@@ -4089,7 +4097,8 @@ the expected arithmetic-coding bit cost using $M'$'s distribution is
 = H(X_i \mid X_{i-W_N : i-1})
   + D_{\mathrm{KL}}(P_{\mathrm{true}} \,\|\, P_{M'}),
 \]
-the exact cross-entropy decomposition (Cover \& Thomas 2006 §5). Summing
+the exact cross-entropy decomposition (Cover \& Thomas 2006 §2.6 on
+relative entropy / §5.4 on suboptimal codes). Summing
 over all $N$ positions within their respective sub-blocks:
 \[
 \mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N; M')]
@@ -4110,16 +4119,26 @@ $\log(1/\eta)$.
 idealization (true conditional probabilities) to the practical setting
 of learned predictors. For high-quality language models on natural text
 the empirical per-position cross-entropy $H + \varepsilon_{\mathrm{KL}}$
-is typically $1.0$--$1.5$ bits/byte versus Shannon's lower-bound estimate
-$h(X) \approx 0.6$--$1.3$ bits/byte for English (Shannon 1951; modern
-LLM estimates: e.g., DeepMind Chinchilla 70B reaching ~1.04 bpb on
-enwik9), so $\varepsilon_{\mathrm{KL}} \approx 0.1$--$0.5$ bpb in
-practice. As predictor quality improves with model scale and training
-data, $\varepsilon_{\mathrm{KL}} \to 0$ (per the universal-approximation
-results of Shannon-McMillan and the empirical scaling laws of
-Kaplan--Hoffmann), bringing RNR's empirical rate arbitrarily close to
-Shannon's lower bound $h(X)$. \emph{Practical interpretation:} the
-gap $h(M') - h(X) = \varepsilon_{\mathrm{KL}}$ is the ``predictor
+is roughly $1$ bit/byte (compare Del{\'e}tang et al.\ 2024
+\emph{Language Modeling Is Compression}, ICLR, arXiv:2309.10668, which
+reports neural-network LM compression ratios on enwik9 in the
+sub-1-bpb regime) versus Shannon's lower-bound estimate
+$h(X) \approx 0.6$--$1.3$ bits/byte for English (Shannon 1951
+\emph{Bell System Technical Journal} 30(1):50--64, ``Prediction and
+Entropy of Printed English''; see Cover \& King 1978
+\emph{IEEE Trans.\ Inf.\ Theory} 24(4):413 for the tightened gambling
+estimator), giving $\varepsilon_{\mathrm{KL}}$ on the order of tenths
+of a bit per byte in practice. As predictor quality improves with model
+scale and training data, $\varepsilon_{\mathrm{KL}} \to 0$ (per the
+universal-approximation property of neural networks
+--- Cybenko 1989 \emph{Math.\ Control Signals Syst.}\ 2(4):303;
+Hornik et al.\ 1989 \emph{Neural Networks} 2(5):359 --- combined with
+consistency of MLE and the empirical scaling laws of Kaplan et al.\
+2020 \emph{Scaling Laws for Neural Language Models}, arXiv:2001.08361,
+and Hoffmann et al.\ 2022 \emph{Training Compute-Optimal Large Language
+Models}, arXiv:2203.15556), bringing RNR's empirical rate arbitrarily
+close to Shannon's lower bound $h(X)$. \emph{Practical interpretation:}
+the gap $h(M') - h(X) = \varepsilon_{\mathrm{KL}}$ is the ``predictor
 suboptimality cost'' borne by every position; reducing it by training
 better LMs directly reduces $L^{\mathrm{rep}}_{\mathrm{RNR}}/N$ by the
 same amount, position-for-position.
@@ -4151,13 +4170,27 @@ C(K^*) \;=\; N \cdot h(X) + 2 \sqrt{\gamma \cdot N \cdot \alpha \cdot Q}
             + N \cdot \varepsilon_{\mathrm{KL}} + O(1).
 \]
 \emph{For balanced storage--access weight ($\alpha \cdot Q = \Theta(1)$),
-$K^* = \Theta(\sqrt{N})$ and the storage overhead $C(K^*) - N \cdot h(X) -
-N \cdot \varepsilon_{\mathrm{KL}} = \Theta(\sqrt{N})$; the per-query cost
-is also $\Theta(\sqrt{N})$. This is the classical
-$\sqrt{N}$ time--space trade-off of indexed search structures
-(Bentley \& Yao 1976, Manber \& Myers 1993 for suffix arrays;
-Belazzougui--Navarro 2014 for compressed indexes), now expressed in
-the RNR-compression setting.}
+the unconstrained optimum is $K^* = \Theta(\sqrt{N})$; the storage
+overhead $C(K^*) - N \cdot h(X) - N \cdot \varepsilon_{\mathrm{KL}} =
+\Theta(\sqrt{N})$ and the per-query cost is also $\Theta(\sqrt{N})$.
+This is the AM--GM-optimal $\sqrt{N}$ balance between two reciprocal
+cost terms, structurally analogous to the sampling-rate parameter in
+compressed suffix arrays (Sadakane 2003 \emph{J.\ Algorithms} 48(2):294;
+Grossi--Vitter 2005 \emph{SIAM J.\ Comput.}\ 35(2):378), where a
+sampling rate $s$ gives $O(N/s)$ storage and $O(s \log N)$ query, yielding
+$s = \Theta(\sqrt{N})$ at balance --- here the trade-off is expressed
+in the RNR compression setting with $K$ playing the role of the
+sampling parameter.}
+
+\emph{Constraint on $K^*$.} The formula $K^* = \sqrt{\gamma N / (\alpha Q)}$
+is the \emph{unconstrained} optimum and is valid only when $K^* \geq W_N$.
+For extremely access-saturated workloads $\alpha Q > \gamma N / W_N^2$,
+the formula would give $K^* < W_N$, at which point the lower constraint
+$K \geq W_N$ from Theorem 7.2 binds and the constrained optimum is
+$K = W_N$, with cost $C(W_N) = N \cdot h(X) + \gamma N / W_N +
+\alpha Q \cdot W_N + N \varepsilon_{\mathrm{KL}} + O(1)$. The boundary
+threshold $\alpha Q = \gamma N / W_N^2 = \Theta(N / \log^2 N)$ separates
+the interior $\sqrt{N}$ regime from the constraint-bound regime.
 
 \emph{\textbf{Proof.}} The bit-cost component of $C(K)$ follows from
 the proof of Theorem 7.2 with $m = N/K$ sub-blocks: $L^{\mathrm{rep}}_{\mathrm{RNR}}
