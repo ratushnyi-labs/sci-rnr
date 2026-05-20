@@ -6323,6 +6323,33 @@ listed below.)
   amortized-family variant is the natural research target where
   APX-hardness is plausible via the per-instance salting technique.
 
+  \emph{Indirect connection via Liu--Pass / one-way functions (2026
+  update).} A complementary indirect route to OP2(b) hardness goes
+  through cryptographic hardness via the Liu--Pass equivalence
+  (Liu \& Pass, FOCS 2020 / J ACM 2023, \emph{On One-Way Functions
+  and Kolmogorov Complexity}, arXiv:2009.11514): the existence of
+  one-way functions is equivalent to the hardness, on samplable
+  distributions, of the Minimum-Kt-Complexity Problem
+  (MKtP), where $\mathrm{Kt}(x) = \min_p \{|p| + \log t(p) : U^p
+  \text{ outputs } x\}$ is time-bounded Kolmogorov complexity.
+  For OP2(b), the joint cost
+  $L(M) + L(D) + L(R \mid Y, M, D)$ is upper-bounded by
+  $\mathrm{Kt}(s \mid Y) + O(\log N)$, with the predictor $M$
+  playing the role of the polynomial-time-bounded ``program'' and
+  $L(R)$ the residual incompressibility. Hence: IF one-way functions
+  exist, THEN OP2(b) is average-case hard on a samplable distribution
+  by direct reduction from MKtP. The reduction is not gap-preserving
+  (gives average-case, not worst-case, hardness; and additive Kt-bit
+  gap, not multiplicative APX-gap), but provides an alternative
+  conditional hardness anchor: under the standard cryptographic
+  assumption that OWFs exist, joint Type-III-C compression on
+  random samplable sources is hard. \emph{Caveat:} this is a
+  \emph{different} hardness statement than Conjecture 6.8d's
+  worst-case APX-hardness on Berman-Karpinski instances; the OWF
+  route gives cryptographic-strength average-case hardness, the SGP
+  route gives combinatorial worst-case hardness. Both are consistent
+  with OP2(b) being hard but neither subsumes the other.
+
   \emph{Two-sided status (epistemic gap).} A literature scan
   (2015--2024) confirms that for OP2(a), \emph{neither} a polynomial-time
   constant-factor approximation for unrestricted bit-cost SGP \emph{nor}
@@ -6371,6 +6398,49 @@ listed below.)
   PTAS for unrestricted bit-cost SGP (poly-time $(1 + \varepsilon)$-
   approximation for every $\varepsilon > 0$) would refute this
   conjecture.
+
+  \emph{Observation 6.8d-asymp (Single-escape analysis suggests
+  asymptotic strong form; multi-escape obstacle).} A partial analysis
+  of single-boundary escape grammars suggests that for $|V| \to \infty$
+  the bit-cost gap converges to $\gamma_{\mathrm{SGP}}$. Per single
+  escape across one power-of-2 boundary: saving $L_{\mathrm{sym}}$
+  bits (one bit-width unit on all symbols), cost
+  $\Delta_{\mathrm{sym}} \cdot (\log V - 1)$ bits where
+  $\Delta_{\mathrm{sym}} \geq 1$ from inlining a Charikar-normal-form
+  nonterminal. Beneficial iff $\Delta_{\mathrm{sym}} < L_{\mathrm{sym}}/(\log V - 1)$,
+  with max-beneficial-$\Delta$ giving saving $\sim L_{\mathrm{sym}}/\log V$ bits.
+  Single-escape relative saving $\sim 1/\log V$; for $\log V > 8568$
+  (i.e., $|V| > 2^{8568}$) this is dominated by the Charikar
+  symbol-count gap $1/8568$.
+
+  \emph{Honest caveat: multi-escape / K-optimisation obstacle.}
+  Single-escape analysis is INSUFFICIENT for an asymptotic strong-form
+  closure. Consider a Charikar-style grammar with $K$ free, treating
+  $K$ as an optimisation variable: for the model $L_{\mathrm{sym}}(K)
+  \approx K + c \cdot N/K$ ($c$ a constant of the Berman-Karpinski
+  gadget), the bit-cost objective $L_{\mathrm{sym}}(K) \cdot \log(|\Sigma|+K)$
+  is minimised at $K^* \approx \sqrt{cN/\log V}$ with optimum value
+  $\sim 2\sqrt{cN/\log V} \cdot \log V = 2\sqrt{cN \log V}$. The
+  $K = O(V)$ Charikar regime is NOT the bit-cost-optimal regime; the
+  $K \approx \sqrt{N}$ regime yields strictly smaller bit-cost. The
+  YES vs NO ratio in the $K = \sqrt{N}$ regime is not provably
+  $\gamma_{\mathrm{SGP}}$ --- the Berman-Karpinski reduction is
+  designed to preserve the symbol-count ratio at $K = O(V)$, not at
+  arbitrary $K$. The Charikar gap may collapse under K-optimisation,
+  giving NO grammars with bit-cost no worse than YES.
+
+  We retract any rigorous claim of asymptotic-strong-form closure of
+  Conjecture 6.8d via escape-savings accounting. The right statement
+  remains the conservative ``some $\varepsilon_{\mathrm{bit}} > 0$''
+  weak form, with the K-optimisation obstacle a documented research
+  direction. Resolving it requires either: (a) demonstrating that
+  the Berman-Karpinski reduction can be modified to preserve the
+  symbol-count gap at the $K = \sqrt{N}$ bit-cost-optimal regime;
+  (b) using a different source-of-hardness problem that admits
+  $K$-uniform gap preservation; or (c) proving an exponential-type
+  lower bound on $L_{\mathrm{sym}}(K^*)$ for NO instances under
+  Berman-Karpinski-hard inputs. All three are open research-level
+  directions.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
   natural-data classes --- partially resolved. Four explicit
