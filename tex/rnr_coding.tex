@@ -6178,6 +6178,45 @@ listed below.)
   $8569/8568$ due to objective-function dilution and remain
   research-scale open problems.
 
+  \emph{Partial closure of OP2(a) via continuous bit-cost (Lemma 6.8e).}
+  Lemma 6.8e (Section 6.8) closes the continuous-bit-cost variant of
+  OP2(a) by showing that the information-theoretic objective
+  $L^{\mathrm{cont}}(G) = |G| \cdot \log_2(|\Sigma| + K(G))$
+  (no ceiling, the natural arithmetic-coding target) inherits Charikar's
+  $\gamma_{\mathrm{SGP}} = 8569/8568$ APX-hardness with a vanishing
+  $O(1/(|V|\log|V|))$ correction. This shifts the residual difficulty
+  of OP2(a) to a \emph{specific artifact of the integer-bit objective}
+  --- the ceiling discontinuity at power-of-two boundaries identified
+  by the multi-LLM adversarial review for Conjecture 6.8d. The
+  continuous variant is also the natural object for compression theory
+  (Shannon-McMillan-achievable fractional-bit rates), while the
+  integer/ceiling objective is the prefix-code worst case rarely
+  used in modern compression. The remaining open case is thus
+  specifically the integer/ceiling variant of unrestricted bit-cost SGP,
+  for which Conjecture 6.8d (weak form) is the strongest current
+  statement.
+
+  \emph{Amortized-family reformulation of OP2(b) (new direction,
+  2026).} The single-source predictor-absorption obstacle of
+  Remark 6.8b has a natural reformulation that circumvents the
+  $L(M) \geq |s|$ absorption: switch to an \emph{amortized family}
+  $\mathcal{F}_n = \{s_i\}_{i \in [N(n)]}$ of $N(n) = 2^{\Theta(n)}$
+  SGP-prefix instances, with the objective
+  $L_{\mathrm{amort}} := L(M) + L(D) + \sum_i L(R_i \mid Y, M, D)$
+  shared across the family. For $M$ to memorize all $N(n)$ prefixes,
+  $L(M) \geq N(n) \cdot n$ bits, dominating any savings; per-instance
+  amortization $L(M)/N(n) \to 0$ forces $M$'s contribution to
+  $o(1)$ bit/source while each $L(R_i)$ must still encode its SGP-instance.
+  The reformulation aligns with the Generalized Smallest Grammar
+  Problem of Carrascosa et al.\ (2016, arXiv:1608.08927) and connects
+  to the multi-instance distributional-hardness machinery of
+  Huang-Ilango-Ren STOC'23 (\emph{NP-Hardness of Meta-Complexity},
+  hanlin-ren.github.io). \emph{Caveat:} this is a definitional shift,
+  not a proof of the literal single-source OP2(b); the literal version
+  remains open with Remark 6.8b as the structural obstacle. The
+  amortized-family variant is the natural research target where
+  APX-hardness is plausible via the per-instance salting technique.
+
   \emph{Two-sided status (epistemic gap).} A literature scan
   (2015--2024) confirms that for OP2(a), \emph{neither} a polynomial-time
   constant-factor approximation for unrestricted bit-cost SGP \emph{nor}
@@ -6318,6 +6357,35 @@ listed below.)
   Lossy Kernelization 2023). All five paths require non-trivial
   adaptation to the fixed source-alphabet (256-byte) constraint of
   the $E_{12}$ problem and remain research-scale open.
+
+  \emph{Padding-bit calibration (new direction, 2026).} A
+  multi-agent brainstorm during the present manuscript revision
+  identified a novel attack angle that neutralises the
+  injective-labeling obstacle without trying to evade it: reduce
+  from Min-$2$-CSP via Baby-PIH gap-amplification
+  (Guruswami--Ren--Sandeep, CCC 2024,
+  drops.dagstuhl.de/entities/document/10.4230/LIPIcs.CCC.2024.27)
+  with hypercube alphabet $\{0,1\}^k$ native to $E_{12}$, taking
+  $F_{v_x, v_y} = 1/\deg(v_x)$ (the row-stochastic constraint-incidence
+  Markov kernel of $\Psi$, satisfying row-stochasticity \emph{by
+  construction} rather than retrofit). Take $m = k + \lceil \log_2 n \rceil$:
+  the first $k$ bits encode the CSP assignment (where the constant-gap
+  lives), the last $\lceil \log_2 n \rceil$ bits encode the vertex ID
+  (fixed by the reduction). Since every vertex pays exactly its
+  $\log n$ identifier-Hamming cost uniformly, the
+  injective ``packing noise'' becomes a labeling-independent additive
+  constant rather than a gap-erasing background. Parallel-repetition
+  amplification of the Min-$2$-CSP gap is enabled by the row-uniform
+  graph structure post-repetition. The composition with a
+  Hadamard-style projection (or ghost-vertex slack relaxation from
+  the same brainstorm) converts the CSP gap into an $E_{12}$
+  constant-Hamming gap. The two structural obstacles (row-stochastic
+  $F$ + injective labeling) are circumvented \emph{simultaneously}
+  by the same construction: the first because $F$ is row-stochastic
+  natively from $\Psi$'s incidence kernel; the second because the
+  identifier bits act as a uniform calibration offset rather than
+  a counted constraint. This is the cleanest currently-known
+  research path; full formalisation is beyond the scope of this paper.
 
   \emph{Two-sided status (epistemic gap).} As with OP2(a), a 2015--2024
   literature scan confirms that for $E_{12}$ \emph{neither} a
