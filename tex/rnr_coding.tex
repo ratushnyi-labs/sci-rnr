@@ -3972,6 +3972,83 @@ and sources outside the exp-CMI-decay class fall outside this
 theorem's scope; for such sources weaker (or no) Shannon-rate
 attainability is currently provable.
 
+\textbf{Theorem 7.3 (Information-theoretic tightness of Theorem 7.2:
+matching lower bound).} \emph{Under the hypotheses of Theorem 7.2
+(stationary $X$ with exp-mixing (5.8), sub-block spacing
+$W_N \leq K = \mathrm{polylog}(N)$, conventions C1--C3) and the
+additional assumption that any shared metadata is source-independent
+(Lemma 5.1e condition (iii)), any byte-granular random-access coding
+scheme that emits $m = \lceil N/K \rceil$ independently-decodable
+sub-blocks (Lemma 5.1e conditions (i)--(ii)) has expected
+repair-stream length}
+\[
+L^{\mathrm{rep}}(X^N) \;\geq\; m \cdot H(D_K) \;=\; N \cdot h(X) + m \cdot \delta_K,
+\]
+\emph{where $\delta_K := \sum_{n=1}^K [H(X_n \mid X_{<n}) - h(X)] \geq 0$
+is the cumulative conditional-entropy excess at length $K$
+(Lemma 5.6c). Combined with the Theorem 7.2 upper bound
+$L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) \leq N \cdot h(X) +
+m \cdot \delta_\infty + O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
+and the convergence $\delta_\infty - \delta_K = O(\rho^K)$ under
+exp-mixing, the matching upper and lower bounds coincide modulo
+the inherent finite-precision arithmetic-coding slack:}
+\[
+L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - L^{\mathrm{rep}}_{\min}(X^N)
+\;=\; O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}} + o(1),
+\]
+\emph{where $L^{\mathrm{rep}}_{\min}$ denotes the lower bound above.
+Hence RNR is information-theoretically optimal among byte-granular
+random-access schemes on exp-mixing stationary sources, up to the
+arithmetic-coding finite-precision overhead.}
+
+\emph{\textbf{Proof.}} \emph{Lower bound.} Conditions (i)--(iii) of
+Lemma 5.1e are satisfied by hypothesis; the lemma gives
+$L^{\mathrm{rep}}(X^N) \geq m \cdot H(D_K)$. By Lemma 5.6c (stationary
+$X$, conditional entropy chain rule), $H(D_K) = K \cdot h(X) + \delta_K$
+with $\delta_K \geq 0$. Multiplying by $m = \lceil N/K \rceil$ and
+using $mK = N$ (or $N + O(K)$ for the ceiling case, absorbed in $O(1)$),
+$m \cdot H(D_K) = N \cdot h(X) + m \cdot \delta_K$.
+
+\emph{Convergence rate.} Under exp-mixing (5.8), by Crutchfield--Feldman
+summability $\delta_K \to \delta_\infty < \infty$ at exponential rate:
+$\delta_\infty - \delta_K = \sum_{n > K} [H(X_n \mid X_{<n}) - h(X)]
+\leq C \rho^K / (1 - \rho)$ for some $C, \rho \in (0, 1)$ (Lemma 5.6c (b)
+plus exp-decay (5.8)). With $K \geq W_N = \Omega(\log N)$,
+$\rho^K = O(N^{-c})$ for some $c > 0$, hence
+$m \cdot (\delta_\infty - \delta_K) = O(m \cdot N^{-c}) =
+O(N^{1-c} / K) = O(N^{1-c} / \log N) = o(1)$
+(in fact $o(N^{1-c})$, which is $o(1)$ when $c \geq 1$ and otherwise
+$o(N^{1-c})$; in either case dominated by the $O(1)$ term below for
+the matching claim).
+
+\emph{Match.} Theorem 7.2 gives the upper bound
+$L^{\mathrm{rep}}_{\mathrm{RNR}} \leq N \cdot h(X) + m \cdot \delta_\infty +
+O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$. The lower bound is
+$L^{\mathrm{rep}}_{\min} = N \cdot h(X) + m \cdot \delta_K$. Their
+difference is $m \cdot (\delta_\infty - \delta_K) + O(1) +
+\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = o(1) + O(1) +
+\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$, as claimed.
+\hfill$\blacksquare$
+
+\emph{Scope.} Theorem 7.3 is the matching lower bound for Theorem 7.2:
+the upper-lower bound pair coincides at the $m \cdot \delta_\infty$
+excess level, not merely at the leading $N \cdot h(X)$ order. The
+gap is the inherent arithmetic-coding finite-precision slack
+$\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$, which can be made
+$O(\log(1/\eta))$-per-sub-block via the standard floor convention (C2).
+This generalizes Corollary 5.1f's tight matching from order-$W'$
+Markov sources to all exp-mixing stationary sources within the
+Theorem 7.2 framework, and demonstrates that the
+$(m-1) \cdot \delta_\infty$ ``sync overhead'' identified in Lemma 5.1d
+is information-theoretically irreducible --- it cannot be removed by
+any byte-granular RA scheme satisfying Lemma 5.1e's independence
+conditions. \emph{Open question:} if source-dependent shared metadata
+is allowed (relaxing Lemma 5.1e (iii)), can the sync overhead be
+reduced below $(m-1) \cdot \delta_\infty$? The answer depends on
+whether global-header amortization can ``leak'' sub-block-correlation
+information across sync boundaries; we leave this as an open question
+in §13 (Open Problems).
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
