@@ -6358,34 +6358,86 @@ listed below.)
   adaptation to the fixed source-alphabet (256-byte) constraint of
   the $E_{12}$ problem and remain research-scale open.
 
-  \emph{Padding-bit calibration (new direction, 2026).} A
-  multi-agent brainstorm during the present manuscript revision
-  identified a novel attack angle that neutralises the
-  injective-labeling obstacle without trying to evade it: reduce
-  from Min-$2$-CSP via Baby-PIH gap-amplification
-  (Guruswami--Ren--Sandeep, CCC 2024,
-  drops.dagstuhl.de/entities/document/10.4230/LIPIcs.CCC.2024.27)
-  with hypercube alphabet $\{0,1\}^k$ native to $E_{12}$, taking
-  $F_{v_x, v_y} = 1/\deg(v_x)$ (the row-stochastic constraint-incidence
-  Markov kernel of $\Psi$, satisfying row-stochasticity \emph{by
-  construction} rather than retrofit). Take $m = k + \lceil \log_2 n \rceil$:
-  the first $k$ bits encode the CSP assignment (where the constant-gap
-  lives), the last $\lceil \log_2 n \rceil$ bits encode the vertex ID
-  (fixed by the reduction). Since every vertex pays exactly its
-  $\log n$ identifier-Hamming cost uniformly, the
-  injective ``packing noise'' becomes a labeling-independent additive
-  constant rather than a gap-erasing background. Parallel-repetition
-  amplification of the Min-$2$-CSP gap is enabled by the row-uniform
-  graph structure post-repetition. The composition with a
-  Hadamard-style projection (or ghost-vertex slack relaxation from
-  the same brainstorm) converts the CSP gap into an $E_{12}$
-  constant-Hamming gap. The two structural obstacles (row-stochastic
-  $F$ + injective labeling) are circumvented \emph{simultaneously}
-  by the same construction: the first because $F$ is row-stochastic
-  natively from $\Psi$'s incidence kernel; the second because the
-  identifier bits act as a uniform calibration offset rather than
-  a counted constraint. This is the cleanest currently-known
-  research path; full formalisation is beyond the scope of this paper.
+  \emph{PIH-under-ETH reduction with refined analysis (new direction,
+  2026).} A multi-agent brainstorm during the present manuscript
+  revision proposed reducing from the constant-gap parameterized
+  CSP of Guruswami--Lin--Ren--Sun--Wu (arXiv:2311.16587, ``PIH under
+  ETH'', 2023), which gives ETH-hardness with absolute soundness gap
+  $\varepsilon_{\mathrm{PIH}} = 1/9600$ on a 2-CSP $G^* = (V^*, E^*,
+  \Sigma^*, \{\Pi_e\})$ with $|V^*| = K = 2^{\Theta(\ell^2)}$ variables
+  and alphabet $|\Sigma^*| = 2^{\Theta(n/\ell)}$, for free parameter
+  $\ell$. The reduction sketch: $V_H = V^*$ (vertex per CSP variable),
+  $E_H = E^*$ (edge per constraint), $F_{u, v} = 1/\deg_H(u)$ (the
+  row-stochastic Markov kernel of $\Psi$, built-in by construction),
+  codeword $f(v_i) = [\mathrm{identifier}_i, \mathrm{Enc}(\sigma_i)]$
+  with $m_{\mathrm{id}} = \lceil \log_2 K \rceil$ identifier bits
+  (fixed per vertex) and $m_{\mathrm{val}}$ value bits encoding the
+  CSP value via some binary code $\mathrm{Enc} : \Sigma^* \to
+  \{0, 1\}^{m_{\mathrm{val}}}$.
+
+  \emph{Identifier-dilution obstacle (subtle and new).} Naive analysis
+  of the proposed reduction overlooks a structural obstacle from the
+  row-stochastic normalisation: with $\sum_e F_e = K$ (each row of $F$
+  sums to $1$), the total identifier-Hamming cost is $K \cdot \bar{c}_{\mathrm{id}}$
+  where $\bar{c}_{\mathrm{id}}$ is the vertex-weighted average per-edge
+  identifier-Hamming distance. For random identifier assignment,
+  $\bar{c}_{\mathrm{id}} \approx m_{\mathrm{id}}/2 = \Theta(\log K)$.
+  An unsatisfied CSP constraint with per-bit code disagreement gives
+  per-edge value cost $\geq 1$, so the multiplicative gap is
+  \[
+  \rho_{E_{12}} \;\geq\; 1 + \frac{\varepsilon_{\mathrm{PIH}}}{\bar{c}_{\mathrm{id}}}
+  \;=\; 1 + \frac{\varepsilon_{\mathrm{PIH}}}{\Theta(\log K)} \;\to\; 1
+  \]
+  as $K \to \infty$, vanishing. The padding-bit angle alone does not
+  preserve constant gap under row-stochastic $F$: the identifier cost
+  dominates the per-edge satisfaction signal.
+
+  \emph{Saving construction (constant relative-distance code on value
+  bits).} The obstacle is overcome by encoding CSP values via a
+  binary code $\mathrm{Enc}$ with constant rate ($m_{\mathrm{val}}
+  \geq \Omega(\log |\Sigma^*|) = \Omega(n/\ell)$) and constant
+  relative distance $\delta > 0$ (Justesen 1972 explicit construction
+  attains both). Then unsatisfied constraints have value-Hamming
+  $\geq \delta \cdot m_{\mathrm{val}}$ per edge, giving
+  \[
+  \rho_{E_{12}} \;\geq\; 1 + \frac{\varepsilon_{\mathrm{PIH}} \cdot \delta \cdot m_{\mathrm{val}}}{\bar{c}_{\mathrm{id}}}.
+  \]
+  For $\rho$ constant, need $m_{\mathrm{val}} \geq \Omega(\bar{c}_{\mathrm{id}})
+  = \Omega(\log K) = \Omega(\ell^2)$. Combined with the rate constraint
+  $m_{\mathrm{val}} \geq \Omega(n/\ell)$, both hold when $\ell^2 \geq
+  \Omega(n/\ell)$, i.e., $\ell \geq \Omega(n^{1/3})$.
+
+  \emph{Conditional closure (alphabet-balanced PIH at $\ell = \Theta(n^{1/3})$).}
+  At $\ell = \Theta(n^{1/3})$, GLRSW Theorem 3.1 gives an alphabet-balanced
+  instance with $K = 2^{\Theta(n^{2/3})}$ vertices and $|\Sigma^*|
+  = 2^{\Theta(n^{2/3})}$, polynomially balanced. The above reduction
+  then transfers $\varepsilon_{\mathrm{PIH}} = 1/9600$ to a constant
+  $E_{12}$ gap of $1 + \Omega(\varepsilon_{\mathrm{PIH}} \cdot \delta)$.
+  This gives \emph{conditional ETH-hard FPT inapproximability of
+  $E_{12}$} (parameterised by $\ell = n^{1/3}$, no $2^{o(n)}$ algorithm
+  exists for distinguishing $(1+\varepsilon')$-approximation, some
+  constant $\varepsilon' > 0$), STRICTLY WEAKER than the NP-hard
+  inapproximability claimed by Conjecture 4.3e but a concrete proof-path
+  toward it. The remaining technical work: (i) verify that the code
+  $\mathrm{Enc}$ can be \emph{constraint-aware} (i.e., the constraint
+  $\Pi_e(\sigma_u, \sigma_v)$ is decoded as a Hamming-distance condition
+  $d_H(\mathrm{Enc}(\sigma_u), \mathrm{Enc}(\sigma_v))$, which requires
+  matching the binary code to the GLRSW constraint form
+  (linear $+$ parallel QUADEQ)); (ii) extend from FPT/ETH-hardness
+  to classical NP-hardness via gap-preserving polynomial-time reduction
+  (open whether such a reduction exists from $\ell = n^{1/3}$
+  PIH-under-ETH to a polynomial-size instance).
+
+  This is a strictly more careful analysis than the optimistic
+  earlier ``padding-bit absorbs packing noise'' framing: the absorption
+  is \emph{additive but not multiplicative} under row-stochastic $F$.
+  The multi-LLM brainstorm's original Angle 1 missed the dilution; a
+  follow-up adversarial review (independent fresh-context agent with
+  web-search 2020--2025 literature) identified the fix via good
+  binary codes on value bits, with the explicit parameter constraint
+  $\ell \geq n^{1/3}$ to balance identifier and value contributions.
+  Full formalisation requires technical work on constraint-aware
+  encoding and remains beyond the present paper.
 
   \emph{Two-sided status (epistemic gap).} As with OP2(a), a 2015--2024
   literature scan confirms that for $E_{12}$ \emph{neither} a
