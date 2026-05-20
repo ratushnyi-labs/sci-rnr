@@ -4347,7 +4347,80 @@ from sequential-only compressors (NNCP, PixelCNN++, etc.).
 \emph{Open extensions:} non-stationary sources, non-summable mixing,
 and sources outside the exp-CMI-decay class fall outside this
 theorem's scope; for such sources weaker (or no) Shannon-rate
-attainability is currently provable.
+attainability is currently provable. Corollary 7.2a (below) extends
+to polynomial-mixing sources with a sub-linear (rather than polylog)
+RA cost trade-off; Lemma 5.6f extends to AMS non-stationary sources
+in a different sense (TC linearity, not Shannon-rate attainability).
+
+\textbf{Corollary 7.2a (Polynomial-mixing extension of Theorem 7.2:
+mixing-vs-RA-cost trade-off).} \emph{Let $X = (X_n)_{n \geq 1}$ be
+a strictly stationary process on a finite alphabet satisfying the
+\emph{polynomial} conditional-MI decay (replacing exp-mixing (5.8))}
+\[
+I\bigl(X_n; X_{1:n-W-1} \mid X_{n-W:n-1}\bigr) \;\leq\; C \cdot W^{-c}
+\]
+\emph{for constants $C > 0$ and $c > 1$ (the summability threshold
+for Crutchfield--Feldman excess $\delta_\infty < \infty$). Then the
+$W_N$ choice analogous to Lemma 5.1b becomes
+$W_N := \lceil (C \cdot N)^{1/c} \rceil$, ensuring
+$H_{W_N}(D_N) - H(D_N) \leq 1$, and Theorem 7.2 holds with the
+modified sub-block range}
+\[
+W_N \;=\; \Theta(N^{1/c}) \;\leq\; K \;\leq\; \mathrm{poly}(N),
+\]
+\emph{giving expected total repair-stream length
+$L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) = N \cdot h(X) + o(N) +
+\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ as in Theorem 7.2, but
+with per-query random-access cost
+$O(\log L(R) + (K+k) \cdot \mathrm{cost}(M)) = \Theta(N^{1/c})$
+when $K = \Theta(N^{1/c})$ at the lower edge of the sub-block range,
+which is \emph{sub-linear} in $N$ but \emph{not} polylog.}
+
+\emph{Trade-off characterisation.} As the mixing exponent $c$
+decreases from $\infty$ (exp-mixing) toward $1^+$ (barely summable):
+RA cost grows as $K^* \sim N^{1/c}$:
+\begin{itemize}
+\item $c \to \infty$ (exp-mixing): $K^* \to W_N = O(\log N)$, RA cost
+polylog. Theorem 7.2 regime.
+\item $c = 2$ (quadratic mixing): $K^* = \Theta(\sqrt{N})$, RA cost
+$\Theta(\sqrt{N})$.
+\item $c = 3$: $K^* = \Theta(N^{1/3})$, RA cost $\Theta(N^{1/3})$.
+\item $c \to 1^+$ (barely summable): $K^* \to N^{1-\varepsilon}$,
+RA cost approaches whole-block (sequential coding).
+\end{itemize}
+\emph{Sources with $c \leq 1$ (non-summable conditional-MI excess):
+$\delta_\infty$ diverges, and Theorem 7.2's $m \cdot \delta_\infty = o(N)$
+analysis fails. Such sources require either weaker Shannon-rate
+attainability claims (e.g., asymptotic-rate only, not bounded excess)
+or different proof techniques.}
+
+\emph{\textbf{Proof.}} The polynomial-mixing hypothesis replaces the
+exp-mixing constants $(C, \rho)$ with $(C, c)$. The Lemma 5.1b proof
+becomes:
+$H_W(D_N) - H(D_N) \leq N \cdot C \cdot W^{-c}$ (replacing $C \cdot \rho^W$).
+Choosing $W_N := \lceil (C N)^{1/c} \rceil$ gives the bound
+$\leq C \cdot N / (CN) = 1$, matching Lemma 5.1b's $\leq 1$ conclusion.
+
+The Theorem 7.2 proof carries through verbatim with this $W_N$ choice,
+replacing $\log N$ scaling of $W_N$ by $N^{1/c}$. Total repair-stream
+length analysis is unchanged: $N \cdot h(X) + m \cdot \delta_\infty +
+O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ with
+$m \cdot \delta_\infty = (N/K) \cdot \delta_\infty = o(N)$ for
+$K = \omega(1)$ (any growing $K$). Crucially the constraint
+$K \geq W_N$ from Lemma 5.1d's hypothesis now gives
+$K \geq N^{1/c}$ rather than $K \geq \log N$, raising the lower edge
+of the K range. Per-query cost from Theorem 10.3 is
+$O(\log L(R) + (K+k) \cdot \mathrm{cost}(M))$, which at $K = N^{1/c}$
+is $\Theta(N^{1/c})$.
+\hfill$\blacksquare$
+
+\emph{Scope.} Corollary 7.2a closes the ``non-summable mixing''
+open-extension hook of Theorem 7.2 in the partial sense: it shows
+that polynomial mixing (sub-class of non-exponential, sub-class of
+non-summable) preserves Shannon-rate attainability at the cost of
+sub-linear (not polylog) RA queries. Non-summable mixing ($c \leq 1$)
+remains genuinely open --- the Crutchfield--Feldman excess diverges
+and the $m \cdot \delta_\infty$ accounting fails.
 
 \textbf{Theorem 7.3 (Information-theoretic tightness of Theorem 7.2:
 matching lower bound).} \emph{Under the hypotheses of Theorem 7.2
