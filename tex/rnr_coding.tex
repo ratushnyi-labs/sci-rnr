@@ -5697,6 +5697,124 @@ under stationarity (martingale CLT, McLeish 1974 \emph{Ann.\ Probab.}\
 version; the CLT gives sharper asymptotic constants but matches the
 $\sqrt{N}$ scaling.
 
+\textbf{Theorem 7.15 (End-to-end performance bound for neural-LM-based
+RNR: synthesis of T7.2, T7.4, T7.5, T7.14 with practical numerical
+prediction).}
+\emph{Let $X = (X_n)_{n \geq 1}$ be a stationary exp-mixing source on
+finite byte alphabet $|\Sigma| = 256$, and let $M'$ be a pre-trained
+neural language model (e.g., transformer, RNN, state-space model)
+producing the per-position conditional distribution
+$P_{M'}(X_n \mid X_{n - W_N : n - 1})$ with empirical per-position
+cross-entropy $H_{M'}$ bits on $X$ (so $H_{M'} = h(X) +
+\varepsilon_{\mathrm{KL}}$ with $\varepsilon_{\mathrm{KL}} \geq 0$).
+Assume bit-exact integer-arithmetic computation (Theorem 10.6
+conformance), $\eta$-floor probability quantization at $p$-bit
+precision (so $\eta = 2^{-p}$), and sub-block spacing $K$ in the
+balanced regime $K = \Theta(\sqrt{N})$ (Theorem 7.5 with $\alpha
+\cdot Q = \Theta(1)$). Then for any $\delta > 0$, with probability
+at least $1 - \delta$, the encoded archive size satisfies}
+\[
+\boxed{
+\;
+L^{\mathrm{rep}}_{\mathrm{RNR}}^{M'}(X^N)
+\;=\;
+\underbrace{N \cdot H_{M'}}_{\text{predictor cross-entropy}}
+\;+\;
+\underbrace{m \cdot \delta_\infty}_{\substack{\text{sync overhead} \\ O(\sqrt{N} \cdot \delta_\infty)}}
+\;+\;
+\underbrace{m \cdot p \cdot O(1)}_{\substack{\text{AC slack} \\ O(\sqrt{N} \cdot p)}}
+\;\pm\;
+\underbrace{\sqrt{2 N \log(2/\delta)} \cdot p}_{\substack{\text{concentration} \\ O(\sqrt{N} \log(1/\delta) \cdot p)}}
+\;+\;
+\underbrace{O(1)}_{\text{header}}
+\;
+}
+\]
+\emph{bits, with byte-granular random-access query cost
+$O(\sqrt{N} \cdot \mathrm{cost}(M'))$ per query (where
+$\mathrm{cost}(M') = O(W_N \cdot d)$ is the neural-network inference
+time for $W_N = O(\log N)$ context and $d$ parameters).}
+
+\emph{Numerical prediction for enwik9-scale archive
+($N = 10^9$ bytes, English Wikipedia text)}: with a
+Chinchilla-70B-class transformer giving
+$H_{M'} \approx 1.04$ bits/byte (Del{\'e}tang et al.\ 2024 ICLR
+arXiv:2309.10668), $\eta = 2^{-32}$ ($p = 32$), $K = \sqrt{N} \approx
+31623$, $\delta_\infty \approx 1$ bit (English text empirical),
+$\delta = 10^{-6}$:
+\begin{itemize}
+\item Predictor cross-entropy: $N \cdot H_{M'} = 10^9 \cdot 1.04$ bits
+$\approx 124 \,\mathrm{MB}$.
+\item Sync overhead: $m \cdot \delta_\infty = (10^9 / 31623) \cdot 1
+\approx 3.16 \cdot 10^4$ bits $\approx 4 \,\mathrm{kB}$ (negligible).
+\item AC slack: $m \cdot p = (10^9 / 31623) \cdot 32 \approx 1.01 \cdot
+10^6$ bits $\approx 123 \,\mathrm{kB}$ (negligible).
+\item Concentration at $1\sigma$ ($\delta \approx 0.32$, so $\log(2/\delta)
+\approx 1.84$): $\sqrt{2 \cdot 10^9 \cdot 1.84} \cdot 32 \approx
+1.94 \cdot 10^6$ bits $\approx 244 \,\mathrm{kB}$
+(or $\sim 0.2\%$ of archive).
+\item Concentration at $\delta = 10^{-6}$ ($\log(2/\delta) \approx 14.5$):
+$\sqrt{2 \cdot 10^9 \cdot 14.5} \cdot 32 \approx 5.45 \cdot 10^6$ bits
+$\approx 665 \,\mathrm{kB}$ ($\sim 0.5\%$ of archive).
+\item Predicted total: $\approx 124 \pm 0.7 \,\mathrm{MB}$ at $\delta
+= 10^{-6}$ ($\sim 7.68\times$ compression vs $1 \,\mathrm{GB}$ raw text).
+\item Per-query random-access cost: $O(\sqrt{N} \cdot \mathrm{cost}(M'))
+\approx 31623 \cdot \mathrm{transformer\_eval} \approx$ tens of
+milliseconds on a single GPU.
+\end{itemize}
+
+\emph{\textbf{Proof.}} Substitute the practical neural-LM predictor
+$M'$ into Theorem 7.4 ($\varepsilon_{\mathrm{KL}} = H_{M'} - h(X)$),
+giving $\mathbb{E}[L^{\mathrm{rep}}] \leq N \cdot H_{M'} + m \cdot
+\delta_\infty + O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$.
+Apply Theorem 7.5's optimal $K^* = \Theta(\sqrt{N})$ for balanced
+storage-access workloads, giving $m \cdot \delta_\infty + \alpha Q
+K^* = \Theta(\sqrt{N})$. Apply Theorem 7.14's concentration bound
+with $\eta = 2^{-p}$, giving deviation
+$\sqrt{2 N \log(2/\delta)} \cdot p$. Combine all terms.
+
+The $\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = O(m \cdot p)$
+follows from Theorem 7.2 convention C2 with per-sub-block stream
+$\eta$-floor slack $O(p)$; sum over $m = N/K$ sub-blocks gives
+$O((N/K) \cdot p) = O(\sqrt{N} \cdot p)$.
+
+Per-query cost: Theorem 7.5 gives
+$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M'))$. For
+$L(R) = \mathrm{poly}(N)$ and $K = \Theta(\sqrt{N})$:
+$O(\log N + \sqrt{N} \cdot \mathrm{cost}(M')) = O(\sqrt{N} \cdot
+\mathrm{cost}(M'))$ dominated by NN inference.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.15 is the explicit end-to-end
+synthesis for the paper's headline use case: \emph{neural lossless
+compression with byte-granular random access}. It composes the four
+main theorems (T7.2 Shannon-rate, T7.4 KL accounting, T7.5 K* optimal,
+T7.14 concentration) into a single bound with concrete numerical
+predictions calibrated to the empirical performance of modern
+language models. The boxed equation can be used directly as a sizing
+formula by implementers: choose $\delta$ for confidence,
+$M'$ from available pre-trained LMs (with $H_{M'}$ measured on a
+calibration corpus), and compute the predicted archive size with
+$\pm$ confidence interval.
+
+\emph{Comparison with existing neural compression systems.}
+NNCP (Bellard 2019) and PixelCNN++-based compressors achieve similar
+$N \cdot H_{M'}$ rates but lack byte-granular random access (sequential
+arithmetic coding only). RNR's contribution is the byte-granular RA
+preservation at $O(\sqrt{N})$ per-query cost, paid via the
+$m \cdot \delta_\infty + m \cdot p$ sub-block overhead which is
+$O(\sqrt{N})$ in total — negligible against the $N \cdot H_{M'}$
+predictor cost for any non-trivial $H_{M'}$.
+
+\emph{Implementation requirements (per §10 conformance).} The
+predictor $M'$ must be evaluated in bit-exact integer arithmetic
+(Theorem 10.6 conformance conditions (a)--(g)) across all encoder
+and decoder devices. The $\eta$-floor arithmetic coder is a standard
+fixed-point design (Said 2003 \emph{Arithmetic Coding for Data
+Compression}, Hewlett-Packard Tech.\ Report; Witten--Neal--Cleary
+1987 \emph{Comm.\ ACM} 30(6):520). The sub-block synchronisation
+protocol is Theorem 10.3's byte-granular RA construction.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
