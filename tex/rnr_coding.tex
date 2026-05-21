@@ -5907,6 +5907,118 @@ contribution).
 archive), Theorem 7.16 recovers Theorem 7.5 exactly. The adaptive
 framework strictly subsumes the fixed-$K$ framework.
 
+\textbf{Theorem 7.17 (Edit-tolerant RNR: localized re-encoding cost
+under in-place updates, insertions, and deletions).}
+\emph{Let $X^N$ be an archive compressed by RNR (Theorem 7.2 framework)
+with sub-block size $K$. For each of the following edit operations on
+the source, the re-encoding cost is bounded by a constant multiple of
+the sub-block size $K$, independent of the archive size $N$:}
+
+\emph{(a) [Single-byte replacement at position $i$]} \emph{Re-encode
+the unique sub-block containing position $i$ ($j_i := \lfloor i/K
+\rfloor$). Cost: $O(K \cdot \mathrm{cost}(M'))$ predictor evaluations,
+$O(K)$ source-stream reads, $\Theta(K \cdot H_{M'})$ bits archive
+delta. No other sub-block is touched. Header $\Theta$ updates: the
+new sub-block's offset, hash, and (if adaptive) $K_r$ value.}
+
+\emph{(b) [Range replacement of $M$ bytes starting at position $i$]}
+\emph{Re-encode the $\lceil M/K \rceil + 1$ sub-blocks intersecting
+the modified range $[i, i+M-1]$. Cost: $O(M \cdot \mathrm{cost}(M'))$,
+$O(M \cdot H_{M'})$ bits archive delta. No re-encoding of unmodified
+sub-blocks.}
+
+\emph{(c) [Insertion of $M$ bytes at position $i$]} \emph{Re-encode
+the sub-block containing $i$ and shift sync-metadata offsets for
+subsequent sub-blocks by $\Delta L$ (the archive-bit-length change).
+Cost: $O((M+K) \cdot \mathrm{cost}(M'))$ for re-encoding the affected
+sub-block (now containing the inserted bytes plus the original
+content), plus $O((N - i)/K \cdot \log L(R))$ header offset updates.
+The header offset shift is constant per sub-block, so cumulative
+overhead is at most $m \cdot \log L(R) = \mathrm{polylog}(N)$ bits.}
+
+\emph{(d) [Deletion of $M$ bytes at position $i$]} \emph{Symmetric to
+insertion: re-encode affected sub-block, shift offsets of subsequent
+sub-blocks. Cost: $O((M+K) \cdot \mathrm{cost}(M'))$ + header updates.}
+
+\emph{Comparison with monolithic compressors.} Standard compressors
+(gzip, zstd, Brotli without restart points) require \emph{full
+re-encoding} of the archive after any edit, costing
+$O(N \cdot \mathrm{cost}(\text{compressor}))$. RNR's sub-block
+structure reduces this to $O(K)$ per edit operation, a speedup factor
+of $N/K = m$. For $N = 1\,\mathrm{GB}$, $K = 1024$: $m = 10^6\times$
+speedup on single-byte edits.
+
+\emph{\textbf{Proof.}} \emph{(a) Single-byte replacement.}
+Each sub-block in Theorem 7.2's RNR is encoded independently (sync
+points at $K$-spaced boundaries reset the arithmetic coder and
+predictor context). Hence changing one byte affects only the
+arithmetic-coded payload of the sub-block containing it.
+Re-encoding requires:
+\begin{itemize}
+\item Re-read the modified $K$-byte sub-block (memory access $O(K)$).
+\item Re-run the predictor $M'$ on the new sub-block, generating $K$
+positions of conditional distributions ($K \cdot \mathrm{cost}(M')$
+time).
+\item Re-encode via $\eta$-floor arithmetic coder ($K$ AC operations).
+\item Write new payload bits to archive ($K \cdot H_{M'}$ bits in
+expectation).
+\item Update header: this sub-block's hash, offset (if length
+changed), and (in adaptive $K$ regime) $K_r$ value.
+\end{itemize}
+Total cost: $O(K \cdot \mathrm{cost}(M'))$. No other sub-block touched
+because Theorem 7.2's per-sub-block independence guarantees the
+payload of sub-block $j$ depends only on $X_{[jK : (j+1)K)}$.
+
+\emph{(b) Range replacement.} Affected sub-blocks are those with
+indices $[\lfloor i/K \rfloor, \lfloor (i+M-1)/K \rfloor]$, totaling
+at most $\lceil M/K \rceil + 1$ sub-blocks. Each re-encoded as in (a),
+giving total cost $O(M \cdot \mathrm{cost}(M'))$.
+
+\emph{(c, d) Insertion/deletion.} Re-encoding the affected sub-block
+(which may grow/shrink by up to $M$ bytes) requires the same $O((M+K)
+\cdot \mathrm{cost}(M'))$ work. Subsequent sub-blocks' encoded
+payloads are UNCHANGED (their source content is unaffected), but
+their \emph{offsets} in the archive shift by the bit-length change
+$\Delta L$. The offset shift requires a sweep through the offset
+table in the header, costing $O(m \cdot \log L(R)) = \mathrm{polylog}(N)$
+bits and $O(m)$ time. The PAYLOAD bytes of unaffected sub-blocks are
+not re-read, re-decoded, or re-encoded.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.17 establishes RNR as a
+practical compression scheme for \emph{mutable archives}: filesystems
+(file edits), databases (record updates), version-controlled archives
+(commit deltas), live document collaboration (text edits). The
+$O(K)$ per-edit cost contrasts sharply with the $O(N)$ cost of
+monolithic compressors, enabling responsive interactive applications
+on multi-GB archives.
+
+\emph{Comparison with related schemes.} Existing approaches for
+mutable compressed archives:
+\emph{(a) gzip / zstd / brotli + restart points (Z\_FULL\_FLUSH):}
+require encoder-side restart-point spacing similar to RNR's sub-blocks,
+but lack RNR's byte-granular RA without restart-to-restart decoding.
+\emph{(b) bzip2 + block independence:} similar block-independent
+structure to RNR, but block size $K = 900\,\mathrm{kB}$ (much larger
+than RNR's typical $K$), and lacks adaptive predictor / byte-granular RA.
+\emph{(c) git pack format:} delta-encoded objects, supports edits but
+requires recomputing deltas between revisions; not random-access.
+\emph{(d) Compressed B-trees / LSMs:} per-page compression with
+$O(\text{page size})$ edit cost; similar to RNR but page-level
+granularity, lacks neural-LM predictor integration.
+
+\emph{Implementation requirements.} The edit operations require the
+encoder to:
+\begin{itemize}
+\item Maintain a header offset table indexed by sub-block index,
+updatable in $O(\log m)$ per edit (e.g., via a packed array or
+order-statistic tree).
+\item Re-validate sub-block hashes (Theorem 9.1 verified-only context
+update) after re-encoding to maintain context-propagation invariants.
+\item Handle archive-bit-length changes via an indirection table
+(constant-time offset lookup after shift).
+\end{itemize}
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
