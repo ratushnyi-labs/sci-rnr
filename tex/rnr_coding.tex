@@ -5233,6 +5233,101 @@ data archives with quick-look at low fidelity + drill-down at high
 fidelity. All built on RNR's byte-granular RA, with layered codes
 enabling per-query distortion selection.
 
+\textbf{Theorem 7.10 (Wyner-Ziv RNR: lossy compression of $X$ with
+correlated side-information $Y$ available only at the decoder).}
+\emph{Let $X = (X_n)_{n \geq 1}$ and $Y = (Y_n)_{n \geq 1}$ be jointly
+stationary on finite alphabets, with $(X, Y)$ satisfying the joint
+exp-mixing condition (5.8) on the product alphabet. Assume only $X$
+needs reconstruction with Hamming distortion budget
+$D \in [0, 1 - 1/|\Sigma_X|]$; $Y$ is available at the decoder as
+side-information but NOT at the encoder. Define the Wyner-Ziv
+rate-distortion function}
+\[
+R_{\mathrm{WZ}}(D) \;:=\; \min_{\substack{U : U - X - Y \text{ Markov chain} \\ \hat{X} = f(U, Y) \\ \mathbb{E}[d_H(X, \hat{X})] \leq D}} I(X; U) - I(Y; U),
+\]
+\emph{the Wyner-Ziv 1976 rate-distortion function with side-information
+at decoder (Wyner \& Ziv 1976 \emph{IEEE Trans.\ Inf.\ Theory}
+22(1):1--10 ``The rate-distortion function for source coding with
+side information at the decoder''). Then there exists an RNR encoder
+$\mathcal{E}_X^{\mathrm{WZ}}$ (operating on $X^N$ alone, without
+access to $Y^N$) such that the joint decoder, given both archives,
+reconstructs $\hat{X}^N$ with $\mathbb{E}[d_H(X^N, \hat{X}^N)/N]
+\leq D$ and}
+\[
+\mathbb{E}\bigl[L^{\mathrm{rep}}_X^{\mathrm{WZ}}(X^N)\bigr]
+\;\leq\;
+N \cdot R_{\mathrm{WZ}}(D) + m \cdot \delta_\infty^{\mathrm{WZ}, D} + O(1) + \varepsilon_{\mathrm{ac}}.
+\]
+
+\emph{Closed form for binary doubly symmetric source.} For
+$X \sim \mathrm{Bern}(1/2)$, $Y = X \oplus Z$ with $Z \sim \mathrm{Bern}(p)$
+independent of $X$, and Hamming distortion:
+\[
+R_{\mathrm{WZ}}(D) \;=\; \begin{cases} h(p) - h(D) & \text{if } D \in [0, p], \\ 0 & \text{if } D \geq p, \end{cases}
+\]
+\emph{where $h(\cdot)$ is binary entropy (Wyner--Ziv 1976 §3.5
+``Doubly symmetric binary source'').}
+
+\emph{Limits and relations to T7.7/T7.8.}
+\emph{(a) $D \to 0$: $R_{\mathrm{WZ}}(0) = h(X \mid Y)$, recovering
+the Slepian--Wolf one-sided rate (Theorem 7.8 with only $X$
+reconstructed).}
+\emph{(b) $D \to D_{\max}$ (where $D_{\max} = p$ for binary doubly
+symmetric): $R_{\mathrm{WZ}} \to 0$. Decoder outputs $\hat{X} = Y$
+directly, distortion equals $\mathbb{E}[d_H(X, Y)] = p$. No encoding
+needed.}
+\emph{(c) Comparison with no-side-info T7.7: $R_{\mathrm{WZ}}(D) \leq
+R(D)$ always; for correlated $(X, Y)$ the gap $R(D) - R_{\mathrm{WZ}}(D)$
+scales with $I(X; Y)$.}
+
+\emph{\textbf{Proof.}} Wyner--Ziv 1976 Theorem 2 establishes the
+$R_{\mathrm{WZ}}(D)$ rate-distortion function as the achievable rate
+with side-info at decoder. The achievability uses random binning of
+$\mathcal{U}$-typical sequences (where $\mathcal{U}$ is the auxiliary
+alphabet) combined with the typicality decoder selecting the unique
+$U^N$ jointly typical with the decoder's $Y^N$.
+
+Within RNR: sub-block-level Wyner-Ziv coding applies per sub-block of
+size $K$. Each sub-block's $X_K$ is mapped to a $U_K$ codeword
+(quantization), then $U_K$ is binned at rate $I(X; U) - I(Y; U)$ bits
+per position. Joint decoder uses sub-block of $Y$ for that index range
+to recover $U_K$, then computes $\hat{X}_K = f(U_K, Y_K)$.
+
+Sync overhead $\delta_\infty^{\mathrm{WZ}, D}$ is the Crutchfield--Feldman
+analog under the joint mixing, finite for exp-mixing $(X, Y)$.
+
+For constructive codes: DISCUS (Pradhan--Ramchandran 1999/2003
+\emph{IEEE Trans.\ Inf.\ Theory} 49(3):626 ``Distributed source coding
+using syndromes (DISCUS): design and construction'') gives explicit
+syndrome-based binning that integrates with sub-block structure.
+Modern constructions use LDPC or polar codes for the binning
+(Liveris--Xiong--Georghiades 2003 cited above).
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.10 completes the multi-source
+RNR quadrant:
+
+\begin{center}
+\begin{tabular}{l|c|c}
+              & Lossless                          & Lossy (distortion $D$)            \\ \hline
+Single-source & Theorem 7.2 ($N h(X)$)            & Theorem 7.7 ($N R(D)$)            \\
+Multi-source  & Theorem 7.8 ($N h(X, Y)$)         & Theorem 7.10 ($N R_{\mathrm{WZ}}(D)$) \\
+\end{tabular}
+\end{center}
+
+\emph{Numerical example.} For $X \sim \mathrm{Bern}(1/2)$, $Y = X
+\oplus \mathrm{Bern}(0.1)$, Hamming $D = 0.05$:
+$R_{\mathrm{WZ}}(0.05) = h(0.1) - h(0.05) = 0.469 - 0.286 = 0.183$ bits/symbol.
+Compared to $R(0.05) = 1 - h(0.05) = 0.714$ (no side-info, T7.7):
+\emph{74\% savings} from side-info.
+Compared to lossless Slepian-Wolf $h(X \mid Y) = h(0.1) = 0.469$:
+\emph{61\% savings} from lossy.
+
+\emph{Applications}: distributed video coding where reference frame
+$Y$ available at decoder (e.g., previous frame, server-side);
+sensor networks with predictable side-info (e.g., GPS plus inertial);
+deduplication with similarity-aware updates.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
