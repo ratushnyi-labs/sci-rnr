@@ -5130,6 +5130,109 @@ Theory} 21(2):226) with rate region $\sum_{i \in S} R_i \geq H(X_S
 \mid X_{\bar{S}})$ for every $S \subseteq [k]$. RNR with $k$ correlated
 archives achieves the corresponding $k$-source sum-rate $H(X_{[k]})$.
 
+\textbf{Theorem 7.9 (Successive-refinement RNR: anytime variable-quality
+access via layered rate-distortion codes).}
+\emph{Let $X = (X_n)_{n \geq 1}$ satisfy the hypotheses of Theorem 7.7
+(stationary exp-mixing on finite alphabet $\Sigma$, sub-block range
+$W_N \leq K = \mathrm{polylog}(N)$, conventions C1--C3), under Hamming
+distortion. Suppose $X$ satisfies the \emph{Equitz--Cover
+successive-refinement condition} (Equitz \& Cover 1991
+\emph{IEEE Trans.\ Inf.\ Theory} 37(2):269--275
+``Successive refinement of information''): for every nested distortion
+sequence $D_0 > D_1 > \cdots > D_{k-1} \geq 0$, there exists a Markov
+chain $X \rightarrow \hat{X}_{k-1} \rightarrow \hat{X}_{k-2} \rightarrow
+\cdots \rightarrow \hat{X}_0$ where $\hat{X}_i$ achieves the rate-distortion
+optimum $R(D_i)$ at distortion level $D_i$, and each $\hat{X}_{i-1}$
+is a (possibly random) function of $\hat{X}_i$. Then there exist
+multi-layer RNR codes with $k$ refinement layers $c_0, c_1, \ldots,
+c_{k-1}$ such that}
+\begin{enumerate}
+\item \emph{(Layer rates) Reading layers $0$ through $i$ yields
+reconstruction $\hat{X}^N_i$ with expected per-position distortion
+$\mathbb{E}[d_H(X^N, \hat{X}^N_i)/N] \leq D_i$ and cumulative encoded
+length}
+\[
+\sum_{j = 0}^{i} L^{\mathrm{rep}}_{\mathrm{layer}_j}(X^N)
+\;\leq\;
+N \cdot R(D_i) + (i+1) m \cdot \delta_\infty^{D_i} + O(1) + (i+1) \varepsilon_{\mathrm{ac}}.
+\]
+\item \emph{(No layering penalty) Total archive length (all $k$ layers
+concatenated) equals the single-shot $R(D_{k-1})$-rate code length up
+to lower-order terms:}
+\[
+\sum_{j = 0}^{k-1} L^{\mathrm{rep}}_{\mathrm{layer}_j}(X^N)
+\;\leq\;
+N \cdot R(D_{k-1}) + k m \cdot \delta_\infty^{D_{k-1}} + O(1) + k \varepsilon_{\mathrm{ac}}.
+\]
+\item \emph{(Anytime byte-granular RA) Decoder queries can specify
+desired distortion $D_i \in \{D_0, \ldots, D_{k-1}\}$ per byte and read
+only the layer slices $0..i$ for the sub-block containing the byte.
+Per-query cost: $O\bigl((i+1) (\log L(R) + (K+k) \mathrm{cost}(M))\bigr)$,
+polylog in $N$ for $i$ bounded and $K, k, \mathrm{cost}(M),
+\log L(R)$ polylog.}
+\end{enumerate}
+
+\emph{\textbf{Proof.}} The Equitz--Cover 1991 successive-refinement
+theorem establishes that under the stated Markov-chain condition,
+there exist nested codebooks $\mathcal{C}_0 \subset \mathcal{C}_1
+\subset \cdots \subset \mathcal{C}_{k-1}$ achieving the
+rate-distortion optimum at each level: $|\mathcal{C}_i| = 2^{N R(D_i)}$.
+Each codeword in $\mathcal{C}_{i+1}$ refines a unique codeword in
+$\mathcal{C}_i$ (i.e., the refinement layer encodes the residual
+between $\hat{X}_i$ and $\hat{X}_{i+1}$ in $R(D_{i+1}) - R(D_i)$ bits).
+This is the ``embedded'' or ``nested'' codebook structure
+(Rimoldi 1994 \emph{IEEE Trans.\ Inf.\ Theory} 40(1):253--259
+``Successive refinement of information: characterization of the
+achievable rates'' for the converse and tight characterisation).
+
+Within the RNR framework: each sub-block of size $K$ uses the layered
+codebook structure. Layer $i$'s codeword for sub-block $j$ encodes
+the residual at rate $R(D_i) - R(D_{i-1})$ bits per position (with
+$R(D_{-1}) := 0$ for layer 0). The sync-overhead $\delta_\infty^{D_i}$
+at each sub-block is the rate-distortion analog of T7.7's
+sync overhead. Summing over $m = N/K$ sub-blocks:
+$L^{\mathrm{rep}}_{\mathrm{layer}_i} = N \cdot (R(D_i) - R(D_{i-1})) +
+m \cdot \delta_\infty^{D_i} + O(1)$.
+
+Cumulative layers $0..i$:
+$\sum_{j=0}^{i} L^{\mathrm{rep}}_{\mathrm{layer}_j} = N \cdot R(D_i) +
+\sum_{j=0}^{i} m \cdot \delta_\infty^{D_j} + O(1) \leq N \cdot R(D_i) +
+(i+1) m \cdot \delta_\infty^{D_i} + O(1)$ (since
+$\delta_\infty^{D_j} \leq \delta_\infty^{D_0}$ for $D_j \geq D_i$ when
+$j \leq i$ --- coarser distortion has smaller excess).
+
+Per-query: layers $0..i$ each contribute $O(\log L(R) + (K+k)
+\mathrm{cost}(M))$ to the byte-decoding cost.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.9 enables \emph{anytime}
+variable-quality archives: a single archive stores multiple distortion
+levels, and the decoder chooses the level per byte query without
+re-encoding. Three concrete consequences:
+
+\emph{(a) Examples of refinable sources}: Binary Bernoulli source
+under Hamming distortion is successively refinable (Equitz--Cover 1991
+Theorem 1); Gaussian source under squared-error is also refinable
+(Equitz--Cover 1991 Theorem 2). Memoryless sources with discrete
+alphabets and Hamming distortion satisfy the condition under mild
+regularity.
+
+\emph{(b) Non-refinable sources}: For sources \emph{not} satisfying
+the Equitz--Cover condition, layered RNR incurs an additional rate
+penalty per layer: cumulative layer rates exceed $R(D_i)$ by a
+source-dependent gap (Westerlund--Wyner 1992
+\emph{IEEE Trans.\ Inf.\ Theory} 38(3):938 ``Successive refinement
+with side information''; Rimoldi 1994 cited above for the
+characterisation of refinable vs not). The penalty is bounded but
+non-zero.
+
+\emph{(c) Practical applications}: video streaming with adaptive
+quality (mobile networks: low-quality on weak signal, high-quality
+on strong); progressive image rendering (JPEG-2000-style); scientific
+data archives with quick-look at low fidelity + drill-down at high
+fidelity. All built on RNR's byte-granular RA, with layered codes
+enabling per-query distortion selection.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
