@@ -5328,6 +5328,71 @@ $Y$ available at decoder (e.g., previous frame, server-side);
 sensor networks with predictable side-info (e.g., GPS plus inertial);
 deduplication with similarity-aware updates.
 
+\textbf{Corollary 7.11 (Lossy RNR plus error-correcting code equals
+lossless RNR: Shannon source--channel separation in the RNR framework).}
+\emph{For any stationary exp-mixing source $X$ under Hamming
+distortion budget $D \in [0, 1 - 1/|\Sigma|]$, the rate-distortion-plus-
+error-correction decomposition}
+\[
+L^{\mathrm{rep}}_{\mathrm{lossy}}(X^N; D) + L^{\mathrm{ECC}}(N, D)
+\;\geq\;
+N \cdot h(X) + 2m \cdot \delta_\infty + O(1),
+\]
+\emph{where $L^{\mathrm{rep}}_{\mathrm{lossy}}$ is the Theorem 7.7
+lossy-RNR repair stream and $L^{\mathrm{ECC}}(N, D) = N \cdot h(D) +
+O(\sqrt{N})$ is the Shannon-optimal binary-symmetric-channel ECC
+correcting $D$-fraction Hamming errors. For \emph{memoryless} $X$
+(e.g., $X \sim \mathrm{Bern}(p)$) the inequality is TIGHT:}
+\[
+L^{\mathrm{rep}}_{\mathrm{lossy}}(X^N; D) + L^{\mathrm{ECC}}(N, D)
+\;=\;
+N \cdot [R(D) + h(D)] + O(1)
+\;=\;
+N \cdot h(X) + O(1)
+\;=\;
+L^{\mathrm{rep}}_{\mathrm{lossless}}(X^N) + O(1)
+\]
+\emph{(Theorem 7.2 directly). For sources with memory, the inequality
+may be strict: $R(D) + h(D) > h(X)$ for some $D$, reflecting that
+Shannon's source--channel separation can be suboptimal under
+memory (Cover \& Thomas 2006 §11.7 ``Source--channel separation
+theorem'' and counterexample).}
+
+\emph{\textbf{Proof.}} The lossy-RNR rate is $N \cdot R(D) + m
+\delta_\infty^D + O(1)$ (Theorem 7.7). The ECC for $D$-fraction
+Hamming errors on a length-$N$ string requires at least $N \cdot h(D)$
+bits asymptotically (Shannon's binary-symmetric channel-capacity
+theorem $C = 1 - h(D)$ implies the ECC overhead $1 - C = h(D)$ per
+bit; Cover \& Thomas 2006 §7.1). Summing:
+\[
+L^{\mathrm{lossy}} + L^{\mathrm{ECC}} \geq N \cdot R(D) + N \cdot h(D) + 2m \delta_\infty + O(1).
+\]
+For memoryless $X \sim \mathrm{Bern}(p)$ at Hamming distortion:
+$R(D) = h(p) - h(D)$ (Shannon 1959; Cover \& Thomas 2006 Theorem 10.3.1
+``Bernoulli rate-distortion''). Sum: $R(D) + h(D) = h(p) = h(X)$,
+matching $L^{\mathrm{lossless}}$ from Theorem 7.2.
+
+For memory sources, $R(D) + h(D) \geq h(X)$ by Shannon's separation
+theorem with equality conditional on memorylessness; strict inequality
+possible (e.g., for jointly Gaussian Markov sources where joint
+source--channel coding beats separation; Cover \& Thomas 2006
+Theorem 11.7.1 and Example 11.7.1).
+\hfill$\blacksquare$
+
+\emph{Practical implication.} Lossy RNR (Theorem 7.7) is genuinely
+useful only when:
+\emph{(a)} the application tolerates distortion $D > 0$ in the
+reconstruction (e.g., perceptual quality in video/audio), or
+\emph{(b)} the ECC infrastructure is unavailable or costlier than
+direct lossless coding.
+For applications requiring exact reconstruction, Theorem 7.2 (direct
+lossless RNR) is at least as efficient as Theorem 7.7 + ECC, and
+strictly better for memory sources where separation is suboptimal.
+This grounds the framework: \emph{lossless RNR is the asymptotic
+information-theoretic optimum for byte-granular random-access exact
+compression}, with lossy and side-info variants (Theorems 7.7--7.10)
+exploring controlled relaxations of the exactness constraint.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
