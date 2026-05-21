@@ -5041,6 +5041,95 @@ approximation. Hamming distortion is the canonical choice for finite
 alphabets; other distortion measures (e.g., $\ell_2$ for continuous
 embeddings) require separate analysis.
 
+\textbf{Theorem 7.8 (Slepian--Wolf distributed RNR: joint compression
+of correlated sources with byte-granular random access on each).}
+\emph{Let $X = (X_n)_{n \geq 1}$ and $Y = (Y_n)_{n \geq 1}$ be jointly
+stationary on finite alphabets $\Sigma_X, \Sigma_Y$, with per-position
+joint law $p_{XY}(x, y)$ and per-position mutual information $I :=
+I(X_1; Y_1) > 0$. Assume the joint process $(X, Y)$ satisfies the
+exp-mixing condition (5.8) applied to the product alphabet
+$\Sigma_X \times \Sigma_Y$. Then for any rate pair $(R_X, R_Y)$ in the
+Slepian--Wolf rate region}
+\[
+R_X \geq h(X \mid Y), \quad R_Y \geq h(Y \mid X), \quad
+R_X + R_Y \geq h(X, Y),
+\]
+\emph{there exist distributed RNR encoders $\mathcal{E}_X, \mathcal{E}_Y$
+(each operating on \emph{only} its own source) producing repair
+streams of expected lengths}
+\[
+\mathbb{E}\bigl[L^{\mathrm{rep}}_X(X^N)\bigr] \leq N \cdot R_X + m \cdot \delta_\infty^{X} + O(1) + \varepsilon_{\mathrm{ac}},
+\;\;
+\mathbb{E}\bigl[L^{\mathrm{rep}}_Y(Y^N)\bigr] \leq N \cdot R_Y + m \cdot \delta_\infty^{Y} + O(1) + \varepsilon_{\mathrm{ac}},
+\]
+\emph{such that a joint decoder, given both archives, losslessly
+reconstructs $(X^N, Y^N)$. The sum repair-stream length}
+\[
+\mathbb{E}[L^{\mathrm{rep}}_X + L^{\mathrm{rep}}_Y]
+\;\leq\; N \cdot h(X, Y) + 2m \cdot \delta_\infty^{\mathrm{joint}} + O(1) + 2 \varepsilon_{\mathrm{ac}}
+\]
+\emph{saves $N \cdot I = N \cdot I(X_1; Y_1)$ bits over independent
+RNR encoding of each source ($N \cdot h(X) + N \cdot h(Y) + \cdots$).
+Byte-granular random access is preserved on each archive via
+Theorem 10.3.}
+
+\emph{\textbf{Proof.}} The Slepian--Wolf random-coding theorem
+(Slepian \& Wolf 1973 \emph{IEEE Trans.\ Inf.\ Theory} 19(4):471--480
+``Noiseless coding of correlated information sources'') establishes
+that the stated rate region is achievable via random binning: each
+encoder partitions $\Sigma_X^N$ (resp.\ $\Sigma_Y^N$) into $2^{N R_X}$
+(resp.\ $2^{N R_Y}$) bins uniformly at random and sends the
+bin-index of the realised source. The joint decoder, given both
+bin-indices, finds the unique pair $(X^N, Y^N)$ jointly typical and
+consistent with both indices.
+
+Within the RNR framework: each encoder $\mathcal{E}_X, \mathcal{E}_Y$
+operates per sub-block of size $K$. Per-sub-block bin-index encoding
+plus the Theorem 7.2 per-sub-block sync overhead gives the stated
+$N \cdot R_X + m \cdot \delta_\infty^X$ expected length for $X$
+(analogous for $Y$). Joint decoder uses both bin-indices per
+corresponding pair of sub-blocks to recover $(X_j, Y_j)$ jointly.
+
+For \emph{constructive} achievement (deterministic codes instead of
+random binning), structured codes such as LDPC-Wyner-Ziv
+(Liveris--Xiong--Georghiades 2003 \emph{IEEE Comm.\ Letters}
+7(10):440) or polar-Wyner-Ziv (Korada--Urbanke 2010 \emph{IEEE Trans.\
+Inf.\ Theory} 56(4):1571) provide explicit binning rules with the
+required typicality decoding. These integrate cleanly with the
+RNR sub-block structure since each sub-block can use an independent
+LDPC/polar code.
+
+Sum-rate savings: independent RNR encoding gives $N \cdot h(X) + N
+\cdot h(Y)$ baseline. Slepian--Wolf achieves $N \cdot h(X, Y) =
+N \cdot [h(X) + h(Y) - I(X_1; Y_1)]$. Savings $= N \cdot I(X_1; Y_1)$
+bits, scaling linearly with archive size whenever $I > 0$.
+\hfill$\blacksquare$
+
+\emph{Scope and limitations.} Theorem 7.8 generalises RNR from
+single-source archives to multi-source archives where the encoders
+do \emph{not} need to communicate during encoding (distributed
+setting). Three remarks:
+
+\emph{(a) Achievability vs constructivity.} Slepian--Wolf 1973 is an
+existence result via random binning; explicit constructive codes
+(LDPC, polar) achieve the bound up to vanishing gap. For RNR
+implementation, structured codes are preferred.
+
+\emph{(b) Byte-granular RA per-source.} The decoder, given a query
+for byte $b$ in $X^N$, reads $X$'s sub-block containing $b$ AND the
+corresponding sub-block of $Y$ to recover $X$ jointly. Per-query
+cost: $O(\log L(R_X) + \log L(R_Y) + (K + k) \cdot \mathrm{cost}(M))$,
+polylog in $N$ if both archives are polylog-RA. Independent decoding
+(without $Y$) is INFEASIBLE in the Slepian--Wolf-optimal regime
+$R_X = h(X | Y) < h(X)$: $X$ alone has been compressed below its
+own entropy, requiring $Y$ for disambiguation.
+
+\emph{(c) Generalisation to $k$ sources.} Slepian--Wolf extends to
+$k$-source distributed coding (Cover 1975 \emph{IEEE Trans.\ Inf.\
+Theory} 21(2):226) with rate region $\sum_{i \in S} R_i \geq H(X_S
+\mid X_{\bar{S}})$ for every $S \subseteq [k]$. RNR with $k$ correlated
+archives achieves the corresponding $k$-source sum-rate $H(X_{[k]})$.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
