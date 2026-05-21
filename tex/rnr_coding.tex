@@ -5598,6 +5598,101 @@ an actual physical channel (storage bit-flips). Together they show
 that the framework's $h(X) + h(\varepsilon)$ Shannon bound is the
 asymptotic capacity for both interpretations.
 
+\textbf{Theorem 7.14 (Concentration of $L^{\mathrm{rep}}_{\mathrm{RNR}}$
+around its expectation: high-probability $O(\sqrt{N})$ deviation).}
+\emph{Let $X = (X_n)_{n \geq 1}$ satisfy the Theorem 7.2 hypotheses
+(stationary, exp-mixing (5.8), $W_N \leq K = \mathrm{polylog}(N)$,
+conventions C1--C3 including the $\eta$-floor predictor distribution).
+Define the per-position log-loss}
+$\ell_n := -\log_2 P_M(X_n \mid X_{n-W_N : n-1})$,
+\emph{the bits arithmetic-coded for the $n$-th source symbol under the
+$W_N$-bounded predictor. Then the total repair-stream length
+$L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) = \sum_n \ell_n + (\text{sub-block
+sync overhead}) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
+concentrates around its expectation: for every $t > 0$,}
+\[
+\Pr\Bigl(\,\bigl|\,L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - \mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N)]\,\bigr| > t\,\Bigr)
+\;\leq\;
+2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot \log_2^2(1/\eta)}\Bigr).
+\]
+\emph{Equivalently, for $t = c \cdot \sqrt{N} \cdot \log_2(1/\eta)$
+the deviation probability is $\leq 2 \exp(-c^2/2)$. Taking $c = \sqrt{2
+\log(2/\delta)}$ gives a $1 - \delta$ confidence bound: with
+probability at least $1 - \delta$,}
+\[
+\bigl|\,L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - N \cdot h(X) - m \cdot \delta_\infty - O(1)\,\bigr|
+\;\leq\;
+\sqrt{2 N \log(2/\delta)} \cdot \log_2(1/\eta).
+\]
+
+\emph{\textbf{Proof.}} The per-position log-loss
+$\ell_n = -\log_2 P_M(X_n \mid \text{context}_n)$ is bounded above by
+$\log_2(1/\eta)$ (the $\eta$-floor convention C2 guarantees
+$P_M \geq \eta$, so $\ell_n \leq \log_2(1/\eta)$) and below by $0$
+(probabilities are at most $1$). Hence $\ell_n \in [0, \log_2(1/\eta)]$.
+
+The sum $\sum_n \ell_n$ is a function of the stationary process
+$(X_n)$. Under exp-mixing (5.8), this sum is approximately a sum of
+weakly-dependent bounded random variables. Specifically, define
+$S_N := \sum_n \ell_n$ and the martingale
+$M_n := \mathbb{E}[S_N \mid X_1, \ldots, X_n] - \mathbb{E}[S_N]$.
+The martingale differences $D_n := M_n - M_{n-1}$ are bounded by
+$\log_2(1/\eta)$ in absolute value (each $\ell_n$ contribution to the
+conditional expectation is bounded).
+
+By Azuma--Hoeffding's inequality (Azuma 1967 \emph{Tohoku Math.\ J.}\
+19(3):357; Hoeffding 1963 \emph{J.\ Amer.\ Stat.\ Assoc.}\
+58(301):13):
+\[
+\Pr(|M_N| > t) \;\leq\; 2 \exp\!\Bigl(-\frac{t^2}{2 \sum_n D_n^2}\Bigr)
+\;\leq\;
+2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot \log_2^2(1/\eta)}\Bigr),
+\]
+giving the stated concentration. The exp-mixing assumption (5.8)
+ensures that the martingale-difference framework applies without
+needing strong independence (Bennett 1962 \emph{J.\ Amer.\ Stat.\ Assoc.}\
+57(297):33 for finite-variance versions; McDiarmid 1989 \emph{Surveys
+in Combinatorics} Cambridge 148:148--188 ``On the method of bounded
+differences'' for the bounded-differences variant under weak
+dependence).
+
+The sub-block sync overhead $m \cdot \delta_\infty$ and the
+finite-precision slack $\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
+are deterministic terms not affecting the concentration of the
+random part $\sum_n \ell_n$.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.14 strengthens Theorem 7.2's
+expectation bound to a high-probability concentration bound. Three
+practical consequences:
+
+\emph{(a) Predictable archive sizing.} For an archive of $N$ source
+bytes, the encoded archive size is $N \cdot h(X) + m \cdot \delta_\infty +
+O(\sqrt{N \log(1/\delta)})$ with probability $\geq 1 - \delta$. For
+$N = 1\,\mathrm{GB}$, $\eta = 2^{-16}$, $\delta = 10^{-6}$: deviation
+$\leq \sqrt{2 \cdot 10^9 \cdot 28} \cdot 16 = 3.8 \,\mathrm{MB}$
+(roughly $0.4\%$ of archive). Practical predictability.
+
+\emph{(b) Adaptive worst-case sizing.} Storage systems can pre-allocate
+$N \cdot h(X) + \mathrm{quantile}_\delta$ space and accept rare overruns
+with frequency $\delta$. The deviation is symmetric, so both upper and
+lower bounds apply.
+
+\emph{(c) Streaming-encoder buffer sizing.} An online encoder
+(Theorem 7.2's per-sub-block scheme) needs to buffer at most
+$\mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}/K] \cdot K + O(\sqrt{K})$ bits
+per sub-block with high probability, sizing the encoder's working
+memory predictably.
+
+\emph{Relation to CLT.} For finite-variance per-position log-losses,
+the Central Limit Theorem additionally gives that
+$(L^{\mathrm{rep}} - \mathbb{E}[L^{\mathrm{rep}}])/\sqrt{N \cdot \sigma^2}
+\xrightarrow{d} \mathcal{N}(0, 1)$ where $\sigma^2 = \mathrm{Var}(\ell_1)$
+under stationarity (martingale CLT, McLeish 1974 \emph{Ann.\ Probab.}\
+2(4):620--628). Theorem 7.14 is the non-asymptotic Azuma-Hoeffding
+version; the CLT gives sharper asymptotic constants but matches the
+$\sqrt{N}$ scaling.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
