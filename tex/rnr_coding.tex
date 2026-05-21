@@ -4870,6 +4870,94 @@ queries to a roughly $N$-byte archive. The $\sqrt{N}$ regime
 $K^* = \Theta(\sqrt{N})$ is the balanced setting most appropriate for
 typical archive use.
 
+\textbf{Theorem 7.6 (Universal online RNR without pre-trained predictor,
+for source classes of polylog parametric dimension).}
+\emph{Let $X$ satisfy the hypotheses of Theorem 7.2 (stationary
+exp-mixing on finite alphabet, $W_N \leq K = \mathrm{polylog}(N)$), and
+suppose $X$ is realisable by some predictor in a model class
+$\mathcal{M}_d$ of parametric dimension $d = d(N) = \mathrm{polylog}(N)$
+(e.g., order-$W'$ Markov for some $W' = O(\log \log N)$ giving $d =
+|\Sigma|^{W'} = \mathrm{polylog}(N)$, or a low-rank HMM with bounded
+hidden-state count, or any compactly-parameterized sequence model).
+Then RNR with an \emph{online universal predictor} over $\mathcal{M}_d$
+--- e.g., the Bayesian-mixture / Krichevsky--Trofimov estimator
+(Krichevsky \& Trofimov 1981 \emph{IEEE Trans.\ Inf.\ Theory}
+27(2):199--207 ``The performance of universal encoding''; Rissanen 1996
+\emph{IEEE Trans.\ Inf.\ Theory} 42(1):40--47 ``Fisher information
+and stochastic complexity'' for MDL-style universal-mixture regret;
+Cover \& Thomas 2006 Ch.\ 13 ``Universal Source Coding'') ---
+incurs regret at most}
+\[
+\mathrm{Regret}_{\mathcal{M}_d}(N) \;\leq\; d \cdot \log(N) + O(1),
+\]
+\emph{giving expected per-position cross-entropy excess
+$\varepsilon_{\mathrm{KL}}(N) \leq \mathrm{Regret}/N =
+O(d \log(N) / N)$. Combined with Theorem 7.4's KL accounting:}
+\[
+\mathbb{E}\bigl[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N;\,M'_{\text{universal}})\bigr]
+\;\leq\;
+N \cdot h(X) + O\bigl(d(N) \cdot \log N\bigr) + m \cdot \delta_\infty + O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}.
+\]
+\emph{For $d(N) = \mathrm{polylog}(N)$: $d \cdot \log N = \mathrm{polylog}(N) =
+o(N)$, so $L^{\mathrm{rep}}_{\mathrm{RNR}} = N \cdot h(X) + o(N)$,
+attaining Shannon rate \emph{without any pre-trained predictor}
+(no $L(M)$ header beyond the $O(1)$ mixture-encoder code).}
+
+\emph{\textbf{Proof.}} The Krichevsky--Trofimov regret bound for
+$d$-parameter exponential-family / order-$k$-Markov estimators is
+classical (Krichevsky--Trofimov 1981 for Markov; Rissanen 1996
+\emph{IEEE Trans.\ Inf.\ Theory} 42(1):40--47 ``Fisher information
+and stochastic complexity'' for general MDL): with the Jeffreys'
+prior (or a comparable smooth prior on $\mathcal{M}_d$), the online
+Bayesian mixture predictor has expected cumulative log-loss within
+$(d/2) \cdot \log(N) + O(1)$ of the offline optimum in $\mathcal{M}_d$.
+For source $X \in \mathcal{M}_d$, the offline optimum equals
+$N \cdot h(X)$ (the source's entropy rate, since the true predictor
+is in the model class). Hence the per-position cross-entropy excess
+$\varepsilon_{\mathrm{KL}} \leq d \cdot \log(N) / N$ (up to constants).
+
+The universal-predictor estimator is itself encoded in $O(1)$ bits
+(the mixture-estimator's algorithm description), so its $L(M)$
+contribution is $O(1)$ amortised; this distinguishes it from a
+pre-trained large-parameter predictor (which would have $L(M)
+\sim d$ unless amortised over an exponential number of archives).
+
+Substituting $\varepsilon_{\mathrm{KL}} = O(d \log N / N)$ into
+Theorem 7.4:
+$L^{\mathrm{rep}}_{\mathrm{RNR}} \leq N \cdot h(X) +
+N \cdot \varepsilon_{\mathrm{KL}} + m \cdot \delta_\infty + O(1) +
+\varepsilon_{\mathrm{ac}}^{\mathrm{total}}
+\leq N \cdot h(X) + O(d \log N) + m \cdot \delta_\infty + O(1) +
+\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$.
+
+For $d = \mathrm{polylog}(N)$: $d \log N = \mathrm{polylog}(N)$ is
+$o(N)$. With Theorem 7.2's analysis $m \cdot \delta_\infty = o(N)$
+and Theorem 7.2's $\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = o(N)$:
+the bound becomes $L^{\mathrm{rep}}_{\mathrm{RNR}} = N \cdot h(X) +
+o(N)$. Shannon rate attained.
+\hfill$\blacksquare$
+
+\emph{Scope and limitations.} Theorem 7.6 closes the
+``universal online RNR'' question for source classes of polylog
+parametric dimension. The hypothesis $X \in \mathcal{M}_d$ with
+$d = \mathrm{polylog}(N)$ is the key restriction: it requires the
+source to be \emph{approximable} by a polylog-parameter model
+(e.g., low-order Markov, sparse HMM, mixture of $\mathrm{polylog}$
+simple components). Generic exp-mixing sources with no compact
+parametric representation (e.g., requiring $|\Sigma|^{O(\log N)} =
+\mathrm{poly}(N)$ Markov parameters) fall outside this scope --- for
+such sources the universal-predictor regret is $\Omega(\log N)$
+per position, dominating the Shannon term and preventing
+rate-optimality without pre-training.
+
+The result complements Theorem 7.4 (pre-trained predictor with
+empirical $\varepsilon_{\mathrm{KL}}$) by giving an explicit regret
+bound for the online-learning regime: pre-trained models pay $L(M)$
+amortised but achieve potentially small $\varepsilon_{\mathrm{KL}}$;
+online universal models pay no $L(M)$ but incur regret-based
+$\varepsilon_{\mathrm{KL}} = O(d \log N / N)$. The trade-off is
+between predictor storage and adaptation cost.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
