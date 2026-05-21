@@ -5463,11 +5463,14 @@ $\delta_\infty^f$ is the analog of T7.8's joint sync overhead,
 finite under exp-mixing (5.8). Sum over $m = N/K$ sub-blocks gives
 the stated bound.
 
-For \emph{constructive} achievement: Doshi--M{\'e}dard 2007
-\emph{IEEE Trans.\ Inf.\ Theory} 53(11):4093 ``Source coding with
-distortion through graph coloring'' provides explicit graph-colouring-
-based encoders; modern coding constructions (LDPC, polar) integrate
-with sub-block structure.
+For \emph{constructive} achievement: Doshi, Shah, M{\'e}dard \&
+Effros 2010 \emph{IEEE Trans.\ Inf.\ Theory} 56(8):3901--3917
+``Functional compression through graph coloring'' (extended journal
+version of the 2007 ISIT proceedings; Doshi, Shah \& M{\'e}dard, Proc.\
+IEEE ISIT 2007, pp.\ 1501--1505 ``Source coding with distortion
+through graph coloring'') provides explicit graph-colouring-based
+encoders; modern coding constructions (LDPC, polar) integrate with
+sub-block structure.
 \hfill$\blacksquare$
 
 \emph{Scope and significance.} Theorem 7.12 extends the multi-source
@@ -5495,8 +5498,8 @@ computes $f(X, Y)$ aggregates without seeing $X$.
 information-theoretic optimisation (minimisation over auxiliary $W$).
 Closed-form evaluation is possible for specific $f$ structures
 (parity, threshold functions, structured graph automorphisms);
-generic $f$ requires numerical optimisation. Doshi--M{\'e}dard 2007
-gives polynomial-time achievable schemes within $O(\log |\Sigma_X|)$
+generic $f$ requires numerical optimisation. Doshi--Shah--M{\'e}dard--Effros
+2010 gives polynomial-time achievable schemes within $O(\log |\Sigma_X|)$
 of optimal.
 
 \textbf{Theorem 7.13 (Error-resilient RNR: joint source--channel
@@ -5579,7 +5582,8 @@ optimal expansion factor $1/(1 - h(\varepsilon))$. Three regimes:
 expansion ($1 + 10^{-15} \cdot \log 2$), essentially Theorem 7.2.
 
 \emph{(b) Magnetic tape / cold storage} ($\varepsilon \sim 10^{-6}$):
-expansion factor $\sim 1 + 10^{-5}$, $1.001\%$ overhead.
+$h(\varepsilon) \approx 2 \cdot 10^{-5}$, expansion factor
+$\sim 1 + 2 \cdot 10^{-5}$, $0.002\%$ overhead.
 
 \emph{(c) Quantum-decoherence-prone or radiation-hardened storage}
 ($\varepsilon \sim 10^{-2}$): expansion factor $\sim 1.09$ (9\%
