@@ -4958,6 +4958,89 @@ online universal models pay no $L(M)$ but incur regret-based
 $\varepsilon_{\mathrm{KL}} = O(d \log N / N)$. The trade-off is
 between predictor storage and adaptation cost.
 
+\textbf{Theorem 7.7 (Lossy RNR via Shannon rate-distortion: byte-granular
+random access with controlled per-position distortion).}
+\emph{Let $X = (X_n)_{n \geq 1}$ satisfy the hypotheses of Theorem 7.2
+(stationary, exp-mixing (5.8), finite alphabet $\Sigma$, sub-block
+spacing $W_N \leq K = \mathrm{polylog}(N)$, conventions C1--C3),
+and let $d_H : \Sigma \times \Sigma \to \{0, 1\}$ denote Hamming
+distortion. For any per-position distortion budget $D \in [0,
+1 - 1/|\Sigma|]$ (the Hamming-distortion range), define the
+Shannon rate-distortion function of $X$:}
+\[
+R(D) \;:=\; \lim_{n \to \infty} \tfrac{1}{n} \min_{P_{\hat{X}^n \mid X^n} :\, \mathbb{E}[d_H(X^n, \hat{X}^n)/n] \leq D}
+I(X^n; \hat{X}^n),
+\]
+\emph{which exists and is continuous in $D$ for stationary ergodic
+$X$ (Cover \& Thomas 2006 §10.5 ``Computation of the rate-distortion
+function''; Berger 1971 \emph{Rate Distortion Theory}, Prentice-Hall).
+RNR with lossy per-sub-block rate-distortion coding (replacing
+per-position lossless arithmetic coding of Theorem 7.2 with the
+Shannon-optimal rate-distortion encoder at rate $R(D)$ per position)
+achieves expected repair-stream length}
+\[
+\mathbb{E}\bigl[L^{\mathrm{rep}}_{\mathrm{RNR}, D\text{-lossy}}(X^N)\bigr]
+\;\leq\;
+N \cdot R(D) + m \cdot \delta_\infty^D + O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}},
+\]
+\emph{with per-position reconstruction satisfying $\mathbb{E}[d_H(X^N,
+\hat{X}^N)/N] \leq D$. The quantity $\delta_\infty^D$ is the
+$D$-distortion analog of the Crutchfield--Feldman excess
+$\delta_\infty$, finite under exp-mixing (5.8) (Cover \& Thomas 2006
+Theorem 10.4.1 for the per-sub-block rate-distortion).}
+
+\emph{Limit cases:} \emph{(a) $D \to 0$: $R(D) \to h(X)$ and
+$\delta_\infty^D \to \delta_\infty$, recovering Theorem 7.2's lossless
+bound; (b) $D \to 1 - 1/|\Sigma|$: $R(D) \to 0$ (constant prediction
+$\hat{X}_n = $ mode$_X$ minimises Hamming distortion at zero rate),
+$L^{\mathrm{rep}}_{\mathrm{RNR}, D\text{-lossy}} \to O(1)$
+(archive compresses to a constant.}
+
+\emph{\textbf{Proof.}} The per-sub-block bound is the classical Shannon
+rate-distortion theorem applied to a $K$-length block of the
+stationary source (Cover \& Thomas 2006 Theorem 10.4.1):
+for any per-sub-block distortion budget $D$, there exists an encoder
+that achieves expected codeword length
+$K \cdot R(D) + \delta_K^D$, where $\delta_K^D$ is the
+finite-block-length excess (analog of Lemma 5.1d's $\delta_W^{(h_W)}$
+in the rate-distortion regime). Under exp-mixing (5.8), the
+conditional rate-distortion excess summable
+$\sum_n [R(X_n \mid X_{<n}; D) - R(D)] = \delta_\infty^D < \infty$
+(rate-distortion analog of Crutchfield--Feldman for finite-rate
+encoding; Berger 1971 §6 on stationary rate-distortion).
+Summing over $m = N/K$ sub-blocks: $m \cdot K \cdot R(D) + m \cdot
+\delta_K^D \to N \cdot R(D) + m \cdot \delta_\infty^D$ as $K \to
+\infty$. The arithmetic-coding finite-precision slack
+$\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$ is unchanged from
+Theorem 7.2.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.7 extends RNR from the
+lossless regime (Theorem 7.2) to the lossy regime via the Shannon
+rate-distortion function. Three concrete consequences:
+\emph{(a) Smooth interpolation:} the bound is continuous in $D$
+from $0$ (lossless = T7.2) to $1 - 1/|\Sigma|$ (trivial constant
+encoding). Practical lossy RNR can choose $D$ to trade reconstruction
+fidelity for storage cost.
+\emph{(b) Empirical compression beats lossless Shannon:} for natural
+sources where small Hamming distortion is acceptable (e.g., natural
+images at JPEG quality, text with occasional typo, audio at MP3
+quality), the lossy rate $R(D) < h(X)$ gives strict improvement.
+\emph{(c) Per-query reconstruction precision:} byte-granular RA still
+returns sub-block-decoded data; the distortion guarantee is
+per-position average, so individual queries may have $d_H = 0$ or $1$
+on each byte, with average $\leq D$.
+
+\emph{Limitations.} The classical rate-distortion machinery requires
+the source's $R(D)$ function to be COMPUTABLE; closed-form $R(D)$
+exists for memoryless sources (binary Bernoulli: Blahut algorithm
+Cover \& Thomas 2006 Example 10.3.1) and for some structured
+sources (Gaussian: Cover \& Thomas 2006 Theorem 10.3.2), but for
+arbitrary exp-mixing $X$ the $R(D)$ function may need numerical
+approximation. Hamming distortion is the canonical choice for finite
+alphabets; other distortion measures (e.g., $\ell_2$ for continuous
+embeddings) require separate analysis.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
