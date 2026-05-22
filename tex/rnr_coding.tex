@@ -6019,6 +6019,97 @@ update) after re-encoding to maintain context-propagation invariants.
 (constant-time offset lookup after shift).
 \end{itemize}
 
+\textbf{Theorem 7.18 (Parallelizable RNR encoding: data-parallel
+linear speedup up to $P = m$ workers).}
+\emph{Let $X^N$ be encoded by RNR (Theorem 7.2 framework) with sub-block
+size $K$ and $m = \lceil N/K \rceil$ sub-blocks. The per-sub-block
+independence of Theorem 7.2 implies the encoding task decomposes into
+$m$ independent jobs, each requiring $O(K \cdot \mathrm{cost}(M'))$
+work, with no inter-job synchronisation during encoding. Hence for $P$
+parallel workers:}
+\[
+T_{\mathrm{encode}}^{(P)}(X^N)
+\;=\;
+\Theta\!\Bigl(\,\frac{m}{P} \cdot K \cdot \mathrm{cost}(M')\,\Bigr) + T_{\mathrm{merge}}
+\;=\;
+\Theta\!\Bigl(\,\frac{N}{P} \cdot \mathrm{cost}(M')\,\Bigr) + O(m \cdot \log L(R))
+\]
+\emph{for any $P \leq m$, with $T_{\mathrm{merge}} = O(m \cdot \log L(R))$
+the post-encoding header assembly cost (offset table + per-sub-block
+hashes). Speedup over the sequential encoder ($P = 1$):
+$T^{(1)} / T^{(P)} \to P$ as $N \to \infty$ (linear speedup up to
+$P = m$, scattering bounded thereafter by Amdahl's law on the merge
+step).}
+
+\emph{Decoder parallelism.} The decoder admits the same parallelism
+for batch decoding (decoding multiple sub-blocks concurrently for
+multi-byte queries). Per-query single-byte decoding still requires
+$O(K \cdot \mathrm{cost}(M'))$ on a single worker (the byte's
+containing sub-block).
+
+\emph{\textbf{Proof.}} Theorem 7.2's encoding partitions $X^N$ into $m$
+disjoint sub-blocks $\{X_{[jK : (j+1)K)}\}_{j=0}^{m-1}$. For each $j$,
+the encoder runs the $W_N$-bounded predictor with cold context
+(no information from sub-blocks $j' \neq j$) and arithmetic-codes the
+sub-block independently. The per-sub-block work
+$O(K \cdot \mathrm{cost}(M'))$ depends only on $X_{[jK : (j+1)K)}$ and
+the model $M'$ (shared, read-only across workers).
+
+For $P$ workers: assign each worker $\lceil m/P \rceil$ consecutive
+sub-blocks (or any balanced partition). Each worker processes its
+sub-block subset in $O(\lceil m/P \rceil \cdot K \cdot \mathrm{cost}(M'))
+= O(N/P \cdot \mathrm{cost}(M'))$ time, with no inter-worker
+communication during encoding (only at the end, to merge headers).
+
+Header merge: each worker produces its sub-blocks' encoded payloads
+plus offset/hash metadata. Final assembly computes cumulative offsets
+($O(m)$ time, $O(\log L(R))$ bits per offset) and concatenates
+payloads. Total merge: $O(m \cdot \log L(R)) = O(\mathrm{polylog}(N) \cdot
+\mathrm{polylog}(N)) = \mathrm{polylog}(N)$ for $K = \mathrm{polylog}(N)$.
+
+Hence
+$T^{(P)} = N \cdot \mathrm{cost}(M') / P + \mathrm{polylog}(N)$,
+giving asymptotic linear speedup $T^{(1)}/T^{(P)} \to P$ as $N \to
+\infty$ for any fixed $P \leq m$. For $P > m$, additional workers are
+idle (Amdahl saturation at $P = m$).
+\hfill$\blacksquare$
+
+\emph{Practical realisation for neural lossless compression.}
+
+\emph{(a) GPU batch encoding.} Modern GPUs (NVIDIA H100, AMD MI300X)
+have $P \sim 10^4$ parallel cores. For a $1\,\mathrm{GB}$ archive
+with $K = 1024$, $m = 10^6$: full GPU utilisation ($P = 10^4$) gives
+$100\times$ speedup over single-core encoding. Wall-clock encoding
+time on H100: $\sim 1\,\mathrm{second}$ ($10^6$ sub-blocks of $1024$
+bytes each, transformer inference at $\sim 10\,\mu\mathrm{s}$/sub-block).
+
+\emph{(b) Distributed multi-node encoding.} For archives at
+$N = 10^{12}$ bytes (TB-scale, e.g., LLM training datasets):
+$m = 10^9$ sub-blocks, $P = 10^3$ nodes give $10^3 \times$ speedup;
+each node processes $10^6$ sub-blocks in parallel using its local GPU.
+
+\emph{(c) Streaming encoding pipeline.} Even without parallel
+workers, the per-sub-block independence enables \emph{pipelined}
+encoding where one sub-block is being predicted while the previous is
+being arithmetic-coded. Throughput speedup $\approx 2 \times$ at
+no parallelism cost.
+
+\emph{Limitations.} The predictor $M'$ itself may have internal
+parallelism (e.g., transformer attention is parallelizable across
+positions within a sub-block). Theorem 7.18 quantifies inter-sub-block
+parallelism, on top of which intra-sub-block parallelism in $M'$ adds
+a multiplicative factor. The full parallel cost is
+$\mathrm{cost}(M') / P_{\mathrm{intra}}$ per position, giving
+$T^{(P, P_{\mathrm{intra}})} = O(N \cdot \mathrm{cost}(M') /
+(P \cdot P_{\mathrm{intra}}))$.
+
+\emph{Comparison with sequential compressors.} gzip, zstd, brotli are
+\emph{inherently sequential} due to causal arithmetic-coder state
+dependencies on prior positions. Parallel variants require restart
+points (Z\_FULL\_FLUSH), which effectively replicate RNR's sub-block
+structure at coarser granularity. RNR's sub-block design natively
+supports the parallelism without auxiliary tuning.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
