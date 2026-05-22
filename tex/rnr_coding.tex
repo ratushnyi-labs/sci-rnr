@@ -6368,11 +6368,11 @@ $\rho_C = \sum_{k=1}^C p_k / \sum_{k=1}^m p_k$, with two asymptotic
 regimes: \emph{(heavy-tailed)} $0 < \alpha < 1$ gives
 $\rho_C \approx (C/m)^{1-\alpha}$ (so $\rho_C \to 0$ as $m \to \infty$
 for fixed $C/m$ small); \emph{(light-tailed)} $\alpha > 1$ gives
-$\rho_C \to 1 - O(C^{1-\alpha} / \zeta(\alpha))$ saturating near $1$
-as $C \to \infty$ (the typical web-cache regime, $\alpha \in [0.7,
-1.1]$ in Breslau measurements; values near $\alpha = 1$ require
-the $\alpha = 1$-harmonic limit
-$\rho_C \approx \log C / \log m$).
+$\rho_C \to 1 - \dfrac{C^{1-\alpha}}{(\alpha-1)\,\zeta(\alpha)}$
+saturating near $1$ as $C \to \infty$ (using the
+Euler--Maclaurin tail $\sum_{k>C} k^{-\alpha} \sim C^{1-\alpha}/(\alpha-1)$);
+values near $\alpha = 1$ require the $\alpha = 1$-harmonic limit
+$\rho_C \approx \log C / \log m$.
 For Ferragut et al.\ 2017 \emph{Queueing Systems} 88:207, see their
 Theorem~3 for the general timer-based-cache hit-rate analysis under
 general arrival processes (which includes LRU as a limit).
@@ -6414,16 +6414,16 @@ throughput: limited by L1/L2 cache memory bandwidth (\textit{not}
 predictor inference cost).
 
 \emph{(b) Hot-key access patterns.} For Zipf-distributed access with
-$\alpha = 1.5$ (heavily skewed, lighter-than-Breslau-empirical) and
-$m = 10^6$, $C = 100$: $\rho_C \approx 1 - C^{1-\alpha}/\zeta(\alpha)
-\approx 1 - 100^{-0.5}/2.61 \approx 0.96$ (96\% hit rate). For the
-typical Breslau measurement range $\alpha \in [0.7, 0.85]$ (heavy-
-tailed web traces), $\rho_C \approx (C/m)^{1-\alpha}$: at $C=100, m=
-10^6, \alpha=0.8$ this gives $\rho_C \approx (10^{-4})^{0.2} \approx
-0.16$ (16\% hit rate, modest but still better than uniform $C/m
-= 10^{-4}$). Amortized cost reduced by factor $1/(1-\rho_C)$, e.g.\
-$\sim 25\times$ for $\alpha=1.5$ regime, $\sim 1.2\times$ for the
-$\alpha=0.8$ heavy-tailed web-trace regime.
+$\alpha = 1.5$ (heavily skewed) and $m = 10^6$, $C = 100$:
+$\rho_C \approx 1 - C^{1-\alpha}/((\alpha-1)\,\zeta(\alpha))
+= 1 - 100^{-0.5}/(0.5 \cdot 2.612) \approx 1 - 0.077 \approx 0.92$
+(92\% hit rate). For the typical Breslau measurement range
+$\alpha \in [0.7, 0.85]$ (heavy-tailed web traces), $\rho_C \approx
+(C/m)^{1-\alpha}$: at $C=100, m= 10^6, \alpha=0.8$ this gives
+$\rho_C \approx (10^{-4})^{0.2} \approx 0.16$ (16\% hit rate, modest
+but still better than uniform $C/m = 10^{-4}$). Amortized cost
+reduced by factor $1/(1-\rho_C)$: $\sim 12\times$ for $\alpha=1.5$,
+$\sim 1.2\times$ for the $\alpha=0.8$ heavy-tailed web-trace regime.
 
 \emph{(c) Random-access OLTP workloads.} Uniform random access has
 $\rho_C \approx C/m$. For $C = 1024, m = 10^6$: $\rho_C \approx
