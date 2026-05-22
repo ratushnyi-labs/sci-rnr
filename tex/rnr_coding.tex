@@ -6812,30 +6812,118 @@ key-secrecy) versus 9.1's plain hash (collision-resistant but no key).
 The cryptographic upgrade defends against malicious adversaries with
 significant compute budgets.
 
-\emph{Remark (decoder latency tail-bound — outside scope).}
-A previous draft of this section attempted a combined batched-workload
-latency tail bound (denoted Theorem 7.24) combining per-sub-block log-
-loss concentration (Theorem 7.14) with cache-Bernoulli concentration
-via LRU. Adversarial cross-model review (codex gpt-5.5) found multiple
-fatal flaws in the formulation: (i) LRU miss indicators are not iid
-Bernoulli --- the counterexample workload ``$A, B, A, B, \ldots$''
-against a $C = 1$ cache produces $\Theta(Q)$ miss deviation rather
-than $\Theta(\sqrt{Q})$; (ii) per-miss costs are not iid across queries
-because the same sub-block can be missed repeatedly under cache
-thrashing; (iii) the long-run hit rate $\rho_C$ does not control
-finite-batch deviations under non-stationary workloads. A correct
-finite-batch tail bound requires (at minimum) an Independent Reference
-Model (IRM) assumption on the workload and a separate concentration
-analysis for LRU miss indicators under IRM (Fagin 1977 \emph{Comm.\
-ACM} 20(11):846 and Hendricks 1972 for foundational LRU stationary
-analysis; King 1971 \emph{J.\ ACM} for finite-batch deviation bounds).
-For production deployment, the cleanest operational guidance remains
-Theorem 7.20's average-latency formula
-$\mathbb{E}[T_{\mathrm{query}}] = (1-\rho_C) \cdot K \cdot
-\mathrm{cost}(M')$ plus standard service-level engineering practice
-(measure tail empirically per workload). A formally-correct production
-tail bound is left to future work; we explicitly do not assert one
-here.
+\textbf{Theorem 7.24 (Decoder latency Hoeffding tail under IRM
+workload and static top-popularity cache: minimal honest production
+tail bound).}
+\emph{Fix an RNR archive built under Theorem 7.15 hypotheses, source
+$X^N$ held fixed (no source-randomness in this statement; the source-
+side concentration of per-sub-block costs is supplied by Theorem 7.14
+applied separately). Let $\mu$ be a probability distribution over
+sub-block indices $\{1, \ldots, m\}$ and assume:}
+\begin{itemize}
+\item \emph{(IRM workload).} \emph{The query addresses
+$b_1, \ldots, b_Q \in [N]$ are independent and identically distributed:
+the sub-block index $J_i := \lceil b_i / K \rceil$ is drawn iid from
+$\mu$ (and the byte offset $b_i \bmod K$ is drawn uniformly).}
+\item \emph{(Static top-$C$ cache, ``Perfect-LFU'').} \emph{The
+decoder caches exactly the $C$ most $\mu$-popular sub-blocks
+$\mathcal{C}^* := \{\,j : \mu(j) \in \text{top-}C\,\}$ throughout the
+workload (no eviction). Cache hit rate is
+$\rho_C := \sum_{j \in \mathcal{C}^*} \mu(j)$.}
+\item \emph{(Bounded per-miss cost).} \emph{Each cache-miss query has
+cost $T_{\mathrm{miss}}(j) \in [0, T_{\max}]$ for some uniform upper
+bound $T_{\max}$ (e.g., $T_{\max} = K \cdot c_{M'} + \Delta_{\mathrm{ac}}^{\max}$
+with $\Delta_{\mathrm{ac}}^{\max}$ the maximum AC slack across sub-blocks
+under Theorem 7.2 convention C2).}
+\item \emph{(Workload $\perp$ source).} \emph{The workload $W$ is
+independent of $X^N$.}
+\end{itemize}
+\emph{Then the total batched-decode latency
+$T_{\mathrm{total}} := \sum_{i=1}^Q T_{\mathrm{query}}(b_i)$ satisfies,
+for any $\delta > 0$:}
+\[
+\boxed{\;
+\Pr\!\Bigl(\bigl|\,T_{\mathrm{total}} - Q \cdot \bar{T}\,\bigr|
+\;>\;
+\sqrt{\tfrac{Q}{2} \log(2/\delta)} \cdot T_{\max}\Bigr)
+\;\leq\;
+\delta\;
+}
+\]
+\emph{where $\bar{T} := \mathbb{E}_\mu[T_{\mathrm{query}}] =
+(1 - \rho_C) \cdot \mathbb{E}_{\mu \mid J \notin \mathcal{C}^*}
+[T_{\mathrm{miss}}(J)] \in [0, (1-\rho_C) T_{\max}]$ is the per-query
+expected cost under $\mu$.}
+
+\emph{\textbf{Proof.}} Under IRM and static-cache assumptions, the
+per-query costs $T_{\mathrm{query}}(b_1), \ldots, T_{\mathrm{query}}(b_Q)$
+are i.i.d.\ random variables (a function of the i.i.d.\ $J_i$ alone,
+since the cache content is determined a priori by $\mu$, not by query
+history). Each is bounded: $T_{\mathrm{query}}(b_i) = 0$ if
+$J_i \in \mathcal{C}^*$ (hit) and $T_{\mathrm{query}}(b_i) =
+T_{\mathrm{miss}}(J_i) \in [0, T_{\max}]$ otherwise. Hoeffding's
+inequality (Hoeffding 1963 \emph{J.\ Amer.\ Stat.\ Assoc.}\
+58(301):13, Theorem 2) for iid bounded sums yields
+$\Pr(|S_Q - \mathbb{E}[S_Q]| > t) \leq 2 \exp(-2t^2/(Q T_{\max}^2))$,
+which gives the stated bound by setting $t = \sqrt{(Q/2)\log(2/\delta)}
+\cdot T_{\max}$.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.}
+Theorem 7.24 is the \emph{minimal honest} tail bound for production
+deployment. It deliberately makes restrictive hypotheses to remain
+provably correct:
+\begin{itemize}
+\item \emph{Why IRM, not LRU?} Under LRU the cache state depends on
+query history, so $T_{\mathrm{query}}(b_i)$ are not iid; the
+counterexample workload $A, B, A, B, \ldots$ against an LRU cache of
+size $C = 1$ produces $\Theta(Q)$ deviation in cache misses, defeating
+$\sqrt{Q}$-style concentration. Perfect-LFU (static top-$C$) sidesteps
+this by removing eviction dynamics: each query independently lands in
+or out of the cache based on its sub-block identity alone. A correct
+LRU+IRM concentration analysis (with non-trivial cache-state mixing
+times) is left to future work (cf.\ Fagin 1977 \emph{Comm.\ ACM}
+20(11):846; Hendricks 1972; King 1971 \emph{J.\ ACM}).
+\item \emph{Why fix the source?} Per-sub-block cost
+$T_{\mathrm{miss}}(j)$ depends on the log-loss of sub-block $j$, which
+is random over the source $X^N$. Theorem 7.14 separately bounds the
+per-sub-block log-loss concentration; the present theorem assumes a
+uniform $T_{\max}$ upper bound that absorbs source-side worst-case
+behavior. To compose with source randomness, apply Theorem 7.14 first
+to bound $T_{\max}$ with prob.\ $\geq 1 - \delta'$, then Theorem 7.24
+with $\delta$, giving total tail probability $\delta + \delta'$ by
+union bound.
+\item \emph{Why bounded $T_{\max}$, not variance-aware?} Hoeffding is
+known to be loose when individual terms are concentrated. Bernstein's
+inequality would give a tighter bound using
+$\mathrm{Var}[T_{\mathrm{query}}]$, but requires more delicate
+analysis. The Hoeffding form is chosen for transparency and
+falsifiability.
+\end{itemize}
+
+\emph{Numerical worked example.}
+$N = 10^9$, $K = \sqrt{N} \approx 31623$, $m = 31623$, $c_{M'} =
+1\,\mu\mathrm{s}$, AC slack negligible relative to $K \cdot c_{M'}$,
+so $T_{\max} \approx K \cdot c_{M'} = 32\,\mathrm{ms}$. Zipf $\mu$
+with $\alpha = 0.8$, $C = 1000$: exact $\rho_C = \sum_{k=1}^{1000}
+k^{-0.8} / \sum_{k=1}^{31623} k^{-0.8} \approx 0.438$. For
+$Q = 10^6$, $\delta = 10^{-3}$: $\log(2/\delta) \approx 7.6$, so
+$\sqrt{(Q/2)\log(2/\delta)} \cdot T_{\max} \approx \sqrt{3.8 \cdot 10^6}
+\cdot 32\,\mathrm{ms} \approx 62.4\,\mathrm{s}$.
+$\bar{T} \leq (1-\rho_C) T_{\max} \approx 0.562 \cdot 32\,\mathrm{ms}
+\approx 18\,\mathrm{ms}$; expected total $\approx 18{,}000\,\mathrm{s}
+\approx 5\,\mathrm{h}$; 99.9\%-tail addition $\sim 62\,\mathrm{s}$
+($\sim 0.35\%$ tail). The bound is Hoeffding-loose (real
+deviations under variance-aware bounds would be smaller); useful as
+an upper-bound SLO target.
+
+\emph{Relation to T7.20.}
+Theorem 7.20 computes the average per-query latency
+$\mathbb{E}[T_{\mathrm{query}}]$ for any workload-cache combination.
+Theorem 7.24 adds, under the much-restricted IRM + Perfect-LFU
+hypotheses, a worst-case Hoeffding tail. For LRU and non-IRM
+workloads, neither theorem applies directly; empirical service-level
+measurement is the operational fallback.
 
 \textbf{8. No universal dominance}
 
