@@ -155,11 +155,11 @@ def main() -> int:
     expected_T_total = Q * (1 - rho_C) * T_miss
     print(f"  Expected total latency: {expected_T_total:.1f} us = {expected_T_total/1e6:.3f} s")
 
-    # Compute boxed tail bound
+    # Compute boxed tail bound (tightened: both terms scale as sqrt(Q))
     cache_bernoulli_term = (
         math.sqrt(2 * Q * rho_C * (1 - rho_C) * math.log(2 / delta)) * T_miss
     )
-    per_sb_term = Q * (1 - rho_C) * sigma_sb_time * math.sqrt(2 * math.log(2 / delta))
+    per_sb_term = math.sqrt(2 * Q * (1 - rho_C) * math.log(2 / delta)) * sigma_sb_time
     tail_bound = cache_bernoulli_term + per_sb_term
     print(f"  Cache Bernoulli term: {cache_bernoulli_term:.1f} us")
     print(f"  Per-sub-block term: {per_sb_term:.1f} us")
@@ -198,26 +198,22 @@ def main() -> int:
     if rel_err > 0.1:
         print(f"    WARN: mean prediction off by {rel_err*100:.1f}% — re-check hit rate model")
 
-    # Test crossover: Q* where Bernoulli and per-sb terms are equal
-    if sigma_sb_time > 0:
-        Q_star_factor = (sigma_sb_time / T_miss) ** 2 * rho_C / (1 - rho_C)
-        print(f"\n  Crossover Q* (Bernoulli vs per-sb terms equal): Q* ~= {Q_star_factor:.1f} * (delta-correction)")
-
-    # Sweep Q to show two-term scaling
-    print(f"\n  Tail-bound scaling with Q:")
+    # Sweep Q to show both terms scale as sqrt(Q) with different prefactors
+    print(f"\n  Tail-bound scaling with Q (both terms ~ sqrt(Q)):")
     print(f"  Q       | Bernoulli term | Per-sb term | Total bound")
     print(f"  " + "-" * 60)
     for Q_test in [100, 1000, 10000, 100000, 1000000]:
         bern = math.sqrt(2 * Q_test * rho_C * (1 - rho_C) * math.log(2 / delta)) * T_miss
-        sb = Q_test * (1 - rho_C) * sigma_sb_time * math.sqrt(2 * math.log(2 / delta))
+        sb = math.sqrt(2 * Q_test * (1 - rho_C) * math.log(2 / delta)) * sigma_sb_time
         total = bern + sb
         print(f"  {Q_test:6d}  | {bern:13.1f}  | {sb:11.1f} | {total:11.1f}")
+    print(f"  (Prefactor ratio Bernoulli/per-sb = T_miss*sqrt(rho_C) / sigma_sb = {T_miss * math.sqrt(rho_C) / sigma_sb_time:.1f})")
 
     print()
     if all_ok:
         print("PASS: Theorem 7.24 verified.")
         print("      Total latency concentrates within boxed tail bound.")
-        print("      Two-term scaling (sqrt(Q) Bernoulli + Q per-sb) confirmed.")
+        print("      Both terms scale as sqrt(Q); prefactor decides dominance.")
         print("      99.9%-tail prediction usable for production SLO planning.")
         return 0
     print("FAIL")

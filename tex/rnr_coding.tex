@@ -6844,7 +6844,7 @@ randomness:}
 \;\leq\;
 \underbrace{\sqrt{2 Q \, \rho_C (1-\rho_C) \log(2/\delta)} \cdot T_{\mathrm{miss}}}_{\text{cache Bernoulli concentration}}
 \;+\;
-\underbrace{Q \cdot (1-\rho_C) \cdot \sigma_{\mathrm{sb}} \sqrt{2 \log(2/\delta)}}_{\text{per-sub-block AC concentration}}
+\underbrace{\sqrt{2 Q (1-\rho_C) \log(2/\delta)} \cdot \sigma_{\mathrm{sb}}}_{\text{per-sub-block AC concentration}}
 \;
 }
 \]
@@ -6884,10 +6884,10 @@ $Q(1-\rho_C)$), each per-sub-block cost has independent log-loss
 contribution with deviation $\sigma_{\mathrm{sb}} = O(\sqrt{K} \cdot
 (W_N + 1 + \rho/(1-\rho)) \cdot \log_2(1/\eta))$ from Theorem 7.14
 applied to single $K$-byte sub-blocks (which inherit the source
-exp-mixing). Their sum has Azuma--Hoeffding tail bound with deviation
-$\sqrt{Q (1-\rho_C) \cdot 2 \log(2/\delta_2)} \cdot \sigma_{\mathrm{sb}}
-\leq Q (1-\rho_C) \cdot \sigma_{\mathrm{sb}} \sqrt{2 \log(2/\delta_2)}$
-when $Q(1-\rho_C) \geq 1$.
+exp-mixing). Their sum --- a sum of (expected) $Q(1-\rho_C)$
+mean-zero terms each bounded in magnitude by $O(\sigma_{\mathrm{sb}})$
+--- has Azuma--Hoeffding tail
+$\sqrt{2 Q (1-\rho_C) \log(2/\delta_2)} \cdot \sigma_{\mathrm{sb}}$.
 
 Union bound with $\delta_1 = \delta_2 = \delta/2$ (then $\log(2/\delta_i)
 = \log(4/\delta) \leq \log(2/\delta) + 1$, absorbing the $\log 2$ into
@@ -6908,9 +6908,15 @@ queries actually trigger misses.
 (steady-state regime), capturing variance in how long each missed
 sub-block takes to decode under variable log-loss.
 \end{itemize}
-The crossover is at $Q^* \approx (\sigma_{\mathrm{sb}}/T_{\mathrm{miss}})^2
-\rho_C / (1-\rho_C)$ queries; below $Q^*$ Bernoulli noise dominates,
-above $Q^*$ source noise dominates.
+The two terms have the same $\sqrt{Q}$ scaling but with different
+prefactors: the cache term is proportional to $T_{\mathrm{miss}}\sqrt{\rho_C}$
+while the source term is proportional to $\sigma_{\mathrm{sb}}$
+(both multiplied by the same $\sqrt{2(1-\rho_C)\log(2/\delta)}$).
+The cache term dominates when
+$T_{\mathrm{miss}} \sqrt{\rho_C} > \sigma_{\mathrm{sb}}$, i.e.\ when
+the per-miss cost variance (Bernoulli) exceeds the per-decode AC
+variance --- which is the typical regime for cost-dominated
+transformer inference.
 
 \emph{Numerical example for production decoder.}
 Take $N = 10^9$ bytes (enwik9-scale), $K = \sqrt{N} \approx 31623$,
@@ -6928,8 +6934,10 @@ expected total time $7 \cdot 10^5 \cdot 32\,\mathrm{ms} \approx
 22{,}400\,\mathrm{s}$ (6 h, embarrassingly parallelizable per Theorem
 7.18). 99.9\% tail above expectation:
 $\sqrt{2 \cdot 10^6 \cdot 0.3 \cdot 0.7 \cdot 14.5} \cdot 32\,\mathrm{ms}
-+ 7 \cdot 10^5 \cdot 320\,\mu\mathrm{s} \cdot \sqrt{29} \approx 60\,\mathrm{s}$
-($0.3\%$ tail beyond expectation). Useful for capacity planning.
++ \sqrt{2 \cdot 7 \cdot 10^5 \cdot 14.5} \cdot 320\,\mu\mathrm{s}
+\approx 70\,\mathrm{s} + 1.4\,\mathrm{s} \approx 72\,\mathrm{s}$
+($0.3\%$ tail beyond expectation, cache-Bernoulli term dominant).
+Useful for capacity planning.
 
 \emph{Relation to T7.20.}
 Theorem 7.20 computes the \emph{average} per-query latency
