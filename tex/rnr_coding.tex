@@ -5871,11 +5871,16 @@ model size (a property the rate-distortion literature calls
 unadjusted LM-as-compressor metrics in Zhang et al.\ 2024
 \emph{L3TC: Leveraging RWKV for Learned Lossless Low-Complexity Text
 Compression}, arXiv:2412.16642). The break-even archive volume against
-a fixed 140\,GB-class shared predictor is reached at total source
-volume $V^* \approx 140\,\mathrm{GB} / (1 - H_{M'} \cdot 8^{-1}) \cdot
-8 \approx 1.5\,\mathrm{TB}$ of compressible text --- a deployment scale
-fully consistent with cloud-backup, archival-storage, and content-delivery
-applications, but \emph{not} with single-document compression. Theorem
+a fixed 140\,GB-class shared predictor satisfies
+$V^* \cdot (\log_2|\Sigma| - H_{M'}) = 140\,\mathrm{GB} \cdot \log_2|\Sigma|$
+(equating self-contained archive size with raw source size), giving
+$V^* \approx 140\,\mathrm{GB} \cdot 8 / (8 - 0.664) \approx 152\,\mathrm{GB}$
+of compressible byte-alphabet text. This break-even is comfortably
+exceeded by cloud-backup, archival-storage, content-delivery, and
+even individual large-corpus deployments (a single user's photo or
+video library, a moderate-size Wikipedia mirror, etc.), but is
+\emph{not} satisfied by single-document compression where the source
+is megabyte-scale. Theorem
 7.21 quantifies the predictor-archive size trade-off explicitly when the
 model itself is encoded as part of the archive (knowledge distillation
 to predictor $M''$ with bounded KL gap).
