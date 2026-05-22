@@ -5851,6 +5851,35 @@ Compression}, Hewlett-Packard Tech.\ Report; Witten--Neal--Cleary
 1987 \emph{Comm.\ ACM} 30(6):520). The sub-block synchronisation
 protocol is Theorem 10.3's byte-granular RA construction.
 
+\emph{Side-information framing and model overhead (caveat).}
+The $12.0\times$ ratio and $\approx 79\,\mathrm{MB}$ figure above
+measure the \emph{archive bitstream} produced by the encoder; they
+do \emph{not} include the size of the neural predictor $M'$ itself.
+In Shannon-style or side-information-assisted compression
+(Slepian--Wolf 1973, Wyner--Ziv 1976), the decoder is assumed to
+possess $M'$ as shared side information, in which case the rate
+$N \cdot H_{M'}$ is the operational quantity of interest. In strict
+algorithmic/Kolmogorov-style framing, by contrast, the archive must
+be self-contained: a Chinchilla-70B predictor stored in 16-bit
+precision occupies $\approx 140\,\mathrm{GB}$, which dwarfs the
+$1\,\mathrm{GB}$ enwik9 source --- yielding a \emph{negative} stand-alone
+compression ratio for a single archive of this size. The headline
+$12\times$ rate therefore applies in the \emph{amortized} regime where
+$M'$ is shared across many archives whose combined size exceeds the
+model size (a property the rate-distortion literature calls
+``universal'' or ``model-shared'' coding; see also the critique of
+unadjusted LM-as-compressor metrics in Zhang et al.\ 2024
+\emph{L3TC: Leveraging RWKV for Learned Lossless Low-Complexity Text
+Compression}, arXiv:2412.16642). The break-even archive volume against
+a fixed 140\,GB-class shared predictor is reached at total source
+volume $V^* \approx 140\,\mathrm{GB} / (1 - H_{M'} \cdot 8^{-1}) \cdot
+8 \approx 1.5\,\mathrm{TB}$ of compressible text --- a deployment scale
+fully consistent with cloud-backup, archival-storage, and content-delivery
+applications, but \emph{not} with single-document compression. Theorem
+7.21 quantifies the predictor-archive size trade-off explicitly when the
+model itself is encoded as part of the archive (knowledge distillation
+to predictor $M''$ with bounded KL gap).
+
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
 when local statistics vary).}
