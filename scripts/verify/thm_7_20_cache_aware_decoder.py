@@ -148,18 +148,39 @@ def main() -> int:
         print(f"    C={C:6d}: empirical hit rate = {hit_rate:.4f}, "
               f"theoretical ~1-K/L = {theoretical_min:.4f}")
 
-    # Zipf hot-key
-    print(f"\n  Zipf hot-key access (alpha=1.1):")
+    # Zipf hot-key — verify the corrected Breslau-style asymptotic
+    # For alpha > 1 (light-tailed): rho_C ~ 1 - C^{1-alpha} / zeta(alpha)
+    # For alpha in (0,1) (heavy-tailed): rho_C ~ (C/m)^{1-alpha}
+    def theoretical_zipf_hit_rate(C, m, alpha):
+        # Direct exact computation: sum_{k=1}^C k^{-alpha} / sum_{k=1}^m k^{-alpha}
+        num = sum(1.0 / (k ** alpha) for k in range(1, min(C, m) + 1))
+        den = sum(1.0 / (k ** alpha) for k in range(1, m + 1))
+        return num / den
+
+    print(f"\n  Zipf hot-key access (alpha=1.1, light-tailed):")
     queries = workload_zipf_hot_key(N, K, T, alpha=1.1, rng=rng)
     for C in [10, 100, 1000]:
         hit_rate = evaluate_workload("zipf1.1", queries, K, C)
-        print(f"    C={C:6d}: empirical hit rate = {hit_rate:.4f}")
+        theoretical = theoretical_zipf_hit_rate(C, m, 1.1)
+        print(f"    C={C:6d}: empirical = {hit_rate:.4f}, theory (top-C/total) = {theoretical:.4f}")
+        if abs(hit_rate - theoretical) > 0.10:
+            print(f"      WARN: empirical deviates by >0.10 from static-popularity theory")
+
+    print(f"\n  Zipf hot-key access (alpha=0.8, heavy-tailed, Breslau web regime):")
+    queries = workload_zipf_hot_key(N, K, T, alpha=0.8, rng=rng)
+    for C in [10, 100, 1000]:
+        hit_rate = evaluate_workload("zipf0.8", queries, K, C)
+        theoretical = theoretical_zipf_hit_rate(C, m, 0.8)
+        approx_heavy = (C / m) ** (1 - 0.8)
+        print(f"    C={C:6d}: empirical = {hit_rate:.4f}, theory = {theoretical:.4f}, "
+              f"asymptotic (C/m)^(1-alpha) = {approx_heavy:.4f}")
 
     print(f"\n  Zipf hot-key access (alpha=2.0, very skewed):")
     queries = workload_zipf_hot_key(N, K, T, alpha=2.0, rng=rng)
     for C in [10, 100, 1000]:
         hit_rate = evaluate_workload("zipf2.0", queries, K, C)
-        print(f"    C={C:6d}: empirical hit rate = {hit_rate:.4f}")
+        theoretical = theoretical_zipf_hit_rate(C, m, 2.0)
+        print(f"    C={C:6d}: empirical = {hit_rate:.4f}, theory = {theoretical:.4f}")
 
     # Cost amortization
     print(f"\n  Cost amortization (cost(M')=10us per inference, K=1024):")
