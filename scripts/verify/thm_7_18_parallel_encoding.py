@@ -100,10 +100,10 @@ def test_gpu_scenarios():
     cost_M_us = 10.0  # microseconds per predictor evaluation
 
     scenarios = [
-        ("1 MB on 1-core CPU",  10**6, 1024, 1,            cost_M_us),
-        ("1 MB on RTX 4090 (16k cores)",   10**6, 1024, 16384,        cost_M_us / 100),
-        ("1 GB on H100 (~10k tensor cores)", 10**9, 1024, 10000,      cost_M_us / 100),
-        ("1 TB on 100-node cluster", 10**12, 1024, 100 * 10000,       cost_M_us / 100),
+        ("1 MB on 1-core CPU",  10**6, 1024, 1,                  cost_M_us),
+        ("1 MB on RTX 5090 (~21k cores)",   10**6, 1024, 21504,        cost_M_us / 100),
+        ("1 GB on B200 (~16k tensor cores)", 10**9, 1024, 16384,       cost_M_us / 200),
+        ("1 TB on 100x B200 cluster", 10**12, 1024, 100 * 16384,       cost_M_us / 200),
     ]
 
     for label, N, K, P, cost in scenarios:
