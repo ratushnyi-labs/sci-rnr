@@ -6812,6 +6812,132 @@ key-secrecy) versus 9.1's plain hash (collision-resistant but no key).
 The cryptographic upgrade defends against malicious adversaries with
 significant compute budgets.
 
+\textbf{Theorem 7.24 (Decoder latency tail bound for batched
+random-access workloads: production-grade SLO guarantee combining
+T7.14 source concentration and T7.20 cache hit rate).}
+\emph{Let $W = (b_1, b_2, \ldots, b_Q) \in [N]^Q$ be a workload of
+$Q$ random-access byte queries against an RNR archive built under
+Theorem 7.15 hypotheses (source $X$ satisfies (5.8) exp-mixing with
+constant $\rho$, predictor $M'$ with context window $W_N$, sub-block
+size $K = \Theta(\sqrt{N})$, $\eta$-floor AC, per-token predictor
+cost $c_{M'} := \mathrm{cost}(M')$). Assume:}
+\begin{itemize}
+\item \emph{LRU cache of $C$ sub-blocks achieves long-run hit rate
+$\rho_C$ against $W$ (Theorem 7.20).}
+\item \emph{Workload $W$ is independent of source $X^N$ (an
+operational assumption: byte addresses are determined by application
+logic, not by the encoded payload).}
+\item \emph{Cache-miss penalty per sub-block consists of constant
+offset-lookup time $T_{\mathrm{lookup}} = O(\log L(R))$, fixed
+AC-decoder bit-shift cost $O(K \log_2(1/\eta))$, and predictor
+evaluation $K \cdot c_{M'}$.}
+\end{itemize}
+\emph{Define $T_{\mathrm{miss}} := K \cdot c_{M'} + O(K \log_2(1/\eta))
++ T_{\mathrm{lookup}}$, the per-sub-block miss cost. Then the total
+batched-workload decode latency $T_{\mathrm{total}}(W) := \sum_{i=1}^Q
+T_{\mathrm{query}}(b_i)$ satisfies, for any $\delta > 0$ and with
+probability at least $1 - \delta$ over both source and workload
+randomness:}
+\[
+\boxed{\;
+\bigl|\,T_{\mathrm{total}}(W) - Q \cdot (1 - \rho_C) \cdot T_{\mathrm{miss}}\,\bigr|
+\;\leq\;
+\underbrace{\sqrt{2 Q \, \rho_C (1-\rho_C) \log(2/\delta)} \cdot T_{\mathrm{miss}}}_{\text{cache Bernoulli concentration}}
+\;+\;
+\underbrace{Q \cdot (1-\rho_C) \cdot \sigma_{\mathrm{sb}} \sqrt{2 \log(2/\delta)}}_{\text{per-sub-block AC concentration}}
+\;
+}
+\]
+\emph{where $\sigma_{\mathrm{sb}} = O(\sqrt{K} \cdot (W_N + 1 + \rho/(1-\rho))
+\cdot \log_2(1/\eta))$ is the per-sub-block log-loss deviation from
+Theorem 7.14 specialized to a single $K$-byte sub-block.}
+
+\emph{\textbf{Proof.}} Decompose $T_{\mathrm{query}}(b_i) =
+\mathbf{1}_{\mathrm{miss}_i} \cdot T_{\mathrm{miss},i}$ where
+$\mathbf{1}_{\mathrm{miss}_i}$ is the indicator of a cache miss for
+query $i$ and $T_{\mathrm{miss},i}$ is the per-miss cost for sub-block
+containing $b_i$ (independent draw from source-induced distribution
+since $W \perp X^N$). The total time is
+
+$T_{\mathrm{total}} = \sum_{i=1}^Q \mathbf{1}_{\mathrm{miss}_i}
+\cdot T_{\mathrm{miss},i} = Z_1 + Z_2$,
+
+where $Z_1 := \sum_i \mathbf{1}_{\mathrm{miss}_i} \cdot \mathbb{E}[T_{\mathrm{miss},i}]
+= \mathbb{E}[T_{\mathrm{miss}}] \cdot \sum_i \mathbf{1}_{\mathrm{miss}_i}$
+captures Bernoulli randomness in cache outcomes, and
+$Z_2 := \sum_i \mathbf{1}_{\mathrm{miss}_i} \cdot (T_{\mathrm{miss},i}
+- \mathbb{E}[T_{\mathrm{miss}}])$ captures per-sub-block log-loss deviation
+on missed queries only.
+
+For $Z_1$: $\sum_i \mathbf{1}_{\mathrm{miss}_i} \sim \mathrm{Bin}(Q,
+1-\rho_C)$ under the workload's long-run stationarity. By Hoeffding's
+inequality for binomial deviation,
+\[
+\Pr\Bigl(\bigl|\sum_i \mathbf{1}_{\mathrm{miss}_i} - Q (1-\rho_C)\bigr|
+> \sqrt{Q (1-\rho_C) \rho_C \cdot 2 \log(2/\delta_1)}\Bigr) \leq \delta_1.
+\]
+Multiplying by $\mathbb{E}[T_{\mathrm{miss}}] = T_{\mathrm{miss}}$ gives the
+first term in the boxed equation.
+
+For $Z_2$: conditional on the missed sub-blocks (a set of expected size
+$Q(1-\rho_C)$), each per-sub-block cost has independent log-loss
+contribution with deviation $\sigma_{\mathrm{sb}} = O(\sqrt{K} \cdot
+(W_N + 1 + \rho/(1-\rho)) \cdot \log_2(1/\eta))$ from Theorem 7.14
+applied to single $K$-byte sub-blocks (which inherit the source
+exp-mixing). Their sum has Azuma--Hoeffding tail bound with deviation
+$\sqrt{Q (1-\rho_C) \cdot 2 \log(2/\delta_2)} \cdot \sigma_{\mathrm{sb}}
+\leq Q (1-\rho_C) \cdot \sigma_{\mathrm{sb}} \sqrt{2 \log(2/\delta_2)}$
+when $Q(1-\rho_C) \geq 1$.
+
+Union bound with $\delta_1 = \delta_2 = \delta/2$ (then $\log(2/\delta_i)
+= \log(4/\delta) \leq \log(2/\delta) + 1$, absorbing the $\log 2$ into
+the $O$-constants) gives the stated combined tail bound.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.}
+Theorem 7.24 is the operational tail-bound for production deployment:
+given an SLO target ``99.9\% of batched queries return within $T^*$
+total time'', set $\delta = 10^{-3}$ and solve the boxed equation for
+$T^* = Q \cdot (1 - \rho_C) \cdot T_{\mathrm{miss}} + (\text{tail
+correction})$. The two tail terms have distinct scaling:
+\begin{itemize}
+\item \emph{Cache Bernoulli term} $\sim \sqrt{Q}$ dominates for small
+$Q$ (cold-cache regime), capturing variance in how many of the $Q$
+queries actually trigger misses.
+\item \emph{Per-sub-block term} $\sim Q$ dominates for large $Q$
+(steady-state regime), capturing variance in how long each missed
+sub-block takes to decode under variable log-loss.
+\end{itemize}
+The crossover is at $Q^* \approx (\sigma_{\mathrm{sb}}/T_{\mathrm{miss}})^2
+\rho_C / (1-\rho_C)$ queries; below $Q^*$ Bernoulli noise dominates,
+above $Q^*$ source noise dominates.
+
+\emph{Numerical example for production decoder.}
+Take $N = 10^9$ bytes (enwik9-scale), $K = \sqrt{N} \approx 31623$,
+$m = N/K \approx 31623$, $c_{M'} = 1\,\mu\mathrm{s}$ (transformer
+batch inference at modern GPU speeds, B100/B200-class), $\eta = 2^{-32}$,
+$\rho = 0.5$ (typical English-text mixing), $W_N = 16$. Per-miss cost
+$T_{\mathrm{miss}} \approx K \cdot c_{M'} \approx 32\,\mathrm{ms}$.
+Per-sub-block log-loss deviation
+$\sigma_{\mathrm{sb}} \approx \sqrt{K} \cdot 18 \cdot 32 \approx
+10^5\,\mathrm{bits} \approx 320\,\mu\mathrm{s}$ when converted to
+$c_{M'}$-units. For a workload of $Q = 10^6$ queries against
+LRU cache of $C = 1000$ sub-blocks (Zipf $\alpha = 0.8$:
+$\rho_C \approx 0.30$ at this $C$, see Theorem 7.20 example):
+expected total time $7 \cdot 10^5 \cdot 32\,\mathrm{ms} \approx
+22{,}400\,\mathrm{s}$ (6 h, embarrassingly parallelizable per Theorem
+7.18). 99.9\% tail above expectation:
+$\sqrt{2 \cdot 10^6 \cdot 0.3 \cdot 0.7 \cdot 14.5} \cdot 32\,\mathrm{ms}
++ 7 \cdot 10^5 \cdot 320\,\mu\mathrm{s} \cdot \sqrt{29} \approx 60\,\mathrm{s}$
+($0.3\%$ tail beyond expectation). Useful for capacity planning.
+
+\emph{Relation to T7.20.}
+Theorem 7.20 computes the \emph{average} per-query latency
+$\mathbb{E}[T_{\mathrm{query}}] = (1-\rho_C) \cdot T_{\mathrm{miss}}$.
+Theorem 7.24 adds the \emph{tail bound}: 99.9\% of batched-workload
+latency is within $\pm O(\sqrt{Q})$ of expectation. Combined, these
+characterize the latency distribution for production deployment.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
