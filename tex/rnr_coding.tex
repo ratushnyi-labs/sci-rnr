@@ -6517,6 +6517,124 @@ acceptable since store-mode caps the worst case. This loosens the
 distillation accuracy requirement and lowers $L^*(N)$ further in
 practice.
 
+\textbf{Theorem 7.23 (Integrity-preserving RNR: cryptographic tamper
+detection via per-sub-block authenticated encryption at $O(\tau \cdot
+m)$ overhead).}
+\emph{Augment the Theorem 7.2 RNR encoder with per-sub-block
+authenticated encryption: for each sub-block $j$, compute a
+message-authentication-code tag $\tau_j = \mathrm{HMAC}_K(\mathrm{payload}_j)$
+of length $\tau$ bits using a per-archive symmetric key $K$ (HMAC-
+SHA256 with $\tau = 256$; Poly1305 with $\tau = 128$; AES-GCM with
+$\tau = 128$, etc.). Store the tag in the archive header alongside the
+sub-block offset and hash. The decoder verifies the MAC before
+decoding any sub-block; mismatch aborts the query with a tamper-detected
+error. Then:}
+\begin{itemize}
+\item \emph{(Integrity overhead)}: $L^{\mathrm{rep}+\mathrm{MAC}}(X^N) =
+L^{\mathrm{rep}}(X^N) + m \cdot \tau$ bits. For $\tau = 128$ and
+$K = 1024$: $m \cdot \tau / N = 128 / (1024 \cdot 8) \approx 1.6\%$
+overhead.
+\item \emph{(Detection probability)}: Under a computationally bounded
+adversary, modification of any sub-block payload is detected with
+probability $\geq 1 - 2^{-\tau} - \mathrm{negl}(\lambda)$, where
+$\lambda$ is the security parameter (HMAC key length). For
+$\tau = 128$, the false-negative probability is $\leq 2^{-128}$
+(cryptographically secure under standard random-oracle / PRF
+assumptions; Bellare--Canetti--Krawczyk 1996 \emph{Advances in
+Cryptology --- CRYPTO '96}, Springer LNCS 1109 ``Keying hash
+functions for message authentication'').
+\item \emph{(Per-query verification cost)}: $O(K + \tau)$ time
+($O(K)$ for HMAC computation over the sub-block, $O(\tau)$ for tag
+comparison). Polylog in $N$ for $K = \mathrm{polylog}(N)$.
+\item \emph{(Byte-granular RA preserved)}: each query verifies only
+the queried sub-block's MAC, no whole-archive scan required.
+\end{itemize}
+
+\emph{\textbf{Proof.}} The HMAC construction (Bellare--Canetti--
+Krawczyk 1996) provides a pseudorandom function family $\mathrm{HMAC}_K
+: \{0,1\}^* \to \{0,1\}^{\tau}$ such that, given oracle access to
+$\mathrm{HMAC}_K(\cdot)$ without knowledge of $K$, the probability of
+producing a valid $(m', \tau')$ pair with $m'$ not previously queried
+and $\tau' = \mathrm{HMAC}_K(m')$ is at most $2^{-\tau} +
+\mathrm{negl}(\lambda)$ for computationally bounded adversaries.
+
+Per-sub-block MAC tag generation: compute $\tau_j = \mathrm{HMAC}_K(
+\mathrm{payload}_j)$ at encoding time, store alongside sub-block
+metadata in header $\Theta$. Header size grows by $m \cdot \tau$ bits.
+For $m = N/K$ and $\tau = 128$: header overhead $\sim N \cdot \tau /
+K = N / 64$ bits for $K = 1024$, i.e., $1.6\%$ of byte-archive
+size.
+
+Per-query: decoder computes $\mathrm{HMAC}_K(\mathrm{payload}_j)$ on
+the fetched payload, compares to stored $\tau_j$. Mismatch implies
+tampering; constant-time comparison prevents timing-channel attacks.
+
+Sub-block independence (Theorem 7.2) preserved: each MAC is local to
+its sub-block, no inter-sub-block cryptographic dependencies. Byte-
+granular RA cost identical to plain RNR plus $O(\tau)$ per query.
+\hfill$\blacksquare$
+
+\emph{Implementation choices (practical).}
+\begin{itemize}
+\item \emph{HMAC-SHA256} ($\tau = 256$): conservative, FIPS-approved,
+$3\%$ overhead at $K = 1024$.
+\item \emph{Poly1305} ($\tau = 128$): faster ($\sim 5\times$ HMAC-
+SHA256), $1.6\%$ overhead at $K = 1024$.
+\item \emph{AES-GCM} ($\tau = 128$, $\nu = 96$-bit nonce): combined
+encryption + authentication, $1.6\%$ MAC overhead, $1.2\%$ nonce
+overhead, total $\sim 2.8\%$. Hardware-accelerated on modern CPUs
+(AES-NI, ARM Crypto Extensions).
+\item \emph{BLAKE3 keyed mode} ($\tau = 256$ or truncated): SIMD-
+optimised, $\sim 3\times$ HMAC-SHA256 throughput.
+\end{itemize}
+
+\emph{Combined encryption + integrity (AEAD).} For
+\emph{confidentiality} in addition to integrity, replace HMAC with an
+authenticated encryption mode (AES-GCM, ChaCha20-Poly1305). The
+encryption layer wraps each sub-block payload before storage; the
+decoder decrypts and verifies before RNR decoding. RA and parallelism
+properties (Theorems 7.18, 7.20) preserved since each sub-block has
+independent (key, nonce) pair.
+
+\emph{Scope and significance.} Theorem 7.23 brings RNR to parity with
+modern secure-archive systems (LUKS encrypted volumes, encrypted ZFS
+datasets, age encrypted files) on integrity / tamper-detection
+properties, while preserving the RNR-specific byte-granular RA and
+sub-block parallelism. Applications:
+
+\emph{(a) Cloud backup with provider-untrusted integrity.} User uploads
+RNR-compressed + MAC'd archive to cloud storage; provider cannot
+modify any byte without detection on client-side query.
+
+\emph{(b) Forensic archives with chain-of-custody.} Per-sub-block
+hash + MAC chain provides evidence of integrity at any byte position
+since archive creation.
+
+\emph{(c) Software distribution.} Signed-and-compressed updates
+deliver code via RNR + MAC; per-update RA enables differential
+patching with cryptographic verification.
+
+\emph{Comparison with related systems.}
+\begin{itemize}
+\item \emph{LUKS / dm-crypt}: AES-XTS encryption on $4\,\mathrm{kB}$
+filesystem blocks. Comparable overhead, but no compression. RNR +
+T7.23 adds compression at similar cost.
+\item \emph{Tarsnap / restic / borg}: encrypted-compressed backup
+systems. RNR achieves better compression via neural LMs while
+preserving byte-granular RA (not supported in these systems).
+\item \emph{Git pack with GPG sign}: per-pack signature, no per-byte
+integrity. RNR + T7.23 provides finer-grained integrity at modest
+overhead increase.
+\end{itemize}
+
+\emph{Combination with Theorem 9.1 (verified context update).}
+Theorem 9.1 already provides per-sub-block hash verification for
+context-update integrity. Theorem 7.23 extends this with
+\emph{cryptographic} MAC (preimage- and forgery-resistant under
+key-secrecy) versus 9.1's plain hash (collision-resistant but no key).
+The cryptographic upgrade defends against malicious adversaries with
+significant compute budgets.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
