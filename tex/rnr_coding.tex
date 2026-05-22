@@ -5730,22 +5730,42 @@ under stationarity (martingale CLT, McLeish 1974 \emph{Ann.\ Probab.}\
 version; the CLT gives sharper asymptotic constants but matches the
 $\sqrt{N}$ scaling.
 
-\emph{Remark on the $(W_N+1)$ factor.} The $(W_N+1)$ factor in the
-bound above arises specifically from the Doob-martingale construction
-$M_n := \mathbb{E}[L^{\mathrm{rep}} \mid \mathcal{F}_n] - \mathbb{E}[L^{\mathrm{rep}}]$,
-whose differences $D_n = \mathbb{E}[L^{\mathrm{rep}} \mid \mathcal{F}_n]
-- \mathbb{E}[L^{\mathrm{rep}} \mid \mathcal{F}_{n-1}]$ are bounded by
-$(W_N+1) \log_2(1/\eta)$ because $X_n$ enters the context of $\ell_n,
-\ell_{n+1}, \ldots, \ell_{n+W_N}$. An alternative construction --- the
-compensated martingale $\tilde{M}_N = \sum_{k=1}^N (\ell_k -
-\mathbb{E}[\ell_k \mid \mathcal{F}_{k-1}])$ --- has Azuma increments
-bounded by $\log_2(1/\eta)$ without the $(W_N+1)$ factor, but
-concentrates a different quantity (a centered sum, not
-$L^{\mathrm{rep}} - \mathbb{E}[L^{\mathrm{rep}}]$). For the stated bound
-on the deviation of the encoder output around its expectation, the
-$(W_N+1)$ factor is the operational consequence of the
-bounded-differences inequality (McDiarmid 1989); under exp-mixing the
-factor may be loose but is non-removable for the Doob construction.
+\emph{Remark on the $(W_N+1)$ factor and source-mixing tail.}
+The $(W_N+1)$ factor in the bound above tracks the
+\emph{direct predictor-context} influence of $X_n$ on the
+subsequent log-losses $\ell_n, \ldots, \ell_{n+W_N}$ (positions whose
+predictor context-window contains $X_n$). A second, source-mediated
+contribution must also be accounted for: under the exp-mixing
+hypothesis (5.8), conditioning on $X_n$ also alters the conditional
+distribution of $X_{n+W_N+1}, X_{n+W_N+2}, \ldots$ at geometric rate
+$\rho^k$, contributing an additional mixing-tail factor
+$\sum_{k \geq 1} \rho^k = \rho/(1-\rho)$ in the bound on the
+Doob-martingale increment. The full bound is therefore}
+\[
+|D_n| \;\leq\; \bigl(W_N + 1 + \tfrac{\rho}{1-\rho}\bigr)
+\cdot \log_2(1/\eta),
+\]
+\emph{and the concentration becomes}
+\[
+\bigl|\,L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - \mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N)]\,\bigr|
+\;\leq\;
+\sqrt{2 N \log(2/\delta)} \cdot \bigl(W_N + 1 + \tfrac{\rho}{1-\rho}\bigr)
+\cdot \log_2(1/\eta)
+\]
+\emph{with probability at least $1 - \delta$. For exp-mixing with
+$\rho$ bounded away from $1$ (the standard assumption (5.8) with
+constant $\rho$), $\rho/(1-\rho) = O(1)$ and is dominated by
+$W_N = O(\log N)$, so the $(W_N+1)$ leading-order bound stated in
+the theorem is asymptotically tight. For polynomially-slowly-mixing
+processes (where $1/(1-\rho)$ becomes super-constant in $N$), the
+mixing-tail factor would dominate; the present statement therefore
+implicitly assumes exp-mixing with constant decay rate. A compensated
+martingale $\tilde{M}_N = \sum_{k=1}^N (\ell_k - \mathbb{E}[\ell_k
+\mid \mathcal{F}_{k-1}])$ has Azuma increments bounded by
+$\log_2(1/\eta)$ without either factor, but concentrates a different
+quantity (a centered sum, not $L^{\mathrm{rep}} -
+\mathbb{E}[L^{\mathrm{rep}}]$), and so does not bound the deviation
+of the encoder output directly.}
 
 \textbf{Theorem 7.15 (End-to-end performance bound for neural-LM-based
 RNR: synthesis of T7.2, T7.4, T7.5, T7.14 with practical numerical
@@ -5879,8 +5899,9 @@ $N \cdot H_{M'}$ is the operational quantity of interest. In strict
 algorithmic/Kolmogorov-style framing, by contrast, the archive must
 be self-contained: a Chinchilla-70B predictor stored in 16-bit
 precision occupies $\approx 140\,\mathrm{GB}$, which dwarfs the
-$1\,\mathrm{GB}$ enwik9 source --- yielding a \emph{negative} stand-alone
-compression ratio for a single archive of this size. The headline
+$1\,\mathrm{GB}$ enwik9 source --- yielding \emph{negative savings}
+(i.e., the encoded archive expands the input by a factor of roughly
+$140\times$) for a single archive of this size. The headline
 $12\times$ rate therefore applies in the \emph{amortized} regime where
 $M'$ is shared across many archives whose combined size exceeds the
 model size (a property the rate-distortion literature calls
@@ -6359,23 +6380,31 @@ either hits same sub-block or fetches next). Amortized $O(1)$ per
 query.
 \item \emph{(Range scan over $L$ bytes)}: $\rho_C = 1 - K/L$. For
 $L \gg K$, near-perfect locality.
-\item \emph{(Zipf hot-key with skew $\alpha$)}: For the static-popularity
-LRU hit rate under Zipf rank distribution $p_k \propto k^{-\alpha}$ over
-$m$ items (Breslau et al.\ 1999 \emph{Proc.\ IEEE INFOCOM},
-``Web caching and Zipf-like distributions: evidence and implications''),
-the hit rate is the cumulative probability of the top-$C$ items
-$\rho_C = \sum_{k=1}^C p_k / \sum_{k=1}^m p_k$, with two asymptotic
-regimes: \emph{(heavy-tailed)} $0 < \alpha < 1$ gives
-$\rho_C \approx (C/m)^{1-\alpha}$ (so $\rho_C \to 0$ as $m \to \infty$
-for fixed $C/m$ small); \emph{(light-tailed)} $\alpha > 1$ gives
+\item \emph{(Zipf hot-key with skew $\alpha$)}: We compute the hit rate
+of the Perfect-LFU / static-top-popularity cache (an upper bound on
+LRU under the Independent Reference Model; Breslau et al.\ 1999
+\emph{Proc.\ IEEE INFOCOM}, ``Web caching and Zipf-like distributions:
+evidence and implications'').
+The hit rate is the cumulative probability of the top-$C$ Zipf-ranked
+items $\rho_C = \sum_{k=1}^C k^{-\alpha} / \sum_{k=1}^m k^{-\alpha}$,
+with two regimes distinguished by normalizer convergence:
+\emph{(divergent normalizer)} $0 < \alpha \leq 1$ gives
+$\rho_C \approx (C/m)^{1-\alpha}$ for $\alpha < 1$
+(equivalently, $\rho_C \to 0$ as $m \to \infty$ for fixed $C/m$ small),
+and the harmonic limit $\rho_C \approx \log C / \log m$ at $\alpha = 1$;
+\emph{(convergent normalizer)} $\alpha > 1$ gives the saturating
+limit
 $\rho_C \to 1 - \dfrac{C^{1-\alpha}}{(\alpha-1)\,\zeta(\alpha)}$
-saturating near $1$ as $C \to \infty$ (using the
-Euler--Maclaurin tail $\sum_{k>C} k^{-\alpha} \sim C^{1-\alpha}/(\alpha-1)$);
-values near $\alpha = 1$ require the $\alpha = 1$-harmonic limit
-$\rho_C \approx \log C / \log m$.
-For Ferragut et al.\ 2017 \emph{Queueing Systems} 88:207, see their
-Theorem~3 for the general timer-based-cache hit-rate analysis under
-general arrival processes (which includes LRU as a limit).
+as $C \to \infty$ (using $\sum_{k>C} k^{-\alpha} \sim
+C^{1-\alpha}/(\alpha-1)$ from Euler--Maclaurin).
+Note: the Zipf distribution is power-law and hence \emph{heavy-tailed}
+in both regimes (in the precise probability-theoretic sense of
+sub-exponential tails); the $\alpha > 1$ vs $\alpha \leq 1$ split
+concerns normalizer integrability on $\mathbb{N}$, not tail
+heaviness. The LRU competitive analysis under IRM and general
+arrival processes is in Ferragut et al.\ 2017 \emph{Queueing Systems}
+88:207, Theorem~3 (general timer-based-cache hit-rate, with LRU as
+a limit).
 \item \emph{(LRU under bursty workloads)}: $\rho_C$ tracks workload's
 working-set size; cache performance characterised by Belady's
 optimal-replacement bound and online competitive ratio
@@ -6414,16 +6443,19 @@ throughput: limited by L1/L2 cache memory bandwidth (\textit{not}
 predictor inference cost).
 
 \emph{(b) Hot-key access patterns.} For Zipf-distributed access with
-$\alpha = 1.5$ (heavily skewed) and $m = 10^6$, $C = 100$:
-$\rho_C \approx 1 - C^{1-\alpha}/((\alpha-1)\,\zeta(\alpha))
-= 1 - 100^{-0.5}/(0.5 \cdot 2.612) \approx 1 - 0.077 \approx 0.92$
-(92\% hit rate). For the typical Breslau measurement range
-$\alpha \in [0.7, 0.85]$ (heavy-tailed web traces), $\rho_C \approx
-(C/m)^{1-\alpha}$: at $C=100, m= 10^6, \alpha=0.8$ this gives
-$\rho_C \approx (10^{-4})^{0.2} \approx 0.16$ (16\% hit rate, modest
-but still better than uniform $C/m = 10^{-4}$). Amortized cost
-reduced by factor $1/(1-\rho_C)$: $\sim 12\times$ for $\alpha=1.5$,
-$\sim 1.2\times$ for the $\alpha=0.8$ heavy-tailed web-trace regime.
+$\alpha = 1.5$ (heavily skewed, convergent-normalizer regime) and
+$m = 10^6$, $C = 100$: the exact static-top hit rate
+$\rho_C = \sum_{k=1}^{100} k^{-1.5} / \sum_{k=1}^{10^6} k^{-1.5}
+\approx 0.9243$ (92\% hit rate). For the typical Breslau measurement
+range $\alpha \in [0.7, 0.85]$ (divergent-normalizer regime, web
+traces): at $C=100, m= 10^6, \alpha=0.8$ the exact value is
+$\rho_C = \sum_{k=1}^{100} k^{-0.8} / \sum_{k=1}^{10^6} k^{-0.8}
+\approx 0.1087$ (11\% hit rate, modestly above uniform $C/m =
+10^{-4}$); the leading asymptotic $(C/m)^{1-\alpha} = 0.158$ is too
+crude at this $C$ (next-order corrections from harmonic sum
+remainders are not negligible until $C \gg 1$).
+Amortized cost reduced by factor $1/(1-\rho_C)$: $\sim 12\times$ for
+$\alpha=1.5$, $\sim 1.1\times$ for the $\alpha=0.8$ web-trace regime.
 
 \emph{(c) Random-access OLTP workloads.} Uniform random access has
 $\rho_C \approx C/m$. For $C = 1024, m = 10^6$: $\rho_C \approx
