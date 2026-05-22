@@ -68,14 +68,14 @@ def main() -> int:
     # enwik9 scenario from paper
     print("\nPaper's enwik9 scenario:")
     print("  N = 10^9 bytes (enwik9)")
-    print("  H_M' = 1.04 bpb (Chinchilla-70B-class, Deletang et al. 2024)")
+    print("  H_M' = 0.664 bpb (Chinchilla-70B, Deletang et al. 2024 Table 1)")
     print("  delta_inf = 1 bit (English text empirical)")
     print("  p = 32 (eta = 2^-32 AC precision)")
     print("  K = sqrt(N) ≈ 31623 (balanced regime)")
     print("  delta = 10^-6 confidence")
 
     N = 10**9
-    H_M = 1.04
+    H_M = 0.664
     delta_inf = 1.0
     p = 32
     K = int(math.sqrt(N))
@@ -112,9 +112,9 @@ def main() -> int:
 
     all_ok = True
 
-    print(f"  Predictor: paper claims ~124 MB, computed {bits_to_human(result['predictor'])}")
+    print(f"  Predictor: paper claims ~79 MB, computed {bits_to_human(result['predictor'])}")
     predictor_mb = result['predictor'] / 8 / 1024**2
-    if abs(predictor_mb - 124.0) > 5.0:
+    if abs(predictor_mb - 79.0) > 5.0:
         print(f"    FAIL: off by >5 MB")
         all_ok = False
 
@@ -152,9 +152,9 @@ def main() -> int:
     # Compression ratio
     raw_bits = 8 * N
     ratio = raw_bits / result['total_central']
-    print(f"\n  Compression ratio: {ratio:.2f}x (paper claims ~7.68x)")
-    if abs(ratio - 7.68) > 0.1:
-        print(f"    FAIL: off by >0.1")
+    print(f"\n  Compression ratio: {ratio:.2f}x (paper claims ~12.0x for Chinchilla-70B)")
+    if abs(ratio - 12.0) > 0.5:
+        print(f"    FAIL: off by >0.5")
         all_ok = False
 
     # Sweep H_M' values for sanity

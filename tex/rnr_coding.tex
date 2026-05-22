@@ -5125,10 +5125,15 @@ $R_X = h(X | Y) < h(X)$: $X$ alone has been compressed below its
 own entropy, requiring $Y$ for disambiguation.
 
 \emph{(c) Generalisation to $k$ sources.} Slepian--Wolf extends to
-$k$-source distributed coding (Cover 1975 \emph{IEEE Trans.\ Inf.\
-Theory} 21(2):226) with rate region $\sum_{i \in S} R_i \geq H(X_S
-\mid X_{\bar{S}})$ for every $S \subseteq [k]$. RNR with $k$ correlated
-archives achieves the corresponding $k$-source sum-rate $H(X_{[k]})$.
+$k$-source distributed coding with rate region $\sum_{i \in S} R_i
+\geq H(X_S \mid X_{\bar{S}})$ for every $S \subseteq [k]$
+(Csisz{\'a}r \& K{\"o}rner 1981/2011 \emph{Information Theory: Coding
+Theorems for Discrete Memoryless Systems}, Cambridge Univ.\ Press,
+Theorem 15.4.1; Cover 1975 \emph{IEEE Trans.\ Inf.\ Theory}
+21(2):226--228 establishes the 2-source ergodic generalisation, with
+the $k$-source case following by similar coding-theoretic
+techniques). RNR with $k$ correlated archives achieves the
+corresponding $k$-source sum-rate $H(X_{[k]})$.
 
 \textbf{Theorem 7.9 (Successive-refinement RNR: anytime variable-quality
 access via layered rate-distortion codes).}
@@ -5220,10 +5225,11 @@ regularity.
 \emph{(b) Non-refinable sources}: For sources \emph{not} satisfying
 the Equitz--Cover condition, layered RNR incurs an additional rate
 penalty per layer: cumulative layer rates exceed $R(D_i)$ by a
-source-dependent gap (Westerlund--Wyner 1992
-\emph{IEEE Trans.\ Inf.\ Theory} 38(3):938 ``Successive refinement
-with side information''; Rimoldi 1994 cited above for the
-characterisation of refinable vs not). The penalty is bounded but
+source-dependent gap (Rimoldi 1994 cited above gives the complete
+characterisation of refinable vs.\ non-refinable cases; for the side-
+information variant see Steinberg \& Merhav 2004
+\emph{IEEE Trans.\ Inf.\ Theory} 50(8):1636--1654 ``On successive
+refinement for the Wyner-Ziv problem''). The penalty is bounded but
 non-zero.
 
 \emph{(c) Practical applications}: video streaming with adaptive
@@ -5297,9 +5303,10 @@ Sync overhead $\delta_\infty^{\mathrm{WZ}, D}$ is the Crutchfield--Feldman
 analog under the joint mixing, finite for exp-mixing $(X, Y)$.
 
 For constructive codes: DISCUS (Pradhan--Ramchandran 1999/2003
-\emph{IEEE Trans.\ Inf.\ Theory} 49(3):626 ``Distributed source coding
-using syndromes (DISCUS): design and construction'') gives explicit
-syndrome-based binning that integrates with sub-block structure.
+\emph{IEEE Trans.\ Inf.\ Theory} 49(3):626--643 ``Distributed source
+coding using syndromes (DISCUS): design and construction'') gives
+explicit syndrome-based binning that integrates with sub-block
+structure.
 Modern constructions use LDPC or polar codes for the binning
 (Liveris--Xiong--Georghiades 2003 cited above).
 \hfill$\blacksquare$
@@ -5331,7 +5338,9 @@ deduplication with similarity-aware updates.
 \textbf{Corollary 7.11 (Lossy RNR plus error-correcting code equals
 lossless RNR: Shannon source--channel separation in the RNR framework).}
 \emph{For any stationary exp-mixing source $X$ under Hamming
-distortion budget $D \in [0, 1 - 1/|\Sigma|]$, the rate-distortion-plus-
+distortion budget $D \in [0, D_{\max}]$ (where $D_{\max} = 1 -
+\max_x \pi(x)$ is the no-information distortion --- the smallest
+distortion achievable by a constant predictor), the rate-distortion-plus-
 error-correction decomposition}
 \[
 L^{\mathrm{rep}}_{\mathrm{lossy}}(X^N; D) + L^{\mathrm{ECC}}(N, D)
@@ -5367,16 +5376,27 @@ bit; Cover \& Thomas 2006 §7.1). Summing:
 \[
 L^{\mathrm{lossy}} + L^{\mathrm{ECC}} \geq N \cdot R(D) + N \cdot h(D) + 2m \delta_\infty + O(1).
 \]
-For memoryless $X \sim \mathrm{Bern}(p)$ at Hamming distortion:
-$R(D) = h(p) - h(D)$ (Shannon 1959; Cover \& Thomas 2006 Theorem 10.3.1
-``Bernoulli rate-distortion''). Sum: $R(D) + h(D) = h(p) = h(X)$,
-matching $L^{\mathrm{lossless}}$ from Theorem 7.2.
+For memoryless $X \sim \mathrm{Bern}(p)$ at Hamming distortion in
+the valid range $D \in [0, \min(p, 1-p)]$: $R(D) = h(p) - h(D)$
+(Shannon 1959; Cover \& Thomas 2006 Theorem 10.3.1 ``Bernoulli
+rate-distortion''). Sum: $R(D) + h(D) = h(p) = h(X)$, matching
+$L^{\mathrm{lossless}}$ from Theorem 7.2. For $D > \min(p, 1-p)$
+the rate-distortion function $R(D) = 0$ (constant predictor
+$\hat{X} = \mathrm{argmax}_x \pi(x)$ achieves distortion $\min(p,1-p)$
+at zero rate); the identity $R(D) + h(D) = h(X)$ no longer holds in
+this regime --- it transitions to $R(D) + h(D) = h(D)$, which can be
+less than $h(X)$.
 
-For memory sources, $R(D) + h(D) \geq h(X)$ by Shannon's separation
-theorem with equality conditional on memorylessness; strict inequality
-possible (e.g., for jointly Gaussian Markov sources where joint
-source--channel coding beats separation; Cover \& Thomas 2006
-Theorem 11.7.1 and Example 11.7.1).
+For memory sources, Shannon's separation theorem (Cover \& Thomas 2006
+§11.7) gives $R(D) + h(D) \geq h(X)$ with equality conditional on
+memorylessness. Strict inequality is possible for certain joint
+source--channel settings (Vembu, Verd{\'u} \& Steinberg 1995
+\emph{IEEE Trans.\ Inf.\ Theory} 41(1):44--54 ``The source--channel
+separation theorem revisited''). For the canonical Hamming-distortion
+binary-Markov case, separation remains optimal up to vanishing terms;
+strict inequality is a feature of more exotic distortion/channel
+combinations (e.g., joint Gaussian source over Gaussian channel under
+mean-squared-error, where joint coding beats separation).
 \hfill$\blacksquare$
 
 \emph{Practical implication.} Lossy RNR (Theorem 7.7) is genuinely
@@ -5521,10 +5541,12 @@ correct source byte with probability at least $1 - 2^{-\Omega(K)}$
 (decoding failure exponential in sub-block size). The factor
 $1/(1 - h(\varepsilon))$ is the Shannon BSC channel-capacity overhead:
 the channel can carry $C = 1 - h(\varepsilon)$ bits of information per
-channel use. The $O(\sqrt{N})$ term is the finite-blocklength
-penalty (Polyanskiy--Poor--Verd{\'u} 2010 \emph{IEEE Trans.\ Inf.\
-Theory} 56(5):2307 ``Channel coding rate in the finite blocklength
-regime'').}
+channel use. The penalty term $O(\sqrt{N})$ holds when
+$K = \Omega(\sqrt{N})$ (balanced T7.5 regime); for polylog $K$ the
+penalty is $O(N/\sqrt{K}) = O(N/\sqrt{\mathrm{polylog}(N)})$,
+sub-linear in $N$ but larger than $\sqrt{N}$ (Polyanskiy--Poor--Verd{\'u}
+2010 \emph{IEEE Trans.\ Inf.\ Theory} 56(5):2307--2359 ``Channel coding
+rate in the finite blocklength regime'').}
 
 \emph{Limits and trade-offs.}
 \emph{(a) $\varepsilon \to 0$ (clean storage):} $1/(1 - h(\varepsilon))
@@ -5560,11 +5582,16 @@ independently to length $\sim K \cdot h(X) / (1 - h(\varepsilon))$
 bits. Per-query decoding: read the ECC-encoded sub-block,
 ECC-decode, then source-decode via the RNR sub-block decoder.
 
-The finite-blocklength penalty $O(\sqrt{N})$ accumulates over
-$m = N/K$ sub-blocks, each with $O(\sqrt{K})$ penalty: total
-$m \cdot \sqrt{K} = N/\sqrt{K} = O(\sqrt{N})$ for $K = \mathrm{polylog}(N)$
-(actually slightly better as $K$ grows; for the stated $K =
-\mathrm{polylog}(N)$, the $O(\sqrt{N})$ bound is loose but suffices).
+The finite-blocklength penalty accumulates over $m = N/K$ sub-blocks,
+each with $O(\sqrt{K \log K})$ penalty (Polyanskiy--Poor--Verd{\'u}
+channel-dispersion bound): total
+$m \cdot \sqrt{K \log K} = (N/K) \cdot \sqrt{K \log K} = N \sqrt{\log
+K / K}$. For $K = \mathrm{polylog}(N)$: penalty scales as $N /
+\sqrt{\mathrm{polylog}(N)}$, sub-linear in $N$ but \emph{larger}
+than $\sqrt{N}$. To achieve $O(\sqrt{N})$ total penalty, require
+$K = \Omega(\sqrt{N})$ (matching Theorem 7.5's balanced regime).
+For Theorem 7.13's polylog-$K$ regime, the more honest bound is
+$O(N / \sqrt{K})$.
 
 For constructive ECC: LDPC, polar, or BCH codes at sub-block size
 $K = \mathrm{polylog}(N)$ achieve the rate $1 - h(\varepsilon) - O(1/K)$
@@ -5617,16 +5644,19 @@ concentrates around its expectation: for every $t > 0$,}
 \[
 \Pr\Bigl(\,\bigl|\,L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - \mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N)]\,\bigr| > t\,\Bigr)
 \;\leq\;
-2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot \log_2^2(1/\eta)}\Bigr).
+2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot (W_N + 1)^2 \cdot \log_2^2(1/\eta)}\Bigr).
 \]
-\emph{Equivalently, for $t = c \cdot \sqrt{N} \cdot \log_2(1/\eta)$
+\emph{The $(W_N+1)$ factor reflects the dependency of $\ell_k$
+($k \in [n, n+W_N]$) on $X_n$ via the $W_N$-bounded predictor context,
+which widens the martingale-difference bound.
+Equivalently, for $t = c \cdot \sqrt{N} \cdot (W_N+1) \cdot \log_2(1/\eta)$
 the deviation probability is $\leq 2 \exp(-c^2/2)$. Taking $c = \sqrt{2
 \log(2/\delta)}$ gives a $1 - \delta$ confidence bound: with
 probability at least $1 - \delta$,}
 \[
 \bigl|\,L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - N \cdot h(X) - m \cdot \delta_\infty - O(1)\,\bigr|
 \;\leq\;
-\sqrt{2 N \log(2/\delta)} \cdot \log_2(1/\eta).
+\sqrt{2 N \log(2/\delta)} \cdot (W_N + 1) \cdot \log_2(1/\eta).
 \]
 
 \emph{\textbf{Proof.}} The per-position log-loss
@@ -5640,9 +5670,12 @@ $(X_n)$. Under exp-mixing (5.8), this sum is approximately a sum of
 weakly-dependent bounded random variables. Specifically, define
 $S_N := \sum_n \ell_n$ and the martingale
 $M_n := \mathbb{E}[S_N \mid X_1, \ldots, X_n] - \mathbb{E}[S_N]$.
-The martingale differences $D_n := M_n - M_{n-1}$ are bounded by
-$\log_2(1/\eta)$ in absolute value (each $\ell_n$ contribution to the
-conditional expectation is bounded).
+The martingale differences $D_n := M_n - M_{n-1}$ capture the change
+in conditional expectation induced by revealing $X_n$. Under the
+$W_N$-bounded predictor, $X_n$ enters the context window of $\ell_k$
+for $k \in [n, n + W_N]$, so $|D_n| \leq (W_N + 1) \cdot \log_2(1/\eta)$
+(the $(W_N+1)$ subsequent log-loss terms can each change by at most
+$\log_2(1/\eta)$ when conditioning on $X_n$).
 
 By Azuma--Hoeffding's inequality (Azuma 1967 \emph{Tohoku Math.\ J.}\
 19(3):357; Hoeffding 1963 \emph{J.\ Amer.\ Stat.\ Assoc.}\
@@ -5650,7 +5683,7 @@ By Azuma--Hoeffding's inequality (Azuma 1967 \emph{Tohoku Math.\ J.}\
 \[
 \Pr(|M_N| > t) \;\leq\; 2 \exp\!\Bigl(-\frac{t^2}{2 \sum_n D_n^2}\Bigr)
 \;\leq\;
-2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot \log_2^2(1/\eta)}\Bigr),
+2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot (W_N + 1)^2 \cdot \log_2^2(1/\eta)}\Bigr),
 \]
 giving the stated concentration. The exp-mixing assumption (5.8)
 ensures that the martingale-difference framework applies without
@@ -5724,7 +5757,7 @@ L^{\mathrm{rep}}_{\mathrm{RNR}}^{M'}(X^N)
 \;+\;
 \underbrace{m \cdot p \cdot O(1)}_{\substack{\text{AC slack} \\ O(\sqrt{N} \cdot p)}}
 \;\pm\;
-\underbrace{\sqrt{2 N \log(2/\delta)} \cdot p}_{\substack{\text{concentration} \\ O(\sqrt{N} \log(1/\delta) \cdot p)}}
+\underbrace{\sqrt{2 N \log(2/\delta)} \cdot W_N \cdot p}_{\substack{\text{concentration} \\ O(\sqrt{N} \log(1/\delta) \cdot W_N p)}}
 \;+\;
 \underbrace{O(1)}_{\text{header}}
 \;
@@ -5737,14 +5770,14 @@ time for $W_N = O(\log N)$ context and $d$ parameters).}
 
 \emph{Numerical prediction for enwik9-scale archive
 ($N = 10^9$ bytes, English Wikipedia text)}: with a
-Chinchilla-70B-class transformer giving
-$H_{M'} \approx 1.04$ bits/byte (Del{\'e}tang et al.\ 2024 ICLR
-arXiv:2309.10668), $\eta = 2^{-32}$ ($p = 32$), $K = \sqrt{N} \approx
-31623$, $\delta_\infty \approx 1$ bit (English text empirical),
-$\delta = 10^{-6}$:
+Chinchilla-70B-class transformer compressing enwik9 to raw rate $8.3\%$
+of original size, i.e.\ $H_{M'} \approx 0.664$ bits/byte (Del{\'e}tang
+et al.\ 2024 ICLR arXiv:2309.10668, Table 1), $\eta = 2^{-32}$
+($p = 32$), $K = \sqrt{N} \approx 31623$, $\delta_\infty \approx 1$ bit
+(English text empirical), $\delta = 10^{-6}$:
 \begin{itemize}
-\item Predictor cross-entropy: $N \cdot H_{M'} = 10^9 \cdot 1.04$ bits
-$\approx 124 \,\mathrm{MB}$.
+\item Predictor cross-entropy: $N \cdot H_{M'} = 10^9 \cdot 0.664$ bits
+$\approx 79 \,\mathrm{MB}$.
 \item Sync overhead: $m \cdot \delta_\infty = (10^9 / 31623) \cdot 1
 \approx 3.16 \cdot 10^4$ bits $\approx 4 \,\mathrm{kB}$ (negligible).
 \item AC slack: $m \cdot p = (10^9 / 31623) \cdot 32 \approx 1.01 \cdot
@@ -5752,12 +5785,13 @@ $\approx 124 \,\mathrm{MB}$.
 \item Concentration at $1\sigma$ ($\delta \approx 0.32$, so $\log(2/\delta)
 \approx 1.84$): $\sqrt{2 \cdot 10^9 \cdot 1.84} \cdot 32 \approx
 1.94 \cdot 10^6$ bits $\approx 244 \,\mathrm{kB}$
-(or $\sim 0.2\%$ of archive).
+(or $\sim 0.3\%$ of archive).
 \item Concentration at $\delta = 10^{-6}$ ($\log(2/\delta) \approx 14.5$):
 $\sqrt{2 \cdot 10^9 \cdot 14.5} \cdot 32 \approx 5.45 \cdot 10^6$ bits
-$\approx 665 \,\mathrm{kB}$ ($\sim 0.5\%$ of archive).
-\item Predicted total: $\approx 124 \pm 0.7 \,\mathrm{MB}$ at $\delta
-= 10^{-6}$ ($\sim 7.68\times$ compression vs $1 \,\mathrm{GB}$ raw text).
+$\approx 665 \,\mathrm{kB}$ ($\sim 0.8\%$ of archive).
+\item Predicted total: $\approx 79 \pm 0.7 \,\mathrm{MB}$ at $\delta
+= 10^{-6}$ ($\sim 12.0\times$ compression vs $1 \,\mathrm{GB}$ raw text,
+matching Del{\'e}tang et al.\ 2024 Table 1 measurement).
 \item Per-query random-access cost: $O(\sqrt{N} \cdot \mathrm{cost}(M'))
 \approx 31623 \cdot \mathrm{transformer\_eval} \approx$ tens of
 milliseconds on a single GPU.
@@ -5771,7 +5805,9 @@ Apply Theorem 7.5's optimal $K^* = \Theta(\sqrt{N})$ for balanced
 storage-access workloads, giving $m \cdot \delta_\infty + \alpha Q
 K^* = \Theta(\sqrt{N})$. Apply Theorem 7.14's concentration bound
 with $\eta = 2^{-p}$, giving deviation
-$\sqrt{2 N \log(2/\delta)} \cdot p$. Combine all terms.
+$\sqrt{2 N \log(2/\delta)} \cdot W_N \cdot p$ (with $W_N = O(\log N)$
+factor reflecting predictor-context memory; see Theorem 7.14's
+$(W_N+1)$-bound). Combine all terms.
 
 The $\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = O(m \cdot p)$
 follows from Theorem 7.2 convention C2 with per-sub-block stream
@@ -5927,18 +5963,31 @@ the modified range $[i, i+M-1]$. Cost: $O(M \cdot \mathrm{cost}(M'))$,
 $O(M \cdot H_{M'})$ bits archive delta. No re-encoding of unmodified
 sub-blocks.}
 
-\emph{(c) [Insertion of $M$ bytes at position $i$]} \emph{Re-encode
-the sub-block containing $i$ and shift sync-metadata offsets for
-subsequent sub-blocks by $\Delta L$ (the archive-bit-length change).
-Cost: $O((M+K) \cdot \mathrm{cost}(M'))$ for re-encoding the affected
-sub-block (now containing the inserted bytes plus the original
-content), plus $O((N - i)/K \cdot \log L(R))$ header offset updates.
-The header offset shift is constant per sub-block, so cumulative
-overhead is at most $m \cdot \log L(R) = \mathrm{polylog}(N)$ bits.}
+\emph{(c) [Insertion of $M$ bytes at position $i$ under content-defined
+chunking]} \emph{Assuming the encoder uses \emph{content-defined
+chunking} (CDC) --- sub-block boundaries determined by rolling-hash
+fingerprints of the source content (Rabin 1981 \emph{Fingerprinting by
+Random Polynomials}, Center for Research in Computing Tech., Harvard;
+Muthitacharoen--Chen--Mazi{\`e}res 2001 \emph{SOSP '01} ``A low-bandwidth
+network file system''), rather than fixed-position $K$-aligned
+boundaries --- insertion of $M$ bytes affects at most $O(1)$
+sub-blocks straddling the insertion point. Re-encode those affected
+sub-blocks (cost $O((M+K) \cdot \mathrm{cost}(M'))$) and shift
+sync-metadata offsets for subsequent sub-blocks by $\Delta L$. The
+header offset shift is $O(\log L(R))$ per sub-block, cumulative
+$O(m \cdot \log L(R)) = \mathrm{polylog}(N)$ bits. \emph{Without CDC}
+(fixed $K$-aligned boundaries), insertion realigns ALL subsequent
+sub-blocks --- each now covers different source bytes than before, and
+all $m - \lfloor i/K \rfloor$ subsequent sub-blocks must be re-encoded,
+giving $O(N)$ cost; in this case insertion is no better than monolithic
+re-encoding.}
 
-\emph{(d) [Deletion of $M$ bytes at position $i$]} \emph{Symmetric to
-insertion: re-encode affected sub-block, shift offsets of subsequent
-sub-blocks. Cost: $O((M+K) \cdot \mathrm{cost}(M'))$ + header updates.}
+\emph{(d) [Deletion of $M$ bytes at position $i$ under content-defined
+chunking]} \emph{Symmetric to insertion: re-encode the affected
+sub-blocks (CDC absorbs the deletion locally), shift offsets of
+subsequent sub-blocks. Cost: $O((M+K) \cdot \mathrm{cost}(M'))$ +
+header updates. Without CDC, all subsequent sub-blocks shift and
+require re-encoding.}
 
 \emph{Comparison with monolithic compressors.} Standard compressors
 (gzip, zstd, Brotli without restart points) require \emph{full
@@ -6064,11 +6113,15 @@ communication during encoding (only at the end, to merge headers).
 Header merge: each worker produces its sub-blocks' encoded payloads
 plus offset/hash metadata. Final assembly computes cumulative offsets
 ($O(m)$ time, $O(\log L(R))$ bits per offset) and concatenates
-payloads. Total merge: $O(m \cdot \log L(R)) = O(\mathrm{polylog}(N) \cdot
-\mathrm{polylog}(N)) = \mathrm{polylog}(N)$ for $K = \mathrm{polylog}(N)$.
+payloads. Total merge: $T_{\mathrm{merge}} = O(m \cdot \log L(R)) =
+O((N/K) \cdot \log L(R))$. For $K = \mathrm{polylog}(N)$ this is
+$O(N \cdot \log L(R) / \mathrm{polylog}(N))$ --- sub-linear in $N$
+(strictly between $\mathrm{polylog}(N)$ and $N$), and asymptotically
+dominated by the per-worker encoding cost $N \cdot \mathrm{cost}(M')/P$
+whenever $P \cdot \log L(R) = o(K \cdot \mathrm{cost}(M'))$.
 
 Hence
-$T^{(P)} = N \cdot \mathrm{cost}(M') / P + \mathrm{polylog}(N)$,
+$T^{(P)} = N \cdot \mathrm{cost}(M') / P + O((N/K) \log L(R))$,
 giving asymptotic linear speedup $T^{(1)}/T^{(P)} \to P$ as $N \to
 \infty$ for any fixed $P \leq m$. For $P > m$, additional workers are
 idle (Amdahl saturation at $P = m$).
@@ -6114,16 +6167,26 @@ structure at coarser granularity. RNR's sub-block design natively
 supports the parallelism without auxiliary tuning.
 
 \textbf{Theorem 7.19 (Streaming RNR encoder: $O(K + \mathrm{size}(M'))$
-memory and $K$-position bounded latency for memory-constrained devices).}
+memory and $K$-position bounded latency for memory-constrained devices,
+under footer-layout convention).}
 \emph{The Theorem 7.2 encoder admits a streaming implementation
 processing the source $X^N$ as a sequential stream, with the following
-resource bounds:}
+resource bounds (under the convention that sub-block metadata --- offsets,
+hashes, MAC tags --- is written as a \emph{footer} after the payload, in
+the ZIP central-directory style, rather than a prefix header):}
 \begin{itemize}
 \item \emph{\textbf{Memory}: $O(K + \mathrm{size}(M'))$ bits encoder
-state, independent of $N$. Specifically: $K$-byte source buffer +
+state for the active sub-block plus predictor, \emph{plus} an
+incrementally-accumulating footer buffer of $O(m \cdot \log L(R))
+= O(N/K \cdot \log L(R))$ bits (or a streamed footer if the storage
+medium supports random-access seek after payload emission).
+For the on-line encoder: total memory is $O(K + \mathrm{size}(M') +
+(N/K) \cdot \log L(R))$, with the last term sub-linear in $N$ for
+$K = \mathrm{polylog}(N)$. Specifically: $K$-byte source buffer +
 arithmetic-coder state $O(p)$ bits + predictor model parameters
 $\mathrm{size}(M')$ bits + predictor hidden state
-$O(W_N \cdot d_{\mathrm{hidden}})$ bits.}
+$O(W_N \cdot d_{\mathrm{hidden}})$ bits + footer accumulator
+$O((N/K) \log L(R))$ bits.}
 \item \emph{\textbf{Latency}: At most $K$ source positions of input
 read before first output bit emitted (encoder must read full sub-block
 before encoding). Steady-state: one sub-block of output emitted per
@@ -6246,8 +6309,10 @@ query.
 \item \emph{(Range scan over $L$ bytes)}: $\rho_C = 1 - K/L$. For
 $L \gg K$, near-perfect locality.
 \item \emph{(Zipf hot-key with skew $\alpha$)}: $\rho_C \approx 1 -
-(C/m)^{-1+1/\alpha}$. For $\alpha > 1$ (heavy-tailed): $\rho_C \to 1$
-as $C$ grows.
+(C/m)^{1 - 1/\alpha}$ (Breslau et al.\ 1999 \emph{Proc.\ IEEE INFOCOM},
+``Web caching and Zipf-like distributions: evidence and implications'').
+For $\alpha > 1$ (heavy-tailed): $(C/m)^{1-1/\alpha} \to 0$ as $C$
+grows, so $\rho_C \to 1$.
 \item \emph{(LRU under bursty workloads)}: $\rho_C$ tracks workload's
 working-set size; cache performance characterised by Belady's
 optimal-replacement bound and online competitive ratio
@@ -6335,24 +6400,26 @@ storage cost is}
 \;
 L^*(N) \;=\; (N \cdot C \cdot \alpha)^{1/(1+\alpha)},
 \quad
-\mathrm{TotalCost}(L^*, N) \;=\; N \cdot h(X) + \Theta\bigl(N^{\alpha/(1+\alpha)}\bigr),
+\mathrm{TotalCost}(L^*, N) \;=\; N \cdot h(X) + \Theta\bigl(N^{1/(1+\alpha)}\bigr),
 \;
 }
 \]
 \emph{i.e., the optimal predictor size grows as $L^* = \Theta(N^{1/(1+\alpha)})$,
-strictly sub-linear in $N$, and the per-archive amortised predictor
-overhead is $\Theta(N^{\alpha/(1+\alpha)})$ bits — also sub-linear.}
+strictly sub-linear in $N$, and the per-archive amortised total overhead
+is $(1 + 1/\alpha) \cdot L^* = \Theta(N^{1/(1+\alpha)})$ bits — also
+sub-linear. The exponent $1/(1+\alpha) < 1$ for any $\alpha > 0$.}
 
 \emph{Concrete scaling values.}
 \begin{itemize}
 \item \emph{$\alpha = 1$ (heuristic):} $L^* = \Theta(\sqrt{N})$,
 overhead $= \Theta(\sqrt{N})$. For $N = 1\,\mathrm{GB}$: $L^* \sim
-30\,\mathrm{k}$ parameters, overhead $\sim 30\,\mathrm{kB}$.
-\item \emph{$\alpha = 0.5$ (more conservative):} $L^* = \Theta(N^{2/3})$,
-overhead $= \Theta(N^{1/3})$. For $N = 1\,\mathrm{GB}$: $L^* \sim
-10^6$ params, overhead $\sim 1\,\mathrm{kB}$.
-\item \emph{$\alpha = 0.34$ (Kaplan 2020 fit for text models):} $L^*
-\sim N^{0.75}$, overhead $\sim N^{0.25}$. Balanced regime.
+30\,\mathrm{k}$ parameters, overhead $\sim 60\,\mathrm{kB}$.
+\item \emph{$\alpha = 0.5$ (intermediate):} $L^* = \Theta(N^{2/3})$,
+overhead $= \Theta(N^{2/3})$. For $N = 1\,\mathrm{GB}$: $L^* \sim
+3 \cdot 10^6$ params, overhead $\sim 9 \cdot 10^6$ bits = $1.1\,\mathrm{MB}$.
+\item \emph{$\alpha = 0.34$ (Hoffmann/Chinchilla 2022 fit for compute-
+optimal LLM training):} $L^* \sim N^{1/1.34} \approx N^{0.75}$, overhead
+$= \Theta(L^*) \sim N^{0.75}$. Balanced regime.
 \end{itemize}
 
 \emph{\textbf{Proof.}} Calculus optimisation:
@@ -6363,13 +6430,15 @@ C \cdot \alpha)^{1/(\alpha+1)}$.
 Second-order: $d^2/dL^2 = N \cdot C \cdot \alpha(\alpha+1) \cdot
 L^{-(\alpha+2)} > 0$ at $L^*$, confirming minimum.
 Substituting back:
-$\mathrm{TotalCost}(L^*, N) = L^* + N \cdot h(X) + N \cdot C \cdot
-(L^*)^{-\alpha} = L^* + N h(X) + (L^*)/\alpha = (1 + 1/\alpha) L^* +
-N h(X) = \Theta(L^*) + N h(X)$.
-With $L^* = \Theta(N^{1/(1+\alpha)})$, the overhead is $\Theta(N^{1/(1+\alpha)})$
-which equals $\Theta(N^{\alpha/(1+\alpha)})$ when re-expressed in terms
-of the source-cost decomposition (the $1/(1+\alpha)$ power on $L$
-balances $\alpha/(1+\alpha)$ on $N$).
+$N \cdot C \cdot (L^*)^{-\alpha} = N \cdot C \cdot (N C \alpha)^{-\alpha/(1+\alpha)}
+= L^* / \alpha$ (using $L^{1+\alpha} = NC\alpha$, so
+$L^{-\alpha} = L/(NC\alpha)$, hence $N C L^{-\alpha} = L/\alpha$).
+Therefore:
+$\mathrm{TotalCost}(L^*, N) = L^* + N \cdot h(X) + L^*/\alpha
+= (1 + 1/\alpha) L^* + N h(X) = \Theta(L^*) + N h(X)
+= \Theta(N^{1/(1+\alpha)}) + N h(X)$.
+The overhead grows as $L^* = \Theta(N^{1/(1+\alpha)})$, strictly
+sub-linear in $N$.
 \hfill$\blacksquare$
 
 \emph{Scope and practical implications.}
@@ -6539,10 +6608,16 @@ adversary, modification of any sub-block payload is detected with
 probability $\geq 1 - 2^{-\tau} - \mathrm{negl}(\lambda)$, where
 $\lambda$ is the security parameter (HMAC key length). For
 $\tau = 128$, the false-negative probability is $\leq 2^{-128}$
-(cryptographically secure under standard random-oracle / PRF
-assumptions; Bellare--Canetti--Krawczyk 1996 \emph{Advances in
-Cryptology --- CRYPTO '96}, Springer LNCS 1109 ``Keying hash
-functions for message authentication'').
+(cryptographically secure under the PRF assumption on the underlying
+compression function; Bellare--Canetti--Krawczyk 1996 \emph{Advances
+in Cryptology --- CRYPTO '96}, Springer LNCS 1109 ``Keying hash
+functions for message authentication'', with the tighter PRF-only
+characterisation in Bellare 2006 \emph{CRYPTO 2006},
+LNCS 4117 ``New proofs for NMAC and HMAC: security without
+collision-resistance''; for AEAD security (encrypt-then-MAC compositions),
+Bellare \& Namprempre 2000 \emph{Advances in Cryptology --- ASIACRYPT
+2000}, Springer LNCS 1976 ``Authenticated encryption: relations among
+notions and analysis of the generic composition paradigm'').
 \item \emph{(Per-query verification cost)}: $O(K + \tau)$ time
 ($O(K)$ for HMAC computation over the sub-block, $O(\tau)$ for tag
 comparison). Polylog in $N$ for $K = \mathrm{polylog}(N)$.
