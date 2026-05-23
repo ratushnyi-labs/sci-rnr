@@ -8455,6 +8455,86 @@ viewed as hand‑designed Type‑III‑A schedulers in which the entropy field
 U is computed from explicit context features rather than predicted by a
 neural network.
 
+\textbf{12.8 Foundations used by the §7 extensions}
+
+The 23-theorem §7 framework draws on several established lines outside
+the immediate compression literature, listed here for completeness.
+
+\emph{Concentration of measure and martingales.} Theorem 7.14's
+Doob-martingale tail bound uses Azuma (1967) \emph{T\^ohoku Math.\
+J.} 19(3):357 and Hoeffding (1963) \emph{J.\ Amer.\ Stat.\ Assoc.}
+58(301):13 as base, with McDiarmid (1989) \emph{Surveys in
+Combinatorics} (Cambridge) for the bounded-differences variant.
+Under exp-mixing, the source-mixing-tail factor $\rho/(1-\rho)$ is
+the obstacle that prevents direct iid-Hoeffding application; tighter
+bounds under polynomially-slow mixing would use Rio (2000)
+\emph{Th\'eorie asymptotique des processus al\'eatoires faiblement
+d\'ependants} or Samson (2000) \emph{Ann.\ Probab.} 28(1):416.
+
+\emph{Cache analysis.} Theorem 7.20's cache-aware decoder uses the
+classical LRU competitive ratio $C/(C-h+1)$ of Sleator and Tarjan
+(1985) \emph{Comm.\ ACM} 28(2):202--208 ``Amortized efficiency of
+list update and paging rules''. The static-top-popularity hit rate
+under Zipf workloads is the Breslau et al.\ (1999) \emph{Proc.\ IEEE
+INFOCOM} ``Web caching and Zipf-like distributions'' result with
+the correct asymptotics $\rho_C \sim (C/m)^{1-\alpha}$
+(divergent-normalizer $0<\alpha<1$) and
+$\rho_C \to 1 - C^{1-\alpha}/((\alpha-1)\zeta(\alpha))$
+(convergent-normalizer $\alpha>1$). Theorem 7.24's IRM hypothesis
+follows the Independent Reference Model of Fagin (1977) \emph{Comm.\
+ACM} 20(11):846--851; foundational LRU+IRM analysis is in Hendricks
+(1972) and finite-batch deviation bounds for paging are in King
+(1971) \emph{J.\ ACM} 18(1):95--117. Ferragut, Rodriguez, and
+Paganini (2017) \emph{Queueing Systems} 88:207 give modern
+timer-based-cache hit-rate analysis under general arrival processes.
+
+\emph{Scaling laws for neural predictors.} Theorem 7.15's numerical
+prediction uses the empirical bits-per-byte rate of Delétang et al.\
+(2024) ``Language Modeling Is Compression'', arXiv:2309.10668,
+ICLR 2024 (Table 1: Chinchilla-70B on enwik9 at $\approx 0.664$ bpb,
+$12.0\times$ raw compression). Theorem 7.21's predictor-archive size
+trade-off uses the Hoffmann et al.\ (2022)
+\emph{Training Compute-Optimal Large Language Models}
+(``Chinchilla paper'', NeurIPS 2022) scaling law with $\alpha
+\approx 0.34$ for loss as a function of parameter count; this
+\emph{updates} the earlier scaling fit of Kaplan et al.\ (2020)
+\emph{Scaling Laws for Neural Language Models}, arXiv:2001.08361,
+whose data-scaling exponent was estimated at $\approx 0.076$. The
+model-overhead caveat in §7 (T7.15 framing) and the critique of
+unadjusted-LM-as-compressor metrics cite Zhang et al.\ (2024)
+\emph{L3TC: Leveraging RWKV for Learned Lossless Low-Complexity
+Text Compression}, arXiv:2412.16642.
+
+\emph{Authenticated encryption.} Theorem 7.23's per-sub-block MAC
+uses the Bellare--Namprempre (2000)
+\emph{Authenticated Encryption: Relations among Notions and
+Analysis of the Generic Composition Paradigm}, ASIACRYPT 2000,
+LNCS 1976, for the encrypt-then-MAC compositional security
+analysis. HMAC security is established in Bellare, Canetti, and
+Krawczyk (1996) \emph{CRYPTO}; Poly1305 in Bernstein (2005)
+\emph{Fast Software Encryption}; BLAKE3 in Aumasson et al.\
+(2020/2022) ``BLAKE3: one function, fast everywhere''.
+
+\emph{Content-defined chunking.} Theorem 7.17's insertion/deletion
+robustness uses the content-defined chunking of Rabin (1981)
+``Fingerprinting by random polynomials'', Harvard Tech.\ Report
+TR-15-81, as deployed in LBFS (Muthitacharoen, Chen, and Mazi\`eres
+2001) \emph{Proc.\ SOSP} for distributed file systems.
+
+\emph{Functional and multi-source coding.} Theorem 7.8 (functional
+compression) uses the characteristic-graph entropy of Orlitsky and
+Roche (2001) \emph{IEEE Trans.\ Inf.\ Theory} 47(3):903; Theorem 7.7
+(successive refinement) uses Equitz and Cover (1991) \emph{IEEE
+Trans.\ Inf.\ Theory} 37(2):269; Theorem 7.12 (multi-source joint
+coding) uses Lauritzen and Spiegelhalter (1988) \emph{J.\ Royal
+Stat.\ Soc.\ B} 50(2):157 for the junction-tree entropy
+decomposition.
+
+\emph{Universal online compression.} Theorem 7.6 uses
+Krichevsky--Trofimov estimator regret bounds (Krichevsky and
+Trofimov 1981 \emph{IEEE Trans.\ Inf.\ Theory} 27(2):199), which
+form the foundation for universal-coding regret analysis.
+
 \textbf{13. Status of open problems}
 
 This section reports the status of every problem the framework opens,
