@@ -9087,6 +9087,44 @@ listed below.)
   incompletely characterized. A specific compatible Adam variant
   with a convergence guarantee matching the floating-point
   baseline, on standard problems, is open.
+\item
+  Finite-batch concentration of total decode latency under LRU and
+  IRM workloads. Theorem 7.24 (revised) establishes a Hoeffding tail
+  bound under the restricted hypotheses of IRM workloads and
+  \emph{static} Perfect-LFU caching (no eviction dynamics).
+  Adversarial review during the revision cycle (codex 2026-05)
+  produced an explicit counterexample showing that LRU miss
+  indicators are not iid Bernoulli: the workload
+  ``$A, B, A, B, \ldots$'' against an LRU cache of size $C = 1$
+  produces $\Theta(Q)$ miss-count deviation rather than the
+  $\Theta(\sqrt{Q})$ Hoeffding scaling. A correct finite-batch tail
+  bound for LRU under IRM (let alone non-IRM workloads) requires
+  separate concentration analysis for the LRU Markov chain over
+  cache states, with mixing-time-dependent constants. Foundational
+  results in this direction are Fagin (1977) \emph{Comm.\ ACM}
+  20(11):846--851 ``Asymptotic miss ratios over independent
+  references'' and Hendricks (1972) on LRU stationary analysis;
+  King (1971) \emph{J.\ ACM} 18(1):95--117 gives finite-batch
+  deviation bounds for paging algorithms but not in the form needed
+  for direct application here. A clean LRU+IRM tail bound matching
+  Theorem 7.24's accessibility would be a useful contribution.
+\item
+  Tightened concentration of $L^{\mathrm{rep}}_{\mathrm{RNR}}$ under
+  polynomially-slow mixing. Theorem 7.14 (as revised after
+  codex 2026-05 adversarial review) gives the Doob-martingale tail
+  bound with deviation factor $(W_N + 1 + \rho/(1-\rho)) \cdot
+  \log_2(1/\eta)$, where $\rho$ is the exp-mixing constant from
+  hypothesis (5.8). Under \emph{constant} $\rho$ this is
+  asymptotically tight (the $(W_N+1)$ predictor-context term
+  dominates), but for processes whose mixing slows polynomially
+  with $N$ (where $1/(1-\rho)$ becomes super-constant in $N$), the
+  mixing-tail term dominates and the bound becomes loose. A clean
+  concentration analysis under polynomial mixing --- bypassing the
+  $\rho/(1-\rho)$ factor via Rio (2000) or Samson (2000)
+  concentration-for-mixing-processes machinery --- would extend
+  Theorem 7.14 to a broader source class. Either a positive result
+  (tighter bound) or a converse (showing the $\rho/(1-\rho)$ factor
+  is necessary) would close this question.
 \end{itemize}
 
 \textbf{13.3 Out of scope: engineering deferrals}
