@@ -8299,6 +8299,34 @@ uncertainty. On already-compressed data (gzip, xz, zstd output), RNR
 is predicted to be slightly worse than passthrough, since the
 residual entropy is high and the model cost is wasted.
 
+\textbf{11.7 Large-scale neural predictors (Theorem 7.15 instantiation)}
+
+The end-to-end synthesis Theorem 7.15 gives an \emph{explicit
+numerical prediction}, not a conjecture: with a Chinchilla-70B-class
+transformer ($H_{M'} \approx 0.664$ bpb measured by Delétang et al.\
+2024 on enwik9, Table 1) and the balanced regime $K = \Theta(\sqrt{N})$,
+encoder output is $\approx 79\,\mathrm{MB}$ for the $1\,\mathrm{GB}$
+enwik9 source, with $\pm 0.7\,\mathrm{MB}$ Azuma deviation at
+$\delta = 10^{-6}$. This is a $12.0\times$ \emph{bitstream-rate}
+compression (matching Delétang et al.\ Table 1), \emph{exclusive} of
+the predictor itself; see the ``Side-information framing and model
+overhead'' caveat in §7 for the amortization framing. Under
+amortization across $V \gtrsim 152\,\mathrm{GB}$ of compressible text
+(per the break-even computation in T7.15's caveat), the per-archive
+self-contained compression remains net-positive. This prediction
+distinguishes §11.7 from §§11.1--11.5 in two ways: (i) it derives
+from a theorem rather than a conjecture, and (ii) it has been
+verified against the cited measurement
+(\texttt{scripts/verify/thm\_7\_15\_neural\_rnr\_end\_to\_end.py}).
+
+The predictions of §§11.1--11.5 above (1.5--2.0 bpb for small
+byte-level transformers) refer to the small-model regime; T7.15's
+0.664 bpb refers to the large-model (frontier-class LM) regime. The
+two are quantitatively consistent: rate decreases monotonically with
+model size, following the Hoffmann et al.\ 2022 (Chinchilla-paper)
+scaling law $L(N_{\mathrm{params}}) \sim N_{\mathrm{params}}^{-\alpha}$
+with $\alpha \approx 0.34$ (cited and used in Theorem 7.21).
+
 \textbf{12. Related work}
 
 This work intersects several established research lines.
