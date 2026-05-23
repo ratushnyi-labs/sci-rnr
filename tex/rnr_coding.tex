@@ -509,6 +509,48 @@ This article makes the following contributions.
   overhead $O(\log K_{\text{params}})$ for transmitting the chosen
   parameter values.
 \item
+  A 23-theorem RNR-with-random-access framework (Section 7.2--7.24)
+  that bridges the abstract framework to a practical neural-LM-based
+  compression pipeline. Theorems 7.2--7.5 establish the basic
+  byte-granular random-access architecture; Theorems 7.6--7.10 cover
+  source-coding extensions (universal online with KT-style regret,
+  successive refinement, functional compression via Orlitsky--Roche
+  characteristic-graph entropy, Shannon rate--distortion lossy mode,
+  Slepian--Wolf / Wyner--Ziv side-information composition); Corollary
+  7.11 records the standard observation that lossy compression with
+  an outer error-correcting code recovers losslessness up to the
+  ECC rate gap; Theorems 7.12--7.13 cover multi-source joint coding
+  via Lauritzen--Spiegelhalter junction-tree entropy decomposition
+  and tree-MRF adaptive sub-block sizing; Theorem 7.14 establishes
+  Azuma--Hoeffding concentration of the repair-stream length
+  $L^{\mathrm{rep}}$ around its expectation, with deviation factor
+  $(W_N+1+\rho/(1-\rho)) \cdot \log_2(1/\eta)$ tracking
+  predictor-context plus source-mixing-tail contributions; Theorem 7.15
+  is the explicit end-to-end synthesis with the
+  Chinchilla-class numerical prediction $\approx 79\,\mathrm{MB}$ on
+  enwik9 (12.0$\times$ bitstream rate, matching Delétang et al.\
+  2024 Table 1); Theorem 7.16 gives adaptive per-region $K_r$ for
+  piecewise-stationary sources; Theorem 7.17 covers content-defined
+  chunking for insertion/deletion robustness; Theorems 7.18--7.19 cover
+  parallelizable encoding and $O(K)$-memory streaming encoder;
+  Theorem 7.20 quantifies cache-aware decoder amortization under
+  workload locality with explicit Zipf static-top-cache hit-rate
+  asymptotics; Theorem 7.21 establishes the predictor-archive
+  size trade-off via the Hoffmann 2022 scaling law $\alpha \approx 0.34$
+  giving sub-linear optimal $L^*(N) = \Theta(N^{1/(1+\alpha)})$;
+  Theorem 7.22 is the fail-safe-with-store-mode worst-case bound
+  $L^{\mathrm{rep}} \leq N \log_2|\Sigma|$ under any source and
+  predictor; Theorem 7.23 adds per-sub-block authenticated-encryption
+  integrity via PRF-based MAC at $O(\tau \cdot m)$ overhead with
+  cryptographic forgery resistance; and Theorem 7.24 (revised after
+  retraction of an earlier LRU-based version) gives a minimal honest
+  Hoeffding tail bound on total decode latency under the restricted
+  hypotheses of IRM workload, static Perfect-LFU cache, and bounded
+  per-miss cost. The full framework has been adversarially cross-
+  validated across three independent model families (Claude / Gemini
+  Pro 3.1 / OpenAI gpt-5.5) with all surviving statements verified
+  numerically in \texttt{scripts/verify/thm\_7\_*}.
+\item
   Worked numerical examples for Type-I (§4.7), Type-II (§5.7), and
   Type-III-B (§6.4), demonstrating concrete coding-length arithmetic
   on toy distributions. Type-III-A and Type-III-C are illustrated
