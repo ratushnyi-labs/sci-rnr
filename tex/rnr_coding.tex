@@ -566,17 +566,29 @@ and the three Type-III subtypes. Worked numerical examples are given
 in §4.7 (Type-I), §5.7 (Type-II), and §6.4 (Type-III-B); Type-III-A
 and Type-III-C are illustrated through the composition discussion in
 §7 and the dictionary-construction discussion in §6.5 respectively
-rather than through standalone worked examples. Section 7 discusses
-composition, mode selection, and runtime parameter selection across
-types. Section 8 states the
+rather than through standalone worked examples. Section 7 covers
+composition, mode selection, runtime parameter selection (§§7.1--7.2),
+and the 23-theorem RNR-with-random-access framework
+(§§7.2--7.24, organized as: §§7.2--7.5 basic byte-granular
+random-access architecture; §§7.6--7.11 source-coding extensions
+including the lossy + ECC = lossless corollary; §§7.12--7.15
+multi-source, concentration, and end-to-end Chinchilla-class
+numerical synthesis; §§7.16--7.24 practical extensions covering
+adaptive sub-block sizing, content-defined chunking, parallel and
+streaming encoders, cache-aware decoder, predictor-archive scaling,
+fail-safe store-mode fallback, cryptographic integrity, and an
+IRM-restricted decoder-latency tail bound). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
-lists experimental predictions for empirical follow‑up. Section 12
-surveys related work, and Section 13 reports the status of open
-problems, distinguishing resolved results, remaining mathematical open
-questions, and items explicitly deferred to engineering or empirical
-work.
+lists experimental predictions for empirical follow‑up, including the
+explicit T7.15 enwik9 prediction in §11.7. Section 12 surveys related
+work, and Section 13 reports the status of open problems, distinguishing
+resolved results (§13.1), remaining mathematical open questions (§13.2,
+including new questions exposed by the §7 expansion such as
+LRU+IRM finite-batch concentration and tightened concentration under
+slow mixing), and items explicitly deferred to engineering or empirical
+work (§13.3).
 
 \textbf{2. Preliminaries and notation}
 
