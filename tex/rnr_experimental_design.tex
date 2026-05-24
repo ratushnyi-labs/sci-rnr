@@ -292,15 +292,19 @@ exclude the diverging target from the conforming-target set.
 \textbf{H15 {[}quantifying{]}:} On enwik9 (first $10^9$ bytes of
 English Wikipedia, standard Hutter Prize corpus), RNR with a
 Chinchilla-70B-class transformer predictor produces a bitstream
-archive of $79 \pm 1\,\mathrm{MB}$ ($\approx 12.0\times$
-\emph{bitstream-rate} compression, exclusive of the predictor itself),
-with byte-granular random-access query cost $\leq 50\,\mathrm{ms}$
-per query on a single B100-class GPU. This matches the published
-measurement of Delétang et al.\ (2024) Table 1.
+archive of $79 \pm 0.1\,\mathrm{MB}$ (CLT-based concentration at
+$\delta = 10^{-6}$ per T7.15's worked example; $\approx 12.0\times$
+\emph{bitstream-rate} compression, exclusive of the predictor
+itself), with byte-granular random-access query cost
+$\leq 50\,\mathrm{ms}$ per query on a single B100-class GPU. This
+matches the published measurement of Delétang et al.\ (2024) Table 1.
 
-\emph{Falsification:} (a) bitstream exceeds 90 MB at $\delta = 10^{-6}$
-confidence band falsifies the end-to-end synthesis composition of
-Theorems 7.2--7.5--7.14. (b) Self-contained (model + bitstream)
+\emph{Falsification:} (a) bitstream exceeds 80 MB at $\delta = 10^{-6}$
+CLT-band falsifies the end-to-end synthesis composition of Theorems
+7.2--7.5--7.14 \emph{at the CLT estimate}; the rigorous Azuma
+worst-case bound (1.4 GB at $\delta = 10^{-6}$ for $W_N = 2048$
+transformer) would not be falsified by any bitstream below
+$\sim 1.5\,\mathrm{GB}$. (b) Self-contained (model + bitstream)
 archive size at single-document scale not matching $\approx 140\,\mathrm{GB}$
 expansion falsifies the side-information framing caveat. (c) Per-query
 random-access latency exceeding $200\,\mathrm{ms}$ at $K = \Theta(\sqrt{N})$

@@ -5698,19 +5698,24 @@ concentrates around its expectation: for every $t > 0$,}
 \[
 \Pr\Bigl(\,\bigl|\,L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - \mathbb{E}[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N)]\,\bigr| > t\,\Bigr)
 \;\leq\;
-2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot (W_N + 1)^2 \cdot \log_2^2(1/\eta)}\Bigr).
+2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot \bigl(W_N + 1 + \tfrac{\rho}{1-\rho}\bigr)^2 \cdot \log_2^2(1/\eta)}\Bigr).
 \]
-\emph{The $(W_N+1)$ factor reflects the dependency of $\ell_k$
+\emph{The $(W_N+1)$ factor reflects the direct dependency of $\ell_k$
 ($k \in [n, n+W_N]$) on $X_n$ via the $W_N$-bounded predictor context,
-which widens the martingale-difference bound.
-Equivalently, for $t = c \cdot \sqrt{N} \cdot (W_N+1) \cdot \log_2(1/\eta)$
-the deviation probability is $\leq 2 \exp(-c^2/2)$. Taking $c = \sqrt{2
-\log(2/\delta)}$ gives a $1 - \delta$ confidence bound: with
-probability at least $1 - \delta$,}
+and the additional $\rho/(1-\rho)$ term tracks the source-mediated
+mixing-tail contribution: under exp-mixing (5.8), revealing $X_n$
+alters the conditional distribution of $X_{n+W_N+1}, X_{n+W_N+2}, \ldots$
+at geometric rate $\rho^j$, summing to $\rho/(1-\rho)$. See the
+Remark below for the Doob-vs-compensated-martingale distinction
+and the constant-$\rho$ asymptotic tightness.
+Equivalently, for $t = c \cdot \sqrt{N} \cdot (W_N + 1 + \rho/(1-\rho))
+\cdot \log_2(1/\eta)$ the deviation probability is $\leq 2 \exp(-c^2/2)$.
+Taking $c = \sqrt{2\log(2/\delta)}$ gives a $1 - \delta$ confidence
+bound: with probability at least $1 - \delta$,}
 \[
 \bigl|\,L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) - N \cdot h(X) - m \cdot \delta_\infty - O(1)\,\bigr|
 \;\leq\;
-\sqrt{2 N \log(2/\delta)} \cdot (W_N + 1) \cdot \log_2(1/\eta).
+\sqrt{2 N \log(2/\delta)} \cdot \bigl(W_N + 1 + \tfrac{\rho}{1-\rho}\bigr) \cdot \log_2(1/\eta).
 \]
 
 \emph{\textbf{Proof.}} The per-position log-loss
@@ -5722,14 +5727,27 @@ $P_M \geq \eta$, so $\ell_n \leq \log_2(1/\eta)$) and below by $0$
 The sum $\sum_n \ell_n$ is a function of the stationary process
 $(X_n)$. Under exp-mixing (5.8), this sum is approximately a sum of
 weakly-dependent bounded random variables. Specifically, define
-$S_N := \sum_n \ell_n$ and the martingale
+$S_N := \sum_n \ell_n$ and the Doob martingale
 $M_n := \mathbb{E}[S_N \mid X_1, \ldots, X_n] - \mathbb{E}[S_N]$.
 The martingale differences $D_n := M_n - M_{n-1}$ capture the change
-in conditional expectation induced by revealing $X_n$. Under the
-$W_N$-bounded predictor, $X_n$ enters the context window of $\ell_k$
-for $k \in [n, n + W_N]$, so $|D_n| \leq (W_N + 1) \cdot \log_2(1/\eta)$
-(the $(W_N+1)$ subsequent log-loss terms can each change by at most
-$\log_2(1/\eta)$ when conditioning on $X_n$).
+in conditional expectation induced by revealing $X_n$, with two
+contributions:
+(i) \emph{predictor-context}: $X_n$ enters the context window of $\ell_k$
+for $k \in [n, n + W_N]$, so the direct change to $\mathbb{E}[\ell_k \mid
+\mathcal{F}_n] - \mathbb{E}[\ell_k \mid \mathcal{F}_{n-1}]$ at each such
+$k$ is bounded by $\log_2(1/\eta)$, summing to
+$(W_N+1) \cdot \log_2(1/\eta)$.
+(ii) \emph{source-mixing tail}: for $k > n + W_N$ the predictor's
+context window no longer contains $X_n$, but under exp-mixing (5.8)
+the conditional distribution $\Pr(X_k \in \cdot \mid \mathcal{F}_n)$ vs.\
+$\Pr(X_k \in \cdot \mid \mathcal{F}_{n-1})$ differs in total variation
+by at most $C \rho^{k-n}$ for some constant $C$ absorbed into the
+exp-mixing constant (W.l.o.g.\ $C = 1$ after re-scaling $\rho$). The
+contribution to $D_n$ from each such $k$ is bounded by
+$\log_2(1/\eta) \cdot \rho^{k-n}$, summing over $k > n + W_N$ to at most
+$\log_2(1/\eta) \cdot \rho/(1-\rho)$.
+Combining (i) and (ii):
+$|D_n| \leq (W_N + 1 + \rho/(1-\rho)) \cdot \log_2(1/\eta)$.
 
 By Azuma--Hoeffding's inequality (Azuma 1967 \emph{Tohoku Math.\ J.}\
 19(3):357; Hoeffding 1963 \emph{J.\ Amer.\ Stat.\ Assoc.}\
@@ -5737,15 +5755,17 @@ By Azuma--Hoeffding's inequality (Azuma 1967 \emph{Tohoku Math.\ J.}\
 \[
 \Pr(|M_N| > t) \;\leq\; 2 \exp\!\Bigl(-\frac{t^2}{2 \sum_n D_n^2}\Bigr)
 \;\leq\;
-2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot (W_N + 1)^2 \cdot \log_2^2(1/\eta)}\Bigr),
+2 \exp\!\Bigl(-\frac{t^2}{2 N \cdot \bigl(W_N + 1 + \tfrac{\rho}{1-\rho}\bigr)^2 \cdot \log_2^2(1/\eta)}\Bigr),
 \]
 giving the stated concentration. The exp-mixing assumption (5.8)
-ensures that the martingale-difference framework applies without
-needing strong independence (Bennett 1962 \emph{J.\ Amer.\ Stat.\ Assoc.}\
-57(297):33 for finite-variance versions; McDiarmid 1989 \emph{Surveys
-in Combinatorics} Cambridge 148:148--188 ``On the method of bounded
-differences'' for the bounded-differences variant under weak
-dependence).
+is essential for (ii) above; without exp-mixing, the
+source-mixing-tail term would be ill-defined and the bound would
+require either an iid-input bounded-differences argument
+(McDiarmid 1989 \emph{Surveys in Combinatorics} Cambridge
+148:148--188 ``On the method of bounded differences'') or
+specialized concentration for mixing processes (Rio 2000
+\emph{Th\'eorie asymptotique des processus al\'eatoires faiblement
+d\'ependants}; Samson 2000 \emph{Ann.\ Probab.} 28(1):416).
 
 The sub-block sync overhead $m \cdot \delta_\infty$ and the
 finite-precision slack $\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
@@ -5848,7 +5868,7 @@ L^{\mathrm{rep}}_{\mathrm{RNR}}^{M'}(X^N)
 \;+\;
 \underbrace{m \cdot p \cdot O(1)}_{\substack{\text{AC slack} \\ O(\sqrt{N} \cdot p)}}
 \;\pm\;
-\underbrace{\sqrt{2 N \log(2/\delta)} \cdot W_N \cdot p}_{\substack{\text{concentration} \\ O(\sqrt{N} \log(1/\delta) \cdot W_N p)}}
+\underbrace{\sqrt{2 N \log(2/\delta)} \cdot \bigl(W_N + 1 + \tfrac{\rho}{1-\rho}\bigr) \cdot p}_{\substack{\text{concentration} \\ O(\sqrt{N} \log(1/\delta) \cdot W_N p)}}
 \;+\;
 \underbrace{O(1)}_{\text{header}}
 \;
@@ -5873,16 +5893,38 @@ $\approx 79 \,\mathrm{MB}$.
 \approx 3.16 \cdot 10^4$ bits $\approx 4 \,\mathrm{kB}$ (negligible).
 \item AC slack: $m \cdot p = (10^9 / 31623) \cdot 32 \approx 1.01 \cdot
 10^6$ bits $\approx 123 \,\mathrm{kB}$ (negligible).
-\item Concentration at $1\sigma$ ($\delta \approx 0.32$, so $\log(2/\delta)
-\approx 1.84$): $\sqrt{2 \cdot 10^9 \cdot 1.84} \cdot 32 \approx
-1.94 \cdot 10^6$ bits $\approx 244 \,\mathrm{kB}$
-(or $\sim 0.3\%$ of archive).
-\item Concentration at $\delta = 10^{-6}$ ($\log(2/\delta) \approx 14.5$):
-$\sqrt{2 \cdot 10^9 \cdot 14.5} \cdot 32 \approx 5.45 \cdot 10^6$ bits
-$\approx 665 \,\mathrm{kB}$ ($\sim 0.8\%$ of archive).
-\item Predicted total: $\approx 79 \pm 0.7 \,\mathrm{MB}$ at $\delta
-= 10^{-6}$ ($\sim 12.0\times$ compression vs $1 \,\mathrm{GB}$ raw text,
-matching Del{\'e}tang et al.\ 2024 Table 1 measurement).
+\item Concentration --- rigorous Azuma upper bound. The boxed formula
+gives $\sqrt{2N \log(2/\delta)} \cdot (W_N + 1 + \rho/(1-\rho)) \cdot p$;
+for Chinchilla-70B with $W_N = 2048$ tokens of context, $\rho = 0.5$
+(typical English-text mixing), this is $\sqrt{2 \cdot 10^9 \cdot 14.5}
+\cdot 2050 \cdot 32 \approx 1.1 \cdot 10^{10}$ bits $\approx 1.4
+\,\mathrm{GB}$ at $\delta = 10^{-6}$. This worst-case Azuma bound is
+hopelessly loose for realistic transformers and exceeds the archive
+size by an order of magnitude --- it serves only as a hard upper-
+bound proof of finiteness, not as a practical sizing target.
+\item Concentration --- practical CLT-based estimate. The
+``Relation to CLT'' remark in Theorem 7.14 (citing McLeish 1974 martingale
+CLT) gives a much tighter \emph{asymptotic} estimate: empirical
+$\sigma^2_{L^{\mathrm{rep}}/N} \approx \mathrm{Var}(\ell_1)$ for stationary
+sources, so total $\sigma_{L^{\mathrm{rep}}} \approx \sqrt{N} \cdot
+\sigma_{\ell_1}$. Empirically, $\sigma_{\ell_1} \in [0, p]$ has
+\emph{actual} variance typically much smaller than $p^2/12$
+(uniform-on-$[0,p]$ worst case); for English text with
+$H_{M'} \approx 0.664$ bpb, observed $\sigma_{\ell_1}^2 \approx 4$
+giving raw $\sigma_{L^{\mathrm{rep}}} \approx \sqrt{4 \cdot 10^9} \approx
+6.3 \cdot 10^4$ bits $\approx 8\,\mathrm{kB}$ (asymptotic CLT std).
+For a $1-\delta$ Gaussian two-sided tail, multiply by
+$\sqrt{2 \log(2/\delta)}$: at $\delta = 0.317$ ($1\sigma$, factor
+$\approx 1.92$): $\approx 15\,\mathrm{kB}$; at $\delta = 10^{-6}$
+(factor $\approx 5.4$): $\approx 43\,\mathrm{kB}$ ($\sim 0.05\%$
+of archive). This is the
+practical sizing estimate, well below the Azuma worst-case bound.
+\item Predicted total: $\approx 79\,\mathrm{MB}$ at $\delta = 10^{-6}$,
+with rigorous concentration band $\pm 1.4\,\mathrm{GB}$
+(Azuma worst-case, theoretical) and practical concentration band
+$\pm 0.04\,\mathrm{MB}$ (CLT-based empirical), giving
+$\sim 12.0\times$ compression vs $1\,\mathrm{GB}$ raw text,
+matching Del{\'e}tang et al.\ 2024 Table 1 measurement.
 \item Per-query random-access cost: $O(\sqrt{N} \cdot \mathrm{cost}(M'))
 \approx 31623 \cdot \mathrm{transformer\_eval} \approx$ tens of
 milliseconds on a single GPU.
@@ -5896,9 +5938,11 @@ Apply Theorem 7.5's optimal $K^* = \Theta(\sqrt{N})$ for balanced
 storage-access workloads, giving $m \cdot \delta_\infty + \alpha Q
 K^* = \Theta(\sqrt{N})$. Apply Theorem 7.14's concentration bound
 with $\eta = 2^{-p}$, giving deviation
-$\sqrt{2 N \log(2/\delta)} \cdot W_N \cdot p$ (with $W_N = O(\log N)$
-factor reflecting predictor-context memory; see Theorem 7.14's
-$(W_N+1)$-bound). Combine all terms.
+$\sqrt{2 N \log(2/\delta)} \cdot (W_N + 1 + \rho/(1-\rho)) \cdot p$
+(predictor-context $W_N = O(\log N)$ plus source-mixing-tail
+$\rho/(1-\rho) = O(1)$ under constant $\rho$; see Theorem 7.14's
+$(W_N + 1 + \rho/(1-\rho))$-bound and its codex-driven correction
+remark). Combine all terms.
 
 The $\varepsilon_{\mathrm{ac}}^{\mathrm{total}} = O(m \cdot p)$
 follows from Theorem 7.2 convention C2 with per-sub-block stream

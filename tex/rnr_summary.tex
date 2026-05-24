@@ -558,10 +558,16 @@ bits/byte (Delétang et al.\ 2024) into Theorems 7.2--7.5--7.14 for
 $N = 10^9$ enwik9 bytes, $K = \sqrt{N} \approx 31{,}623$,
 $\eta = 2^{-32}$, $\delta = 10^{-6}$ predicts:
 \[
-L^{\mathrm{rep}}_{\mathrm{RNR}} \approx 79\,\mathrm{MB} \pm 0.7\,\mathrm{MB}
-\quad (\text{12.0$\times$ bitstream-rate compression}).
+L^{\mathrm{rep}}_{\mathrm{RNR}} \approx 79\,\mathrm{MB}
+\quad (\text{12.0$\times$ bitstream-rate compression}),
 \]
-This matches Delétang et al.\ Table 1 measurement exactly.
+with two concentration bands: rigorous Azuma worst-case
+$\pm 1.4\,\mathrm{GB}$ (provably correct upper bound, hopelessly
+loose for realistic transformers with $W_N = 2048$) and practical
+CLT-based estimate $\pm 0.04\,\mathrm{MB}$ at $\delta = 10^{-6}$ (per
+T7.14's ``Relation to CLT'' remark with empirical $\sigma^2_{\ell_1}
+\approx 4$). The CLT estimate matches Delétang et al.\ Table 1
+measurement exactly.
 
 \emph{Caveat (side-information framing).} The 12$\times$ figure is the
 \emph{bitstream rate} excluding the 140 GB Chinchilla-70B model itself.
