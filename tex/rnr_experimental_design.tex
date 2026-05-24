@@ -287,6 +287,73 @@ integer-arithmetic or lookup-table behavior that diverges and either (i)
 revise the conformance specification to require it explicitly, or (ii)
 exclude the diverging target from the conforming-target set.
 
+\textbf{2.11 Chinchilla-on-enwik9 end-to-end synthesis (Theorem 7.15)}
+
+\textbf{H15 {[}quantifying{]}:} On enwik9 (first $10^9$ bytes of
+English Wikipedia, standard Hutter Prize corpus), RNR with a
+Chinchilla-70B-class transformer predictor produces a bitstream
+archive of $79 \pm 1\,\mathrm{MB}$ ($\approx 12.0\times$
+\emph{bitstream-rate} compression, exclusive of the predictor itself),
+with byte-granular random-access query cost $\leq 50\,\mathrm{ms}$
+per query on a single B100-class GPU. This matches the published
+measurement of Delétang et al.\ (2024) Table 1.
+
+\emph{Falsification:} (a) bitstream exceeds 90 MB at $\delta = 10^{-6}$
+confidence band falsifies the end-to-end synthesis composition of
+Theorems 7.2--7.5--7.14. (b) Self-contained (model + bitstream)
+archive size at single-document scale not matching $\approx 140\,\mathrm{GB}$
+expansion falsifies the side-information framing caveat. (c) Per-query
+random-access latency exceeding $200\,\mathrm{ms}$ at $K = \Theta(\sqrt{N})$
+falsifies the random-access cost bound $O(\sqrt{N} \cdot \mathrm{cost}(M'))$.
+
+\textbf{2.12 Fail-safe store-mode upper bound (Theorem 7.22)}
+
+\textbf{H16 {[}confirming{]}:} On adversarial inputs (random bytes,
+already-compressed data, encrypted data), an RNR encoder with per-
+sub-block store-mode fallback produces an archive of size
+$\leq N \cdot \log_2 |\Sigma| + m$ bits ($\leq N + N/K$ bytes),
+\emph{never exceeding} the raw source size by more than mode-flag
+overhead.
+
+\emph{Falsification:} any source/predictor combination for which the
+encoder produces output strictly larger than $N \cdot \log_2|\Sigma|
++ m \cdot (1 + \epsilon)$ for negligible $\epsilon$ falsifies the
+fail-safe guarantee. (The store-mode fallback bound is a hard worst-
+case guarantee proven in T7.22; failure would indicate a bug in
+encoder mode-selection rather than a theory gap.)
+
+\textbf{2.13 Cache-aware decoder hit rate under Zipf workloads
+(Theorem 7.20)}
+
+\textbf{H17 {[}quantifying{]}:} For an LRU decoder cache of size $C$
+sub-blocks against a Zipf-distributed query workload with parameter
+$\alpha$ over $m$ sub-blocks, the empirical hit rate $\rho_C$ matches
+the static-top theoretical formula:
+$\rho_C \approx (C/m)^{1-\alpha}$ for divergent-normalizer $\alpha < 1$;
+$\rho_C \to 1 - C^{1-\alpha}/((\alpha-1)\zeta(\alpha))$ for
+convergent-normalizer $\alpha > 1$. Per-query amortized latency
+$(1-\rho_C) \cdot K \cdot \mathrm{cost}(M')$ matches the predicted
+amortization.
+
+\emph{Falsification:} empirical hit rate deviation from the static-top
+formula by more than $20\%$ at $C = 100, m = 10^6$ for $\alpha \in
+\{0.7, 0.8, 1.1, 1.5\}$ on a sample of $Q \geq 10^4$ queries falsifies
+the cache-amortization analysis.
+
+\textbf{2.14 Per-sub-block MAC integrity (Theorem 7.23)}
+
+\textbf{H18 {[}confirming{]}:} An RNR archive built with per-sub-block
+HMAC-SHA256 (or Poly1305-AES, or AES-GCM tag, or BLAKE3-keyed) detects
+every single-bit tampering of the encoded payload with detection
+probability $\geq 1 - 2^{-128}$ per sub-block on uniformly random
+tampering, and total archive size overhead is $m \cdot \tau$ bits.
+
+\emph{Falsification:} any single-bit tampering of an encoded sub-block
+that produces an output accepted as valid by the decoder falsifies
+the MAC-based integrity guarantee. (Per Bellare--Namprempre 2000
+ASIACRYPT LNCS 1976 PRF security, failure would indicate either a
+broken MAC implementation or compromised key material.)
+
 \textbf{3. Corpus selection}
 
 The corpus is chosen to exercise each Type on its target regime, with
