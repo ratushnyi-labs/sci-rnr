@@ -5780,9 +5780,18 @@ practical consequences:
 \emph{(a) Predictable archive sizing.} For an archive of $N$ source
 bytes, the encoded archive size is $N \cdot h(X) + m \cdot \delta_\infty +
 O(\sqrt{N \log(1/\delta)})$ with probability $\geq 1 - \delta$. For
-$N = 1\,\mathrm{GB}$, $\eta = 2^{-16}$, $\delta = 10^{-6}$: deviation
-$\leq \sqrt{2 \cdot 10^9 \cdot 28} \cdot 16 = 3.8 \,\mathrm{MB}$
-(roughly $0.4\%$ of archive). Practical predictability.
+$N = 1\,\mathrm{GB}$, $\eta = 2^{-16}$, $\delta = 10^{-6}$, predictor
+context $W_N = O(\log N)$, exp-mixing rate $\rho$ bounded away from
+$1$: the rigorous Azuma deviation is
+$\sqrt{2 \cdot 10^9 \cdot \log(2/\delta)} \cdot (W_N + 1 + \rho/(1-\rho))
+\cdot \log_2(1/\eta)$, which for $W_N = 30, \rho = 0.5$ gives
+$\sqrt{5.6 \cdot 10^{10}} \cdot 32 \cdot 16 \approx 1.2 \cdot 10^8$ bits
+$\approx 15\,\mathrm{MB}$; the CLT-based estimate via empirical
+$\sigma_{\ell_1}^2$ is typically much smaller (per T7.15's worked example,
+$\sim 43\,\mathrm{kB}$ at the same $\delta$ for English-text-like
+sources). Storage planners typically use the CLT estimate plus a
+safety margin; the Azuma bound serves as a worst-case proof of
+boundedness.
 
 \emph{(b) Adaptive worst-case sizing.} Storage systems can pre-allocate
 $N \cdot h(X) + \mathrm{quantile}_\delta$ space and accept rare overruns
@@ -8405,8 +8414,11 @@ numerical prediction}, not a conjecture: with a Chinchilla-70B-class
 transformer ($H_{M'} \approx 0.664$ bpb measured by Delétang et al.\
 2024 on enwik9, Table 1) and the balanced regime $K = \Theta(\sqrt{N})$,
 encoder output is $\approx 79\,\mathrm{MB}$ for the $1\,\mathrm{GB}$
-enwik9 source, with $\pm 0.7\,\mathrm{MB}$ Azuma deviation at
-$\delta = 10^{-6}$. This is a $12.0\times$ \emph{bitstream-rate}
+enwik9 source, with practical CLT-based concentration $\pm 0.04\,\mathrm{MB}$
+at $\delta = 10^{-6}$ (rigorous Azuma worst-case
+$\pm 1.4\,\mathrm{GB}$ for the $W_N = 2048$ Chinchilla transformer
+is hopelessly loose; see T7.15 worked-example dual-band discussion).
+This is a $12.0\times$ \emph{bitstream-rate}
 compression (matching Delétang et al.\ Table 1), \emph{exclusive} of
 the predictor itself; see the ``Side-information framing and model
 overhead'' caveat in §7 for the amortization framing. Under
