@@ -945,6 +945,92 @@ encoder spec (out of scope here); the composed archive is uniquely
 decodable by direct application of the theorem once that spec is in
 place.
 
+\textbf{Theorems 7.2--7.5 (byte-granular RA architecture + optimal
+$K^\ast$)} → §8 (random-access conformance) and §10.7 of the main
+paper. Implementers MUST choose $K = \Theta(\sqrt{N})$ unless an
+adaptive sub-block-sizing policy (Theorem 7.16) is invoked. The
+implicit $\delta_\infty$ per-sync overhead is bounded per §11.1
+(per-sync-point hashes).
+
+\textbf{Theorems 7.6--7.10 (source-coding extensions: universal
+online, successive refinement, functional, lossy, side-information)}
+→ Out of scope for the current spec (each demands its own encoder
+mode and is optional per §13 versioning). When an extension is
+deployed, it MUST be flagged in the archive header (per §13.1) and
+its mode-specific parameters MUST be documented in a separate
+extension specification.
+
+\textbf{Corollary 7.11 (lossy + ECC = lossless)} → Out of scope
+(applies to the optional T7.9 lossy mode). When invoked, the outer
+ECC code MUST be specified in the header (Reed-Solomon, BCH, or
+LDPC).
+
+\textbf{Theorem 7.13 (error-resilient RNR with per-sub-block ECC)} →
+Optional extension (§11.4 sketch; full spec deferred). Adds
+$O(K \cdot R_{\mathrm{ecc}})$ ECC parity bits per sub-block.
+
+\textbf{Theorem 7.14 (concentration of $L^{\mathrm{rep}}$)} →
+Implementers SHOULD use the concentration bound to size archive
+allocation buffers; the $\sqrt{N \log(1/\delta)}$ deviation at
+$\delta = 10^{-6}$ is typically $< 1\%$ of total archive size and
+suffices as a pre-allocation slack.
+
+\textbf{Theorem 7.15 (end-to-end Chinchilla numerical prediction)}
+→ Reference benchmark for conformance test suite (§12). A
+conforming implementation against the Chinchilla-70B reference
+predictor on enwik9 MUST produce a bitstream of $\approx 79\,\mathrm{MB}$
+($\pm 1\%$) up to the per-sync-point and Azuma slack.
+
+\textbf{Theorem 7.16 (adaptive per-region $K_r$)} → Optional
+extension to §8 sync-point format. When invoked, the header MUST
+include a per-region $K_r$ table; absent the table, $K$ defaults
+to the fixed value from §8.
+
+\textbf{Theorem 7.17 (content-defined chunking for insertion/deletion
+robustness)} → Optional extension; sync points placed at
+Rabin-fingerprint boundaries instead of fixed offsets. Header flag
+distinguishes the two.
+
+\textbf{Theorem 7.18 (parallelizable encoding)} → Encoder spec
+(out of scope here). Implementers MAY parallelize per sub-block;
+the conformance suite (§12) MUST include a cross-parallelism
+byte-identity test.
+
+\textbf{Theorem 7.19 (streaming encoder with $O(K)$ memory)} →
+Encoder spec (out of scope here). The header layout MUST permit a
+trailing footer for sub-block offset table to support streaming
+encoders that don't know $N$ a priori.
+
+\textbf{Theorem 7.20 (cache-aware decoder)} → §9.3 (cache
+architecture). Implementers SHOULD cache decoded sub-blocks under
+LRU policy; Theorem 7.20's expected per-query cost
+$(1-\rho_C) \cdot K \cdot \mathrm{cost}(M')$ is the sizing target.
+
+\textbf{Theorem 7.21 (predictor-archive size trade-off)} → Sizing
+guideline; informs the choice of predictor size $L^\ast(N)$ for a
+given archive size $N$. For typical $\alpha \approx 0.34$,
+$L^\ast(N) = \Theta(N^{1/(1+\alpha)}) \approx \Theta(N^{0.75})$.
+
+\textbf{Theorem 7.22 (fail-safe RNR with store-mode fallback)} →
+REQUIRED for conformance: every conforming encoder MUST emit a
+per-sub-block mode flag (1 bit) distinguishing RNR mode vs.\ raw
+store mode, and MUST select whichever produces shorter per-sub-block
+encoding. Worst-case archive size MUST NOT exceed $N \cdot \log_2 |\Sigma|
++ m$ under any source.
+
+\textbf{Theorem 7.23 (integrity-preserving RNR via per-sub-block MAC)}
+→ §11 (Verification under random access) extended: optional
+per-sub-block MAC slot in addition to (or instead of) plain hash.
+MAC algorithms HMAC-SHA256, Poly1305-AES, AES-GCM tag, and
+BLAKE3-keyed are all conforming. Key management out of scope here
+(deployment-specific).
+
+\textbf{Theorem 7.24 (revised: IRM Hoeffding tail bound)} →
+Operational guidance for decoder SLO sizing under restricted
+hypotheses (IRM workload + static Perfect-LFU cache + bounded
+per-miss cost). Production deployments under LRU should fall back
+to empirical latency measurement per workload.
+
 \textbf{Theorem 8.1 (no universal dominance)} → Acknowledged in archive
 header (fallback-mode flag).
 
