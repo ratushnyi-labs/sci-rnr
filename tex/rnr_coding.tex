@@ -6456,8 +6456,9 @@ in both regimes (in the precise probability-theoretic sense of
 sub-exponential tails); the $\alpha > 1$ vs $\alpha \leq 1$ split
 concerns normalizer integrability on $\mathbb{N}$, not tail
 heaviness. The LRU competitive analysis under IRM and general
-arrival processes is in Ferragut et al.\ 2017 \emph{Queueing Systems}
-88:207, Theorem~3 (general timer-based-cache hit-rate, with LRU as
+arrival processes is in Ferragut, Rodriguez, and Paganini (2018)
+\emph{Queueing Systems} 88(3):207--241 (online 2017, formal volume
+2018), Theorem~3 (general timer-based-cache hit-rate, with LRU as
 a limit).
 \item \emph{(LRU under bursty workloads)}: $\rho_C$ tracks workload's
 working-set size; cache performance characterised by Belady's
@@ -6936,8 +6937,8 @@ $\sqrt{Q}$-style concentration. Perfect-LFU (static top-$C$) sidesteps
 this by removing eviction dynamics: each query independently lands in
 or out of the cache based on its sub-block identity alone. A correct
 LRU+IRM concentration analysis (with non-trivial cache-state mixing
-times) is left to future work (cf.\ Fagin 1977 \emph{Comm.\ ACM}
-20(11):846; Hendricks 1972; King 1971 \emph{J.\ ACM}).
+times) is left to future work (cf.\ Fagin 1977 \emph{J.\ Comput.\ Sys.\ Sci.}
+14(2):222--250; Hendricks 1972; King 1971 \emph{Proc.\ IFIP Congress}, 485--490).
 \item \emph{Why fix the source?} Per-sub-block cost
 $T_{\mathrm{miss}}(j)$ depends on the log-loss of sub-block $j$, which
 is random over the source $X^N$. Theorem 7.14 separately bounds the
@@ -8481,12 +8482,15 @@ the correct asymptotics $\rho_C \sim (C/m)^{1-\alpha}$
 (divergent-normalizer $0<\alpha<1$) and
 $\rho_C \to 1 - C^{1-\alpha}/((\alpha-1)\zeta(\alpha))$
 (convergent-normalizer $\alpha>1$). Theorem 7.24's IRM hypothesis
-follows the Independent Reference Model of Fagin (1977) \emph{Comm.\
-ACM} 20(11):846--851; foundational LRU+IRM analysis is in Hendricks
-(1972) and finite-batch deviation bounds for paging are in King
-(1971) \emph{J.\ ACM} 18(1):95--117. Ferragut, Rodriguez, and
-Paganini (2017) \emph{Queueing Systems} 88:207 give modern
-timer-based-cache hit-rate analysis under general arrival processes.
+follows the Independent Reference Model of Fagin (1977)
+\emph{J.\ Comput.\ Sys.\ Sci.} 14(2):222--250 ``Asymptotic miss
+ratios over independent references''; foundational LRU+IRM analysis
+is in Hendricks (1972) \emph{J.\ Appl.\ Prob.} 9(1):231--233 and
+demand-paging algorithm analysis is in King (1971)
+\emph{Proc.\ IFIP Congress 1971}, pp.\ 485--490. Ferragut, Rodriguez, and
+Paganini (2018) \emph{Queueing Systems} 88(3):207--241 (online 2017)
+give modern timer-based-cache hit-rate analysis under general arrival
+processes.
 
 \emph{Scaling laws for neural predictors.} Theorem 7.15's numerical
 prediction uses the empirical bits-per-byte rate of Delétang et al.\
@@ -8499,7 +8503,11 @@ trade-off uses the Hoffmann et al.\ (2022)
 \approx 0.34$ for loss as a function of parameter count; this
 \emph{updates} the earlier scaling fit of Kaplan et al.\ (2020)
 \emph{Scaling Laws for Neural Language Models}, arXiv:2001.08361,
-whose data-scaling exponent was estimated at $\approx 0.076$. The
+whose model-size exponent $\alpha_N$ for $L(N_{\mathrm{params}})$
+was estimated at $\approx 0.076$ (the data-size exponent $\alpha_D$
+for $L(D_{\mathrm{tokens}})$ at fixed model is $\approx 0.095$;
+Hoffmann 2022's $\alpha \approx 0.34$ is for the compute-optimal
+joint allocation, a different regime). The
 model-overhead caveat in §7 (T7.15 framing) and the critique of
 unadjusted-LM-as-compressor metrics cite Zhang et al.\ (2024)
 \emph{L3TC: Leveraging RWKV for Learned Lossless Low-Complexity
@@ -8512,8 +8520,9 @@ Analysis of the Generic Composition Paradigm}, ASIACRYPT 2000,
 LNCS 1976, for the encrypt-then-MAC compositional security
 analysis. HMAC security is established in Bellare, Canetti, and
 Krawczyk (1996) \emph{CRYPTO}; Poly1305 in Bernstein (2005)
-\emph{Fast Software Encryption}; BLAKE3 in Aumasson et al.\
-(2020/2022) ``BLAKE3: one function, fast everywhere''.
+\emph{Fast Software Encryption}; BLAKE3 in O'Connor, Aumasson,
+Neves, and Wilcox-O'Hearn (2020) ``BLAKE3: one function, fast
+everywhere'' (specification and reference implementation).
 
 \emph{Content-defined chunking.} Theorem 7.17's insertion/deletion
 robustness uses the content-defined chunking of Rabin (1981)
@@ -9263,13 +9272,15 @@ listed below.)
   bound for LRU under IRM (let alone non-IRM workloads) requires
   separate concentration analysis for the LRU Markov chain over
   cache states, with mixing-time-dependent constants. Foundational
-  results in this direction are Fagin (1977) \emph{Comm.\ ACM}
-  20(11):846--851 ``Asymptotic miss ratios over independent
-  references'' and Hendricks (1972) on LRU stationary analysis;
-  King (1971) \emph{J.\ ACM} 18(1):95--117 gives finite-batch
-  deviation bounds for paging algorithms but not in the form needed
-  for direct application here. A clean LRU+IRM tail bound matching
-  Theorem 7.24's accessibility would be a useful contribution.
+  results in this direction are Fagin (1977) \emph{J.\ Comput.\ Sys.\
+  Sci.} 14(2):222--250 ``Asymptotic miss ratios over independent
+  references'' and Hendricks (1972) \emph{J.\ Appl.\ Prob.}
+  9(1):231--233 on the LRU-stack stationary distribution; King (1971)
+  \emph{Proc.\ IFIP Congress 1971}, pp.\ 485--490 gives the classical
+  demand-paging algorithm analysis but does not yield finite-batch
+  deviation bounds in the form needed for direct application here.
+  A clean LRU+IRM tail bound matching Theorem 7.24's accessibility
+  would be a useful contribution.
 \item
   Tightened concentration of $L^{\mathrm{rep}}_{\mathrm{RNR}}$ under
   polynomially-slow mixing. Theorem 7.14 (as revised after
