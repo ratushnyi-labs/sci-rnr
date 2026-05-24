@@ -8811,6 +8811,56 @@ point to the relevant theorems.
   corollary of the theorem). The copy-on-write
   overlay pattern (§10.8) enables read-write semantics using the
   same architecture as existing compressed-filesystem deployments.
+\item
+  Byte-granular RA architecture with neural predictor and concrete
+  numerical end-to-end synthesis --- resolved by the §7.2--7.24
+  framework (24 theorems + 2 corollaries):
+  \emph{architecture}: Theorem 7.2 establishes the basic sub-block
+  byte-granular RA construction with cost
+  $O(\log L(R) + K \cdot \mathrm{cost}(M'))$ per query and total
+  $N H_{M'} + m \delta_\infty + O(m \cdot p)$, with Theorem 7.5
+  giving optimal $K^* = \Theta(\sqrt{N})$ for balanced workloads.
+  \emph{Source-coding extensions} are theorems: T7.6 (universal
+  online with Krichevsky--Trofimov regret), T7.7 (successive
+  refinement), T7.8 (functional compression via Orlitsky--Roche
+  characteristic-graph entropy), T7.9 (lossy RNR with distortion
+  budget $D$ via Shannon $R(D)$), T7.10 (Slepian--Wolf/Wyner--Ziv
+  side-information composition), and the user-originated lossy+ECC
+  Corollary 7.11. \emph{Multi-source and structural} are theorems:
+  T7.12 (junction-tree entropy decomposition for multi-source
+  joint), T7.13 (per-sub-block ECC for noisy-storage RA with
+  Shannon-optimal expansion $1/(1 - h(\varepsilon))$). \emph{Concentration
+  and end-to-end} are theorems: T7.14 establishes Doob-martingale
+  Azuma--Hoeffding concentration with the
+  $(W_N + 1 + \rho/(1-\rho))$ factor (predictor-context plus
+  source-mixing-tail under exp-mixing), and T7.15 is the explicit
+  end-to-end Chinchilla-class numerical prediction matching
+  Delétang et al.\ 2024 Table 1 ($79\,\mathrm{MB}$ on enwik9 at
+  $12.0\times$ bitstream rate) with dual concentration framing
+  (rigorous Azuma vs.\ practical CLT). \emph{Practical extensions}
+  are theorems: T7.16 (adaptive per-region $K_r$ with strict
+  Cauchy--Schwarz improvement over fixed $K$), T7.17
+  (content-defined chunking for insertion/deletion robustness),
+  T7.18 (parallelizable encoding across $P$ workers with
+  $O(N/P + \sqrt{N})$ span), T7.19 (streaming encoder with $O(K)$
+  memory and trailing-footer layout), T7.20 (cache-aware decoder
+  amortization with exact static-top Zipf hit-rate asymptotics),
+  T7.21 (predictor-archive size trade-off
+  $L^*(N) = \Theta(N^{1/(1+\alpha)})$ via Hoffmann 2022 scaling),
+  T7.22 (fail-safe with per-sub-block store-mode worst-case
+  $L^{\mathrm{rep}} \leq N \log_2 |\Sigma| + m$ under any source
+  and predictor), T7.23 (per-sub-block authenticated MAC integrity
+  with $O(\tau \cdot m)$ overhead and cryptographic forgery
+  resistance under standard PRF assumptions), and T7.24 (revised)
+  (minimal honest decoder-latency Hoeffding tail bound under IRM
+  workload + static Perfect-LFU cache + bounded $T_{\max}$). The
+  §7.24 history (LRU version retracted under codex disproof,
+  rewritten under restricted hypotheses, survived round 2)
+  illustrates the validation discipline applied throughout.
+  All 24 theorems + 2 corollaries verified numerically in
+  \texttt{scripts/verify/thm\_7\_*} and adversarially
+  cross-validated by three independent model families
+  (Claude / Gemini Pro 3.1 / OpenAI gpt-5.5).
 \end{itemize}
 
 \textbf{13.2 Remaining mathematical open problems}
