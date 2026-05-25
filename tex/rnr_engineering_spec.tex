@@ -61,10 +61,13 @@ Pavlo Ratushnyi --- May 2026
 \textbf{1. Purpose and scope}
 
 This document specifies the conformance requirements for a reference
-implementation of RNR Coding. It operationalizes Theorems 10.1, 10.2,
-10.3, 10.4, 10.5, and 10.6 of the main paper into a
-software-engineering specification that can be implemented, tested,
-and certified across the hardware targets named in §10.8.
+implementation of RNR Coding. It operationalizes Theorems 10.1--10.6
+(determinism, random access, mounted-filesystem deployment) and the
+§7 extensions (Theorems 7.1--7.24: parallel encoding, fail-safe store
+mode, per-sub-block MAC integrity, cache-aware decoding) of the main
+paper into a software-engineering specification that can be
+implemented, tested, and certified across the hardware targets named
+in §10.8.
 
 The specification is RFC-style: requirements use the MUST/SHOULD/MAY
 language of RFC 2119. A conforming implementation MUST satisfy every
@@ -106,7 +109,9 @@ requirements are at implementer discretion.
   architecture-neutral within the constraints of §3.
 \item
   Storage encryption and content addressing. These are deployment-layer
-  concerns and not part of the codec.
+  concerns. Note: per-sub-block integrity verification (Theorem 7.23
+  MAC) \emph{is} in scope as a codec-layer requirement; encryption and
+  content-addressable storage are not.
 \item
   Network distribution protocols and authentication. Deployment-layer.
 \end{itemize}
