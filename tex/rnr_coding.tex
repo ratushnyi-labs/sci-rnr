@@ -106,7 +106,20 @@ the identity that for an arbitrary source $D_N$ the gap equals
 multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5, where the gap may
 vanish on sources without joint structure). Type-III-A admits a tight
 $2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
-lower bound Theorem 6.2). The framework's deployment-relevant feature is random-access decoding
+lower bound Theorem 6.2). A 24-theorem byte-granular random-access
+framework (§7) establishes Shannon-rate achievability with
+$K = \Theta(\sqrt{N})$ optimal sub-block sizing (Theorems 7.2--7.5),
+extends to universal, Slepian--Wolf, lossy, successive-refinement,
+and functional RNR variants (Theorems 7.6--7.12), proves a
+Doob-martingale concentration bound for archive-size deviation
+(Theorem 7.14), and synthesises an end-to-end prediction for
+Chinchilla-class neural LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb;
+Theorem 7.15, with an explicit model-overhead caveat noting that the
+compression ratio excludes the $\approx$140\,GB model).
+Practical extensions cover parallel encoding with linear speedup,
+streaming, cache-aware decoding under Zipf workloads, fail-safe
+store mode, and per-sub-block integrity via PRF-based MAC
+(Theorems 7.16--7.24). The framework's deployment-relevant feature is random-access decoding
 with cost
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
 $W$-bounded predictors, per-position sequential coding modes, and
