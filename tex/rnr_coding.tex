@@ -5946,8 +5946,10 @@ $\approx 1.92$): $\approx 15\,\mathrm{kB}$; at $\delta = 10^{-6}$
 of archive). This is the
 practical sizing estimate, well below the Azuma worst-case bound.
 \item Predicted total: $\approx 79\,\mathrm{MB}$ at $\delta = 10^{-6}$,
-with rigorous concentration band $\pm 1.4\,\mathrm{GB}$
-(Azuma worst-case, theoretical) and practical concentration band
+with rigorous concentration bands of $\pm 1.4\,\mathrm{GB}$
+(Azuma worst-case, T7.14) or $\pm 1.3$--$2.6\,\mathrm{MB}$
+(variance-aware Bernstein, T7.25, replacing $B$ by $\sigma_\ell$
+$\approx 2$ bits for English text) and practical concentration band
 $\pm 0.04\,\mathrm{MB}$ (CLT-based empirical), giving
 $\sim 12.0\times$ compression vs $1\,\mathrm{GB}$ raw text,
 matching Del{\'e}tang et al.\ 2024 Table 1 measurement.
