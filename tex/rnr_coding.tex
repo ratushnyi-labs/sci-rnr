@@ -7131,29 +7131,25 @@ For the enwik9 example at $\delta = 10^{-6}$, the sub-Gaussian regime
 holds and the bound is determined entirely by $\sigma_\ell$, not by
 $B$. This is the source of Theorem 7.25's improvement over Theorem 7.14.
 
-\emph{Remark 7.25b (relation to Theorem 7.14 and 7.15).}
+\emph{Remark 7.25b (relation to Theorems 7.14 and 7.15).}
 Theorem 7.14 uses Azuma's inequality on the Doob martingale of
 $L^{\mathrm{rep}}$ with the worst-case per-step bound
 $(W_N + 1 + \rho/(1-\rho)) \log(1/\eta)$, which is rigorous but
 uses $B$ rather than the variance proxy $\sigma_\ell$. Theorem 7.25
 replaces Azuma by Bernstein for the per-position sequence $(\ell_i)$,
 yielding the variance-aware scaling $\sigma_\ell \sqrt{N(W_N+1)}$ vs.\
-$B(W_N+1)\sqrt{N}$ --- an improvement by factor $B / \sigma_\ell
-\approx 16$ for English text. The end-to-end Chinchilla-class
+Azuma's $B(W_N+1)\sqrt{N}$ --- an improvement by factor $B /
+\sigma_\ell \approx 16$ for English text. The end-to-end Chinchilla-class
 prediction of Theorem 7.15 thus admits a tighter rigorous concentration
-band: the $1.4\,\mathrm{GB}$ Azuma worst-case quoted in §11.7 becomes
-$1.5\,\mathrm{MB}$ under Theorem 7.25's hypotheses, much closer to the
-$\approx 43\,\mathrm{kB}$ practical CLT estimate. Theorem 7.14
+band: the $\approx 1.3\,\mathrm{GB}$ Azuma worst-case quoted in §11.7
+becomes approximately $1.3$--$2.6\,\mathrm{MB}$ under Theorem 7.25's
+hypotheses (with the precise constant depending on the specific
+Merlev\`ede-Peligrad-Rio formulation), within $\sim 60\times$ of the
+$\approx 42\,\mathrm{kB}$ practical CLT estimate. Theorem 7.14
 remains the operational bound when only the Doob-martingale increments
 can be controlled (non-mixing sources where Bernstein hypotheses fail);
-Theorem 7.25 is the preferred bound for mixing sources where
-$\sigma_\ell$ can be measured or upper-bounded. The end-to-end
-Chinchilla-class prediction of Theorem 7.15 thus admits a tighter
-rigorous concentration band: the $1.3\,\mathrm{GB}$ Azuma worst-case
-quoted in §11.7 becomes approximately $1.3$--$2.6\,\mathrm{MB}$ under
-Theorem 7.25's hypotheses (with the precise constant depending on the
-specific Merlev\`ede-Peligrad-Rio formulation), within $\sim 60\times$
-of the $\approx 42\,\mathrm{kB}$ practical CLT estimate.
+Theorem 7.25 is the preferred bound for exp-mixing sources where
+$\sigma_\ell$ can be measured or upper-bounded.
 
 \textbf{8. No universal dominance}
 
