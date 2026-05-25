@@ -172,34 +172,50 @@ def main() -> int:
 
         print()
 
-    # Headline scaling comparison: Azuma vs Bernstein on Chinchilla-class enwik9
-    print("  Chinchilla-class enwik9 scenario:")
-    print("    N=10^9, W_N=2048, sigma_l~2 (English text), B=32, rho~0.7, delta=10^-6")
+    # Headline scaling comparison: Azuma vs Bernstein-MPR on Chinchilla enwik9
+    print("  Chinchilla-class enwik9 scenario (post-adversarial-review corrections):")
+    print("    N=10^9, W_N=2048, sigma_l~2 (Brown et al. 1992), B=32,")
+    print("    rho~0.7, delta=10^-6, c=1, C_alpha=1")
     N_c = 10**9
     W_N_c = 2048
     sigma_l_c = 2.0
     B_c = 32.0
     rho_c = 0.7
+    c_mix_const = 1.0
+    C_alpha = 1.0
     log_term = math.log(2 / 1e-6)
     log_N_c = math.log(N_c)
 
+    # Corrected long-run variance v^2 = sigma_l^2 (2W_N+1) + 8 B^2 C_alpha / (e^c - 1)
+    v_squared = (sigma_l_c**2 * (2 * W_N_c + 1)
+                 + 8 * B_c**2 * C_alpha / (math.exp(c_mix_const) - 1))
+    v = math.sqrt(v_squared)
+
     azuma_factor = (W_N_c + 1 + rho_c / (1 - rho_c)) * B_c
     azuma_dev = azuma_factor * math.sqrt(2 * N_c * log_term)
-    azuma_mb = azuma_dev / 8 / 1024**2 / 1024  # in GB
+    azuma_gb = azuma_dev / 8 / 1024**3
 
-    bern_sub_gauss = 2.0 * sigma_l_c * math.sqrt(N_c * (W_N_c + 1) * log_term)
-    bern_bern_corr = 2.0 * B_c * log_N_c * log_term
-    bern_total = bern_sub_gauss + bern_bern_corr
-    bern_mb = bern_total / 8 / 1024**2  # in MB
+    # MPR Theorem 2 form: sub-Gauss = sqrt(N v^2 log(2/d)), Bern = B*(log N)^2*log(2/d)
+    bern_sub_gauss = math.sqrt(N_c * v_squared * log_term)
+    bern_bern_corr = B_c * log_N_c**2 * log_term  # corrected: (log N)^2
+    bern_low = 1.0 * bern_sub_gauss + 1.0 * bern_bern_corr  # C_1=C_2=1
+    bern_high = 2.0 * bern_sub_gauss + 2.0 * bern_bern_corr  # C_1=C_2=2
+    bern_low_mb = bern_low / 8 / 1024**2
+    bern_high_mb = bern_high / 8 / 1024**2
 
     clt_dev = sigma_l_c * math.sqrt(2 * N_c * log_term)
-    clt_kb = clt_dev / 8 / 1024  # in kB
+    clt_kb = clt_dev / 8 / 1024
 
-    print(f"    T7.14 Azuma worst-case: {azuma_mb:.2f} GB")
-    print(f"    T7.25 Bernstein-MPR:    {bern_mb:.2f} MB (sub-Gauss={bern_sub_gauss/8/1024**2:.2f} MB, Bern-corr={bern_bern_corr/8/1024**2:.4f} MB)")
+    print(f"    v^2 = sigma_l^2(2W_N+1) + 8B^2/(e^c-1) = {v_squared:.0f},  v = {v:.1f}")
+    print(f"      sigma_l^2(2W_N+1) = {sigma_l_c**2 * (2*W_N_c+1):.0f} (dominant)")
+    print(f"      8B^2/(e^c-1)     = {8 * B_c**2 / (math.exp(c_mix_const)-1):.0f}")
+    print(f"    T7.14 Azuma worst-case: {azuma_gb:.2f} GB")
+    print(f"    T7.25 Bernstein-MPR:    {bern_low_mb:.2f}-{bern_high_mb:.2f} MB")
+    print(f"      sub-Gauss term (C_1=1): {bern_sub_gauss/8/1024**2:.2f} MB")
+    print(f"      Bern-tail term (C_2=1): {bern_bern_corr/8/1024**2:.4f} MB")
     print(f"    Practical CLT:          {clt_kb:.2f} kB")
-    print(f"    T7.25 improvement over Azuma: {azuma_mb*1024 / bern_mb:.0f}x")
-    print(f"    T7.25 looseness vs CLT:        {bern_mb*1024 / clt_kb:.0f}x")
+    print(f"    Improvement Azuma/Bernstein: {azuma_gb*1024 / bern_low_mb:.0f}x")
+    print(f"    Looseness Bernstein/CLT:     {bern_low_mb*1024 / clt_kb:.0f}x")
     print()
 
     if all_ok:

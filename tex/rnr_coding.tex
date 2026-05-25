@@ -5946,13 +5946,14 @@ $\approx 1.92$): $\approx 15\,\mathrm{kB}$; at $\delta = 10^{-6}$
 of archive). This is the
 practical sizing estimate, well below the Azuma worst-case bound.
 \item Predicted total: $\approx 79\,\mathrm{MB}$ at $\delta = 10^{-6}$,
-with rigorous concentration bands of $\pm 1.4\,\mathrm{GB}$
-(Azuma worst-case, T7.14) or $\pm 1.3$--$2.6\,\mathrm{MB}$
-(variance-aware Bernstein, T7.25, replacing $B$ by $\sigma_\ell$
-$\approx 2$ bits for English text) and practical concentration band
-$\pm 0.04\,\mathrm{MB}$ (CLT-based empirical), giving
-$\sim 12.0\times$ compression vs $1\,\mathrm{GB}$ raw text,
-matching Del{\'e}tang et al.\ 2024 Table 1 measurement.
+with rigorous concentration bands of $\pm 1.3\,\mathrm{GB}$
+(Azuma worst-case, T7.14) or $\pm 2.1$--$4.2\,\mathrm{MB}$
+(variance-aware Bernstein, T7.25 with long-run variance
+$v^2 = \sigma_\ell^2 (2W_N+1) + O(B^2)$ and
+empirical $\sigma_\ell \approx 2$ bits for English text) and
+practical concentration band $\pm 0.04\,\mathrm{MB}$ (CLT-based
+empirical), giving $\sim 12.0\times$ compression vs $1\,\mathrm{GB}$
+raw text, matching Del{\'e}tang et al.\ 2024 Table 1 measurement.
 \item Per-query random-access cost: $O(\sqrt{N} \cdot \mathrm{cost}(M'))
 \approx 31623 \cdot \mathrm{transformer\_eval} \approx$ tens of
 milliseconds on a single GPU.
@@ -7055,103 +7056,143 @@ measurement is the operational fallback.
 \textbf{Theorem 7.25 (Variance-aware Bernstein concentration of
 $L^{\mathrm{rep}}$ under exp-mixing).} \emph{Let $X = (X_1, \ldots, X_N)$
 be a stationary $\alpha$-mixing process with exponential mixing rate
-$\alpha(k) \leq C \exp(-c k)$. Assume the $\eta$-floor and
+$\alpha(k) \leq C_\alpha \exp(-c k)$. Assume the $\eta$-floor and
 bounded-context hypotheses of Theorem 7.14 (per-position cost
 $\ell_i := -\log_2 Q_i(X_i \mid \mathrm{ctx}_i)$ bounded above by
 $B := \log_2(1/\eta)$, predictor context window $W_N$), and let
 $\sigma_\ell^2 := \mathrm{Var}(\ell_1)$ denote the marginal
-per-position-cost variance under the stationary law. Then for every
-$\delta \in (0, 1)$, with probability at least $1 - \delta$,
+per-position-cost variance under the stationary law. Define the
+long-run-variance proxy
+\[
+  v^2 \;:=\; \sigma_\ell^2 \cdot (2 W_N + 1) + 8 B^2 C_\alpha / (e^c - 1).
+\]
+Then for every $\delta \in (0, 1)$, with probability at least
+$1 - \delta$,
 \[
   \bigl| L^{\mathrm{rep}}(X) - \mathbb{E}[L^{\mathrm{rep}}(X)] \bigr|
-  \;\leq\; C_1 \cdot \sigma_\ell \cdot \sqrt{N \cdot (W_N + 1) \cdot
-  \log(2/\delta)}
-  \;+\; C_2 \cdot B \cdot \log(N) \cdot \log(2/\delta),
+  \;\leq\; C_1 \cdot \sqrt{N \cdot v^2 \cdot \log(2/\delta)}
+  \;+\; C_2 \cdot B \cdot (\log N)^2 \cdot \log(2/\delta),
 \]
 where $C_1, C_2$ are absolute constants depending only on the mixing
-rate $c$ via the inverse-summable-mixing factor $K_\phi := 1 + 2
-\sum_{k \geq 1} \alpha(k) \leq 1 + 2C/(1 - e^{-c})$.}
+rate $c$ (from Merlev\`ede-Peligrad-Rio 2009, IMS Collections 5,
+Theorem 2). When $\sigma_\ell \cdot \sqrt{W_N+1} \gg B$, the variance
+term $v^2 \approx \sigma_\ell^2 (2 W_N + 1)$ dominates and the bound
+scales as $\sigma_\ell \sqrt{N(W_N+1)\log(2/\delta)}$; otherwise the
+$B^2$ correction is of the same order.}
 
 \emph{Scope and significance.} Theorem 7.25 replaces Azuma's
 worst-case Lipschitz factor of $B = \log_2(1/\eta)$ in Theorem 7.14
-by the variance proxy $\sigma_\ell$, which is typically
-$\sigma_\ell \approx 2$ bits for English text (empirical, $B/\sigma_\ell
-\approx 16$) versus the worst-case $B = 32$ used by Azuma. For a
-Chinchilla-class transformer with $W_N = 2048$ on enwik9 at
-$\delta = 10^{-6}$, the sub-Gaussian term yields
-$C_1 \sigma_\ell \sqrt{N(W_N+1)\log(2/\delta)} \approx 1.3\,\mathrm{MB}$
-(absolute constant $C_1 \in [1, 2]$ depending on the specific
-Merlev\`ede-Peligrad-Rio constants, giving a conservative bound of
-$\approx 2.6\,\mathrm{MB}$), versus Theorem 7.14's Azuma worst-case
-of $\approx 1.3\,\mathrm{GB}$ --- a roughly $500\times$ improvement.
-The bound remains $\sim 50$--$70\times$ loose against the practical
-CLT estimate of $\approx 42\,\mathrm{kB}$, the residual gap stemming
-from the conservative $(W_N+1)$ effective-mixing factor versus the
-distribution-specific long-run covariance $\sum_k \mathrm{Cov}(\ell_0,
-\ell_k)$. The bound applies under exp-mixing; the analogous
+by the long-run-variance proxy $v$, which under the empirical
+assumption $\sigma_\ell \approx 2$ bits for English text (an
+empirical estimate consistent with classical entropy-rate
+measurements; Brown et al.\ 1992 and Shannon 1951) gives $v^2 \approx
+4 \cdot 4097 + 8 \cdot 32^2 / (e^{1} - 1) \approx 16400 + 4760
+\approx 2.1 \cdot 10^4$ bits${}^2$ for the typical regime ($c \approx 1$,
+$C_\alpha \approx 1$). For a Chinchilla-class transformer with
+$W_N = 2048$ on enwik9 at $\delta = 10^{-6}$, the sub-Gaussian
+term yields $C_1 \sqrt{N v^2 \log(2/\delta)} \approx 2.1$--$4.2\,
+\mathrm{MB}$ (constant $C_1 \in [1, 2]$ from the specific
+Merlev\`ede-Peligrad-Rio formulation; Bernstein-tail term $C_2 B
+(\log N)^2 \log(2/\delta) \approx 0.024\,\mathrm{MB}$ is sub-leading
+by $\sim 100\times$), versus Theorem 7.14's Azuma worst-case of
+$\approx 1.3\,\mathrm{GB}$ --- a $\approx 300\times$--$630\times$
+improvement.
+The bound remains $\sim 40$--$80\times$ loose against the practical
+CLT estimate of $\approx 42\,\mathrm{kB}$; the residual gap stems
+from the conservative $(2W_N+1)$ effective-mixing factor in $v^2$
+versus the distribution-specific long-run covariance $\sum_k
+\mathrm{Cov}(\ell_0, \ell_k)$ for the specific transformer-on-text
+process. The bound applies under exp-mixing; the analogous
 polynomial-mixing extension requires $\sum_k \alpha(k) < \infty$
-(i.e.\ $\alpha(k) \leq C k^{-\beta}$ with $\beta > 1$).
+(i.e.\ $\alpha(k) \leq C k^{-\beta}$ with $\beta > 1$) and the
+Rio (2017) machinery instead of MPR.
 
 \emph{\textbf{Proof.}} The per-position-cost sequence $(\ell_i)$
-inherits the mixing of $X$, with $\alpha$-mixing coefficient at lag
-$k$ bounded by $\alpha(\max(0, k - W_N))$ (because $\ell_i$ depends
-only on $X_{i - W_N}, \ldots, X_i$, so $\ell_i$ and $\ell_{i+k}$ are
-generated by disjoint coordinate sets for $k > W_N + 1$ and therefore
-inherit the original $\alpha$-mixing rate of the underlying $X$
-sequence; for $k \leq W_N + 1$ they share dependent coordinates and
-mixing is bounded by $1$). The induced summable-mixing factor for
-$(\ell_i)$ is $K_\phi^{(\ell)} \leq (W_N + 1) + 2 C/(1 - e^{-c}) =
-O(W_N + 1/c)$.
+inherits the $\alpha$-mixing of $X$ at the shifted lag: for $k > W_N$,
+$\ell_i$ and $\ell_{i+k}$ depend on disjoint coordinate windows of
+$X$, so the standard inheritance argument (Bradley 2007, Vol.~1, §5)
+gives $\alpha_{\ell}(k) \leq \alpha_X(k - W_N)$. For $k \leq W_N$,
+the trivial bound $\alpha_\ell(k) \leq 1$ holds.
 
-Applying Merlev\`ede-Peligrad-Rio (2009, Theorem 1, ``Bernstein
-inequality and moderate deviations under strong mixing conditions'')
-to the bounded centred sequence $(\ell_i - \mathbb{E}[\ell_i])$ with
-exp-mixing rate $c$, per-term bound $B$, and effective variance
-$N \sigma_\ell^2 K_\phi^{(\ell)} = O(N \sigma_\ell^2 (W_N + 1))$, we
-obtain
+The long-run-variance proxy. For a stationary $\alpha$-mixing
+bounded sequence with $|\ell_i| \leq B$, Davydov's covariance
+inequality (Davydov 1968; cf.\ Doukhan 1994, Theorem~1.1; Bradley
+2007, Vol.~1, Theorem~3.7) gives $|\mathrm{Cov}(\ell_0, \ell_k)|
+\leq 4 B^2 \alpha_\ell(k)$, while Cauchy-Schwarz gives the
+universal bound $|\mathrm{Cov}(\ell_0, \ell_k)| \leq \sigma_\ell^2$.
+Combining, and splitting the sum at $k = W_N$:
+\begin{align*}
+  v^2 &:= \sigma_\ell^2 + 2 \sum_{k \geq 1} |\mathrm{Cov}(\ell_0, \ell_k)| \\
+  &\leq \sigma_\ell^2 + 2 \sum_{k=1}^{W_N} \sigma_\ell^2
+  + 2 \sum_{k > W_N} 4 B^2 C_\alpha \exp(-c(k - W_N)) \\
+  &\leq \sigma_\ell^2 (2 W_N + 1) + 8 B^2 C_\alpha / (e^c - 1).
+\end{align*}
+
+Bernstein bound. Applying Merlev\`ede-Peligrad-Rio (2009, IMS
+Collections 5:273--292, Theorem~2; the case of exponentially-mixing
+bounded sequences) to the bounded centred sequence
+$(\ell_i - \mathbb{E}[\ell_i])$ with per-term bound $M = B$, sample
+size $N$, and the long-run variance $v^2$ derived above:
 \[
   \Pr\bigl(\,|L^{\mathrm{rep}} - \mathbb{E}[L^{\mathrm{rep}}]| \geq \varepsilon\bigr)
   \;\leq\; \exp\!\Bigl(\,
-    -\tfrac{c \varepsilon^2}{N \sigma_\ell^2 (W_N+1) + B \varepsilon \log(N)}
-  \Bigr) .
+    -\tfrac{C_3 \varepsilon^2}{N v^2 + B^2 + \varepsilon B (\log N)^2}
+  \Bigr) ,
 \]
+where $C_3 > 0$ depends only on the mixing rate $c$.
 Setting the right-hand side equal to $\delta$ and inverting in
-$\varepsilon$ gives the bilinear form
+$\varepsilon$ (the standard bilinear-Bernstein inversion: in the
+sub-Gaussian regime $\varepsilon^2 \ll N v^2$, the first denominator
+term dominates and $\varepsilon \leq C_1 \sqrt{N v^2 \log(2/\delta)}$;
+in the tail regime, the third term dominates and $\varepsilon \leq
+C_2 B (\log N)^2 \log(2/\delta)$; the $B^2$ constant in the
+denominator is absorbed into $C_1$ for $N \geq 1$), we obtain
 \[
-  \varepsilon \;\leq\; C_1 \sigma_\ell \sqrt{N (W_N + 1) \log(2/\delta)}
-  + C_2 B \log(N) \log(2/\delta),
+  \varepsilon \;\leq\; C_1 \sqrt{N v^2 \log(2/\delta)}
+  + C_2 B (\log N)^2 \log(2/\delta),
 \]
 which is the claim. \hfill$\blacksquare$
 
 \emph{Remark 7.25a (regime of dominance).}
-In the sub-Gaussian regime ($\varepsilon \ll N \sigma_\ell^2 (W_N+1)
-/ (B \log N)$), the first term dominates and the bound scales like
-$\sigma_\ell \sqrt{N (W_N+1) \log(2/\delta)}$. In the Bernstein-tail
-regime (very small $\delta$ relative to $\sigma_\ell^2 / B^2$), the
-second term dominates and the bound scales like $B \log N \log(2/\delta)$.
+In the sub-Gaussian regime ($\varepsilon^2 \ll N v^2 / (B (\log N)^2)$),
+the first term dominates and the bound scales like
+$\sqrt{N v^2 \log(2/\delta)}$. In the Bernstein-tail regime
+(very small $\delta$ or very large $W_N$), the second term dominates
+and the bound scales like $B (\log N)^2 \log(2/\delta)$.
 For the enwik9 example at $\delta = 10^{-6}$, the sub-Gaussian regime
-holds and the bound is determined entirely by $\sigma_\ell$, not by
-$B$. This is the source of Theorem 7.25's improvement over Theorem 7.14.
+holds and the bound is determined by $v$. Under
+$\sigma_\ell \sqrt{W_N+1} \gg B$ (the regime where Theorem 7.25
+strictly improves on Theorem 7.14), $v^2 \approx \sigma_\ell^2 (2W_N+1)$
+so the bound effectively reads $\sigma_\ell \sqrt{2 N (W_N+1) \log(2/\delta)}$
+--- this is the source of Theorem 7.25's improvement over Theorem 7.14.
 
 \emph{Remark 7.25b (relation to Theorems 7.14 and 7.15).}
 Theorem 7.14 uses Azuma's inequality on the Doob martingale of
 $L^{\mathrm{rep}}$ with the worst-case per-step bound
-$(W_N + 1 + \rho/(1-\rho)) \log(1/\eta)$, which is rigorous but
-uses $B$ rather than the variance proxy $\sigma_\ell$. Theorem 7.25
-replaces Azuma by Bernstein for the per-position sequence $(\ell_i)$,
-yielding the variance-aware scaling $\sigma_\ell \sqrt{N(W_N+1)}$ vs.\
-Azuma's $B(W_N+1)\sqrt{N}$ --- an improvement by factor $B /
-\sigma_\ell \approx 16$ for English text. The end-to-end Chinchilla-class
-prediction of Theorem 7.15 thus admits a tighter rigorous concentration
-band: the $\approx 1.3\,\mathrm{GB}$ Azuma worst-case quoted in §11.7
-becomes approximately $1.3$--$2.6\,\mathrm{MB}$ under Theorem 7.25's
-hypotheses (with the precise constant depending on the specific
-Merlev\`ede-Peligrad-Rio formulation), within $\sim 60\times$ of the
-$\approx 42\,\mathrm{kB}$ practical CLT estimate. Theorem 7.14
-remains the operational bound when only the Doob-martingale increments
-can be controlled (non-mixing sources where Bernstein hypotheses fail);
+$(W_N + 1 + \rho/(1-\rho)) B$, scale $A_{\rm Azuma}
+\approx (W_N+1) B$ in the leading regime $\rho/(1-\rho) \ll W_N + 1$.
+Theorem 7.25 replaces Azuma by Bernstein for the per-position
+sequence $(\ell_i)$, yielding the variance-aware scaling
+$A_{\rm Bern} \approx v = \sqrt{\sigma_\ell^2 (2W_N+1)
++ O(B^2/c)}$. The improvement factor is
+$A_{\rm Azuma}/A_{\rm Bern} = (W_N+1) B / v$; under
+$\sigma_\ell \sqrt{W_N+1} \gtrsim B$ this reduces to $\sqrt{W_N+1}
+\cdot B/(\sigma_\ell \sqrt{2})$. For English text on Chinchilla
+($\sigma_\ell \approx 2$, $W_N = 2048$, $B = 32$): $v^2 \approx
+4 \cdot 4097 + 8 \cdot 1024 / (e-1) \approx 2.1 \cdot 10^4$,
+$v \approx 145$; vs.\ $(W_N+1) B \approx 6.6 \cdot 10^4$ --- an
+improvement factor of $A_{\rm Azuma}/A_{\rm Bern} \approx 450$
+in the deviation scale (or equivalently $\approx 300\times$--$630\times$
+in the absolute $\delta = 10^{-6}$ deviation bound, depending on
+the choice of $C_1 \in [1, 2]$). The end-to-end
+Chinchilla-class prediction of Theorem 7.15 thus admits the dual
+concentration band $\pm 1.3\,\mathrm{GB}$ (Azuma, T7.14) or
+$\pm 2.1$--$4.2\,\mathrm{MB}$ (Bernstein, T7.25; constants
+$C_1 \in [1,2]$ from MPR 2009) at $\delta = 10^{-6}$ on enwik9.
+Theorem 7.14 remains the operational bound for non-mixing sources
+or when $\sigma_\ell$ cannot be estimated;
 Theorem 7.25 is the preferred bound for exp-mixing sources where
-$\sigma_\ell$ can be measured or upper-bounded.
+the long-run-variance proxy $v$ can be measured or upper-bounded.
 
 \textbf{8. No universal dominance}
 
@@ -8975,17 +9016,20 @@ point to the relevant theorems.
   (minimal honest decoder-latency Hoeffding tail bound under IRM
   workload + static Perfect-LFU cache + bounded $T_{\max}$), and
   T7.25 (variance-aware Bernstein concentration of
-  $L^{\mathrm{rep}}$ via Merlev\`ede-Peligrad-Rio 2009, replacing
-  Azuma's worst-case Lipschitz $B$ by the per-position-cost std
-  $\sigma_\ell$: for Chinchilla-class enwik9, the rigorous
-  $\delta = 10^{-6}$ deviation drops from $\approx 1.3\,\mathrm{GB}$
-  (Azuma, T7.14) to $\approx 1.3$--$2.6\,\mathrm{MB}$ (Bernstein, T7.25),
-  a $\approx 500\times$ improvement and within $\sim 60\times$ of the
-  practical CLT estimate; an earlier draft invoking Samson 2000 on
-  $L^{\mathrm{rep}}$ as a separable Lipschitz functional was
-  self-rejected on cold review because each coordinate $x_j$ affects
-  $(W_N+1)$ terms in the sum, making the direct Samson bound worse
-  than Azuma). The §7.24 history
+  $L^{\mathrm{rep}}$ via Merlev\`ede-Peligrad-Rio 2009 IMS Collections
+  Theorem~2, with the long-run-variance proxy $v^2 = \sigma_\ell^2
+  (2W_N + 1) + O(B^2)$ derived via Davydov 1968 covariance inequality:
+  for Chinchilla-class enwik9, the rigorous $\delta = 10^{-6}$
+  deviation drops from $\approx 1.3\,\mathrm{GB}$ (Azuma, T7.14) to
+  $\approx 2.1$--$4.2\,\mathrm{MB}$ (Bernstein, T7.25), a
+  $\approx 300\times$--$630\times$ improvement and within
+  $\sim 50$--$100\times$ of the practical CLT estimate; two earlier drafts of T7.25 were
+  self-rejected on cold review: (i) a Samson 2000 direct-Lipschitz
+  formulation that gave bound worse than Azuma because each
+  coordinate $x_j$ affects $(W_N+1)$ terms in the sum, and (ii) a
+  variance-substitution shortcut that conflated per-position
+  $\sigma_\ell^2$ with long-run $v^2$; the Davydov-corrected version
+  with the explicit $B^2$ correction in $v^2$ is the version stated). The §7.24 history
   (LRU version retracted under codex disproof, rewritten under
   restricted hypotheses, survived round 2) illustrates the
   validation discipline applied throughout.
@@ -10063,5 +10107,20 @@ Modelling 80, Springer.
 \textbf{{[}112{]}} Kontorovich, L., and Ramanan, K. (2008).
 Concentration Inequalities for Dependent Random Variables via the
 Martingale Method. Annals of Probability, 36(6), 2126-2158.
+
+\textbf{{[}113{]}} Davydov, Yu.\ A. (1968). Convergence of
+Distributions Generated by Stationary Stochastic Processes. Theory
+of Probability and Its Applications, 13(4), 691-696.
+
+\textbf{{[}114{]}} Bradley, R. C. (2007). Introduction to Strong
+Mixing Conditions, Volumes 1--3. Kendrick Press.
+
+\textbf{{[}115{]}} Doukhan, P. (1994). Mixing: Properties and
+Examples. Lecture Notes in Statistics 85, Springer.
+
+\textbf{{[}116{]}} Brown, P. F., Della Pietra, V. J., Mercer,
+R. L., Della Pietra, S. A., and Lai, J. C. (1992). An Estimate of
+an Upper Bound for the Entropy of English. Computational Linguistics,
+18(1), 31-40.
 
 \end{document}
