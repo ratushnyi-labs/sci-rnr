@@ -9417,18 +9417,21 @@ see what additional work is required for a deployable system.
 \item
   Reference implementation conformance. Theorems 10.1 and 10.2 specify
   sufficient conditions for bit-exact reproduction under fixed and
-  adaptive predictors. A reference implementation meeting both, plus a
-  conformance test suite that verifies cross-platform identity on a
-  representative corpus, is required for deployable archives. This is
-  software engineering work, not mathematics. Out of scope for this
-  paper; the natural artifact is a separate code release accompanied by
-  a conformance specification.
+  adaptive predictors; Theorems 7.16--7.18 additionally require that
+  sub-block-parallel encoding produce bit-identical archives regardless
+  of thread count or scheduling order. A reference implementation
+  meeting all three, plus a conformance test suite that verifies
+  cross-platform identity on a representative corpus, is required for
+  deployable archives. This is software engineering work, not
+  mathematics. Out of scope for this paper; the natural artifact is a
+  separate code release accompanied by a conformance specification.
 \item
   Empirical validation. The quantitative predictions in §11 are
   conjectures based on the structural advantages of each Type and on
   coding rates reported for comparable systems. Validation requires
-  running the constructions of §§4--6 against NNCP, PixelCNN++, LZMA,
-  zstd, and bits-back baselines on a representative corpus. This is
+  running the constructions of §§4--7 against NNCP, PixelCNN++, LZMA,
+  zstd, and bits-back baselines on a representative corpus, including
+  the enwik9 prediction of §11.7 (Hypothesis~H15). This is
   experimental work, not mathematics. Out of scope for this paper; the
   natural artifact is a separate experimental paper.
 \item
@@ -9449,6 +9452,35 @@ see what additional work is required for a deployable system.
   information leakage requires a threat model, an adversary capability
   specification, and an empirical privacy audit. This is a security and
   policy question, not a theorem; out of scope for this paper.
+\item
+  Cache architecture and workload characterisation. Theorems 7.20 and
+  7.24 provide formulas for cache hit rates and decoder-latency tail
+  bounds under Zipf and IRM workloads, respectively. Selecting an
+  appropriate cache size~$C$, eviction policy, and per-workload
+  parameters ($\alpha$, request distribution) for a specific deployment
+  requires empirical workload profiling and system-level benchmarking.
+  This is systems engineering work, not mathematics. Out of scope for
+  this paper; the natural artifact is a workload-aware cache
+  configuration guide accompanying a reference decoder.
+\item
+  Per-sub-block MAC key management. Theorem 7.23 guarantees tamper
+  detection given a PRF-based MAC with a secret key. The key
+  lifecycle---generation, storage, rotation, revocation, and
+  multi-archive key hierarchy---requires a threat model and a
+  key-management specification aligned with standard practice
+  (NIST SP 800-57). This is security engineering work, not mathematics.
+  Out of scope for this paper; the natural artifact is a key-management
+  policy document.
+\item
+  Parallel and quantised encoder deployment. Theorems 7.16--7.18
+  establish sub-block-parallel encoding with linear speedup, and
+  Theorems 7.10--7.12 bound the coding-efficiency loss from INT8 and
+  mixed-precision quantisation. Achieving the theoretical speedups on
+  specific hardware (GPU warp scheduling, NUMA-aware memory allocation,
+  quantisation-aware training pipelines) requires systems-level
+  optimisation and benchmarking. This is performance engineering work,
+  not mathematics. Out of scope for this paper; the natural artifact is
+  a hardware-specific deployment guide.
 \end{itemize}
 
 \textbf{References}
