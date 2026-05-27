@@ -10186,21 +10186,99 @@ Switch to family $\mathcal{F}_n = \{s_i\}$ of $N(n) = 2^{\Theta(n)}$
 SGP-prefix instances. For $M$ to memorise all $N(n)$ prefixes,
 $L(M) \geq N(n) \cdot n$ bits, forcing per-instance amortisation to
 $o(1)$ bit/source. This circumvents predictor-absorption.
+
+\emph{Status update 2026-05-27 (negative): amortised-family
+predictor-absorption transfer.} An explicit reduction attempt
+identifies a definitive blocker. The premise ``$L(M) \geq N(n)
+\cdot n$ forces $M$'s contribution to $o(1)$'' implicitly requires
+the family $\mathcal{F}_n$ to be Kolmogorov-incompressible. But any
+polynomial-time reduction from VC-3 (or any combinatorial NP-hard
+problem) produces a family with a \emph{poly-size description} ---
+the reduction algorithm and its $\mathrm{poly}(n)$-bit input. An
+unrestricted predictor $M$ can therefore encode the entire family
+description in $L(M) = \mathrm{poly}(n)$ bits and, after
+amortisation $L(M)/N(n) \to 0$, serve each $s_i$ with
+$L(R_i \mid Y, M, D) = O(1)$ lookup. The $\gamma_{\mathrm{SGP}}$
+gap is absorbed into $L(M)$ symmetrically across YES and NO
+branches --- exactly Remark 6.8b's failure mode applied to the
+family description rather than the single source. \emph{Quantitative
+check.} If we hypothetically enforced $L(M)/N(n) \to 0$ via a
+restriction not available to a free predictor, per-instance
+continuous bit-cost $\Theta(n \log n)$ (Lemma 6.8e) dominates
+$\Theta(\log N(n)) = \Theta(n)$ salt cost, and the amortised gap
+would survive as
+$(\gamma_{\mathrm{SGP}} \log n + 1)/(\log n + 1) \to \gamma_{\mathrm{SGP}}$
+as $n \to \infty$. But for any poly-time-samplable
+$\mathcal{F}_n$, this enforcement fails: $L(M) = \mathrm{poly}(n)
+= o(N(n))$ suffices to absorb the family description, the gap
+collapses to $1 + o(1)$, and the reduction yields no constant
+inapproximability. The amortisation moves the obstacle from ``$M$
+absorbs $s$'' to ``$M$ absorbs the reduction algorithm'',
+preserving the obstacle's structural form. \emph{When this rescue
+would work (and why it does not close OP2(b)).} The absorption
+breaks if (i) $M$ is class-restricted (e.g., $|M| \leq
+n^{1-\varepsilon}$) --- but this is already covered by Lemma
+6.8b's normal-form restriction; (ii) salts $r_i$ have oracle
+randomness --- not available to deterministic polynomial-time
+reductions; or (iii) salts are cryptographically pseudorandom (PRG
+output indistinguishable by poly-time $M$) --- this is the
+Liu--Pass / OWF route already documented in §13.2, which gives
+average-case decision hardness under one-way functions, \emph{not}
+worst-case multiplicative APX-hardness. None of (i)--(iii) yields
+free-predictor worst-case OP2(b)-APX. \emph{Verdict.} The
+amortised-family reformulation, taken in isolation, does not close
+OP2(b)-APX. The single-source predictor-absorption obstacle of
+Remark 6.8b transfers verbatim to the family-description scale;
+the amortisation is symmetric across YES/NO branches and dilutes
+the gap to $1+o(1)$ under any poly-time-samplable family.
 \item \emph{Per-instance salting.} Each SGP-prefix $s_i$ is concatenated
 with a unique random salt $r_i$ of length $\Omega(\log N(n))$ bits.
 The predictor must either memorise all salts (forcing $L(M) \geq
 N(n) \log N(n)$) or fail on the salted instances (achieving no
 predictive gain). Salting forces a per-instance hardness budget.
+
+\emph{Status update 2026-05-27 (subsumed by amortised-family
+negative).} Per-instance salting is a special case of item 1's
+amortised-family construction (salts $r_i$ generate the family
+$\mathcal{F}_n = \{s \cdot r_i\}$). The same predictor-absorption
+mechanism applies: if salts are produced by a poly-time-computable
+function of $i$ (the only option for a polynomial-time reduction),
+then $M$ stores that function in $O(\log n)$ bits and computes
+$r_i$ on demand, absorbing the salting structure with the rest of
+the family description. If salts are truly random or PRG-pseudo\-random,
+the reduction is either not polynomial-time (random-oracle access)
+or routes through OWF (Liu--Pass, average-case decision only).
+Salting is therefore not an independent attack vector.
 \item \emph{Reduction from Generalised Smallest Grammar Problem.}
 Carrascosa et al.\ 2016 (arXiv:1608.08927) define GSGP as
 multi-string grammar inference. APX-hardness of GSGP (if it can be
 established) would directly imply joint OP2(b) hardness in the
 amortised setting.
+
+\emph{Remaining-viable status 2026-05-27.} GSGP is the only attack
+vector in this list that does not collapse to predictor absorption,
+because the GSGP objective is a single multi-string grammar (one
+$G$ encoding all sources) rather than separated predictor + per-
+instance residual: the predictor cannot escape the SGP structure
+by ``moving it into $L(M)$'' if $L(M)$ is itself measured by the
+GSGP grammar size. APX-hardness of GSGP is itself an open problem
+(no reduction with multiplicative gap is currently known); closing
+it would be a prerequisite to closing OP2(b) via this route, and
+is independent of the predictor-absorption obstacle of Remark 6.8b.
 \end{enumerate}
 
 \emph{What would constitute closure:} APX-hardness of the
 amortised-family bit-cost objective with an explicit constant,
 under either standard P $\neq$ NP or cryptographic assumption.
+\emph{Updated 2026-05-27:} after the negative result on
+amortised-family predictor-absorption transfer (item 1 status), the
+only remaining combinatorial-polynomial-time route in this list is
+GSGP (Carrascosa et al.\ 2016) APX-hardness, currently itself an
+open problem. The cryptographic route (Liu--Pass / OWF, §13.2)
+closes a different problem (average-case decision on samplable
+distributions), not free-predictor worst-case APX-hardness.
+Structurally novel reductions outside the SGP/grammar template
+would also qualify.
 
 \textbf{13.4.3 OP3$''$ (Efficient enumerative encoders for specific
 natural-data classes).}
