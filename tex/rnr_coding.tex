@@ -3200,19 +3200,72 @@ $\mathrm{TC}(D_N) = N \log_2 N - \log_2(N!) = N \log_2 e - \tfrac{1}{2}
 \log_2(2 \pi N) + O(1/N)$ by Stirling, giving $\Theta(N)$ scaling
 with leading constant $\log_2 e$. \hfill$\blacksquare$
 
-\emph{Remark 5.6i-a (TC vs.\ sum of pairwise MIs).} A natural
-attempt at upper-bounding TC by pairwise MIs --- $\mathrm{TC}(D_N)
-\stackrel{?}{\leq} \sum_{i < j} I(X_i; X_j)$ --- \emph{fails in
-general}. For $K$-sparse uniform on $N = 100$, $K = 10$: pairwise MI
-$I(X_i; X_j) \approx 7.5 \times 10^{-5}$ bits and
-$\sum_{i<j} I \approx 0.37$ bits, but $\mathrm{TC} \approx 2.92$ bits
---- TC \emph{exceeds} the pairwise sum by a factor of $\sim 8\times$.
-This is because the global cardinality constraint is a higher-order
-dependence that does not decompose into pairs: $K$-sparse vectors
-have approximately-independent pairs but a strict joint constraint.
-The correct upper bound is the multi-information chain rule
-$\mathrm{TC}(D_N) = \sum_{k=2}^{N} I(X_k; X_{1:k-1})$, which captures
-the full joint dependence including higher-order interactions.
+\emph{Remark 5.6i-a (TC vs.\ sum of pairwise MIs --- three regimes
+revealed by combinatorial uniform vs.\ 2D Ising vs.\ tree-MRF).} The
+naive attempt to relate $\mathrm{TC}(D_N)$ and $\sum_{i < j} I(X_i;
+X_j)$ admits NEITHER a uniform upper bound NOR a uniform lower bound
+in general. Three regimes emerge from explicit empirical computation
+(verify scripts \texttt{lemma\_5\_6i\_tc\_combinatorial\_sublinear.py}
+and \texttt{empirical\_tc\_2d\_ising\_pairwise.py}):
+\begin{enumerate}
+\item \emph{Higher-order combinatorial-constraint regime
+($\mathrm{TC} \gg$ sum-pair).} For $K$-sparse uniform on
+$\{0,1\}^N$ with $K \ll N$: the global cardinality constraint
+distributes across pairs as tiny mutual informations
+($I(X_i; X_j) = O(1/N^2)$), so $\sum I$ is small. But the joint
+constraint accumulates via the chain rule to non-trivial
+$\mathrm{TC}$. Concrete: $N = 100$, $K = 10$ gives $\sum I \approx
+0.37$ vs $\mathrm{TC} \approx 2.92$ (ratio $\approx 8\times$).
+\item \emph{Tree / no-redundancy regime ($\mathrm{TC} = $ sum-pair).}
+For tree-structured MRFs (Lemma 5.6g):
+$\mathrm{TC}(D_N) = \sum_{e \in E_{\rm tree}} I(X_u; X_v)$, exact
+equality. Each edge contributes its full MI because there is no
+cyclic redundancy in tree topology.
+\item \emph{Cyclic-redundancy regime ($\mathrm{TC} \ll$ sum-pair).}
+For 2D Ising on the square lattice at low temperature (verified
+empirically for $n = 3, 4, 5$): pairs are heavily correlated
+(especially in the ordered phase, $T < T_c$), but the pairwise
+informations REDUNDANTLY count the shared global magnetisation.
+Concrete: $n = 5$, $T = 0.5 T_c$ gives $\sum I \approx 246$ vs
+$\mathrm{TC} \approx 22$ (ratio $\approx 0.09$, nine-fold
+REDUNDANCY). The ratio approaches 1 at high temperature ($T = 2
+T_c$ gives $\sum I \approx 1.96$ vs $\mathrm{TC} \approx 1.53$,
+ratio $\approx 0.78$) when pairwise correlations become weak and
+non-overlapping.
+\end{enumerate}
+
+The correct universal decomposition is the multi-information chain
+rule $\mathrm{TC}(D_N) = \sum_{k=2}^{N} I(X_k; X_{1:k-1})$ (a
+telescoping sum capturing the full joint dependence including
+higher-order interactions and cyclic-redundancy effects). The naive
+pairwise sum $\sum_{i<j} I(X_i; X_j)$ neither upper-bounds nor
+lower-bounds $\mathrm{TC}$ in general --- the relationship depends
+on the distribution's topology of dependence.
+
+\emph{Remark 5.6i-c (correlation-length signatures from 2D Ising
+pairwise MI vs.\ distance).} The pairwise MI as a function of L1
+lattice distance, computed empirically for $n = 5$ at three
+temperatures (\texttt{empirical\_tc\_2d\_ising\_pairwise.py}), shows
+the standard statistical-physics correlation-length signatures:
+\begin{itemize}
+\item $T = 0.5 T_c$ (ordered): mean pairwise MI decays slowly,
+from $\approx 0.88$ at $d = 1$ to $\approx 0.58$ at $d = 8$
+(log-decay rate $\approx -0.04$ per unit distance, near-constant
+correlations characteristic of long-range order).
+\item $T = T_c$ (critical): power-law-like decay, from $\approx
+0.23$ at $d = 1$ to $\approx 0.004$ at $d = 8$ (log-decay rate
+$\approx -0.5$ to $-0.7$ per unit, consistent with scale-invariant
+critical fluctuations).
+\item $T = 2 T_c$ (disordered): exponential decay (log-decay rate
+$\approx -2$ per unit distance), confirming finite correlation
+length above $T_c$.
+\end{itemize}
+These signatures connect compressibility (via $\mathrm{TC}$ and its
+pairwise decomposition) to the physical correlation structure: the
+RNR compression advantage on 2D-Ising-like sources is dominated by
+nearest-neighbor pairs at all temperatures, but the absolute
+magnitude of compressible information is largest at low $T$
+(ordered phase) and smallest at high $T$ (independent-spin limit).
 
 \emph{Implications for the RNR framework.} (i) The compression
 advantage of joint coding over factorised coding (Theorem 5.5)
