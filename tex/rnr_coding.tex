@@ -10047,6 +10047,240 @@ see what additional work is required for a deployable system.
   a hardware-specific deployment guide.
 \end{itemize}
 
+\textbf{13.4 Concrete attack vectors for remaining open problems}
+
+We list specific approaches for each genuinely open problem after the
+present version's contributions. Where standard reductions have
+demonstrably failed (multi-LLM adversarial validation 2026-05; codex
+counterexamples and Gemini structural critiques), we explicitly
+identify the failed pattern and propose alternative attack vectors
+that have not been tried. The intent is to prevent re-attempts on
+known-failed paths and to direct effort toward genuinely promising
+directions.
+
+\textbf{13.4.1 OP2(a) (Unrestricted bit-cost SGP APX-hardness).}
+
+\emph{What has been tried (failed paths):}
+\begin{itemize}
+\item Direct lift of Berman-Karpinski $\to$ Charikar reduction at
+$K = O(|V|)$ to bit-cost via the $K$-uniformity assumption ---
+blocked by the K-optimisation obstacle (§13.2, K-escape phenomenon):
+at the bit-cost-optimal $K^* = \Theta(\sqrt{N/\log V})$ regime, the
+Berman-Karpinski gadget does not preserve the gap.
+\item Restriction to Charikar normal form (Lemma 6.8b) --- works but
+gives only class-restricted APX-hardness, not unrestricted.
+\item Continuous-bit-cost relaxation (Lemma 6.8e) --- works
+unconditionally; the residual difficulty is specifically the
+ceiling discretisation $\lceil \cdot \rceil$ in the integer-bit
+objective.
+\item K-monotone constraint (Observation 6.8f) --- works but excludes
+the K-escape obstacle by fiat; tautological for the residual question.
+\end{itemize}
+
+\emph{Attack vectors not yet tried:}
+\begin{enumerate}
+\item \emph{Modify the Berman-Karpinski reduction at $K = \sqrt{N}$
+regime.} The current BK construction uses $|V|$ vertices with $|E|
+= O(|V|)$ edges, giving $K_{\rm gadget} = \Theta(|V|)$. A modified
+construction with $|V| = N^{1/2}$ vertices and $|E| = N$ edges (i.e.,
+denser graph) would shift the BK $K^*$ to $\sqrt{N}$, matching the
+bit-cost-optimal regime. Open question: does VC-3 retain its
+$1 + 1/144$ inapproximability gap on denser graphs (the
+``density-shifted Berman-Karpinski'' question)?
+\item \emph{Use a different source-of-hardness problem with
+$K$-uniformity built in.} Candidates: SAT (Karp 1972 NP-hardness),
+3-COL (Garey-Johnson 1979 APX-hardness via Khot-Saket 2014 with UGC),
+or LABEL COVER (Arora-Lund-Motwani-Sudan-Szegedy 1998 PCP composition).
+The challenge is finding a problem whose hardness gap survives the
+log-factor dilution at $K = \sqrt{N}$.
+\item \emph{Lower-bound the bit-cost gap via an exponential
+``$K$-escape budget'' argument.} Show that any grammar with $K \ll
+K_{\rm YES}$ for a BK NO instance must pay at least $\Omega(L_{\rm sym})$
+extra symbols, dominating the log-factor savings. This would close
+the K-escape obstacle directly.
+\item \emph{Cryptographic conditional hardness via OWFs.} Liu-Pass 2020
+shows OWFs $\Leftrightarrow$ samplable-distribution MKtP hardness.
+A reduction MKtP $\to$ bit-cost SGP on a samplable input distribution
+would give conditional average-case APX-hardness under OWF (weaker
+than worst-case but tractable).
+\end{enumerate}
+
+\emph{What would constitute closure:} a polynomial-time
+$(\gamma_{\rm bit} - \varepsilon)$-approximation algorithm for some
+explicit $\gamma_{\rm bit} > 1$, OR a polynomial-time reduction
+from a known NP-hard problem with $\gamma_{\rm bit}$-gap preservation
+across all $K$ regimes.
+
+\textbf{13.4.2 OP2(b) (Free-predictor joint Type-III-C APX-hardness).}
+
+\emph{What has been tried (failed paths):}
+\begin{itemize}
+\item Direct padding reduction from restricted to unrestricted
+joint --- blocked by the predictor-absorption obstacle (Remark 6.8b):
+an unrestricted predictor can pay $L(M) \geq |s|$ bits to memorise
+the SGP-format prefix directly, absorbing the $\gamma_{\rm SGP}$
+gap into $L(M)$.
+\end{itemize}
+
+\emph{Attack vectors not yet tried:}
+\begin{enumerate}
+\item \emph{Amortised-family reformulation (§13.2 documented).}
+Switch to family $\mathcal{F}_n = \{s_i\}$ of $N(n) = 2^{\Theta(n)}$
+SGP-prefix instances. For $M$ to memorise all $N(n)$ prefixes,
+$L(M) \geq N(n) \cdot n$ bits, forcing per-instance amortisation to
+$o(1)$ bit/source. This circumvents predictor-absorption.
+\item \emph{Per-instance salting.} Each SGP-prefix $s_i$ is concatenated
+with a unique random salt $r_i$ of length $\Omega(\log N(n))$ bits.
+The predictor must either memorise all salts (forcing $L(M) \geq
+N(n) \log N(n)$) or fail on the salted instances (achieving no
+predictive gain). Salting forces a per-instance hardness budget.
+\item \emph{Reduction from Generalised Smallest Grammar Problem.}
+Carrascosa et al.\ 2016 (arXiv:1608.08927) define GSGP as
+multi-string grammar inference. APX-hardness of GSGP (if it can be
+established) would directly imply joint OP2(b) hardness in the
+amortised setting.
+\end{enumerate}
+
+\emph{What would constitute closure:} APX-hardness of the
+amortised-family bit-cost objective with an explicit constant,
+under either standard P $\neq$ NP or cryptographic assumption.
+
+\textbf{13.4.3 OP3$''$ (Efficient enumerative encoders for specific
+natural-data classes).}
+
+\emph{Reduction to membership-oracle construction (Cover 1973).}
+Given polynomial-time membership oracle for class $\mathcal{C}
+\subseteq \Sigma^N$, an explicit polynomial-time rank coder follows
+(documented in §13.2). The residual challenge is constructing the
+membership oracle for specific natural classes.
+
+\emph{Attack vectors:}
+\begin{enumerate}
+\item \emph{Formal-language classes.} For any regular language
+$\mathcal{L}$ given by a DFA with $q$ states, membership is
+$O(N q)$. By Cover 1973, polynomial enumerative encoder for
+$\mathcal{L} \cap \Sigma^N$ with rate
+$\log_2 |\mathcal{L} \cap \Sigma^N| / N$ bits per symbol. Concrete
+example: valid RFC-3986 URIs, ISO-8601 dates, simple JSON syntax
+all admit polynomial enumerative encoders.
+\item \emph{Context-free classes.} For any context-free language with
+grammar size $g$, the CYK parser gives $O(N^3 g)$ membership and
+hence polynomial enumerative encoder. Concrete example: well-formed
+HTML5 fragments, valid Python-3 source code (modulo indentation).
+\item \emph{Algebraic / lattice classes.} For lattice membership
+$\{x \in \mathbb{Z}^N : Ax = b \pmod q\}$ for fixed $(A, b, q)$,
+polynomial enumerative encoder via lattice basis reduction.
+Connects compression to lattice-based cryptography.
+\item \emph{Neural-classifier surrogate.} Define
+$\mathcal{C}_{f, \tau} := \{x : f(x) > \tau\}$ where $f$ is a
+polynomial-time neural classifier. The rate $\log_2 |\mathcal{C}_{f,
+\tau}| / N$ depends on $f$'s false-positive rate $\alpha$: for
+$\alpha < |\mathcal{C}_{\rm true}| / |\Sigma|^N$, the encoder
+achieves near-optimal rate; for larger $\alpha$, rate degrades
+proportionally.
+\end{enumerate}
+
+\emph{What would constitute closure:} explicit construction of a
+polynomial-time enumerative encoder for natural images at fixed
+resolution, achieving rate matching state-of-the-art neural
+compressors (e.g., HiFiC, MENT) within constant factors.
+
+\textbf{13.4.4 OP4 (Approximability of optimal support selection for
+general dependent joint laws of $M_v$).}
+
+\emph{What has been tried (failed paths):}
+\begin{itemize}
+\item NP-hardness via CLIQUE reduction --- works (Lemma 5.7c), but
+the positive-affine reduction $\mathbb{E}_\mu[A_s] = A_s(1) -
+(A_s(1) - A_s(0)) \cdot n_0(S)/m$ does not preserve multiplicative
+approximation ratios.
+\item Dense-DkS partial closure (Lemma 5.7d) --- gives polynomial gap
+in the dense regime; Manurangsi 2017 sparse-DkS ETH-hardness does
+not transfer (gap dilutes to $1 + o(1)$ under natural log-binomial
+$A_s$).
+\end{itemize}
+
+\emph{Attack vectors not yet tried:}
+\begin{enumerate}
+\item \emph{Use a different $A_s$ structure where the gap transfers.}
+Search for monotone $A_s$ families where DkS gap multiplies (not
+dilutes) into the support selection problem.
+\item \emph{Reduction from Densest-$k$-Subhypergraph} (Chuzhoy-Manurangsi-
+Schroeppel 2020), which has different gap structure than DkS and
+may transfer better.
+\item \emph{Average-case hardness via planted-clique.} If support
+selection on random graphs with a planted dense subgraph is
+average-case hard (under planted-clique conjecture, hardness for
+$k \leq \sqrt{N}$ subgraphs), this gives conditional hardness.
+\end{enumerate}
+
+\emph{What would constitute closure:} either a polynomial-time
+$O(\log N)$-approximation for general support selection (matching
+DkS upper bound), or APX-hardness with explicit constant under
+P $\neq$ NP or a standard cryptographic assumption.
+
+\textbf{13.4.5 Tight TC scaling for natural-data classes (refined
+after Lemma 5.6i).}
+
+\emph{What has been established:}
+\begin{itemize}
+\item Lemma 5.6a-d: $\Theta(N)$ TC for four explicit dependent
+families (uniqueness-constrained, hidden-class iid, stationary
+processes, HMMs).
+\item Lemma 5.6e-h: extensions to continuous-state HMMs, AMS-mixing,
+tree-MRFs, chordal junction-tree decomposable.
+\item Lemma 5.6i: \emph{sub-linear} TC for $K$-sparse combinatorial
+uniform; $\Theta(N)$ TC requires pairwise dependence (permutations),
+not just low-cardinality support.
+\end{itemize}
+
+\emph{Remaining open: rigorous $\Theta(N)$ TC for less combinatorially
+structured natural-data classes.}
+
+\emph{Attack vectors:}
+\begin{enumerate}
+\item \emph{Empirical TC measurement on real data.} For specific
+data classes (natural images at fixed resolution, audio waveforms,
+genome sequences), compute empirical TC via plug-in estimators
+(Kraskov-Stögbauer-Grassberger 2004 nearest-neighbor MI estimator)
+and check $\Theta(N)$ scaling. This is empirical (§11) but provides
+data for theory.
+\item \emph{Manifold-plus-regularity assumptions.} Show that for
+data classes satisfying explicit manifold-and-density assumptions
+(bounded reach, Lipschitz density on the manifold, bounded
+parameter complexity of the manifold itself), TC is $\Theta(N)$.
+The proof would require quantitative geometric measure theory
+beyond the informal manifold intuition.
+\item \emph{Bounded-relative-entropy classes.} For data classes
+$D_N$ satisfying $D(P_{X_i \mid X_{<i}} \,\|\, P_{X_i}) \geq \delta$
+for all $i$ (each coordinate provides $\delta$ bits of conditional
+information beyond marginal), TC $\geq N \delta = \Theta(N)$. Show
+that natural classes satisfy this with measurable $\delta$.
+\end{enumerate}
+
+\emph{What would constitute closure:} an explicit construction of a
+natural-data class (not combinatorially defined) with rigorously
+proven $\mathrm{TC}(D_N) = \Theta(N)$, plus an explicit polynomial-time
+rank coder achieving rate $\log_2 |D_N| / N + o(1)$.
+
+\textbf{13.4.6 Methodological observation.}
+
+The pattern across these open problems is consistent: \emph{the
+standard reduction templates (Berman-Karpinski-Charikar for SGP,
+CLIQUE for support selection, multi-way-cut for joint problems)
+have all been tried at the natural target regimes and shown to
+fail by quantitative gap-dilution arguments}. Closing any of these
+problems likely requires either (a) a structurally novel reduction
+template suited to the target regime, (b) cryptographic conditional
+hardness via Liu-Pass-style indirect connections, or (c) a positive
+algorithmic result (PTAS or polynomial-time exact algorithm)
+contradicting the current intuition. We list these as the natural
+next research directions, and explicitly retract any premature
+claims of closure that did not survive adversarial multi-LLM
+validation (notably: K-restricted ``closures'' that excluded the
+obstacle by fiat, and constant-substitution ``closures'' that
+conflated different complexity-theoretic quantities).
+
 \textbf{References}
 
 \textbf{{[}1{]}} Banner, R., Hubara, I., Hoffer, E., and Soudry, D.
