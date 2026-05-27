@@ -2316,6 +2316,19 @@ specific natural-data class $D_N$ satisfies $\mathrm{TC}(D_N) =
 constructing an efficient enumerative encoder for the corresponding
 typical set is open.
 
+\emph{Formal refinement: Lemma 5.6i (below in this section) makes
+the limits of the manifold intuition precise by exhibiting a class
+that does fit a ``low-dimensional combinatorial support'' framing
+but has \emph{sub-linear} $\mathrm{TC}$: uniform $K$-sparse binary
+vectors with $|\mathcal{C}| = \binom{N}{K} = 2^{O(K \log(N/K))}$
+have $\mathrm{TC}(D_N) = O(\log K) + O(\log N) = o(N)$. The
+contrast with uniform permutations (also a ``low-dimensional''
+combinatorial support but with $\mathrm{TC} = \Theta(N)$) shows
+that $\Theta(N)$ TC requires explicit pairwise dependence structure
+(distinct-value constraints, Markov-style local-clique factors, or
+hidden latent classes per Lemma 5.6b), not just low support
+cardinality.}
+
 For a specific structured data class --- one with explicit
 combinatorial constraints rather than learned approximate
 structure --- we can give an explicit linear-in-$N$ scaling.
