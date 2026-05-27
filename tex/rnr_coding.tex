@@ -10087,6 +10087,63 @@ denser graph) would shift the BK $K^*$ to $\sqrt{N}$, matching the
 bit-cost-optimal regime. Open question: does VC-3 retain its
 $1 + 1/144$ inapproximability gap on denser graphs (the
 ``density-shifted Berman-Karpinski'' question)?
+
+\emph{Status update 2026-05-27 (failed path, literature blocker).}
+A systematic literature search (Karpinski--Zelikovsky 1997, Clementi--
+Trevisan 1999, Eremeev 1999, Imamura--Iwama 2005, Karpinski--Schmied
+2010, Austrin--Khot--Safra 2011) settles this attack vector
+\emph{negatively}. The target regime $|V| = N^{1/2}$, $|E| = N$
+corresponds to graphs of density $|E|/|V|^2 = 1$, i.e., asymptotically
+complete graphs, where VC is trivial (minimum cover $= |V| - 1$,
+exactly solvable in polynomial time --- no constant gap). Any
+intermediate regime with $|V| = N^{1-\alpha}$, $|E| = N$ for
+$\alpha \in (0, 1/2)$ yields average degree $\Theta(N^{\alpha})$ and
+density $|E|/|V|^2 = \Theta(N^{2\alpha - 1})$; for $\alpha > 1/2$
+this is subdense in Karpinski--Schmied's sense ($|E| =
+\Omega(|V|^2/\psi(|V|))$ with $\psi(|V|) = \omega(1)$), which
+\emph{admits a PTAS for VC} (Karpinski \& Schmied 2010,
+arXiv:1011.0078, ``Approximating Subdense Instances of Covering
+Problems''). For $\alpha \leq 1/2$, average degree is
+$O(\sqrt{|V|}) = O(|V|^{1/2})$ and $K_{\rm Charikar} \sim |V|
+= N^{1-\alpha}$, which remains $\omega(\sqrt{N})$ --- the
+$K$-shift does \emph{not} occur. Explicit hardness ratios in the
+dense regime degrade smoothly to 1: Eremeev's
+$(7+\delta^*)/(6+2\delta^*)$ NP-hardness for strongly
+$\delta^*$-dense graphs gives ratio $7/6$ at $\delta^* \to 0$
+(still sparse-like) but collapses to $1$ at $\delta^* = 1$
+(complete graphs); Karpinski--Zelikovsky's algorithmic upper bound
+$2/(1+\varepsilon)$ for everywhere $\varepsilon$-dense graphs
+likewise collapses to $1$ at $\varepsilon = 1$. Conclusion:
+\emph{the BK $1 + 1/144$ gap is a specific feature of the
+bounded-degree (sparse) regime}, derived from the 3-regular
+amplifier construction (Berman--Karpinski 1999 ECCC TR98-065); it
+does not extend to denser graphs while simultaneously shifting
+$K_{\rm Charikar}$ to $\sqrt{N}$. The density regime that
+preserves a constant VC gap (bounded degree, $|E| = O(|V|)$) is
+incompatible with the $K$-shift requirement
+($K_{\rm Charikar} \sim \sqrt{N}$ needs $|V| \sim \sqrt{N}$, which
+forces $|E| = \omega(|V|)$). This attack vector is therefore
+\emph{closed negatively}: density-shifted BK cannot work because
+the two requirements (constant VC gap on $H$; $K_{\rm Charikar}(H)
+\sim \sqrt{N}$ in Charikar's encoding) are mutually exclusive
+in the BK $\to$ Charikar framework. The Austrin--Khot--Safra 2011
+result ($2 - (2+o_d(1))\log\log d/\log d$ UG-hardness for VC on
+degree-$d$ graphs) gives a larger gap as $d \to \infty$, but is
+(a) Unique-Games-conditional rather than NP-hard, and (b) the
+underlying graphs are still sparse ($|E| = O(d|V|/2)$), so
+$K_{\rm Charikar} \sim |V|$ remains far above $\sqrt{N}$ unless
+one uses $|V| \sim \sqrt{N}$, which then requires $d \sim
+\sqrt{N}$ on $|V| = \sqrt{N}$ vertices --- producing complete
+graphs again. The Dinur--Safra 2005 result gives a stronger
+NP-hardness factor of $\approx 1.36$ on graphs of ``sufficiently
+large vertex degree'', but the Dinur--Safra hardness graphs
+(FGLSS-style from PCP composition with intersection-graph
+structure) do not admit a direct Charikar encoding preserving the
+$K$-shift; this remains a possible direction under item 2 if the
+FGLSS structural overhead can be absorbed into the SGP encoding,
+but is not addressed by the present density-shifted attack
+vector. Alternative attack vectors (items 2, 3, 4 below) remain
+open.
 \item \emph{Use a different source-of-hardness problem with
 $K$-uniformity built in.} Candidates: SAT (Karp 1972 NP-hardness),
 3-COL (Garey-Johnson 1979 APX-hardness via Khot-Saket 2014 with UGC),
