@@ -4281,86 +4281,94 @@ $1 + O(1/(|V| \log |V|))$ correction. Hence Lemma 6.8e extends to
 the fixed-byte-alphabet variant under continuous bit-cost,
 partially closing OP4'.
 
-\textbf{Lemma 6.8f (K-monotone discrete-bit-cost SGP inherits Charikar
-APX-hardness exactly).}
-\emph{Define the K-monotone variant of unrestricted bit-cost SGP as the
+\textbf{Observation 6.8f (K-monotone discrete-bit-cost SGP retains
+Charikar gap; the K-escape obstacle is isolated, not resolved).}
+\emph{Honest framing: this observation is technically derivable from
+Lemma 6.8b and Charikar's symbol-count gap, but is recorded
+explicitly here to clarify the structural decomposition of the
+OP2(a) residual difficulty. It does \emph{not} constitute a partial
+closure of OP2(a) in the same sense as Lemma 6.8e (which closes
+the continuous-bit-cost variant unconditionally); rather, it
+relabels which sub-problem remains open.}
+
+Define the K-monotone variant of unrestricted bit-cost SGP as the
 optimization problem
 \[
 \min_{G} \;|G|_{\mathrm{sym}} \cdot \lceil \log_2(|\Sigma| + K(G)) \rceil
 \quad \text{subject to} \quad K(G) \;\geq\; K_0,
 \]
-where $K_0$ is a fixed lower bound on the grammar's nonterminal count.
-For instances produced by the Berman-Karpinski $\to$ Charikar reduction
-with $K_0 = K(G^*_{\mathrm{YES}})$ (the YES instance's optimal
-nonterminal count), the K-monotone discrete bit-cost objective is
-APX-hard with the full Charikar gap: for every $\varepsilon > 0$, no
-polynomial-time $(\gamma_{\mathrm{SGP}} - \varepsilon)$-approximation
-exists unless $\mathrm{P} = \mathrm{NP}$, where $\gamma_{\mathrm{SGP}}
-= 8569/8568$.}
-
-\emph{Scope: this is a partial closure of OP2(a) that precisely
-locates the residual difficulty as \emph{K-monotonicity violation},
-not the ceiling discretization per se. The Continuous form (Lemma
-6.8e) shows the ceiling is the obstacle for the K-free case; this
-Lemma 6.8f shows that the K-monotone case (forcing $K \geq K_0$)
-admits the strong-form gap even with the ceiling. Together,
-Lemmas 6.8e and 6.8f narrow the residual OP2(a) question to:
-``can an optimal NO-grammar have $K(G^*_{\mathrm{NO}}) <
-K(G^*_{\mathrm{YES}})$ for Berman-Karpinski-Charikar inputs, and if
-so, by how much?''}
+where $K_0$ is a fixed lower bound on the grammar's nonterminal
+count, determined by the input. For instances produced by the
+Berman-Karpinski $\to$ Charikar reduction, $K_0 := 2|V| + k$ can
+be computed directly from the input VC-3 instance $(H, k)$
+(Charikar et al.\ 2005 §V.A: the YES Charikar normal-form grammar
+has exactly $2|V| + |C^*| = 2|V| + k$ nonterminals when the
+optimal cover has size $|C^*| = k$, the BK promise threshold for
+YES). Under this K-monotonicity constraint, the discrete bit-cost
+APX-hardness gap is at least $\gamma_{\mathrm{SGP}} = 8569/8568$:
+for every $\varepsilon > 0$, no polynomial-time
+$(\gamma_{\mathrm{SGP}} - \varepsilon)$-approximation exists unless
+$\mathrm{P} = \mathrm{NP}$.
 
 \emph{\textbf{Proof.}} The Berman-Karpinski $\to$ Charikar reduction
-(Theorem 6.8, Lemma 6.8e) outputs YES/NO instance optima
-$G^*_{\mathrm{YES}}, G^*_{\mathrm{NO}}$ with $|G^*_{\mathrm{NO}}|_{\mathrm{sym}}
-\geq \gamma_{\mathrm{SGP}} \cdot |G^*_{\mathrm{YES}}|_{\mathrm{sym}}$.
-Under K-monotonicity ($K \geq K_0 := K(G^*_{\mathrm{YES}})$), any
-candidate grammar $G$ for the NO instance satisfies $K(G) \geq K_0$,
-hence $\lceil \log_2(|\Sigma| + K(G)) \rceil \geq \lceil \log_2(|\Sigma|
-+ K_0) \rceil$. Therefore
+(Theorem 6.8) outputs YES/NO instances with optimal Charikar
+normal-form grammars satisfying $|G^*_{\mathrm{NO}}|_{\mathrm{sym}}
+\geq \gamma_{\mathrm{SGP}} \cdot |G^*_{\mathrm{YES}}|_{\mathrm{sym}}$
+and $K(G^*_{\mathrm{NO}}) \geq K(G^*_{\mathrm{YES}}) = K_0$. Under
+the K-monotonicity constraint $K \geq K_0$, the YES optimum is
+unchanged (the YES Charikar grammar is feasible) and the NO
+optimum is at least the unconstrained NO Charikar grammar. The
+combined bit-cost ratio:
 \begin{align*}
-L^{\mathrm{bit}}(G_{\mathrm{NO}})
-  &= |G_{\mathrm{NO}}|_{\mathrm{sym}} \cdot \lceil \log_2(|\Sigma| + K(G_{\mathrm{NO}})) \rceil \\
-  &\geq \gamma_{\mathrm{SGP}} \cdot |G_{\mathrm{YES}}|_{\mathrm{sym}}
-       \cdot \lceil \log_2(|\Sigma| + K_0) \rceil
-  \;=\; \gamma_{\mathrm{SGP}} \cdot L^{\mathrm{bit}}(G_{\mathrm{YES}}),
+\frac{L^{\mathrm{bit}}(G^*_{\mathrm{NO}, K\text{-mono}})}{L^{\mathrm{bit}}(G^*_{\mathrm{YES}, K\text{-mono}})}
+  &\geq \frac{|G^*_{\mathrm{NO}}|_{\mathrm{sym}}}{|G^*_{\mathrm{YES}}|_{\mathrm{sym}}}
+       \cdot \frac{\lceil \log_2(|\Sigma| + K(G^*_{\mathrm{NO}})) \rceil}{\lceil \log_2(|\Sigma| + K_0) \rceil}
+  \;\geq\; \gamma_{\mathrm{SGP}} \cdot 1 \;=\; \gamma_{\mathrm{SGP}},
 \end{align*}
-where the inequality uses the symbol-count gap and the K-monotonicity
-constraint (which controls the log-factor from below).
-Hence the K-monotone bit-cost gap is at least $\gamma_{\mathrm{SGP}}$
-exactly, and any polynomial-time $(\gamma_{\mathrm{SGP}} - \varepsilon)$-
-approximation would distinguish YES from NO, contradicting NP-hardness.
+where the second factor is $\geq 1$ by K-monotonicity. Any
+polynomial-time $(\gamma_{\mathrm{SGP}} - \varepsilon)$-approximation
+would distinguish YES from NO, contradicting NP-hardness.
 \hfill$\blacksquare$
 
-\emph{Numerical verification.} Script
-\texttt{scripts/verify/lemma\_6\_8f\_k\_restricted\_apx\_hardness.py}
-demonstrates the K-escape phenomenon (without monotonicity, NO at
-$K = 500$ can achieve bit-cost ratio $0.91 < 1$, beating YES) and
-confirms that under K-monotonicity ($K \geq K_{\mathrm{YES}} = 1000$),
-the ratio is exactly $\gamma_{\mathrm{SGP}} = 1.000117$ at the
-boundary and strictly greater for larger $K_{\mathrm{NO}}$
-(ceiling-jump amplification).
+\emph{Honest assessment: what this Observation does \emph{not} do.}
+The K-monotonicity constraint $K \geq K_0$ is automatically
+satisfied by the Charikar normal-form NO optimum (because
+$K(G^*_{\mathrm{NO}}) \geq K(G^*_{\mathrm{YES}}) = K_0$ in
+Charikar's construction, as noted in Lemma 6.8e's proof). The
+constraint only excludes \emph{K-escape grammars} --- non-Charikar
+normal-form grammars with $K < K_0$ that might exploit ceiling-jump
+savings. The Observation does \emph{not} prove that such K-escape
+grammars fail to beat the gap; it merely excludes them from the
+search space by fiat. Consequently:
+\begin{itemize}
+\item Observation 6.8f is mathematically correct but \textbf{does not
+close any part of OP2(a) that was open before Lemma 6.8b}. It
+is a relabeling of Lemma 6.8b's class-restriction (Charikar
+normal form) as a K-monotonicity restriction.
+\item The residual OP2(a) is precisely: ``does there exist a
+non-Charikar-normal-form grammar $G$ for the Berman-Karpinski NO
+instance with $K(G) < K_0$ and bit-cost ratio $< \gamma_{\mathrm{SGP}}$
+relative to the YES optimum?'' This is the K-escape question
+identified by the K-optimisation obstacle paragraph in §13.2;
+Observation 6.8f does not address it.
+\end{itemize}
 
-\emph{Comparison and residual difficulty for OP2(a).} The three
-lemmas of the 6.8-family now partition the OP2(a) landscape:
+\emph{Comparison with Lemmas 6.8b and 6.8e.}
 \begin{itemize}
 \item Lemma 6.8b: class-restricted (Charikar normal form), full
-$\gamma_{\mathrm{SGP}}$ gap;
-\item Lemma 6.8e: continuous (no-ceiling) bit-cost, full
-$\gamma_{\mathrm{SGP}}$ gap modulo $O(1/(|V|\log|V|))$ correction;
-\item Lemma 6.8f: K-monotone discrete bit-cost, full
-$\gamma_{\mathrm{SGP}}$ gap exactly.
+$\gamma_{\mathrm{SGP}}$ gap. \textbf{Substantive.}
+\item Lemma 6.8e: continuous (no-ceiling) bit-cost, unrestricted grammar
+class, full $\gamma_{\mathrm{SGP}}$ gap modulo $O(1/(|V|\log|V|))$.
+\textbf{Substantive --- closes continuous variant of OP2(a).}
+\item Observation 6.8f: K-monotone discrete bit-cost, full
+$\gamma_{\mathrm{SGP}}$ gap. \textbf{Essentially a rephrasing of
+6.8b; included only to clarify the K-escape framing.}
 \end{itemize}
-The residual OP2(a) (the K-FREE discrete bit-cost case)
-corresponds precisely to the situation where: (i) the ceiling
-operator allows discrete jumps at power-of-two boundaries, AND
-(ii) the K-optimization may produce $K(G^*_{\mathrm{NO}}) <
-K(G^*_{\mathrm{YES}})$. Closing OP2(a) is now reduced to showing
-that no Berman-Karpinski-Charikar NO instance admits a grammar
-with $K \ll K_{\mathrm{YES}}^{\mathrm{BK}}$ achieving a bit-cost
-ratio below $\gamma_{\mathrm{SGP}}$. This is a structural
-question about K-uniformity of the Berman-Karpinski cover (a
-problem about the gadget construction itself), separated from
-the bit-cost objective.
+The residual OP2(a) is the K-free discrete bit-cost case: whether
+K-escape grammars beat $\gamma_{\mathrm{SGP}}$ remains genuinely
+open and is exactly the K-optimisation obstacle paragraph in §13.2
+(reduction modification at $K = \sqrt{N}$ regime, or alternative
+source-of-hardness problem).
 
 \textbf{Remark 6.8b (Why padding-based reduction fails for
 unrestricted-predictor APX-hardness).} \emph{The natural attempt
