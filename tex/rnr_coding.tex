@@ -4516,6 +4516,225 @@ open and is exactly the K-optimisation obstacle paragraph in §13.2
 (reduction modification at $K = \sqrt{N}$ regime, or alternative
 source-of-hardness problem).
 
+\textbf{Lemma 6.8g (Joint Type-III-C cost is upper-bounded by
+time-bounded conditional Kolmogorov complexity).} \emph{Let
+$U$ be a fixed prefix-free universal Turing machine. Let
+$t : \mathbb{N} \to \mathbb{N}$ be a polynomial time bound,
+fixed independently of the input. For any source string
+$s \in \Sigma^N$ and side-information string $Y \in \{0,1\}^*$,
+define the time-bounded conditional Kolmogorov complexity
+\[
+  K^t(s \mid Y) \;:=\; \min\bigl\{\,|p|
+  \;:\; p \in \{0,1\}^*,\ U(p, Y) = s \text{ in at most } t(|s|+|Y|)
+  \text{ steps}\,\bigr\}
+\]
+(this is the Liu \& Pass (FOCS 2020 / J ACM 2023, arXiv:2009.11514)
+polynomial-time-bounded variant, sometimes written $K^{\mathrm{poly}}$
+in the literature; it is \emph{not} Levin's $\mathrm{Kt}(x) =
+\min_p\{|p| + \log t(p)\}$, which augments the description length
+with a logarithmic running-time penalty inside a single
+optimisation). Define the
+optimal joint Type-III-C bit-cost as
+\[
+  L^*_{\mathrm{total}}(s \mid Y) \;:=\;
+  \min_{(M,D,R)\,:\,\mathrm{Dec}(Y,M,D,R)=s}
+  \bigl[\, L(M) + L(D) + L(R \mid Y, M, D)\,\bigr],
+\]
+where the minimum ranges over Type-III-C admissible triples
+$(M, D, R)$ for which the canonical decoder $\mathrm{Dec}$ recovers
+$s$ exactly from $(Y, M, D, R)$, and each of $L(M), L(D),
+L(R \mid Y, M, D)$ is the prefix-free binary description length of
+the corresponding component. Then there exists an explicit universal
+constant $c \in \mathbb{N}$ (depending only on $U$ and the
+prefix-free encoding convention, not on $s$ or $Y$) such that for
+every $s$ and $Y$,
+\[
+  L^*_{\mathrm{total}}(s \mid Y) \;\leq\; K^t(s \mid Y) + c\log_2(|s|+|Y|+1) + c.
+\]
+}
+
+\emph{\textbf{Proof.}} Let $p^* \in \{0,1\}^*$ be a $K^t$-witness
+program: $|p^*| = K^t(s \mid Y)$ and $U(p^*, Y)$ outputs $s$ within
+$t(|s|+|Y|)$ steps. We construct a Type-III-C admissible triple
+$(M_{p^*}, D_\emptyset, R_\emptyset)$ from $p^*$, then bound its
+total encoded length.
+
+\emph{Construction.}
+\begin{enumerate}
+\item \emph{Model.} Define $M_{p^*}$ as the degenerate
+\emph{deterministic single-shot predictor}: on input context $Y$,
+$M_{p^*}$ internally simulates $U$ on the pair $(p^*, Y)$ for up to
+$t(|s|+|Y|)$ steps and outputs the resulting binary string as a
+single deterministic block-level prediction $\hat{s}$ for the entire
+source. Operationally, $M_{p^*}$ is encoded as the prefix-free binary
+description of the pair $(p^*,\text{header})$, where the header is a
+constant-length tag declaring the deterministic single-shot mode.
+This mode is a permissible specialisation of the general Type-III-C
+predictor: the model commits to a single output string with
+degenerate probability mass $1$ on $\hat{s}$, the limit case in which
+arithmetic coding under the predicted distribution produces zero
+residual bits. The universal $U$ is hard-wired into the decoder by
+convention (so does not need to be re-encoded), and the polynomial
+$t$ is fixed once for the codec and likewise does not appear in
+$L(M_{p^*})$ beyond a fixed-size constant.
+\item \emph{Dictionary.} Set $D_\emptyset := \varepsilon$ (the empty
+learned dictionary). The base alphabet $\Sigma$ remains implicitly
+available as the universe of unit tokens, but no multi-byte learned
+entries are introduced. Under the deterministic single-shot mode no
+token table is consulted, because the predictor outputs the entire
+string $\hat{s}$ directly; $L(D_\emptyset)$ is the constant-length
+prefix-free encoding of ``dictionary has 0 learned entries.''
+\item \emph{Residual.} Set $R_\emptyset := \varepsilon$ (the empty
+residual). Under the deterministic single-shot mode, arithmetic
+coding under the degenerate predicted distribution
+$\Pr[\hat{s}] = 1$ produces zero codeword bits in the ideal limit,
+so the residual is empty and its prefix-free length-prefix encoding
+is the natural-number-zero codeword, of constant length.
+\end{enumerate}
+
+\emph{Decoder consistency.} The canonical Type-III-C decoder reads
+the prefix-free header of $M_{p^*}$, parses the deterministic
+single-shot mode flag and recovers $p^*$, runs $U(p^*, Y)$ for
+$t(|s|+|Y|)$ steps, takes the output $\hat{s}$ as the predicted
+string, and since $R_\emptyset = \varepsilon$ emits $\hat{s}$
+verbatim. By construction $\hat{s} = s$, so the triple
+$(M_{p^*}, D_\emptyset, R_\emptyset)$ is Type-III-C admissible under
+the deterministic single-shot extension.
+
+\emph{Length bound.} Each component is encoded with a prefix-free
+length code (Elias gamma or any other concrete prefix-free natural
+number code; the choice affects the universal constant $c$ but not
+the asymptotic form). Let $c_0$ be a constant absorbing the
+description of the canonical Type-III-C decoder, the polynomial $t$,
+the mode-flag header, and any fixed structural overhead. Then:
+\begin{align*}
+  L(M_{p^*}) &\leq |p^*| + \ell_{\mathrm{pref}}(|p^*|) + c_0
+    \;=\; K^t(s \mid Y) + O(\log K^t(s \mid Y)) + c_0, \\
+  L(D_\emptyset) &= \ell_{\mathrm{pref}}(0) \;\leq\; c_1, \\
+  L(R_\emptyset \mid Y, M_{p^*}, D_\emptyset) &= \ell_{\mathrm{pref}}(0)
+    \;\leq\; c_1,
+\end{align*}
+where $\ell_{\mathrm{pref}}(n) = O(\log(n+1))$ is the Elias-gamma
+prefix-free encoding length of a natural number $n$, and $c_1$ is the
+encoding length of the natural number $0$ (a small fixed constant
+under any standard scheme). Summing,
+\[
+  L^*_{\mathrm{total}}(s \mid Y)
+  \;\leq\; L(M_{p^*}) + L(D_\emptyset) + L(R_\emptyset \mid Y, M_{p^*}, D_\emptyset)
+  \;\leq\; K^t(s \mid Y) + c\log_2(|s|+|Y|+1) + c
+\]
+for $c := c_0 + 2 c_1 + c_2$, where $c_2$ absorbs the implicit
+$O(\log K^t)$ term using $K^t(s \mid Y) \leq |s| \log_2 |\Sigma| + O(1)$
+(the trivial print-program upper bound, so $\log K^t = O(\log(|s|+1))$).
+The constants $c_0, c_1, c_2$ are all explicit functions of the
+choices of $U$, $t$, and the Elias-gamma convention; in particular
+$c$ does not depend on $s$ or $Y$.
+\hfill$\blacksquare$
+
+\emph{Honest scope statement.} Lemma 6.8g is an information-theoretic
+upper bound. The following are \emph{not} claimed and do not follow
+from this lemma alone:
+\begin{itemize}
+\item \textbf{No hardness.} Lemma 6.8g makes \emph{no} hardness
+claim --- neither decision-hardness, nor APX-hardness, nor any
+average-case hardness. The bound goes in the direction
+$L^*_{\mathrm{total}} \leq K^t + O(\log)$, which is the
+\emph{achievability} direction: an upper bound on the optimum cannot
+imply hardness of the optimisation. The converse direction
+$K^t \leq L^*_{\mathrm{total}} + O(\log)$ is the easy direction
+(the canonical Type-III-C decoder, supplied with the Type-III-C
+encoding $(M,D,R)$ as a program, is a polynomial-time machine
+outputting $s$ from $Y$, so $K^t(s \mid Y) \leq L^*_{\mathrm{total}}(s \mid Y) +
+O(1)$ when the codec runtime is bounded by the chosen $t$); together
+the two directions give an $O(\log)$-tight characterisation of
+$L^*_{\mathrm{total}}$ in terms of $K^t$, but neither direction is a
+hardness statement on its own.
+\item \textbf{Does not close Conjecture 6.8d.} Conjecture 6.8d
+(unrestricted bit-cost SGP APX-hardness) is a worst-case
+NP-hardness statement, which neither follows from nor implies a
+$K^t$-upper-bound. Lemma 6.8g does, however, formalise the upper
+bound informally invoked in §13.2's Liu--Pass paragraph, fixing the
+K-variant from Levin's $\mathrm{Kt}$ to the Liu--Pass polynomial-time
+$K^t$ and supplying the previously missing explicit constant.
+\item \textbf{Does not imply Type-III-C $\geq K^t - O(1)$ in any
+useful structural direction.} The reverse-direction inequality
+$K^t \leq L^*_{\mathrm{total}} + O(1)$ holds easily when the codec
+runtime is allowed to scale with the chosen polynomial $t$, but if
+$t$ is fixed first and the codec is restricted to a smaller runtime
+budget, $L^*_{\mathrm{total}}$ may strictly exceed $K^t$ by an
+unbounded amount; Lemma 6.8g asserts only the one-sided upper bound.
+\item \textbf{Reference $K^t$ is not Levin $\mathrm{Kt}$.} The
+description-length notation $K^t(\cdot \mid \cdot)$ used here is the
+Liu--Pass time-bounded Kolmogorov complexity with a fixed polynomial
+$t$ (Liu \& Pass, FOCS 2020 / J ACM 2023, arXiv:2009.11514; the
+inner optimisation is over programs $p$ with $U(p, Y) = s$ in
+$\leq t(|s|+|Y|)$ steps), while
+Levin's $\mathrm{Kt}(x) = \min_p \{|p| + \log t(p) : U(p) = x\}$
+incorporates the running time additively inside a single
+optimisation. The two measures coincide up to $O(\log)$ factors when
+the chosen $t$ matches the running time of the optimal program, but
+diverge in general; the formal statement of Lemma 6.8g uses $K^t$
+because that is the measure for which Liu--Pass establish the
+OWF-equivalence anchor cited in §13.2.
+\item \textbf{Constant $c$ is explicit but architecture-dependent.}
+The constant $c$ depends on the choice of universal machine $U$, the
+chosen polynomial $t$, and the prefix-free length-encoding
+convention. It does \emph{not} depend on $s$, $Y$, or any varying
+parameter of the source. Different conventions yield different $c$;
+the universality of the bound is in the asymptotic form
+$O(\log(|s|+|Y|+1))$, not in any specific small constant.
+\item \textbf{Deterministic single-shot mode requires a minor
+extension of Definition 3.5.} The construction uses a degenerate
+predictor that commits to a single full-block output string rather
+than producing a per-position token distribution over the Type-III-C
+dictionary $D$. Definition 3.5 in §3 frames the model as predicting
+$Q(k, i) \approx \Pr(\tau_k \text{ begins at position } i \mid C)$
+over dictionary tokens; the deterministic single-shot predictor used
+in this proof is a permissible \emph{extension} of that definition
+in which the predictor instead emits a single full-block string
+$\hat{s}$ as a degenerate distribution placing probability $1$ on
+$\hat{s}$ and probability $0$ on every other string. Under any
+$L^*_{\mathrm{total}}$ optimisation that includes this single-shot
+mode as an admissible specialisation, the bound holds. If
+Type-III-C is interpreted \emph{strictly} as Definition 3.5
+(per-position token-distribution form only, with no full-block
+degenerate mode), the lemma's bound applies to
+$\widetilde{L}^*_{\mathrm{total}}$ defined over the extended
+admissible class. The extension is natural and consistent with the
+general MDL-coder / arithmetic-coding framework, but we flag it
+explicitly to preempt the reading that Lemma 6.8g is a statement
+about Definition 3.5 verbatim.
+\end{itemize}
+
+\emph{What the lemma is useful for.} Lemma 6.8g formalises the upper
+bound informally asserted in §13.2's Liu--Pass paragraph, replacing
+the loosely-stated ``$L(M) + L(D) + L(R \mid Y, M, D) \leq
+\mathrm{Kt}(s \mid Y) + O(\log N)$'' with the correctly-typed
+inequality $L^*_{\mathrm{total}}(s \mid Y) \leq K^t(s \mid Y) +
+c \log_2(|s|+|Y|+1) + c$. It is the achievability half of an
+$O(\log)$-tight characterisation of the optimal joint cost. It is
+\emph{required as a stepping stone} for any future OWF-conditional
+hardness reduction from $\mathrm{MK^t P}$ to joint Type-III-C
+compression on samplable distributions: the reduction needs both an
+upper bound (this lemma) to encode reduction outputs and a lower
+bound (the easy converse) to translate decision queries; with both
+in hand the reduction has the same asymptotic shape as Liu--Pass's
+MKtP analysis. Constructing the polynomial-time samplable distribution
+on which such a reduction would work remains open (see §13.2).
+
+\emph{Caveat on $Y$-side handling.} The conditional $K^t(s \mid Y)$
+is well-defined provided $Y$ is given to the universal machine as a
+fixed side-input string. In the Type-III-C framework, $Y$ is the
+\emph{decoder context} fixed before the encoder operates and
+identical for encoder and decoder. The construction above treats $Y$
+as a constant-time-accessible auxiliary input to $U$; if instead $Y$
+itself must be reproduced from a shorter description, the bound
+needs the additional term $K^t(Y) + O(\log |Y|)$ added on the
+right-hand side. We assume throughout the standard Type-III-C
+convention that $Y$ is part of the public state and not counted in
+the codec cost; under that convention the bound as stated holds
+verbatim.
+
 \textbf{Remark 6.8b (Why padding-based reduction fails for
 unrestricted-predictor APX-hardness).} \emph{The natural attempt
 to transfer APX-hardness from the restricted (constant predictor,
@@ -5568,7 +5787,7 @@ access to $Y^N$) such that the joint decoder, given both archives,
 reconstructs $\hat{X}^N$ with $\mathbb{E}[d_H(X^N, \hat{X}^N)/N]
 \leq D$ and}
 \[
-\mathbb{E}\bigl[L^{\mathrm{rep}}_X^{\mathrm{WZ}}(X^N)\bigr]
+\mathbb{E}\bigl[L^{\mathrm{rep},\mathrm{WZ}}_X(X^N)\bigr]
 \;\leq\;
 N \cdot R_{\mathrm{WZ}}(D) + m \cdot \delta_\infty^{\mathrm{WZ}, D} + O(1) + \varepsilon_{\mathrm{ac}}.
 \]
@@ -5748,7 +5967,7 @@ values in independent (stable) sets of $G_f$, with the Markov chain
 $W - X - Y$. Then there exists an RNR encoder $\mathcal{E}_X^f$ such
 that}
 \[
-\mathbb{E}\bigl[L^{\mathrm{rep}}_X^f(X^N)\bigr]
+\mathbb{E}\bigl[L^{\mathrm{rep},f}_X(X^N)\bigr]
 \;\leq\;
 N \cdot H_{G_f}(X \mid Y) + m \cdot \delta_\infty^f + O(1) + \varepsilon_{\mathrm{ac}},
 \]
@@ -6077,7 +6296,7 @@ hypothesis (5.8), conditioning on $X_n$ also alters the conditional
 distribution of $X_{n+W_N+1}, X_{n+W_N+2}, \ldots$ at geometric rate
 $\rho^k$, contributing an additional mixing-tail factor
 $\sum_{k \geq 1} \rho^k = \rho/(1-\rho)$ in the bound on the
-Doob-martingale increment. The full bound is therefore}
+Doob-martingale increment. The full bound is therefore
 \[
 |D_n| \;\leq\; \bigl(W_N + 1 + \tfrac{\rho}{1-\rho}\bigr)
 \cdot \log_2(1/\eta),
@@ -6123,7 +6342,7 @@ at least $1 - \delta$, the encoded archive size satisfies}
 \[
 \boxed{
 \;
-L^{\mathrm{rep}}_{\mathrm{RNR}}^{M'}(X^N)
+L^{\mathrm{rep},M'}_{\mathrm{RNR}}(X^N)
 \;=\;
 \underbrace{N \cdot H_{M'}}_{\text{predictor cross-entropy}}
 \;+\;
@@ -9560,12 +9779,20 @@ listed below.)
   one-way functions is equivalent to the hardness, on samplable
   distributions, of the Minimum-Kt-Complexity Problem
   (MKtP), where $\mathrm{Kt}(x) = \min_p \{|p| + \log t(p) : U^p
-  \text{ outputs } x\}$ is time-bounded Kolmogorov complexity.
-  For OP2(b), the joint cost
+  \text{ outputs } x\}$ is time-bounded Kolmogorov complexity in
+  Levin's form; the closely-related Liu--Pass variant
+  $K^t(x) = \min_p \{|p| : U(p) = x \text{ in } \leq t(|x|)
+  \text{ steps}\}$ (with a fixed polynomial $t$) is the measure for
+  which the OWF-equivalence is stated in
+  Liu--Pass~2020. For OP2(b), the joint cost
   $L(M) + L(D) + L(R \mid Y, M, D)$ is upper-bounded by
-  $\mathrm{Kt}(s \mid Y) + O(\log N)$, with the predictor $M$
-  playing the role of the polynomial-time-bounded ``program'' and
-  $L(R)$ the residual incompressibility. Hence: IF one-way functions
+  $K^t(s \mid Y) + O(\log N)$ (formal statement: Lemma 6.8g in
+  §6.8, which gives an explicit universal constant in front of the
+  logarithm; see Lemma 6.8g's scope statement for the precise sense
+  in which Levin's $\mathrm{Kt}$ and the Liu--Pass $K^t$ differ),
+  with the predictor $M$ playing the role of the
+  polynomial-time-bounded ``program'' and $L(R)$ the residual
+  incompressibility. Hence: IF one-way functions
   exist, THEN OP2(b) is average-case hard on a samplable distribution
   by direct reduction from MKtP. The reduction is not gap-preserving
   (gives average-case, not worst-case, hardness; and additive Kt-bit
@@ -10302,6 +10529,7 @@ all admit polynomial enumerative encoders.
 grammar size $g$, the CYK parser gives $O(N^3 g)$ membership and
 hence polynomial enumerative encoder. Concrete example: well-formed
 HTML5 fragments, valid Python-3 source code (modulo indentation).
+Lemma 13.4.3a (below) gives the explicit construction.
 \item \emph{Algebraic / lattice classes.} For lattice membership
 $\{x \in \mathbb{Z}^N : Ax = b \pmod q\}$ for fixed $(A, b, q)$,
 polynomial enumerative encoder via lattice basis reduction.
@@ -10319,6 +10547,173 @@ proportionally.
 polynomial-time enumerative encoder for natural images at fixed
 resolution, achieving rate matching state-of-the-art neural
 compressors (e.g., HiFiC, MENT) within constant factors.
+
+\textbf{Lemma 13.4.3a (Constructive enumerative encoder for
+unambiguous context-free languages; sub-case closure of OP3$''$).}
+\emph{Let $G$ be an unambiguous context-free grammar in Chomsky Normal
+Form with $k$ nonterminals (start symbol $S$ indexed $0$), terminal
+alphabet $\Sigma$ of size $\sigma = |\Sigma|$, and production set $P$
+partitioned into $P_2 = \{A \to BC\}$ binary and $P_1 = \{A \to a\}$
+terminal productions. For any target length $N \in \mathbb{N}$, the
+class $\mathcal{C}_G := L(G) \cap \Sigma^N$ admits an explicit
+polynomial-time enumerative encoder $(\mathrm{count}, \mathrm{rank},
+\mathrm{unrank})$ such that}
+\begin{itemize}
+\item $\mathrm{count}(N) = |\mathcal{C}_G|$ \emph{is computed in
+$O(N^2 \cdot k \cdot |P_2|)$ arithmetic operations on integers of
+$O(N \log \sigma)$ bits;}
+\item $\mathrm{rank}(w) := |\{v \in \mathcal{C}_G : v < w \text{ lex}\}|$
+\emph{is computed in $O(N^4 \cdot \sigma \cdot k \cdot |P_2|)$
+operations for any $w \in \mathcal{C}_G$;}
+\item $\mathrm{unrank}(r) := $ \emph{the lex-$r$-th element of
+$\mathcal{C}_G$ for $r \in [0, |\mathcal{C}_G|)$, computed in
+$O(N^4 \cdot \sigma \cdot k \cdot |P_2|)$ operations.}
+\end{itemize}
+\emph{The encoder transmits $\lceil \log_2 |\mathcal{C}_G| \rceil$ bits
+per message, achieving rate}
+\[
+R_G(N) \;=\; \frac{\lceil \log_2 |\mathcal{C}_G| \rceil}{N}
+\;\leq\; \frac{\log_2 |\mathcal{C}_G|}{N} + \frac{1}{N},
+\]
+\emph{within $1/N$ bit/symbol of the Cover 1973 enumerative-coding
+optimum on $\mathcal{C}_G$.}
+
+\emph{\textbf{Proof / construction.}} We give the algorithm explicitly.
+
+\emph{Step 1 (count table, CYK-counting variant of Younger 1967).} For
+each nonterminal $A \in \{0, \ldots, k-1\}$ and each $j \in \{1, \ldots,
+N\}$, define $N_A[j] := \#\{w \in \Sigma^j : A \Rightarrow_G^\ast w\}$.
+By unambiguity of $G$, each derivable string has a unique parse tree,
+so the parse-tree count equals the distinct-string count, and the
+following CYK-style recurrence is exact:
+\[
+N_A[1] \;=\; |\{a \in \Sigma : (A \to a) \in P_1\}|,
+\]
+\[
+N_A[j] \;=\; \sum_{(A \to BC) \in P_2} \sum_{m=1}^{j-1} N_B[m] \cdot N_C[j-m]
+\quad (j \geq 2).
+\]
+The table has $kN$ entries; filling each entry takes $O(|P_2| \cdot N)$
+arithmetic ops, for total $O(N^2 \cdot k \cdot |P_2|)$ ops. Since
+$N_A[j] \leq \sigma^j \leq \sigma^N$, each integer has
+$O(N \log \sigma)$ bits. (For $G$ ambiguous, the recurrence overcounts
+strings; the algorithm and lemma assume unambiguity, which is
+undecidable in general for arbitrary CFG but \emph{structurally
+verified} for the natural CFLs we target --- Dyck words, balanced
+parenthesis, regular languages converted via right-linear CNF, JSON
+syntax, RFC-3986 URIs, and the LL/LR-parsable subclasses of
+programming languages.)
+
+\emph{Step 2 (prefix-completion count via wildcard CYK).} For any
+pattern $\pi \in (\Sigma \cup \{\star\})^N$ where $\star$ denotes a
+wildcard, define
+\[
+D_A^\pi[a, b] \;:=\; \#\bigl\{ s \in \Sigma^{b-a} : A \Rightarrow_G^\ast s,
+\; s[i] = \pi[a + i] \text{ for all } i \text{ with }
+\pi[a + i] \neq \star \bigr\}.
+\]
+Recurrence:
+\[
+D_A^\pi[a, a+1] \;=\; \sum_{(A \to t) \in P_1}
+\mathbb{1}[\pi[a+1] = \star \;\vee\; \pi[a+1] = t],
+\]
+\[
+D_A^\pi[a, b] \;=\; \sum_{(A \to BC) \in P_2} \sum_{m=a+1}^{b-1}
+D_B^\pi[a, m] \cdot D_C^\pi[m, b]
+\quad (b - a \geq 2).
+\]
+This fills $O(N^2)$ cells per nonterminal in $O(N |P_2|)$ work each,
+total $O(N^3 \cdot k \cdot |P_2|)$ ops per pattern. The quantity
+$\mathrm{Cnt}(p) := D_0^\pi[0, N]$ for $\pi = p \cdot \star^{N - |p|}$
+gives the number of length-$N$ strings in $\mathcal{C}_G$ starting
+with prefix $p$.
+
+\emph{Step 3 (rank by prefix enumeration).} For $w \in \mathcal{C}_G$,
+\[
+\mathrm{rank}(w) \;=\; \sum_{i=0}^{N-1} \sum_{c < w_{i+1}}
+\mathrm{Cnt}(w[1..i] \cdot c).
+\]
+There are at most $N \cdot (\sigma - 1)$ summands; each summand is one
+wildcard-CYK invocation costing $O(N^3 k |P_2|)$, giving the stated
+$O(N^4 \cdot \sigma \cdot k \cdot |P_2|)$ bound. Correctness: every
+$v < w$ in $\mathcal{C}_G$ shares a (possibly empty) maximal prefix
+with $w$, then disagrees at some position $i+1$ with $v_{i+1} < w_{i+1}$;
+the summand at $(i, v_{i+1})$ counts $v$ exactly once.
+
+\emph{Step 4 (unrank by lex prefix search).} Given $r \in [0,
+|\mathcal{C}_G|)$, greedy reconstruct $w$ symbol-by-symbol. At position
+$i+1$, maintain the residual rank $\rho_i$ (initially $r$); enumerate
+$c \in \Sigma$ in lex order; let $q_c := \mathrm{Cnt}(w[1..i] \cdot c)$;
+pick the smallest $c^\ast$ for which $\rho_i < \sum_{c \leq c^\ast} q_c$;
+set $w_{i+1} = c^\ast$ and $\rho_{i+1} := \rho_i - \sum_{c < c^\ast} q_c$.
+Per position cost $O(\sigma)$ wildcard-CYK invocations; over $N$
+positions, the stated bound. Correctness: at each step the residual
+$\rho_i$ identifies a sub-interval of size $1$ within the $q_{c^\ast}$
+extensions, which by the rank construction is exactly the lex-$(r)$-th
+completion conditional on prefix $w[1..i]$.
+
+\emph{Step 5 (rate).} The encoder transmits $\mathrm{rank}(w)$ as a
+fixed-length integer in $b_N := \lceil \log_2 |\mathcal{C}_G| \rceil$
+bits. Since $\mathrm{rank}: \mathcal{C}_G \to [0, |\mathcal{C}_G|)$ is
+a bijection (uniqueness of lex order on a finite set; correctness of
+$\mathrm{rank}, \mathrm{unrank}$ above), the encoding is lossless. The
+rate is $b_N / N \leq (\log_2 |\mathcal{C}_G| + 1)/N$, matching the
+Cover 1973 ceiling within $1/N$ bit per symbol. \hfill$\blacksquare$
+
+\emph{Scope and significance.} Lemma 13.4.3a upgrades the named
+``Context-free classes'' attack vector from a sketch (``CYK gives
+polynomial membership, so Cover 1973 applies'') to an executable
+construction. The novelty lies not in the theory (Cover 1973 plus
+CYK-counting is folklore; cf.\ Goulden-Jackson 1983 \emph{Combinatorial
+Enumeration of Sequences} for generating-function methods on
+unambiguous CFLs) but in the \emph{explicit polynomial-time algorithm}:
+for any unambiguous-CNF grammar provided as input, the construction
+yields a working encoder that researchers can adapt to their specific
+data class.
+
+The restriction to \emph{unambiguous} CFGs is essential: counting
+distinct strings in an ambiguous CFL is \#P-hard in general, since
+$\#$DNF-SAT reduces to it (Bertoni-Goldwurm-Sabadini 1991, \emph{Theoret.\
+Comput.\ Sci.}\ 86:373--391). Most natural data classes admit
+unambiguous CFG presentations (Dyck words, balanced parenthesis,
+RFC-3986 URIs, ISO-8601 dates as a regular subset, and the LL/LR-parsable
+subclasses of programming languages); ambiguity-free presentations of
+HTML5 and full Python are open engineering questions distinct from the
+complexity-theoretic content of Lemma 13.4.3a.
+
+\emph{Concrete benchmark (Fibonacci-string language).} The binary
+language $F = \{w \in \{0,1\}^\ast : \text{``11''} \not\sqsubseteq w\}$
+admits a four-nonterminal unambiguous CNF grammar (start $S$,
+``after-1'' state $T$, helpers $A \to 0$, $B \to 1$, with productions
+$S \to AS \mid BT \mid 0 \mid 1$, $T \to AS \mid 0$). By a standard
+Zeckendorf argument, $|F \cap \{0,1\}^N| = \mathrm{Fib}(N+2)$, with
+asymptotic rate $\log_2((1+\sqrt 5)/2) \approx 0.6942$ bits/symbol.
+At $N = 20$, $|F \cap \{0,1\}^{20}| = \mathrm{Fib}(22) = 17{,}711$;
+the algorithm transmits $\lceil \log_2 17711 \rceil = 15$ bits per
+length-20 message for rate $0.75$ bits/symbol, within $1/N = 0.05$
+of the finite-$N$ optimum $\log_2(17711)/20 \approx 0.7056$. The
+script \texttt{scripts/verify/op3\_cfl\_enumerative\_encoder.py}
+implements all three operations $(\mathrm{count}, \mathrm{rank},
+\mathrm{unrank})$ and verifies (i) count consistency with the
+closed-form Fibonacci value for $N \in \{1, \ldots, 30\}$, (ii) full
+lex-enumeration round-trip for $N \leq 15$, (iii) 100 random
+round-trips at $N = 20$, (iv) rank uniqueness and range, and (v) the
+empirical $0.75$-bits/symbol rate against the optimum.
+
+\emph{What this closes and what remains.} Lemma 13.4.3a constructively
+closes OP3$''$ for the sub-case of \emph{unambiguous CFG-definable
+data classes}. The outer envelope of OP3$''$ --- natural data classes
+such as natural images, video, audio, where no explicit generative
+grammar is known --- remains open; constructing unambiguous CFG (or
+PCFG) approximations to these classes is the remaining engineering
+challenge that the Lemma reduces the open problem to. The complexity
+constant $O(N^4 \sigma k |P_2|)$ in the rank step is the
+straightforward bound; standard incremental-CYK and Earley-set
+optimisations can reduce this to $O(N^3 \sigma k |P_2|)$ at the cost
+of more intricate bookkeeping (sharing pattern-CYK cells across the
+$N$ prefix-positions, since consecutive patterns differ in exactly
+one symbol). The optimised bound is not required for the
+``polynomial-time'' guarantee that establishes the closure.
 
 \textbf{13.4.4 OP4 (Approximability of optimal support selection for
 general dependent joint laws of $M_v$).}
