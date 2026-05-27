@@ -7247,39 +7247,57 @@ coupling-based bounds; Wolfer-Kontoyiannis 2019 non-reversible-chain
 spectral gaps), open for future work.
 
 \emph{\textbf{Proof.}}
-Under IRM, the joint process $(\mathrm{Cache}_t, X_t)_{t \geq 1}$
-is a homogeneous Markov chain on the finite state space
-$\mathcal{S} := \{(S, x) : S \subset [N_{\rm dist}], |S| = C,
-x \in [N_{\rm dist}]\}$ (cardinality $\binom{N_{\rm dist}}{C} \cdot
-N_{\rm dist}$, finite). The transition law is: $(S_t, X_t) \to
-(S_{t+1}, X_{t+1})$ where $X_{t+1} \sim \pi$ independently;
-$S_{t+1} = S_t \setminus \{\mathrm{oldest}(S_t)\} \cup \{X_{t+1}\}$
-if $X_{t+1} \notin S_t$, else $S_{t+1}$ equals $S_t$ with
-$X_{t+1}$ moved to most-recent position (standard LRU update rule).
+Under IRM with the standard LRU update rule, the state is most
+naturally encoded as the \emph{ordered LRU stack}
+$\mathbf{s}_t = (s_t^{(1)}, \ldots, s_t^{(C)})$ where $s_t^{(1)}$
+is the most-recently-requested item among those currently in cache
+(King 1971; Kesidis et al.\ 2017, arXiv:1704.04849). Together with
+the current query $X_t$, the joint state $(\mathbf{s}_t, X_t)$
+lives in the finite space $\mathcal{S} := \{(\mathbf{s}, x) :
+\mathbf{s} \in [N_{\rm dist}]^{(C)}, x \in [N_{\rm dist}]\}$ of
+cardinality $P(N_{\rm dist}, C) \cdot N_{\rm dist} = N_{\rm dist}!
+/ (N_{\rm dist} - C)! \cdot N_{\rm dist}$, where $[N_{\rm dist}]^{(C)}$
+denotes ordered $C$-tuples of distinct elements. The transition
+law is the standard LRU rule: $X_{t+1} \sim \pi$ independently;
+if $X_{t+1} \in \mathbf{s}_t$, move $X_{t+1}$ to position 1 and
+shift older items down; if $X_{t+1} \notin \mathbf{s}_t$, prepend
+$X_{t+1}$ at position 1 and evict the position-$C$ item.
 
-\emph{Irreducibility.} For any target state $(S', x') \in \mathcal{S}$,
-the deterministic query sequence $X_{t+1}, X_{t+2}, \ldots, X_{t+C+1}$
-chosen to be (any ordering of $S' \cup \{x'\}$) drives the chain
-into state $(S', x')$ regardless of the starting state. Each such
-specific query has probability $\geq \pi_{\rm min} > 0$ under IRM,
-so the chain reaches $(S', x')$ from any state in $\leq C + 1$
-steps with probability $\geq \pi_{\rm min}^{C+1} > 0$. Hence the
-chain is irreducible.
+\emph{Irreducibility.} For any target ordered stack $\mathbf{s}'
+= (a_1, \ldots, a_C)$ and any subsequent query $x' \in
+[N_{\rm dist}]$, the deterministic query sequence $X_{t+1} = a_C,
+X_{t+2} = a_{C-1}, \ldots, X_{t+C} = a_1, X_{t+C+1} = x'$ drives
+the chain to state $(\mathbf{s}', x')$ regardless of the starting
+state (each query moves its target item to position 1; after
+$C$ such queries in reverse order, the stack becomes
+$(a_1, \ldots, a_C) = \mathbf{s}'$). Each specific query has
+probability $\geq \pi_{\rm min} > 0$ under IRM, so any state is
+reached from any other in exactly $C + 1$ steps with probability
+$\geq \pi_{\rm min}^{C+1} > 0$. Hence the chain is irreducible.
 
-\emph{Aperiodicity.} For any state $(S, x)$, the self-loop
-$(S, x) \to (S, x)$ via $X_{t+1} = x$ (followed by $X_{t+2} = x$
-again) has probability $\pi_x^2 > 0$, giving period 1.
+\emph{Aperiodicity.} For any state $(\mathbf{s}, x)$, querying
+$X_{t+1} = s^{(1)}$ (the current top of stack) leaves $\mathbf{s}$
+unchanged, giving the transition $(\mathbf{s}, x) \to
+(\mathbf{s}, s^{(1)})$. A subsequent query $X_{t+2} = s^{(1)}$
+yields $(\mathbf{s}, s^{(1)}) \to (\mathbf{s}, s^{(1)})$ --- a
+self-loop with probability $\pi_{s^{(1)}} > 0$. Hence the chain
+has period 1 (aperiodic).
 
 \emph{Stationary distribution and spectral gap.} As a finite,
 irreducible, aperiodic Markov chain, the joint chain admits a
 unique stationary distribution $\pi^*$ (Levin-Peres-Wilmer 2017
 ``Markov Chains and Mixing Times'', Theorem 4.9), with
-$\mu_\infty = \mathbb{E}_{\pi^*}[\mathbf{1}\{x \notin S\}]$.
-The spectral gap of the additive reversibilization $\tilde{P} =
-(P + P^*)/2$ (where $P^*$ is the time-reversal of $P$ w.r.t.\
-$\pi^*$) is strictly positive: $\gamma_{\rm LRU} := 1 -
-\lambda_2(\tilde{P}) > 0$, by the standard finite-chain argument
-(LPW Corollary 12.6).
+$\mu_\infty = \mathbb{E}_{\pi^*}[\mathbf{1}\{x \notin \mathbf{s}\}]$.
+The chain is not reversible in general (LRU dynamics are
+directional). However, the additive reversibilization
+$\tilde{P} := (P + P^*)/2$ (where $P^*$ is the time-reversal of
+$P$ w.r.t.\ $\pi^*$) is reversible by construction, and Aldous-Fill
+(``Reversible Markov Chains and Random Walks on Graphs'', Chapter
+9.4.1, ``Reversibilizations'') establishes that the spectral gap
+$\gamma_{\rm LRU} := 1 - \lambda_2(\tilde{P})$ is strictly positive
+for any finite irreducible aperiodic non-reversible chain
+(equivalently: $\tilde{P}$ has eigenvalue 1 with multiplicity 1 by
+Perron-Frobenius applied to the connected aperiodic reversibilization).
 
 \emph{Application of Lezaud Chernoff.} Lezaud (1998, Theorem 1.1)
 applies to any bounded $L^2$-functional $f$ of a finite-state
@@ -7302,27 +7320,33 @@ gives the claim. \hfill$\blacksquare$
 
 \emph{Remark 7.26a (positivity of $\gamma_{\rm LRU}$ and explicit
 lower bounds).} The positivity $\gamma_{\rm LRU} > 0$ is immediate
-from the chain being finite, irreducible, and aperiodic (cf.\ proof
-above). Explicit lower bounds on $\gamma_{\rm LRU}$ are more subtle.
-A crude Dobrushin-coupling lower bound: by the irreducibility
-argument above, the chain reaches any target state in $\leq C+1$
-steps with probability $\geq \pi_{\rm min}^{C+1}$, so the coupling
-time from any pair of starting states is bounded by a geometric
-random variable, giving (via Markov's inequality and the standard
-Dobrushin-spectral-gap relationship) $\gamma_{\rm LRU} \geq
-\pi_{\rm min}^{C+1}$. For Zipf popularity $\pi_i \propto i^{-\alpha}$
-on $[N_{\rm dist}]$, $\pi_{\rm min} = N_{\rm dist}^{-\alpha} /
-\zeta_{N_{\rm dist}}(\alpha)$, giving $\gamma_{\rm LRU} \geq
-(N_{\rm dist}^{-\alpha}/\zeta(\alpha))^{C+1}$ --- positive but
-exponentially small in $C$, hence not practically useful for
-moderate cache sizes. Tighter bounds via LRU-specific spectral
-structure (the Knudsen-Tsitsiklis 1990 ``stack distance''
-representation; coupling-from-the-past analyses for the LRU
-permutation chain; Aldous-Diaconis 1987 cutoff phenomena for
-related permutation chains) are open for future work. The
-qualitative $\sqrt{Q}$-Hoeffding scaling of Theorem 7.26 holds
-for any positive $\gamma_{\rm LRU}$, regardless of the explicit
-constant.
+from the chain being finite, irreducible, and aperiodic (Aldous-Fill
+RWG §9.4.1; cf.\ proof above). Explicit lower bounds on
+$\gamma_{\rm LRU}$ are more subtle. A crude Dobrushin-style lower
+bound: from the irreducibility argument above, the $(C+1)$-step
+chain $P^{C+1}$ has Dobrushin coefficient $\beta_{C+1} := \max_{s,
+s'} \|P^{C+1}(s, \cdot) - P^{C+1}(s', \cdot)\|_{\rm TV} \leq 1 -
+\pi_{\rm min}^{C+1}$ (because the $C+1$-step deterministic-query
+coupling above succeeds with probability $\geq \pi_{\rm min}^{C+1}$
+from any pair of starting states). By the Dobrushin-spectral-gap
+inequality (Diaconis-Stroock 1991 ``Geometric bounds for
+eigenvalues of Markov chains''; LPW Theorem 13.1), $\gamma(P^{C+1})
+\geq 1 - \beta_{C+1} \geq \pi_{\rm min}^{C+1}$, and the
+multiplicative-step relation $\gamma(P^{C+1}) = 1 - (1 -
+\gamma(P))^{C+1} \leq (C+1) \gamma(P)$ gives the one-step bound
+$\gamma_{\rm LRU} := \gamma(P) \geq \pi_{\rm min}^{C+1} / (C+1)$.
+For Zipf popularity $\pi_i \propto i^{-\alpha}$ on $[N_{\rm dist}]$,
+$\pi_{\rm min} = N_{\rm dist}^{-\alpha} / \zeta_{N_{\rm dist}}(\alpha)$,
+giving $\gamma_{\rm LRU} \geq (N_{\rm dist}^{-\alpha}/\zeta(\alpha))^{C+1}
+/ (C+1)$ --- positive but exponentially small in $C$, hence not
+practically useful for moderate cache sizes. Tighter bounds via
+LRU-specific spectral structure (the Knudsen-Tsitsiklis 1990
+``stack distance'' representation; coupling-from-the-past analyses
+for the LRU permutation chain; Aldous-Diaconis 1987 cutoff
+phenomena for related permutation chains) are open for future
+work. The qualitative $\sqrt{Q}$-Hoeffding scaling of Theorem 7.26
+holds for any positive $\gamma_{\rm LRU}$, regardless of the
+explicit constant.
 
 \emph{Remark 7.26b (relation to Theorems 7.20 and 7.24).}
 Theorem 7.20 gives the \emph{expected} per-query decoder latency
@@ -10290,5 +10314,21 @@ Walks on Expander Graphs. SIAM Journal on Computing, 27(4),
 \textbf{{[}123{]}} Paulin, D. (2015). Concentration Inequalities
 for Markov Chains by Marton Couplings and Spectral Methods.
 Electronic Journal of Probability, 20(79), 1-32.
+
+\textbf{{[}124{]}} Aldous, D., and Fill, J. A. (2002).
+Reversible Markov Chains and Random Walks on Graphs.
+Unfinished monograph, available at
+https://www.stat.berkeley.edu/\textasciitilde aldous/RWG/book.html.
+
+\textbf{{[}125{]}} Diaconis, P., and Stroock, D. (1991). Geometric
+Bounds for Eigenvalues of Markov Chains. Annals of Applied
+Probability, 1(1), 36-61.
+
+\textbf{{[}126{]}} King, W. F. (1971). Analysis of Demand Paging
+Algorithms. Proceedings of the IFIP Congress, 485-490.
+
+\textbf{{[}127{]}} Kesidis, G., Shan, Y., Fumagalli, A., Gulati,
+A., and Singh, A. (2017). An Analysis of LRU Replacement Caches
+under Independent Reference Models. arXiv:1704.04849.
 
 \end{document}
