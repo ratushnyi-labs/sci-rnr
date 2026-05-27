@@ -3081,6 +3081,139 @@ expanders'' (loopy random graphs with girth $\omega(1)$) still
 requires Pakzad--Anantharam / Yedidia--Freeman--Weiss Bethe-bound
 analysis. Closing this subcase fully is open.
 
+\textbf{Lemma 5.6i ($\mathrm{TC}$ scaling for combinatorial uniform
+classes; refinement of Remark 5.6).}
+\emph{Let $D_N$ be the uniform distribution on a combinatorial subset
+$\mathcal{C}$ of an ambient finite product space defined by a global
+constraint. The scaling of $\mathrm{TC}(D_N)$ in $N$ differs
+qualitatively across natural classes:}
+\begin{enumerate}
+\item \emph{(K-sparse uniform: sub-linear.) For $\mathcal{C} = \{x \in
+\{0,1\}^N : \sum_i x_i = K\}$ (uniform on $K$-sparse binary vectors):
+\[
+\mathrm{TC}(D_N) \;=\; N \cdot h(K/N) - \log_2 \binom{N}{K}.
+\]
+Asymptotic regimes (Stirling expansion of $\log_2 \binom{N}{K}$):
+\begin{itemize}
+\item Fixed $K$, $N \to \infty$: $\mathrm{TC}(D_N) \to \log_2(K!) -
+K \log_2 K + K \log_2 e$, a constant in $N$. For $K = 1$ this
+equals $\log_2 e \approx 1.44$; for $K = 10$ it equals $\approx
+3.00$; asymptotically $\approx \tfrac{1}{2} \log_2(2 \pi K)$ for
+large $K$.
+\item $K = \alpha N$ with $\alpha \in (0, 1)$ constant:
+$\mathrm{TC}(D_N) = \tfrac{1}{2} \log_2(2 \pi N \alpha (1-\alpha))
++ O(1/N) = \tfrac{1}{2} \log_2 N + O(1)$.
+\end{itemize}
+\emph{Both regimes are sub-linear: $\mathrm{TC}(D_N) = o(N)$.}}
+\item \emph{(Uniform permutations: linear --- counterexample.) For
+$\mathcal{C} = \{$permutations of $[N]\}$ embedded in $[N]^N$ as
+$x = (\pi(1), \ldots, \pi(N))$ (uniform on permutations):
+\[
+\mathrm{TC}(D_N) \;=\; N \log_2 N - \log_2(N!) \;=\; N \log_2 e - O(\log N),
+\]
+which is linear in $N$ with constant $\log_2 e \approx 1.44$ ---
+this class is $\Theta(N)$. The distinct-value constraint $X_i \neq
+X_j$ for all $i \neq j$ contributes pairwise mutual information
+$I(X_i; X_j) = \log_2(N) - \log_2(N-1) = \Theta(1/N)$ for each of
+$\binom{N}{2} = \Theta(N^2)$ pairs, summing to $\Theta(N)$.}
+\end{enumerate}
+
+\emph{Scope and significance.} Lemma 5.6i refines Remark 5.6's
+informal ``low-dimensional manifold $\Rightarrow$ $\mathrm{TC}(D_N) =
+\Theta(N)$'' intuition by exhibiting a natural class where cardinality
+or sparsity constraints --- which DO restrict the support to a
+``low-dimensional'' subset $\mathcal{C}$ with $|\mathcal{C}| =
+2^{o(N)}$ --- yield sub-linear $\mathrm{TC}$. The structural reason
+is that the $K$-cardinality constraint is a \emph{higher-order
+combinatorial dependence} (each pair has nearly-independent marginals
+$P(X_i = 1, X_j = 1) = K(K{-}1)/(N(N{-}1)) \approx (K/N)^2$, giving
+$O(1/N^2)$ pairwise mutual information). Although the joint
+distribution carries a single $O(K \log(N/K))$-bit constraint, this
+constraint distributes across $\binom{N}{2}$ pairs as tiny pairwise
+MIs that do not accumulate linearly. The contrast with uniform
+permutations (heavy pairwise distinct-value constraint, $\Theta(1)$
+per pair, $\Theta(N^2)$ total) makes the structural mechanism
+explicit: $\Theta(N)$ $\mathrm{TC}$ requires \emph{either} constant
+pairwise MI for a $\Theta(N)$-pair subset (Markov, HMM, tree-MRF),
+\emph{or} the heavy combinatorial distinct-value constraint of
+permutations. Pure sparsity is insufficient.
+
+\emph{\textbf{Proof.}} For (1): the joint entropy of uniform on
+$\binom{N}{K}$ supports equals $\log_2 \binom{N}{K}$. The marginal of
+each coordinate $X_i$ is $\mathrm{Bern}(K/N)$ by symmetry, with
+entropy $h(K/N)$. By definition $\mathrm{TC}(D_N) = \sum_i H(X_i) -
+H(X) = N h(K/N) - \log_2 \binom{N}{K}$, the exact identity.
+
+\emph{Sub-regime: $K = \alpha N$ with $\alpha \in (0, 1)$ constant.}
+Stirling's approximation for the binomial coefficient gives
+$\log_2 \binom{N}{\alpha N} = N h(\alpha) - \tfrac{1}{2} \log_2(2 \pi
+N \alpha(1-\alpha)) + O(1/N)$. Subtracting from $N h(K/N) = N h(\alpha)$:
+\[
+\mathrm{TC}(D_N) \;=\; \tfrac{1}{2} \log_2(2 \pi N \alpha (1-\alpha))
++ O(1/N) \;=\; \tfrac{1}{2} \log_2 N + \tfrac{1}{2} \log_2(2 \pi \alpha(1-\alpha))
++ O(1/N).
+\]
+
+\emph{Sub-regime: $K$ fixed, $N \to \infty$.} Use the exact Stirling
+expansion for the binomial coefficient with fixed numerator-of-falling-
+factorial parameter: $\binom{N}{K} = N^K / K! \cdot (1 + O(K^2/N))$, so
+$\log_2 \binom{N}{K} = K \log_2 N - \log_2 K! + O(K^2/N)$. For the
+entropy: $h(K/N) = -(K/N) \log_2(K/N) - (1-K/N) \log_2(1-K/N)$. The
+Taylor expansion of $h$ around $K/N = 0$ gives
+$h(K/N) = (K/N) \log_2(N/K) + (K/N) \log_2 e + O((K/N)^2)$, hence
+$N h(K/N) = K \log_2(N/K) + K \log_2 e + O(K^2/N)$. Subtracting:
+\[
+\mathrm{TC}(D_N) \;=\; \bigl[ K \log_2(N/K) + K \log_2 e \bigr] -
+\bigl[ K \log_2 N - \log_2 K! \bigr] + O(K^2/N).
+\]
+The $K \log_2 N$ terms cancel: $K \log_2(N/K) - K \log_2 N = -K \log_2 K$.
+This yields
+\[
+\mathrm{TC}(D_N) \;=\; \log_2 K! - K \log_2 K + K \log_2 e + O(K^2/N).
+\]
+The leading term $\log_2 K! - K \log_2 K + K \log_2 e$ is a constant
+in $N$ (depending only on $K$). For $K = 1$: $0 - 0 + \log_2 e \approx
+1.44$. For $K = 10$: $\log_2(10!) - 10 \log_2 10 + 10 \log_2 e \approx
+21.79 - 33.22 + 14.43 \approx 3.00$. Asymptotically large $K$ (using
+Stirling $\log_2 K! = K \log_2 K - K \log_2 e + \tfrac{1}{2} \log_2(2 \pi K)
++ O(1/K)$): the formula simplifies to $\mathrm{TC}(D_N) \to \tfrac{1}{2}
+\log_2(2 \pi K) + O(1/K)$.
+
+In either sub-regime, $\mathrm{TC}(D_N) = o(N)$.
+
+For (2): uniform on permutations has $H(X) = \log_2(N!)$ and each
+$X_i$ marginal is uniform on $[N]$ with $H(X_i) = \log_2 N$.
+$\mathrm{TC}(D_N) = N \log_2 N - \log_2(N!) = N \log_2 e - \tfrac{1}{2}
+\log_2(2 \pi N) + O(1/N)$ by Stirling, giving $\Theta(N)$ scaling
+with leading constant $\log_2 e$. \hfill$\blacksquare$
+
+\emph{Remark 5.6i-a (TC vs.\ sum of pairwise MIs).} A natural
+attempt at upper-bounding TC by pairwise MIs --- $\mathrm{TC}(D_N)
+\stackrel{?}{\leq} \sum_{i < j} I(X_i; X_j)$ --- \emph{fails in
+general}. For $K$-sparse uniform on $N = 100$, $K = 10$: pairwise MI
+$I(X_i; X_j) \approx 7.5 \times 10^{-5}$ bits and
+$\sum_{i<j} I \approx 0.37$ bits, but $\mathrm{TC} \approx 2.92$ bits
+--- TC \emph{exceeds} the pairwise sum by a factor of $\sim 8\times$.
+This is because the global cardinality constraint is a higher-order
+dependence that does not decompose into pairs: $K$-sparse vectors
+have approximately-independent pairs but a strict joint constraint.
+The correct upper bound is the multi-information chain rule
+$\mathrm{TC}(D_N) = \sum_{k=2}^{N} I(X_k; X_{1:k-1})$, which captures
+the full joint dependence including higher-order interactions.
+
+\emph{Implications for the RNR framework.} (i) The compression
+advantage of joint coding over factorised coding (Theorem 5.5)
+scales with $\mathrm{TC}(D_N)$, not with the source's combinatorial
+complexity or support cardinality. Sparse-support data classes
+(e.g., binary indicators of rare events, compressed-sensing signals,
+sparse activations) admit relatively limited joint-coding advantage
+relative to a well-designed factorised coder. (ii) The data classes
+that genuinely benefit from joint coding are those with
+\emph{pairwise} or \emph{local-clique} dependence (Markov chains,
+HMMs, tree-MRFs, junction-tree-decomposable graphs of bounded
+treewidth), where $\mathrm{TC}$ is $\Theta(N)$ via $\Theta(N)$
+contributing pairs.
+
 \textbf{5.7 Worked numerical example}
 
 Consider a block of $N = 1024$ nibbles with counts $k_v = 64$ for
