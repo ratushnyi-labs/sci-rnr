@@ -3284,6 +3284,262 @@ HMMs, tree-MRFs, junction-tree-decomposable graphs of bounded
 treewidth), where $\mathrm{TC}$ is $\Theta(N)$ via $\Theta(N)$
 contributing pairs.
 
+\textbf{Lemma 5.6j ($\mathrm{TC}$ for the quantized
+Gaussian-on-rank-$d$-manifold model; quantitative refinement of
+Remark 5.6).}
+\emph{Let $\sigma > 0$, $d \in \{1, \dots, N\}$, and let $U \in
+\mathbb{R}^{N \times d}$ have orthonormal columns ($U^T U = I_d$). Let
+$\Lambda = \mathrm{diag}(\lambda_1, \dots, \lambda_d) \succeq 0$, write
+$\bar\lambda = \sum_j \lambda_j$, and define the signal-to-noise ratio
+per ambient coordinate as $\rho = \bar\lambda / (N \sigma^2)$. Consider
+the centered Gaussian model $X \sim \mathcal{N}(0, \Sigma)$ on
+$\mathbb{R}^N$ with}
+\[
+\Sigma \;=\; U \Lambda U^T + \sigma^2 I_N,
+\tag{5.6j.1}
+\]
+\emph{and let $X_\Delta$ be the coordinate-wise lattice quantization of
+$X$ at scale $\Delta > 0$. Set $a_i := (U \Lambda U^T)_{ii}/\sigma^2$
+($i = 1, \dots, N$, so $\sum_i a_i = \bar\lambda/\sigma^2 = N \rho$) and
+$b_j := \lambda_j / \sigma^2$ ($j = 1, \dots, d$, so $\sum_j b_j = N \rho$).
+Define the per-coordinate embedding score
+$S_{\rm emb}(U, \Lambda; \sigma^2) := \tfrac{1}{N} \sum_{i=1}^N
+\log_2(1 + a_i)$. Then:}
+\begin{enumerate}
+\item \emph{(Exact identity.) The differential total correlation of
+$X$ satisfies}
+\[
+\mathrm{TC}(X) \;=\; \tfrac{1}{2}\!\left[\,\sum_{i=1}^N \log_2(1 + a_i)
+\,-\, \sum_{j=1}^d \log_2(1 + b_j)\,\right] \quad \text{(bits)}.
+\tag{5.6j.2}
+\]
+\item \emph{(Embedding lower bound.) By Jensen's inequality applied
+to $\log(1 + b_j)$ subject to $\sum_j b_j = N\rho$, $\sum_j \log_2(1 +
+b_j) \leq d \log_2(1 + N \rho / d)$, hence}
+\[
+\mathrm{TC}(X) \;\geq\; \tfrac{N}{2}\,S_{\rm emb}(U, \Lambda; \sigma^2)
+\;-\; \tfrac{d}{2} \log_2\!\bigl(1 + N\rho/d\bigr).
+\tag{5.6j.3}
+\]
+\emph{The Jensen slack is zero when $\lambda_1 = \dots = \lambda_d =
+\bar\lambda/d$ and at most $d \log_2(1 + N\rho/d) - \sum_j \log_2(1 +
+b_j)$ in general.}
+\item \emph{(Asymptotic linear scaling under Haar-uniform $U$.) If $U$
+is sampled Haar-uniformly from the Stiefel manifold $V_d(\mathbb{R}^N)
+= \{U \in \mathbb{R}^{N \times d} : U^T U = I_d\}$ and $\lambda_1 =
+\dots = \lambda_d = \bar\lambda/d$, then as $N \to \infty$ with $d$ and
+$\rho$ held fixed,}
+\[
+S_{\rm emb}(U, \Lambda; \sigma^2) \;\xrightarrow{a.s.}\; c_d(\rho)
+\;:=\; \mathbb{E}_{V \sim \chi^2_d / d}\bigl[\log_2(1 + \rho V)\bigr],
+\tag{5.6j.4}
+\]
+\emph{and consequently}
+\[
+\frac{\mathrm{TC}(X)}{N} \;\xrightarrow{a.s.}\; \tfrac{1}{2}\, c_d(\rho)
+\;>\; 0 \quad \text{whenever } \rho > 0.
+\tag{5.6j.5}
+\]
+\emph{The function $c_d(\rho)$ is positive, increasing in $\rho$, and
+non-decreasing in $d$, with $c_d(\rho) \to \log_2(1+\rho)$ as $d \to
+\infty$. A second-order Taylor expansion in $1/d$ gives the explicit
+estimate}
+\[
+c_d(\rho) \;=\; \log_2(1+\rho) \;-\; \frac{\rho^2}{(\ln 2)(1+\rho)^2 d}
+\;+\; O(1/d^2).
+\tag{5.6j.6}
+\]
+\emph{Numerical values for $\rho = 1$ (Monte Carlo, $10^6$ samples):
+$c_1(1) \approx 0.770$, $c_2(1) \approx 0.860$, $c_4(1) \approx 0.922$,
+$c_{16}(1) \approx 0.978$, $c_{64}(1) \approx 0.995$, with limit
+$\log_2 2 = 1$.}
+\item \emph{(Quantization perturbation.) Let $\tilde X = X + N_\Delta$
+where $N_\Delta$ has independent coordinates uniform on $[-\Delta/2,
+\Delta/2]$, modeling Bennett's high-resolution quantization noise
+(Gersho--Gray 1992, Theorem 5.5.1; Bennett 1948). The discrete TC of
+the lattice-quantized $X_\Delta$ equals the differential TC of $\tilde
+X$ (the $N \log_2 (1/\Delta)$ entropy shifts cancel in the
+$\sum H_{\rm marg} - H_{\rm joint}$ subtraction). The covariance of
+$\tilde X$ is $\Sigma + (\Delta^2/12) I_N$. Using $\mathrm{TC}(\tilde
+X) \leq \mathrm{TC}_{\rm Gauss}(\Sigma + (\Delta^2/12) I_N)$ (Gaussian
+maximizes differential entropy for fixed covariance, applied to the
+joint), then applying (5.6j.2) to $\Sigma + (\Delta^2/12) I_N$ and
+Taylor-expanding around $\Delta^2 = 0$,}
+\[
+\bigl|\,\mathrm{TC}_{\rm Gauss}(\Sigma + (\Delta^2/12) I_N)
+- \mathrm{TC}(X)\,\bigr| \;\leq\; \frac{N \Delta^2}{24 \, \sigma^2 \,
+\ln 2}.
+\tag{5.6j.7}
+\]
+\emph{For $\Delta \leq \sigma / 4$ the perturbation is at most $N /
+(384 \ln 2) \approx 0.0038 N$, so the Gaussian-bounded discrete TC is
+also $\Theta(N)$ with leading constant $\tfrac{1}{2} c_d(\rho) +
+O(\Delta^2/\sigma^2)$. (Note the upper-bound direction: for the
+lower-bound on $\mathrm{TC}(X_\Delta)$ that would close the empirical
+question of \S 11, one needs either a Gaussian-matching argument
+specific to the source $X$ or a direct discrete-entropy calculation.)}
+\item \emph{(Delocalization is necessary.) If $U$ concentrates on a
+proper subset $S \subset \{1, \dots, N\}$ of size $|S| < N$ (i.e.,
+$U_{ij} = 0$ for $i \notin S$), then $a_i = 0$ for $i \notin S$ and
+$N \cdot S_{\rm emb} = \sum_{i \in S} \log_2(1 + a_i) \leq |S|
+\log_2(1 + N\rho/|S|)$. In the extreme case $U = [I_d ; 0]$ (signal
+confined to the first $d$ coordinates), $\Sigma$ is block-diagonal and
+$\mathrm{TC}(X) = 0$ for any choice of $\Lambda$.}
+\end{enumerate}
+
+\emph{Scope and significance.} Lemma 5.6j gives the first
+quantitative $\Theta(N)$ TC bound for a Remark-5.6-style manifold
+model with \emph{explicit} constants depending on the geometric
+parameters $(d, \sigma, \bar\lambda)$. The bound is sharp up to the
+Jensen slack on $\lambda_j$ in (5.6j.3) and the finite-$N$ deviation
+of $S_{\rm emb}$ from $c_d(\rho)$ in (5.6j.4). The Haar hypothesis in
+(3) plays the role of the ``delocalisation / spread'' assumption
+identified in Remark 5.6 as the missing ingredient beyond
+intrinsic-dimension control; the counter-example in (5) shows it
+cannot be dropped --- low intrinsic dimension alone is compatible
+with $\mathrm{TC} = 0$. The connection to a sub-manifold $M \subset
+\mathbb{R}^N$ with reach $\tau$ and density bounded above and below
+(Niyogi--Smale--Weinberger 2008; Levina--Bickel 2004) is via local
+linearisation: in a tube of radius $\sigma \ll \tau$ around any base
+point of $M$, the data are well-approximated by their tangent-Gaussian
+model with $U$ spanning the tangent space and $\Lambda$ the local
+intrinsic covariance, so Lemma 5.6j applies whenever the local
+tangent embedding satisfies the delocalisation hypothesis.
+
+\emph{Caveat (real natural-data classes).} Lemma 5.6j is a
+\emph{conditional} closure: for any natural class for which (a) the
+sub-manifold has bounded reach $\tau$, (b) the on-manifold density is
+comparable to uniform within a constant factor (Lipschitz density
+bounded by $\rho_{\rm max}/\rho_{\rm min}$), (c) $\sigma \ll \tau$, and
+(d) the tangent directions of $M$ are well-spread across ambient
+coordinates, $\mathrm{TC}(D_N) = \Theta(N)$ with the explicit leading
+constant of (5.6j.5). For specific natural-image classes the
+delocalization hypothesis (d) is empirical: local-patch features
+(textures, edges) may concentrate on small ambient subsets in a way
+that violates (d). Whether full natural-image distributions on ambient
+dimension $N \in \{10^4, 10^5, 10^6\}$ satisfy (d) at a non-trivial
+scale is the open empirical question of \S 11 / \S 13.4.5; Lemma 5.6j
+shows that \emph{under} (d) the manifold intuition is correct, and
+identifies (d) as the precise content of ``manifold-plus-regularity''.
+
+\emph{\textbf{Proof.}}
+
+\noindent (1) The differential entropy of $X \sim \mathcal{N}(0,
+\Sigma)$ is $h(X) = \tfrac{1}{2} \log_2((2\pi e)^N \det \Sigma)$, and
+of each marginal $X_i \sim \mathcal{N}(0, \Sigma_{ii})$ is
+$h(X_i) = \tfrac{1}{2} \log_2(2 \pi e \Sigma_{ii})$ (Cover--Thomas
+2006, Theorem 8.4.1). Hence $\mathrm{TC}(X) = \sum_i h(X_i) - h(X)
+= \tfrac{1}{2}[\sum_i \log_2 \Sigma_{ii} - \log_2 \det \Sigma]$.
+By Sylvester's determinant identity,
+\[
+\det \Sigma = \det(\sigma^2 I_N) \det(I_d + \sigma^{-2} \Lambda)
+= \sigma^{2N} \prod_{j=1}^d (1 + \lambda_j / \sigma^2).
+\]
+Also $\Sigma_{ii} = \sigma^2 + (U \Lambda U^T)_{ii} = \sigma^2 (1 +
+a_i)$. Substituting and cancelling the common $N \log_2 \sigma^2$
+term gives (5.6j.2).
+
+\noindent (2) By concavity of $\log$, for any non-negative
+$(b_1, \dots, b_d)$ with $\sum_j b_j = N\rho$, Jensen's inequality
+gives $\tfrac{1}{d} \sum_j \log_2(1 + b_j) \leq \log_2(1 + N\rho/d)$,
+i.e., $\sum_j \log_2(1 + b_j) \leq d \log_2(1 + N\rho/d)$, with
+equality iff all $b_j$ coincide. Substituting into (5.6j.2) yields
+(5.6j.3).
+
+\noindent (3) For Haar-uniform $U$ from the Stiefel manifold
+$V_d(\mathbb{R}^N)$, the random variable $\sum_{j=1}^d U_{ij}^2$ has
+marginal distribution $\mathrm{Beta}(d/2, (N-d)/2)$ for each fixed
+$i$ (Muirhead 1982, Theorem 2.5.5; this follows from $U = G(G^T
+G)^{-1/2}$ for Gaussian $G$, and the Gram matrix law). Multiplying
+by $N$ and rescaling by $1/d$:
+\[
+\frac{N}{d} \sum_{j=1}^d U_{ij}^2 \;\xrightarrow{d}\; V
+\;:=\; \tfrac{1}{d}\chi^2_d \qquad \text{as } N \to \infty
+\]
+(this is the standard scaling limit of $\mathrm{Beta}(d/2,(N-d)/2)$).
+With $\lambda_j = \bar\lambda/d$ constant in $j$,
+$a_i = (\bar\lambda/d)\sum_j U_{ij}^2 / \sigma^2 = \rho \cdot
+(N/d)\sum_j U_{ij}^2 \xrightarrow{d} \rho V$. Concentration of
+measure on $V_d(\mathbb{R}^N)$ (e.g., Talagrand 1995 spectral-radius
+form) gives a.s.\ convergence of the empirical average
+$\tfrac{1}{N}\sum_i \log_2(1+a_i)$ to $\mathbb{E}[\log_2(1 + \rho V)]
+= c_d(\rho)$, establishing (5.6j.4)--(5.6j.5).
+
+The Taylor expansion (5.6j.6) follows from $\log_2(1 + \rho v)
+= \log_2(1 + \rho) + \tfrac{\rho(v-1)}{(\ln 2)(1+\rho)}
+- \tfrac{\rho^2 (v-1)^2}{2 (\ln 2)(1+\rho)^2} + O((v-1)^3)$ combined
+with $\mathbb{E}[V] = 1$ and $\mathrm{Var}(V) = 2/d$, giving
+$\mathbb{E}[\log_2(1+\rho V)] = \log_2(1+\rho) - \rho^2/((\ln 2)
+(1+\rho)^2 d) + O(1/d^2)$.
+
+\noindent (4) The discrete entropy of a lattice-quantized continuous
+variable equals the differential entropy of the dithered variable
+$\tilde X_i = X_i + N_i$ (with $N_i$ uniform on $[-\Delta/2,
+\Delta/2]$, independent across $i$) plus the constant offset $N
+\log_2(1/\Delta)$ on the joint and $\log_2(1/\Delta)$ per marginal
+(Gersho--Gray 1992, Theorem 5.5.1; Bennett 1948); these offsets cancel
+exactly in the TC subtraction $\sum H_{\rm marg} - H_{\rm joint}$, so
+$\mathrm{TC}(X_\Delta) = \mathrm{TC}(\tilde X)$ in the high-resolution
+limit. The covariance of $\tilde X$ is $\Sigma + (\Delta^2/12) I_N$.
+By the maximum-entropy property of Gaussians at fixed covariance
+(Cover-Thomas 2006, Theorem 8.6.5),
+$\mathrm{TC}(\tilde X) \leq \mathrm{TC}_{\rm Gauss}(\Sigma +
+(\Delta^2/12) I_N)$. Applying (5.6j.2) to this Gaussian covariance:
+the perturbation to $\sum_i \log_2(1 + a_i)$ under $a_i \to a_i +
+\Delta^2/(12\sigma^2)$ has gradient $\sum_i 1/((1+a_i) \ln 2) \leq
+N/\ln 2$ (using $a_i \geq 0$); $\sum_j \log_2(1+b_j)$ is unchanged.
+Multiplying by the factor $\Delta^2/(12\sigma^2)$ and the $1/2$
+prefactor gives (5.6j.7).
+
+\noindent (5) If $U_{ij} = 0$ for all $i \notin S$ then
+$(U\Lambda U^T)_{ik} = \sum_l U_{il} \lambda_l U_{kl} = 0$ whenever
+$i \notin S$ or $k \notin S$. Therefore $\Sigma$ is block-diagonal
+with $|S| \times |S|$ ``signal'' block and the complementary
+$(N-|S|) \times (N-|S|)$ block equal to $\sigma^2 I_{N-|S|}$. In the
+extreme case $U = [I_d; 0]$, the $|S|=d$ signal block is itself
+$\Lambda + \sigma^2 I_d = \mathrm{diag}(\lambda_j + \sigma^2)$ which
+is diagonal, so $\Sigma$ is fully diagonal and $\mathrm{TC}(X) = 0$.
+For intermediate $|S| \in (d, N)$, only the $|S|$ ambient
+coordinates in $S$ carry TC; the bound (5.6j.3) applied to the
+$|S|$-coordinate sub-problem gives $\mathrm{TC} = \Theta(|S|)$,
+linear in $|S|$ rather than in $N$.
+\hfill$\blacksquare$
+
+\emph{Connection to literature.} The exact identity (5.6j.2) for
+Gaussian TC is the case of Watanabe's (1960, eq.~21) multi-information
+specialised to the multivariate-normal family, cf.~Studen\'y and
+Vejnarov\'a (1998) for the general TC formula. The Stiefel-manifold
+concentration in (3) is classical (Muirhead 1982; Diaconis and
+Freedman 1987 give related Gaussian-projection limits). The
+connection to the manifold hypothesis via local linearisation is in
+the spirit of Niyogi, Smale and Weinberger (2008) for reach-based
+manifold-sampling theory and the intrinsic-dimension literature
+(Levina and Bickel 2004; Donoho 2000); what is new here is the
+\emph{per-coordinate quantitative constant} $\tfrac{1}{2} c_d(\rho)$,
+making explicit what was previously a qualitative ``$\mathrm{TC} =
+\Theta(N)$'' claim. The verification script
+\texttt{scripts/verify/lemma\_5\_6j\_manifold\_gaussian.py} confirms
+all five claims numerically: the exact identity (1) to within
+$10^{-10}$ bits, the lower bound (2) for $30$ random configurations
+(mean Jensen slack $\approx 1.5$ bits for $N = 500, d = 4$, $\rho = 1$),
+the asymptotic limit (3) within $0.03$ bits of $\tfrac{1}{2} c_d(\rho)$
+at $N = 5000, d = 4$, the quantization perturbation (4) shrinking
+quadratically with $\Delta$, and the spread counter-example (5)
+giving $\mathrm{TC} = 0$ for $U = [I_d; 0]$.
+
+\emph{Relation to OP3 (\S 13.4.5) and the broader open problem.}
+Lemma 5.6j gives one explicit family within the Remark-5.6 ``natural
+manifold'' framing for which $\mathrm{TC} = \Theta(N)$ rigorously holds:
+the Gaussian-tangent model with delocalised embedding. It does
+\emph{not} construct an enumerative encoder achieving rate $h(X)/N +
+o(1)$ for this family, nor does it claim that natural images satisfy
+the delocalisation hypothesis. The open problem of \S 13.4.5 remains
+open as stated; Lemma 5.6j contributes one ``natural'' instance
+(Gaussian-on-manifold with delocalised tangent) where the manifold
+intuition is provably correct under explicit conditions, and isolates
+delocalisation (item~(d) of the caveat) as the precise structural
+hypothesis the informal claim of Remark 5.6 was missing.
+
 \textbf{5.7 Worked numerical example}
 
 Consider a block of $N = 1024$ nibbles with counts $k_v = 64$ for
@@ -10840,88 +11096,119 @@ Casel et al.\ 2020's APX-hardness with $\gamma_{\mathrm{SGP}} =
 8569/8568$ transfers to $k$-MSGP for any constant $k$. This
 genuine grammar-size APX-hardness, however, does \emph{not}
 imply OP2(b) amortised-bit-cost APX-hardness, by step~(c) below.
-(c)~\emph{Predictor absorption applies to the MSGP grammar
-itself, not only to the reduction algorithm.} The OP2(b)
-amortised objective is $L_{\mathrm{amort}}(M,D,\{R_i\}) :=
-L(M) + L(D) + \frac{1}{N} \sum_{i=1}^{N} L(R_i \mid Y,M,D)$,
-not the MSGP grammar size $|G_{\mathrm{MSGP}}|$. The naive
-transfer requires $|G_{\mathrm{MSGP}}| \leq c \cdot N \cdot
-L_{\mathrm{amort}}$ for some constant $c$, but a free predictor
-$M$ of size $L(M) = O(\mathrm{poly}(n))$ suffices to memorise
-the entire optimal $k$-MSGP grammar for the family --- because
-the family is poly-time samplable and the optimal grammar is a
-deterministic function of the family description $d_n$
-($|d_n| = \mathrm{poly}(n)$). Set $M$ to encode $d_n$ together
-with the poly-time algorithm computing $G^* = G_{\mathrm{MSGP}}^*(
-\mathcal{F}_n)$ from $d_n$; then $L(R_i \mid Y, M, D) =
-O(\log N)$ (index $i$ into $G^*$). The MSGP grammar-size gap
-$\gamma_{\mathrm{SGP}} = 8569/8568$ on $|G_{\mathrm{MSGP}}|$
-\emph{vanishes} on $L_{\mathrm{amort}}$: the optimal MSGP
-solution and any $(8569/8568 - \varepsilon)$-approximation
-$G'$ differ by a multiplicative factor on $|G_{\mathrm{MSGP}}|$,
-but $L(M)$ stores the grammar in $O(\mathrm{poly}(n))$ bits
-\emph{regardless of which approximation $G$ vs.\ $G'$ is fixed
-inside $M$}, since both have description $O(\mathrm{poly}(n))$
-bits when the family is poly-time-samplable. The amortised gap
-collapses to $1 + O(\log(1/\varepsilon)/N) \to 1$ as $N \to
-\infty$.
+(c)~\emph{Predictor absorbs the family itself, not any specific
+MSGP solution.} The OP2(b) amortised objective is
+$L_{\mathrm{amort}}(M,D,\{R_i\}) := L(M) + L(D) + \frac{1}{N}
+\sum_{i=1}^{N} L(R_i \mid Y,M,D)$, \emph{not} the MSGP grammar
+size $|G_{\mathrm{MSGP}}|$. Although the optimal MSGP grammar
+$G^*$ for $\mathcal{F}_n$ has size $|G^*| = \Theta(N(n+1) /
+\log(N(n+1)))$ (Berstel--Brlek worst-case-SLP bound on the
+separator-concatenation $s_\# = s_1 \#_1 \cdots s_N \#_N$ of
+total length $N(n+1)$, surveyed in Bannai et al.\ 2019,
+arXiv:1908.06428, Section~2) and is NP-hard to compute exactly
+from $d_n$, this is irrelevant: the free predictor does not
+need to solve MSGP. Instead, the predictor encodes the
+\emph{family-reproduction algorithm} (the same mechanism as
+item~1): let $\mathrm{Red}_n$ be the polynomial-time reduction
+algorithm that maps $(d_n, i) \mapsto s_i$, with description
+size $|\mathrm{Red}_n| = \mathrm{poly}(n)$. Set the free
+predictor $M^* := \langle d_n, \mathrm{Red}_n \rangle$ of
+total size $L(M^*) = O(\mathrm{poly}(n))$. The decoder $D^*$
+on input $(M^*, i)$ runs $\mathrm{Red}_n(d_n, i)$ to recover
+$s_i$ deterministically. Hence $L(R_i \mid Y, M^*, D^*) =
+\lceil \log_2 N \rceil$ (just the index $i$). The amortised
+cost is $L_{\mathrm{amort}}(M^*, D^*, \{R_i = i\}) =
+O(\mathrm{poly}(n)) + O(1) + O(\log N) = O(\mathrm{poly}(n))$
+since $\log N = O(n)$. This is achieved \emph{without any MSGP
+solver being invoked}; the MSGP solution $G^*$ does not appear
+in the encoding at all. Consequently, the OP2(b) amortised
+optimum on this family satisfies $\mathrm{OPT}_{\mathrm{amort}}
+\leq L_{\mathrm{amort}}(M^*, D^*, \{R_i^*\}) =
+O(\mathrm{poly}(n))$, \emph{independent of} the underlying
+MSGP-objective gap. The MSGP grammar-size gap
+$\gamma_{\mathrm{SGP}} = 8569/8568$ on YES vs.\ NO instances
+does not transfer to a multiplicative gap on $L_{\mathrm{amort}}$:
+both YES and NO instances admit the same family-storing
+predictor $M^*$ with the same $O(\mathrm{poly}(n))$ amortised
+cost, so the YES/NO amortised ratio is $1 + o(1)$. The MSGP
+gap is absorbed because the family-storing predictor $M^*$
+achieves $L_{\mathrm{amort}}$ much smaller than the
+per-instance MSGP-grammar cost $|G^*|/N = \Theta(n/\log n)$
+even when MSGP is solved optimally; the amortised objective
+structurally prefers family memorisation over MSGP solution.
 
 \textbf{Lemma 13.4.2a (unified amortised-objective absorption).}
-\emph{Let $\Pi$ be a minimisation problem on poly-time-samplable
-input families $\mathcal{F}_n = \{x_i\}_{i \in [N(n)]}$ with
-$N(n) = 2^{\Theta(n)}$ and $|d_n| = \mathrm{poly}(n)$ bits of
-family description. Suppose $\Pi$'s output $G^*(\mathcal{F}_n)$
-has size $|G^*| \leq \mathrm{poly}(N \cdot n)$ and is computable
-from $d_n$ in time $\mathrm{poly}(N \cdot n)$. Then for any
-multiplicative constant $\gamma > 1$, the amortised-family
-bit-cost objective
-$L_{\mathrm{amort}}(M,D,\{R_i\}) := L(M) + L(D) + \frac{1}{N}
-\sum_{i=1}^{N} L(R_i \mid Y, M, D)$
-admits a free predictor $M^*$ with $L(M^*) = O(\mathrm{poly}(n))$
-such that the multiplicative gap between
-$L_{\mathrm{amort}}(M^*, \cdot, \cdot)$ achieved by $M^*$
-encoding the optimal $G^*$ versus $M'$ encoding any
-$\gamma$-approximation $G'$ of $G^*$ is $1 + O(\log \gamma /
-N) \to 1$ as $N \to \infty$. Hence APX-hardness of $\Pi$ with
-any constant gap $\gamma$ on the $\Pi$-objective does
-\emph{not} transfer to APX-hardness of the amortised-family
-bit-cost objective.}
+\emph{Let $\Pi$ be any minimisation problem on inputs
+$\mathcal{F}_n = \{x_i\}_{i \in [N(n)]}$ produced by a
+deterministic polynomial-time reduction $\mathrm{Red}_n:
+\{0,1\}^{|d_n|} \times [N] \to \Sigma^*$ from a
+$\mathrm{poly}(n)$-bit family description $d_n$, with $N(n) =
+2^{\Theta(n)}$ and $|\mathrm{Red}_n| + |d_n| = \mathrm{poly}(n)$
+bits. The amortised-family bit-cost objective
+$L_{\mathrm{amort}}(M, D, \{R_i\}) := L(M) + L(D) +
+\frac{1}{N}\sum_{i=1}^N L(R_i \mid Y, M, D)$
+admits a free predictor $M^* := \langle d_n, \mathrm{Red}_n
+\rangle$ achieving $L_{\mathrm{amort}}(M^*, D^*, \{R_i^*\}) =
+O(\mathrm{poly}(n))$ for the universal decoder $D^*$ and
+trivial residuals $R_i^* := i$. Consequently, the optimum
+amortised cost satisfies $\mathrm{OPT}_{\mathrm{amort}}(\mathcal{F}_n)
+\leq O(\mathrm{poly}(n))$ on any family $\mathcal{F}_n$
+produced by such a reduction, \emph{independent of} the
+underlying $\Pi$-objective gap. Hence APX-hardness of $\Pi$
+with any constant gap $\gamma_\Pi > 1$ on the $\Pi$-objective
+does \emph{not} transfer to APX-hardness of $L_{\mathrm{amort}}$
+on this family: both YES and NO instances admit the same
+family-storing predictor with the same $O(\mathrm{poly}(n))$
+amortised cost, so the amortised YES/NO ratio is $1 + o(1)$.}
 
-\emph{Proof sketch.} Let $G^*$ be the optimal $\Pi$-output on
-$\mathcal{F}_n$. Define $M^*$ as the deterministic poly-time
-algorithm that hard-codes $d_n$ and on input $i \in [N]$
-computes $G^*$ from $d_n$ in $\mathrm{poly}(N \cdot n)$ time,
-then outputs the $i$-th component. Then $L(M^*) = O(|d_n|) +
-O(1)$ (for the poly-time algorithm description) $= O(\mathrm{poly}(n))$
-bits, and $L(R_i \mid Y, M^*, D) = O(\log N)$ (the index $i$).
-Total: $L_{\mathrm{amort}}(M^*, \cdot, \cdot) =
-O(\mathrm{poly}(n)) + 0 + \frac{1}{N} \cdot N \cdot O(\log N) =
-O(\mathrm{poly}(n) + \log N)$. For a $\gamma$-approximation
-$G'$ (which still has $|G'| \leq \gamma \cdot |G^*| =
-\mathrm{poly}(N \cdot n)$), the analogous $M'$ has $L(M') =
-L(M^*) + O(\log \gamma)$ since the only difference is which
-$\gamma$-approximation algorithm is invoked, and any standard
-$\gamma$-approximation has poly-time description of length
-$O(\log \gamma) + O(1)$. The amortised values differ by an
-additive $O(\log \gamma)$, giving a multiplicative gap on
-$L_{\mathrm{amort}}$ of $1 + O(\log \gamma / (\mathrm{poly}(n)
-+ \log N)) \to 1$ as $N \to \infty$ for any fixed
-$\gamma$. $\Box$
+\emph{Proof.} Define $M^* := \langle d_n, \mathrm{Red}_n
+\rangle$ as a single string of $|d_n| + |\mathrm{Red}_n| =
+O(\mathrm{poly}(n))$ bits. Define $D^*$ as the universal
+decoder: on input $(M, i)$, parse $M = \langle d, \mathrm{Red}
+\rangle$, then execute $\mathrm{Red}(d, i)$ and output the
+result; $|D^*| = O(1)$ as a fixed universal machine. For each
+$i \in [N]$, set the residual $R_i^* := i$ encoded in
+$\lceil \log_2 N \rceil$ bits. Then $D^*(M^*, R_i^*) =
+\mathrm{Red}_n(d_n, i) = s_i$, deterministically recovering
+the $i$-th data block of $\mathcal{F}_n$. Hence $L(R_i^*
+\mid Y, M^*, D^*) = \lceil \log_2 N \rceil = O(n)$ suffices.
+Amortised cost:
+$L_{\mathrm{amort}}(M^*, D^*, \{R_i^*\}) = L(M^*) + L(D^*) +
+\frac{1}{N}\sum_{i=1}^N L(R_i^* \mid \cdot) = O(\mathrm{poly}(n))
++ O(1) + O(n) = O(\mathrm{poly}(n))$. By optimality,
+$\mathrm{OPT}_{\mathrm{amort}}(\mathcal{F}_n) \leq
+L_{\mathrm{amort}}(M^*, D^*, \{R_i^*\}) = O(\mathrm{poly}(n))$.
+Since $M^*$ does not invoke any $\Pi$-solver --- it re-runs
+$\mathrm{Red}_n$ to reproduce the family --- the bound holds
+uniformly across YES and NO instances of any reduction
+$\Pi$-YES vs.\ $\Pi$-NO based on the same family-description
+format. Both admit the same $M^*$ construction (with the
+appropriate $d_n$), achieving the same $O(\mathrm{poly}(n))$
+amortised cost. The YES/NO amortised ratio is therefore
+$O(1)$ but does \emph{not} preserve $\gamma_\Pi$ since
+$\gamma_\Pi$ acted on a quantity ($|G^*_\Pi|$, $|\mathrm{VC}^*|$,
+etc.) that does not appear in $L_{\mathrm{amort}}$. $\Box$
 
 \emph{Consequence (unification of all three attack vectors).}
 Lemma~13.4.2a unifies items~1, 2, and the present item~3 under
-a single structural obstacle: \emph{poly-time-samplable families
-admit poly-time predictors that absorb any optimisation gap of
-polynomial-size structure into $L(M)$, leaving the amortised
-gap at $1+o(1)$.} Item~1 (predictor absorbs the reduction
-algorithm $d_n$), item~2 (predictor absorbs the salting
-function), and item~3 (predictor absorbs the optimal MSGP
-grammar $G^*$, which is itself poly-time-computable from
-$d_n$) are three instantiations of the same lemma. The
-``GSGP is the only non-absorption attack'' characterisation of
-the previous status update is incorrect: MSGP collapses one
-level deeper than items~1--2, because the predictor absorbs
-the optimal solution to the optimisation problem itself.
+a single structural obstacle: \emph{any reduction whose family
+description $\langle d_n, \mathrm{Red}_n \rangle$ has size
+$\mathrm{poly}(n)$ admits a poly-size free predictor $M^*$
+that absorbs the family into $L(M)$, achieving amortised cost
+$O(\mathrm{poly}(n))$ regardless of the $\Pi$-objective gap.}
+Item~1 (predictor absorbs the reduction algorithm $d_n$),
+item~2 (predictor absorbs the salting function as part of the
+reduction algorithm), and item~3 (predictor bypasses MSGP
+entirely by re-running the reduction algorithm to reproduce
+the family --- the MSGP solution is irrelevant to
+$L_{\mathrm{amort}}$, not because the predictor solves MSGP
+but because the optimal-amortised strategy never invokes any
+MSGP solver) are three instantiations of the same lemma. The
+``GSGP is the only non-absorption attack vector''
+characterisation of the previous status update is incorrect:
+the MSGP hardness object \emph{is} absorbed by $L(M)$ via the
+family-reproducing predictor, exactly as items~1--2 absorb the
+reduction algorithm.
 \emph{Verdict (closure of attack vector~3).} Attack vector~3
 (GSGP / multi-string SGP) is closed negatively. The MSGP
 grammar-size APX-hardness (via separator reduction to
@@ -10940,9 +11227,10 @@ amortised-family bit-cost objective with an explicit constant,
 under either standard P $\neq$ NP or cryptographic assumption.
 \emph{Updated 2026-05-28:} after the negative results on items
 1--3 of the attack-vector list (predictor absorption of the
-reduction algorithm, of the salting function, and of the optimal
-MSGP grammar, respectively, all unified by Lemma~13.4.2a), no
-combinatorial-poly\-no\-mial-time route in this list survives.
+reduction algorithm in items~1--2, predictor bypass of the MSGP
+solver via family reproduction in item~3, all unified by
+Lemma~13.4.2a), no combinatorial-poly\-no\-mial-time route in
+this list survives.
 The cryptographic route (Liu--Pass / OWF, §13.2) closes a
 different problem (average-case decision on samplable distributions),
 not free-predictor worst-case APX-hardness. Structurally novel
@@ -11778,5 +12066,30 @@ Algorithms. Proceedings of the IFIP Congress, 485-490.
 \textbf{{[}127{]}} Kesidis, G., Shan, Y., Fumagalli, A., Gulati,
 A., and Singh, A. (2017). An Analysis of LRU Replacement Caches
 under Independent Reference Models. arXiv:1704.04849.
+
+\textbf{{[}128{]}} Niyogi, P., Smale, S., and Weinberger, S. (2008).
+Finding the Homology of Submanifolds with High Confidence from
+Random Samples. Discrete and Computational Geometry, 39(1-3),
+419-441. (Introduces the ``reach'' parameter of a sub-manifold and
+gives quantitative manifold-learning sampling bounds.)
+
+\textbf{{[}129{]}} Muirhead, R. J. (1982). Aspects of Multivariate
+Statistical Theory. Wiley.
+
+\textbf{{[}130{]}} Diaconis, P., and Freedman, D. (1987).
+A dozen de~Finetti-style results in search of a theory. Annales de
+l'Institut Henri Poincar\'e (B) Probabilities et Statistiques, 23(S2),
+397-423.
+
+\textbf{{[}131{]}} Gersho, A., and Gray, R. M. (1992). Vector
+Quantization and Signal Compression. Kluwer Academic Publishers.
+(Bennett high-resolution quantization theory, Chapter 5.)
+
+\textbf{{[}132{]}} Talagrand, M. (1995). Concentration of Measure
+and Isoperimetric Inequalities in Product Spaces. Publications
+Math\'ematiques de l'IH\'ES, 81, 73-205.
+
+\textbf{{[}133{]}} Bennett, W. R. (1948). Spectra of Quantized
+Signals. Bell System Technical Journal, 27(3), 446-472.
 
 \end{document}
