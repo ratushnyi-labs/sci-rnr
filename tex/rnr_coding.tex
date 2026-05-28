@@ -10943,6 +10943,97 @@ would give conditional average-case APX-hardness under OWF (weaker
 than worst-case but tractable).
 \end{enumerate}
 
+\emph{Status update 2026-05-28 (Dinur--Safra FGLSS escape hatch closed
+negatively).} The residual Dinur--Safra direction flagged in the
+2026-05-27 update under item~1 has been investigated and is closed
+negatively. Verified construction parameters (Dinur \& Safra 2005,
+\emph{Annals of Math.}\ 162(1):439--485, Theorem~1.1 and
+Definitions~1.2, 2.3): the hard-instance graphs are nonintersection-based
+co-partite blow-ups with $p_{\max} = (3 - \sqrt{5})/2 \approx 0.382$,
+optimal vertex-cover fractions $\alpha_{\mathrm{DS}} = 1 - p_{\max}
+\approx 0.618$ (YES) and $\beta_{\mathrm{DS}} = 1 - 4 p_{\max}^3 +
+3 p_{\max}^4 \approx 0.841$ (NO), giving the published ratio
+$\beta_{\mathrm{DS}}/\alpha_{\mathrm{DS}} = 10\sqrt{5} - 21 \approx
+1.36068$. Critically, the authors state explicitly (\S1.5, p.~449)
+that the result holds ``for graphs of bounded degree,\ldots\ simply
+because the graph resulting from our reduction is of bounded
+degree.'' However, ``bounded'' here means \emph{constant in the input
+size $|V|$} via the parameter set $(h_0, h_1, l_T, h, l)$ of
+Definition~2.3, which in turn depend on Friedgut's $\Gamma(p,\delta,k)$
+function and the Sunflower-Lemma constant $\Gamma^*(h_1, h_s)$. For
+DS's stated parameter ranges ($\varepsilon, \gamma$ small), these are
+super-polynomial in $1/\varepsilon$ (Friedgut is polynomial in
+$1/\delta$ and $k$ with substantial multiplicative constants; the
+Sunflower constant is at least $h_s^{1/h_s} \cdot h_1!$, which is
+super-exponential in $h_1$), so $d_{\mathrm{DS}}$ is a fixed but
+astronomical constant. Applying Charikar's encoding
+to a DS-hard graph $H_{\mathrm{DS}}$ with $|E|
+= (d_{\mathrm{DS}}/2)|V|$ gives
+\[
+  L_{\mathrm{sym}}^*(s_{\mathrm{DS,YES}}) = |V| \cdot (15 +
+    1.5\,d_{\mathrm{DS}} + \alpha_{\mathrm{DS}}), \qquad
+  L_{\mathrm{sym}}^*(s_{\mathrm{DS,NO}}) = |V| \cdot (15 +
+    1.5\,d_{\mathrm{DS}} + \beta_{\mathrm{DS}}),
+\]
+so the encoding-preserved symbol-count ratio is
+\[
+  \rho_{\mathrm{DS}} \;=\; \frac{15 + 1.5\,d_{\mathrm{DS}} +
+    \beta_{\mathrm{DS}}}{15 + 1.5\,d_{\mathrm{DS}} + \alpha_{\mathrm{DS}}}
+  \;=\; 1 + \frac{\beta_{\mathrm{DS}} - \alpha_{\mathrm{DS}}}{15.618 +
+    1.5\,d_{\mathrm{DS}}} \;\approx\; 1 + \frac{0.2229}{15.618 +
+    1.5\,d_{\mathrm{DS}}}.
+\]
+The original graph-VC gap $1.36$ shrinks under Charikar's encoding
+overhead $15|V| + 3|E|$ because (i)~the cover-size signal
+$\alpha_{\mathrm{DS}}|V|$ is dominated by the structural and edge
+terms, and (ii)~the edge term $1.5\,d_{\mathrm{DS}}|V|$ scales with
+the high DS degree, further amplifying the dilution. Numerical
+comparison against Berman--Karpinski's preserved gap $8569/8568
+\approx 1.000117$: for $d_{\mathrm{DS}} = 3$ (impossible for DS but
+used as a sanity check) $\rho_{\mathrm{DS}} \approx 1.0111$; for
+$d_{\mathrm{DS}} = 100$, $\rho_{\mathrm{DS}} \approx 1.00135$; the
+crossover where DS encoding gap equals BK's is at
+$d_{\mathrm{DS}}^{\mathrm{cross}} = (0.2229 \cdot 8568 -
+15.618)/1.5 \approx 1263$; for $d_{\mathrm{DS}} >
+d_{\mathrm{DS}}^{\mathrm{cross}}$, DS gives a \emph{strictly weaker}
+bit-cost gap than BK. Any reasonable estimate of $d_{\mathrm{DS}}$
+from DS's proof machinery yields $d_{\mathrm{DS}} \gg 1263$, so DS
+provides no improvement over BK at the encoded bit-cost level. The
+$K$-optimisation obstacle (\S13.2) applies symmetrically: at the
+bit-cost-optimal regime $K^* = \Theta(\sqrt{N})$, the encoded ratio
+$\rho_{\mathrm{DS}}$ established at $K = K_{\mathrm{Charikar}} =
+\Theta(|V|)$ is not provably preserved to $K^*$, and DS's larger
+graph-VC ratio does not help here because the dilution occurs at
+the \emph{encoding step}, before any $K$-optimisation is considered.
+The structural blocker is identical in form to the density-shifted
+BK closure of 2026-05-27: any NP-hard VC factor preserved by graph
+blow-up loses asymptotically to the Charikar encoding overhead when
+the underlying graph has $|E| = \omega(|V|)$. The escape hatch via
+FGLSS / non-intersection structure does \emph{not} survive Charikar's
+grammar encoding. \emph{Quantitative summary}: the maximum
+encoding-preserved gap across known unconditional NP-hard VC
+inapproximability results --- BK $\to$ Charikar (sparse, $1 +
+1/8568$), DS $\to$ Charikar (dense, $\leq 1 + 0.149/d_{\mathrm{DS}}$),
+H{\aa}stad $7/6$ on $d = O(1)$ via Charikar
+($\approx 1 + 1/(8568 \cdot 6) \approx 1.00002$) --- is bounded by
+$O(1/d_{\mathrm{src}})$ where $d_{\mathrm{src}}$ is the effective
+degree of the underlying VC-hard graph family. Sparse families
+($d = 3$) maximise this ratio; dense ones destroy it. The
+Dinur--Safra direction is therefore closed negatively (verification
+script: \texttt{scripts/verify/op2a\_dinur\_safra\_attack\_check.py};
+DS constants and ratio reproduced to $10^{-10}$, BK ratio matched
+exactly to $8569/8568$, crossover and dilution at each
+$d_{\mathrm{DS}}$ regime reported). Attack vectors 2, 3, 4 of
+\S13.4.1 remain open as documented; the unified obstacle pattern
+they share is that any reduction $\mathcal{P} \to$ bit-cost SGP via
+Charikar's encoding incurs the $15|V| + 3|E|$ structural overhead,
+which dilutes graph-VC gaps in proportion to the source instance's
+edge density. A $K$-uniform hardness source (item~2) would need to
+either bypass Charikar's encoding entirely or supply a hardness gap
+whose preserved form is not multiplicatively diluted by the encoding
+(e.g., via gap amplification on the source string rather than on
+the underlying graph).
+
 \emph{What would constitute closure:} a polynomial-time
 $(\gamma_{\rm bit} - \varepsilon)$-approximation algorithm for some
 explicit $\gamma_{\rm bit} > 1$, OR a polynomial-time reduction
