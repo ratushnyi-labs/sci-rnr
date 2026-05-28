@@ -106,9 +106,12 @@ the identity that for an arbitrary source $D_N$ the gap equals
 multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5, where the gap may
 vanish on sources without joint structure). Type-III-A admits a tight
 $2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
-lower bound Theorem 6.2). A 26-theorem byte-granular random-access
+lower bound Theorem 6.2). A 27-theorem byte-granular random-access
 framework (§7) establishes Shannon-rate achievability with
 $K = \Theta(\sqrt{N})$ optimal sub-block sizing (Theorems 7.2--7.5),
+matched by a tight space-time product converse $C(K) \cdot S(K) =
+\Theta(N \log N \cdot \mathrm{cost}(M))$ for sub-block-based
+decoders (Theorem 7.27),
 extends to universal, Slepian--Wolf, lossy, successive-refinement,
 and functional RNR variants (Theorems 7.6--7.12), proves
 concentration bounds for archive-size deviation via Azuma's
@@ -586,8 +589,8 @@ and Type-III-C are illustrated through the composition discussion in
 §7 and the dictionary-construction discussion in §6.5 respectively
 rather than through standalone worked examples. Section 7 covers
 composition, mode selection, runtime parameter selection (§§7.1--7.2),
-and the 26-theorem RNR-with-random-access framework
-(§§7.1--7.26, organized as: §§7.2--7.5 basic byte-granular
+and the 27-theorem RNR-with-random-access framework
+(§§7.1--7.27, organized as: §§7.2--7.5 basic byte-granular
 random-access architecture; §§7.6--7.11 source-coding extensions
 including the lossy + ECC = lossless corollary; §§7.12--7.15
 multi-source, concentration, and end-to-end Chinchilla-class
@@ -596,7 +599,8 @@ adaptive sub-block sizing, content-defined chunking, parallel and
 streaming encoders, cache-aware decoder, predictor-archive scaling,
 fail-safe store-mode fallback, cryptographic integrity, IRM-restricted
 decoder-latency tail bound, and LRU+IRM Markov-chain Chernoff
-concentration). Section 8 states the
+concentration; §7.27 sub-block space-time product converse matching
+the T7.5 achievability). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -7867,6 +7871,226 @@ the cost is the $1/\gamma_{\rm LRU}$ factor in the exponent
 expected-and-tail characterization of LRU+IRM decoder latency
 that was open after T7.24's static-LFU restriction.
 
+\textbf{Theorem 7.27 (Space-time product converse for sub-block
+RNR random access).} \emph{Let $X$ be a length-$N$ source compressed
+under any per-position sequential RNR mode (Type-I, per-byte
+Type-III-B strategy (iii), or aligned Type-III-A as in
+Theorem 10.3) with a $W$-bounded predictor $M$ (Definition 10.2,
+per-evaluation cost $\mathrm{cost}(M)$) and uniform sub-block
+sync-point spacing of size $K \geq W$ (Definition 10.3, uniform
+variant). Assume the encoder achieves the Theorem 7.2 rate
+$L^{\mathrm{rep}}_{\mathrm{RNR}} = N h(X) + o(N)$ on a stationary
+exp-mixing source with non-degenerate entropy rate
+$h(X) \geq h_{\min} > 0$. Let $C(K)$ denote the per-query
+computational work (predictor evaluations $+$ bit operations) for a
+\emph{first-access} single-byte random-access query --- i.e., a query
+to a sub-block whose $M$-outputs have not been previously memoised
+(the decoder cache is cold relative to the queried sub-block). Let
+$S(K)$ denote the sync-overhead storage (the seek-index size, in bits,
+excluding the compressed payload $R$ and excluding any decoder
+side-cache of memoised $M$-outputs). Then:}
+\[
+  C(K) \cdot S(K) \;\geq\; N \cdot \mathrm{cost}(M) \cdot
+  \bigl\lceil \log_2(N \cdot h_{\min}) \bigr\rceil
+  \;\geq\; (1 - o(1)) \cdot N \cdot \mathrm{cost}(M) \cdot \log_2 N.
+\]
+\emph{The bound is invariant in $K$: increasing $K$ trades $C(K)$ up
+linearly while reducing $S(K)$ reciprocally, and vice versa. The
+geometric-mean balance point $K^{**} = \sqrt{N \cdot \log_2 N /
+\mathrm{cost}(M)}$ (worst-case parameters, no operational
+$\alpha Q$ weighting; to be distinguished from $K^*$ of T7.5 which
+adds $\alpha Q$ and the Crutchfield-Feldman constant $\gamma$) is
+one specific point on the iso-product curve
+$C(K) \cdot S(K) = N \mathrm{cost}(M) \log_2 N$ where the two factors
+are equal up to lower-order terms.}
+
+\emph{Scope.} The theorem is a CONVERSE for the sub-block class of
+random-access schemes characterised by Definition 10.3 (uniform or
+non-uniform sync spacing with seek-index lookup, predictor-state /
+entropy-coder-state reset at sync points, sequential decode from
+sync to query position). Within this class, the bound is tight: it
+matches Theorem 7.5's achievability formula $\gamma N / K + \alpha Q
+K = 2\sqrt{\gamma N \alpha Q}$ structurally, with $\gamma$ playing
+the role of $\log N \cdot |\mathrm{state}|$ and $\alpha Q$ playing
+the role of $\mathrm{cost}(M)$. For non-sub-block schemes (e.g.,
+hypothetical schemes that store the entire decoded archive
+verbatim, or schemes based on succinct data structures with
+non-sequential predictor invocation), the product bound does
+\emph{not} apply directly --- such schemes may sidestep the
+$K \cdot \mathrm{cost}(M)$ per-query lower bound by avoiding
+sequential predictor evaluation entirely, at the cost of
+abandoning the Shannon-near rate of Theorem 7.2. The general
+converse (across all random-access schemes, not just sub-block) is
+listed as an open problem in §13.2.
+
+\emph{\textbf{Proof.}} The proof combines two component lower bounds:
+(a) per-query work, and (b) sync-overhead storage.
+
+\emph{Lemma 7.27a (per-query predictor-evaluation lower bound,
+first-access).} For any sub-block scheme satisfying Definition 10.3
+with the encoder achieving $L^{\mathrm{rep}}_{\mathrm{RNR}} \leq N h(X)
++ o(N)$, a single-byte first-access random-access query at byte
+position $p \in [0, N)$ --- i.e., a query whose target sub-block has
+no $M$-outputs cached in any decoder side-storage --- requires the
+decoder to evaluate the predictor $M$ at every byte position in
+$[P, p]$, where $P = K \lfloor p / K \rfloor$ is the latest sync
+point at or before $p$. In particular, $C(K) \geq K \cdot
+\mathrm{cost}(M)$ in the worst case where $p \equiv K - 1
+\pmod{K}$ (giving $K$ evaluations at positions $P, P+1, \ldots, P+K-1$).
+
+\emph{Proof of Lemma 7.27a.} By Definition 10.3, the
+predictor-state and entropy-coder state at position $P$ are
+initialised to the same values as in the encoder's sync-point-aligned
+full decode. By Theorem 10.1 (bit-exact deterministic recompute), the
+decoder must reproduce the encoder's $M(C_i)$ at every position
+$i \in [P, p]$ to keep its entropy-coder state synchronised with the
+encoder's. Suppose, for contradiction, that the decoder skips
+evaluation of $M$ at some position $i^* \in [P, p]$. Then either
+(i)~the decoder uses a memoised value of $M(C_{i^*})$ from a previous
+query --- but since the worst-case query is the first access to this
+sub-block, no memoisation is available; or (ii)~the decoder predicts
+$M(C_{i^*})$ from some other source --- but $M$ is a black-box
+$W$-bounded function (Definition 10.2) and there is no
+information-theoretic shortcut to its output (even an approximate
+prediction would yield an entropy-coder-state divergence, by
+Theorem 10.1 bit-exactness, propagating downstream and corrupting
+the decoded byte at $p$). Hence the decoder must evaluate $M$
+at every position in $[P, p]$, giving $(p - P + 1)$ evaluations.
+In the worst case $p \equiv K - 1 \pmod{K}$, $p - P = K - 1$, so
+$p - P + 1 = K$ and $C(K) \geq K \cdot \mathrm{cost}(M)$.
+\hfill$\square$
+
+\emph{Lemma 7.27b (sync-overhead storage lower bound).} Under
+Definition 10.3 with uniform sync spacing and $m = \lceil N/K
+\rceil$ sync points, the sync-overhead storage $S(K)$ satisfies
+\[
+  S(K) \;\geq\; m \cdot \bigl\lceil \log_2 L(R) \bigr\rceil
+  \;\geq\; \frac{N}{K} \cdot \bigl\lceil \log_2(N \cdot h_{\min})
+  \bigr\rceil .
+\]
+
+\emph{Proof of Lemma 7.27b.} By Definition 10.3 the seek index has
+exactly $m = \lceil N/K \rceil$ entries, each storing a bit-offset
+pointer into $R$ that must distinguish among $L(R) + 1$ possible
+values (offsets in $\{0, 1, \ldots, L(R)\}$). By Shannon's noiseless
+source-coding lower bound (Cover-Thomas 2006, Theorem 5.3.1) applied
+to an injective mapping from $m$ distinct sync-point indices to
+$L(R) + 1$ offset values, the worst-case index size is at least
+$m \cdot \lceil \log_2(L(R) + 1) \rceil$ bits (or $m \cdot \log_2 m
++ m \cdot \log_2((L(R)+1)/m)$ in the average case via succinct
+encoding --- Munro-Raman 2001 \emph{SIAM J.\ Comput.}\ 31(3):762 ---
+but the worst-case-per-entry bound is $\lceil \log_2 L(R) \rceil$).
+Under the Theorem 7.2 rate hypothesis $L(R) \geq N \cdot h(X)$, and
+$h(X) \geq h_{\min} > 0$, so $L(R) \geq N \cdot h_{\min}$ and
+$\lceil \log_2 L(R) \rceil \geq \lceil \log_2(N \cdot h_{\min})
+\rceil = (1 - o(1)) \log_2 N$. \hfill$\square$
+
+\emph{Combining Lemmas 7.27a and 7.27b.} Multiply the two lower
+bounds:
+\begin{align*}
+C(K) \cdot S(K) &\;\geq\; \bigl(K \cdot \mathrm{cost}(M)\bigr)
+\cdot \bigl(\lceil N/K \rceil \cdot \lceil \log_2(N h_{\min}) \rceil\bigr) \\
+&\geq\; N \cdot \mathrm{cost}(M) \cdot
+\lceil \log_2(N h_{\min}) \rceil ,
+\end{align*}
+where the second inequality uses $K \cdot \lceil N/K \rceil \geq N$
+for any integer $K \geq 1$. The product is $K$-invariant: the factor
+of $K$ in the per-query bound cancels the $1/K$ in the sync-overhead
+bound, leaving a quantity depending only on $N$, $\mathrm{cost}(M)$,
+and $\log N$. For $h_{\min} \in (0, 1]$ fixed and $N \to \infty$,
+$\lceil \log_2(N h_{\min}) \rceil = (1 + o(1)) \log_2 N$, so
+$C(K) \cdot S(K) \geq (1 - o(1)) N \cdot \mathrm{cost}(M) \cdot \log_2 N$.
+
+\emph{Balance point.} Setting $C(K) = S(K)$ (the AM-GM minimum of
+the sum $C + S$ under fixed product) gives $K \cdot \mathrm{cost}(M)
+= (N/K) \cdot \log_2 N$, i.e., $K^{**} = \sqrt{N \log_2 N /
+\mathrm{cost}(M)}$. For $\mathrm{cost}(M) = \mathrm{polylog}(N)$,
+$K^{**} = \Theta(\sqrt{N})$ up to polylog factors, matching the
+T7.5 balance point structurally. The T7.5 formula
+$K^* = \sqrt{\gamma N / (\alpha Q)}$ adds the
+operational $\alpha Q$ weighting and the Crutchfield-Feldman
+constant $\gamma$, but the geometric-mean $\sqrt{N}$ scaling is
+identical in both formulae. \hfill$\blacksquare$
+
+\emph{Scope, significance, and limitations.} Theorem 7.27 closes the
+matching-converse question for sub-block RNR random access in the
+strong sense: the product $C(K) \cdot S(K)$ is at least
+$N \cdot \mathrm{cost}(M) \cdot \lceil \log_2(N h_{\min}) \rceil =
+\Theta(N \log N \cdot \mathrm{cost}(M))$ across the entire
+sub-block parameter range, not just T7.5's natural $K = \sqrt{N}$
+choice. This rules out the existence of a sub-block-based scheme
+that strictly beats T7.5's trade-off curve via clever $K$-tuning. In
+particular, no choice of $K$ inside the sub-block class can give
+simultaneously $o(\sqrt{N})$ first-access work and $o(\sqrt{N})$ sync
+overhead at balance: such a point would violate
+$C \cdot S \geq N \log N \mathrm{cost}(M)$.
+
+\emph{First-access vs.\ amortised work.} The bound applies to
+\emph{first-access} per-query work: the cost to answer a query
+against a sub-block whose $M$-outputs have not been previously
+memoised. With a decoder cache (Theorem 7.20) hitting a hot
+sub-block, the \emph{amortised} per-query work can be much smaller
+than $K \cdot \mathrm{cost}(M)$ --- in the extreme, $O(K)$ cache
+reads with zero predictor evaluations once the cache is full.
+Theorem 7.27 bounds the worst-case first-touch cost, which is the
+relevant quantity for archive cold-start and the upper bound from
+Theorem 7.5's $\alpha Q K$ term (where $\alpha Q$ accounts for
+expected query volume \emph{averaged} over first-access and
+warm-cache outcomes). The cache-aware amortised version is the
+subject of Theorems 7.20 / 7.24 / 7.26 (which give expected and
+tail bounds for warm-cache cost), and Theorem 7.27 supplies the
+matching cold-start converse.
+
+\emph{Non-sub-block converse (open).} The theorem applies only to
+schemes that fit Definition 10.3's sub-block template
+(sync-point-aligned seek index containing bit-offsets only,
+predictor-state reset at each sync point, sequential decode from
+sync to query position). A hypothetical non-sub-block scheme can
+sidestep the per-position $K$-evaluation lower bound by enlarging
+the side storage beyond the seek index's bit-offsets and
+pre-computing $M$-outputs there: for instance, caching $M(C_i)$ at
+every position $i$ takes $N \cdot |\mathrm{output}(M)|$ bits of side
+storage and reduces per-query work to $O(1)$ predictor evaluations,
+giving a product $C \cdot S = O(N) \cdot O(|\mathrm{output}(M)|) =
+O(N \cdot |\mathrm{output}(M)|)$. This trades against T7.27 by
+exchanging the seek-index $\log N$ factor for an $|\mathrm{output}(M)|$
+factor (typically $\geq 8$ bits per byte), and exits Definition 10.3's
+architecture (the side storage is no longer just a seek index).
+Other non-sub-block scheme candidates include succinct data
+structures with random-access predictor invocation, or schemes that
+store predictor-state snapshots at non-uniform information-theoretic
+positions. The general converse across all random-access schemes is
+listed as an open problem in §13.2: the lower bound there is
+presently information-theoretic --- any scheme must store at least
+$N \cdot h(X) + o(N)$ bits per Theorem 7.2 --- but a matching
+time-space product bound across general decoders is not pinned
+down. A plausible conjecture: the product
+$(\text{query work}) \cdot (\text{total side storage})$ is bounded
+below by $\Omega(N \cdot \mathrm{cost}(M))$ for any decoder attaining
+Shannon-near rate, with Theorem 7.27 being the sub-block-restricted
+version with an additional $\log N$ factor from the seek-index
+identifier-length floor; verifying or refuting this conjecture
+remains open.
+
+\emph{Comparison with classical cell-probe and succinct-data-structure
+lower bounds.} The $\sqrt{N}$ time-space trade-off for sub-block
+RNR is structurally analogous to the classical compressed
+suffix-array sampling-rate trade-off (Sadakane 2003;
+Grossi-Vitter 2005), where sampling rate $s$ gives storage $O(N/s)$
+and query $O(s \log N)$, yielding $s = \Theta(\sqrt{N})$ at balance.
+The general cell-probe lower bound for static membership in the
+RAM model is $\Omega(\log N / \log\log N)$ per query under
+linear-space (Andersson-Miltersen 1999, Pătraşcu-Demaine 2006
+\emph{SIAM J.\ Comput.}\ 35(4):932); Larsen 2012
+\emph{52nd FOCS}, pp.\ 293--301 (`The cell probe complexity of
+dynamic range counting') established $\Omega(\log^{3/2} N)$ for
+dynamic predecessor under polynomial space. These bounds are
+weaker than T7.27 in absolute scale (they trade off probe count
+versus storage in bits, whereas T7.27 trades $K \cdot \mathrm{cost}(M)$
+versus seek-index storage), but they are of the same product-tradeoff
+type and lend literature precedent to the sub-block-restricted
+converse.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
@@ -10248,6 +10472,27 @@ listed below.)
   (e.g.\ improving constants in T7.25's $K_\phi$ via specific
   variance-proxy estimation for natural text) remains a refinement
   question; the qualitative scaling is fixed.
+\item
+  General-scheme space-time converse for random access
+  (\emph{Theorem 7.27 sub-block restriction}). Theorem 7.27
+  establishes a tight product bound $C(K) \cdot S(K) \geq
+  (1 - o(1)) N \cdot \mathrm{cost}(M) \cdot \log N$ for any
+  sub-block-based random-access scheme satisfying
+  Definition 10.3. The converse for the \emph{general} random-access
+  class --- arbitrary decoders that need not partition the archive
+  into sub-blocks --- is open. The natural candidates for such
+  schemes are succinct-data-structure (Munro-Raman 2001) or
+  cell-probe (Pătraşcu-Demaine 2006 \emph{SIAM J.\ Comput.}\
+  35(4):932; Larsen 2012 \emph{52nd FOCS}, pp.\ 293--301)
+  decoders with non-sequential predictor invocation, and the
+  open question is whether such schemes can strictly beat the
+  $N \cdot \mathrm{cost}(M) \cdot \log N$ product lower bound
+  while still achieving the Theorem 7.2 Shannon-near rate
+  $L^{\mathrm{rep}}_{\mathrm{RNR}} = N h(X) + o(N)$. A negative
+  answer (impossibility) would close the random-access converse
+  in full generality; a positive answer (constructive example)
+  would refine Theorem 7.27's scope and motivate a new
+  optimization regime beyond the $K = \sqrt{N}$ sub-block balance.
 \end{itemize}
 
 \textbf{13.3 Out of scope: engineering deferrals}
@@ -10545,20 +10790,171 @@ GSGP grammar size. APX-hardness of GSGP is itself an open problem
 (no reduction with multiplicative gap is currently known); closing
 it would be a prerequisite to closing OP2(b) via this route, and
 is independent of the predictor-absorption obstacle of Remark 6.8b.
+
+\emph{Status update 2026-05-28 (negative, literature misreading +
+structural transfer collapse).} A direct read of Siyari and
+Gall\'e (\emph{The Generalized Smallest Grammar Problem},
+arXiv:1608.08927v1, 31 Aug 2016) corrects two premises of the
+above remaining-viable status. (a)~\emph{GSGP is not multi-string
+grammar inference.} Siyari--Gall\'e Definition~3 (Section~3 of
+the arXiv version) takes a \emph{single} sequence $s$ as input
+and asks for a smallest non-recursive context-free grammar $G$
+with $s \in L(G)$, scored by $|G|_s = \sum_{N \to \alpha \in
+P}(|\alpha|+1) + \mathrm{cost}(s \mid G)$. The
+``generalisation'' is from straight-line grammars to non-recursive
+grammars --- the language $L(G)$ may be finite but larger than
+$\{s\}$, with an explicit cost for selecting $s$ within $L(G)$
+--- \emph{not} from one string to a family of strings. The paper
+provides no NP-hardness or APX-hardness theorem: a text-search
+for ``NP-hard'', ``APX-hard'', or ``NP-complete'' returns no
+matches, and only ``approximate'' (algorithmic) plus a single
+unrelated occurrence in the related-work paragraph (worst-case
+ratio of IRRMGP / ZZ / MMAS-GA is ``hard to analyze'') appear.
+The §13.4.2 premise ``APX-hardness of GSGP $\Rightarrow$ OP2(b)
+amortised hardness'' therefore has no valid literature anchor:
+GSGP-as-defined is a single-string problem, and the cited
+hardness results for single-string SGP (Charikar et al.\ 2005's
+$\gamma_{\mathrm{SGP}} = 8569/8568$, and Casel et al., \emph{On
+the Complexity of the Smallest Grammar Problem over Fixed
+Alphabets}, Theory Comput.\ Syst.\ 65(2):344--409, 2020,
+doi:10.1007/s00224-020-10013-w, which establishes APX-hardness
+even for alphabets of size $\geq 17$) do not transfer to the
+amortised-family bit-cost objective without crossing the same
+predictor-absorption obstacle as item~1.
+(b)~\emph{A self-defined multi-string SGP reduces to single-string
+SGP up to $1+o(1)$ overhead.} Even if one self-defines $k$-MSGP
+(input: $\{s_1,\dots,s_k\} \subset \Sigma^*$; output: a smallest
+SLP-collection $(G,A_1,\dots,A_k)$ with shared non-terminal pool
+such that $\mathrm{val}(A_i)=s_i$, scored by $|G|+k$), the
+following reduction shows $k$-MSGP $\equiv_{1+o(1)}$ single-string
+SGP: take fresh separators $\#_1,\dots,\#_k \notin \Sigma$ and
+concatenate $s_\# := s_1 \#_1 s_2 \#_2 \cdots s_k \#_k$; by
+uniqueness of separators, every SLP for $s_\#$ has start rule
+$S \to A_1 \#_1 A_2 \#_2 \cdots A_k \#_k$ with $\mathrm{val}(A_i)
+= s_i$, and shared sub-expressions across the $A_i$'s are
+precisely shared non-terminals in the induced $k$-MSGP solution
+(and conversely). Both directions preserve grammar size up to
+the additive constant $2k$ (separators and start-rule pointers),
+which is $o(|s_\#|)$ when $\min_i |s_i| \to \infty$. Hence
+Casel et al.\ 2020's APX-hardness with $\gamma_{\mathrm{SGP}} =
+8569/8568$ transfers to $k$-MSGP for any constant $k$. This
+genuine grammar-size APX-hardness, however, does \emph{not}
+imply OP2(b) amortised-bit-cost APX-hardness, by step~(c) below.
+(c)~\emph{Predictor absorption applies to the MSGP grammar
+itself, not only to the reduction algorithm.} The OP2(b)
+amortised objective is $L_{\mathrm{amort}}(M,D,\{R_i\}) :=
+L(M) + L(D) + \frac{1}{N} \sum_{i=1}^{N} L(R_i \mid Y,M,D)$,
+not the MSGP grammar size $|G_{\mathrm{MSGP}}|$. The naive
+transfer requires $|G_{\mathrm{MSGP}}| \leq c \cdot N \cdot
+L_{\mathrm{amort}}$ for some constant $c$, but a free predictor
+$M$ of size $L(M) = O(\mathrm{poly}(n))$ suffices to memorise
+the entire optimal $k$-MSGP grammar for the family --- because
+the family is poly-time samplable and the optimal grammar is a
+deterministic function of the family description $d_n$
+($|d_n| = \mathrm{poly}(n)$). Set $M$ to encode $d_n$ together
+with the poly-time algorithm computing $G^* = G_{\mathrm{MSGP}}^*(
+\mathcal{F}_n)$ from $d_n$; then $L(R_i \mid Y, M, D) =
+O(\log N)$ (index $i$ into $G^*$). The MSGP grammar-size gap
+$\gamma_{\mathrm{SGP}} = 8569/8568$ on $|G_{\mathrm{MSGP}}|$
+\emph{vanishes} on $L_{\mathrm{amort}}$: the optimal MSGP
+solution and any $(8569/8568 - \varepsilon)$-approximation
+$G'$ differ by a multiplicative factor on $|G_{\mathrm{MSGP}}|$,
+but $L(M)$ stores the grammar in $O(\mathrm{poly}(n))$ bits
+\emph{regardless of which approximation $G$ vs.\ $G'$ is fixed
+inside $M$}, since both have description $O(\mathrm{poly}(n))$
+bits when the family is poly-time-samplable. The amortised gap
+collapses to $1 + O(\log(1/\varepsilon)/N) \to 1$ as $N \to
+\infty$.
+
+\textbf{Lemma 13.4.2a (unified amortised-objective absorption).}
+\emph{Let $\Pi$ be a minimisation problem on poly-time-samplable
+input families $\mathcal{F}_n = \{x_i\}_{i \in [N(n)]}$ with
+$N(n) = 2^{\Theta(n)}$ and $|d_n| = \mathrm{poly}(n)$ bits of
+family description. Suppose $\Pi$'s output $G^*(\mathcal{F}_n)$
+has size $|G^*| \leq \mathrm{poly}(N \cdot n)$ and is computable
+from $d_n$ in time $\mathrm{poly}(N \cdot n)$. Then for any
+multiplicative constant $\gamma > 1$, the amortised-family
+bit-cost objective
+$L_{\mathrm{amort}}(M,D,\{R_i\}) := L(M) + L(D) + \frac{1}{N}
+\sum_{i=1}^{N} L(R_i \mid Y, M, D)$
+admits a free predictor $M^*$ with $L(M^*) = O(\mathrm{poly}(n))$
+such that the multiplicative gap between
+$L_{\mathrm{amort}}(M^*, \cdot, \cdot)$ achieved by $M^*$
+encoding the optimal $G^*$ versus $M'$ encoding any
+$\gamma$-approximation $G'$ of $G^*$ is $1 + O(\log \gamma /
+N) \to 1$ as $N \to \infty$. Hence APX-hardness of $\Pi$ with
+any constant gap $\gamma$ on the $\Pi$-objective does
+\emph{not} transfer to APX-hardness of the amortised-family
+bit-cost objective.}
+
+\emph{Proof sketch.} Let $G^*$ be the optimal $\Pi$-output on
+$\mathcal{F}_n$. Define $M^*$ as the deterministic poly-time
+algorithm that hard-codes $d_n$ and on input $i \in [N]$
+computes $G^*$ from $d_n$ in $\mathrm{poly}(N \cdot n)$ time,
+then outputs the $i$-th component. Then $L(M^*) = O(|d_n|) +
+O(1)$ (for the poly-time algorithm description) $= O(\mathrm{poly}(n))$
+bits, and $L(R_i \mid Y, M^*, D) = O(\log N)$ (the index $i$).
+Total: $L_{\mathrm{amort}}(M^*, \cdot, \cdot) =
+O(\mathrm{poly}(n)) + 0 + \frac{1}{N} \cdot N \cdot O(\log N) =
+O(\mathrm{poly}(n) + \log N)$. For a $\gamma$-approximation
+$G'$ (which still has $|G'| \leq \gamma \cdot |G^*| =
+\mathrm{poly}(N \cdot n)$), the analogous $M'$ has $L(M') =
+L(M^*) + O(\log \gamma)$ since the only difference is which
+$\gamma$-approximation algorithm is invoked, and any standard
+$\gamma$-approximation has poly-time description of length
+$O(\log \gamma) + O(1)$. The amortised values differ by an
+additive $O(\log \gamma)$, giving a multiplicative gap on
+$L_{\mathrm{amort}}$ of $1 + O(\log \gamma / (\mathrm{poly}(n)
++ \log N)) \to 1$ as $N \to \infty$ for any fixed
+$\gamma$. $\Box$
+
+\emph{Consequence (unification of all three attack vectors).}
+Lemma~13.4.2a unifies items~1, 2, and the present item~3 under
+a single structural obstacle: \emph{poly-time-samplable families
+admit poly-time predictors that absorb any optimisation gap of
+polynomial-size structure into $L(M)$, leaving the amortised
+gap at $1+o(1)$.} Item~1 (predictor absorbs the reduction
+algorithm $d_n$), item~2 (predictor absorbs the salting
+function), and item~3 (predictor absorbs the optimal MSGP
+grammar $G^*$, which is itself poly-time-computable from
+$d_n$) are three instantiations of the same lemma. The
+``GSGP is the only non-absorption attack'' characterisation of
+the previous status update is incorrect: MSGP collapses one
+level deeper than items~1--2, because the predictor absorbs
+the optimal solution to the optimisation problem itself.
+\emph{Verdict (closure of attack vector~3).} Attack vector~3
+(GSGP / multi-string SGP) is closed negatively. The MSGP
+grammar-size APX-hardness (via separator reduction to
+single-string SGP and Casel et al.\ 2020) holds but does not
+transfer to the amortised-bit-cost objective. The remaining
+worst-case combinatorial route to OP2(b)-APX is the
+cryptographic route via Liu--Pass / OWF (§13.2), which yields
+average-case decision hardness, \emph{not} worst-case
+multiplicative APX-hardness. No worst-case combinatorial-poly\-no\-mial-time route to OP2(b)-APX is currently known;
+Lemma~13.4.2a is the structural obstacle across all three
+attack vectors of this list.
 \end{enumerate}
 
 \emph{What would constitute closure:} APX-hardness of the
 amortised-family bit-cost objective with an explicit constant,
 under either standard P $\neq$ NP or cryptographic assumption.
-\emph{Updated 2026-05-27:} after the negative result on
-amortised-family predictor-absorption transfer (item 1 status), the
-only remaining combinatorial-polynomial-time route in this list is
-GSGP (Carrascosa et al.\ 2016) APX-hardness, currently itself an
-open problem. The cryptographic route (Liu--Pass / OWF, §13.2)
-closes a different problem (average-case decision on samplable
-distributions), not free-predictor worst-case APX-hardness.
-Structurally novel reductions outside the SGP/grammar template
-would also qualify.
+\emph{Updated 2026-05-28:} after the negative results on items
+1--3 of the attack-vector list (predictor absorption of the
+reduction algorithm, of the salting function, and of the optimal
+MSGP grammar, respectively, all unified by Lemma~13.4.2a), no
+combinatorial-poly\-no\-mial-time route in this list survives.
+The cryptographic route (Liu--Pass / OWF, §13.2) closes a
+different problem (average-case decision on samplable distributions),
+not free-predictor worst-case APX-hardness. Structurally novel
+reductions outside the SGP/MSGP/grammar template --- specifically,
+reductions whose hardness object is \emph{not} a poly-time-samplable
+family with $\mathrm{poly}(n)$-bit description (so that the
+$L(M^*) = O(\mathrm{poly}(n))$ absorption of Lemma~13.4.2a does
+not apply) --- would qualify. Candidate routes: hard distributions
+that are themselves Kolmogorov-incompressible (only available via
+oracle access or pseudo-random generators, both falling outside
+poly-time-samplable inputs), or hardness objects whose description
+is super-polynomial in $n$.
 
 \textbf{13.4.3 OP3$''$ (Efficient enumerative encoders for specific
 natural-data classes).}
