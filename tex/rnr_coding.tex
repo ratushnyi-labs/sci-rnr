@@ -11837,6 +11837,111 @@ additivity, flat Pareto slope, $O(1/\log N)$ log saving at $K_{\rm
 YES}/2$, and the ceiling-jump gap erasure for $N < 2^{8568}$,
 all reproduced numerically).
 
+\emph{Status update 2026-05-29 (attack vector~2, ``$K$-uniform
+hardness source (Label Cover)'', closed negatively; with a
+bounded-$K$ dichotomy that rules out the entire $K$-uniform
+programme).} Item~2 proposed defeating the ceiling discontinuity by a
+different source-of-hardness whose reduction is \emph{$K$-uniform}:
+$K(G^*_{\rm YES}) = K(G^*_{\rm NO})$ exactly, so the discrete factor
+$\lceil \log_2(|\Sigma| + K)\rceil$ is identical for YES and NO and
+cannot differentially favour NO. The candidate was \textsc{Label
+Cover} (Arora--Lund--Motwani--Sudan--Szegedy 1998, \emph{J.\ ACM}
+45(3):501--555; Raz 1998 parallel repetition, \emph{SIAM J.\ Comput.}
+27(3):763--803), with a secondary hope that the fixed-alphabet SGP
+hardness of Casel, Fernau, Gaspers, Gras \& Schmid (2016 ICALP,
+2020 \emph{Theory Comput.\ Syst.}\ 65(2):344--409) removes the
+alphabet floor. We find the $K$-uniform route \emph{closed
+negatively}, by \emph{four} independent blockers, the last of which
+rules out the programme in full generality.
+
+\emph{(a)~$K$-uniformity fails for every cover/selection-encoding
+reduction.} Both known constant-gap SGP-hardness reductions encode
+their optimisation signal as a \emph{set of rules whose cardinality
+is the optimum}. In Charikar's unbounded-alphabet reduction the
+optimal grammar has nonterminal count $K = 2|V| + |C|$ (one rule
+$A_i \to \#v_i$ and one $B_i \to v_i\#$ per vertex, plus one
+$D_i \to \#v_i\#$ per \emph{cover} vertex $v_i \in C$; Charikar 2005
+p.~2558 grammar-size decomposition $8|V| + (3|V|-|C|) + 3|E| + 4|V|
++ 2|C|$). In Casel et al.'s fixed-alphabet reduction (Thm~7, via
+Lemma~6) a vertex cover $\Gamma$ translates into a grammar of size
+$f(m,n) + |\Gamma|$ through rules $\{\overleftarrow{V}_i \to
+\#\overrightarrow{V}_i : i \in \mathfrak{I}\}$, $\mathfrak{I} =
+\{i : v_i \in \Gamma\}$, so $K = K_0(n,m) + |\Gamma|$ with $K_0$ a
+\emph{cover-independent} skeleton. In both, $K_{\rm NO} - K_{\rm YES}
+= |C_{\rm NO}| - |C_{\rm YES}| = (\rho_{\rm VC} - 1)\,k_{\rm YES} > 0$:
+$K$ differs by \emph{exactly} the cover gap, the very signal the
+reduction carries. Forcing $K_{\rm YES} = K_{\rm NO}$ would delete the
+cover rules and erase the gap. Cover/selection encodings are
+\emph{inherently} non-$K$-uniform; one cannot pad the YES optimum up
+to $K_{\rm NO}$ because unused nonterminals only \emph{increase} $|G|$
+and are excluded from any optimal grammar.
+
+\emph{(b)~The fixed alphabet removes the alphabet floor but not the
+skeleton-overhead floor.} Granting Casel's fixed $|\Sigma| \in
+\{17,\dots,24\}$ (so $\lceil \log_2(|\Sigma|+K)\rceil \approx
+\lceil \log_2 K\rceil$, no $|\Sigma| = \Theta(N)$ floor), the
+symbol-count gap is still $\rho_{\rm sym} = 1 + (\text{cover
+gap})/(f(m,n) + \text{cover})$. Casel's skeleton is provably large:
+their Lemma~5 proof gives $|u|_\star = 196n$ for just the \emph{first}
+of the three parts $w_{\mathcal G} = uvw$, so $f(m,n) \geq 196n$ and
+$\rho_{\rm sym} - 1 \leq (0.336\,n)/(196\,n) \approx 1.7 \times
+10^{-3} = O(1/c_f)$ with $c_f \geq 196$. This is the \emph{same}
+multiplicative dilution as Charikar's $15|V| + 3|E|$ overhead
+(\S13.2): the alphabet floor governs the \emph{ceiling}, but the
+structural skeleton governs the \emph{symbol gap}, and the latter is
+diluted exactly as in the unbounded case. The fixed alphabet thus
+neutralises the wrong floor.
+
+\emph{(c)~Label Cover dilutes via its own alphabet blow-up.} A
+\textsc{Label Cover} instance attaining a gap requires label
+alphabet $R = \mathrm{poly}(n)$ and an $R$-fold size blow-up of the
+constraint graph (the projection-game / parallel-repetition cost).
+A natural \textsc{LC} $\to$ SGP encoding selects, per vertex, a rule
+encoding its assigned label, so $K$ tracks the number of selected
+labels and is again non-uniform between full (YES) and partial (NO)
+satisfaction. Worse, the $R$-fold blow-up inflates the Charikar-style
+per-gadget overhead by $\Theta(R)$, driving any constant SGP gap to
+$1 + o(1)$ as $R \to \infty$ --- the $15|V| + 3|E|$ unified obstacle
+\emph{amplified} by $R$. \textsc{LC}'s $1/\mathrm{poly}$ value gap is
+moreover a minimisation-of-unsat gap; the standard \textsc{LC} $\to$
+\textsc{Set Cover} map yields a $\ln$-factor (super-constant) gap, not
+the bounded multiplicative ratio SGP inapproximability is stated in.
+
+\emph{(d)~Bounded-$K$ dichotomy (decisive).} Casel et al.\ Thm~11
+states that a grammar for $w$ with at most $k$ rules that is minimal
+among all grammars with $\leq k$ rules is computable in time
+$O(|w|^{2k+6})$: \emph{if the nonterminal count $K$ is fixed, SGP is
+in {\rm P}}. This kills the $K$-uniform programme by a clean
+dichotomy. A $K$-uniform reduction must fix $K$ as a function of
+instance size. Either (i)~$K$ is fixed to a \emph{constant}, whence
+SGP is polynomial (Thm~11) and there is no hardness to reduce
+\emph{to} --- the attack is vacuous; or (ii)~$K$ is fixed to a
+\emph{growing} $K_0(n)$ (so $O(|w|^{2K_0+6})$ is super-polynomial),
+whence the \emph{optimal} grammar must use exactly $K_0(n)$
+nonterminals for \emph{both} YES and NO, contradicting blocker~(a)
+(the optimal $K$ provably differs by the cover gap for the only known
+constant-gap SGP-hardness sources). Casel et al.\ Thm~12
+(SGP parameterised by $|N|$ is $\mathsf{W}[1]$-hard) blocks the FPT
+escape from branch~(i). Hence $K$-uniformity is either vacuous or
+self-contradictory for the SGP-hardness family. \emph{Net:} the
+$K$-uniform / \textsc{Label Cover} route does not reach the ceiling
+discontinuity; it is closed by blockers (a),(b),(d) unconditionally
+and (c) for the specific \textsc{LC} source. This \emph{extends} the
+unified obstacle: a hardness source able to close OP2(a) would have to
+encode its optimisation signal \emph{without} a variable-cardinality
+rule set (else non-$K$-uniform) \emph{and without} a super-constant
+structural skeleton (else gap-diluted) \emph{and} at bounded $K$
+(else Thm~11 trivialises) --- a combination no reduction in the SGP
+or \textsc{Label Cover} literature exhibits. OP2(a) (discrete
+bit-cost) remains open; the residual is still exactly the ceiling
+discontinuity, now shown unreachable by the $K$-uniform route as well.
+Verification script:
+\texttt{scripts/verify/op2a\_label\_cover\_kuniform\_check.py}
+(non-$K$-uniformity of both reductions exhibited on explicit
+max-degree-3 instances with $K_{\rm NO} - K_{\rm YES}$ equal to the
+cover gap; the $O(1/c_f)$ skeleton dilution with $c_f \geq 196$;
+and the Casel Thm~11/12 dichotomy, all reproduced numerically).
+
 \emph{What would constitute closure:} a polynomial-time
 $(\gamma_{\rm bit} - \varepsilon)$-approximation algorithm for some
 explicit $\gamma_{\rm bit} > 1$, OR a polynomial-time reduction
