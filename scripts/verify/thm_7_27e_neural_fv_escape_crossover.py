@@ -46,30 +46,32 @@ So the crossover order is
            already at k = omega(1), e.g. k = log log N << k_cross(N). The
            total rate excess N*(Delta_k + rho_k) = o(N). Escape OPEN.
 
-(C) ESCAPE CLOSES only for sources with SLOW excess decay that forces
-    k = omega(log N) to reach Shannon rate. Construct Delta_k ~ a / k
-    (logarithmically-divergent excess entropy E = sum Delta_k = inf,
-    Crutchfield-Feldman divergent). Then to get Delta_k <= eps needs
-    k >= a/eps; pairing eps = eps(N) -> 0 forces k(N) -> inf, and the
-    JOINT minimum of (Delta_k + rho_k(N)) over k is bounded BELOW away
-    from 0 by a constant whenever a >= Theta(log^2 sigma / log N)*... i.e.
-    when the two terms cannot both be small. Verify: min_k (Delta_k +
-    rho_k(N)) does NOT -> 0 for the slow-decay source => no Shannon-near
-    FV at any k => escape CLOSES (Corollary 7.27e applies).
+(C) ESCAPE CLOSES only for TRIANGULAR-ARRAY sources whose modelling
+    horizon GROWS with N. Construct the N-dependent excess
+    Delta_k^{(N)} = c0 * log_sigma N / k (a/k harmonic shape but with
+    coefficient a = c0*log_sigma N growing). The unconstrained AM-GM
+    optimum k* ~ sqrt(a log_sigma N) ~ log_sigma N = Theta(L) sits at the
+    boundary of FV validity (k = o(L)); restricted to admissible k <= L/2
+    the objective stays on its decreasing branch, so the achieved joint
+    excess is ~ a/(L/2) = 2 c0 = Theta(1), bounded BELOW away from 0,
+    N-independent => no Shannon-near FV at any valid k => escape CLOSES
+    (Corollary 7.27e(b)).
 
-(D) SHARP SEPARATION. The escape-closed class is exactly:
-       sources for which   inf_{k <= k_cross(N)} Delta_k  =  Omega(1).
-    Equivalently Delta_k = omega(1/?) ... operationally: the order needed
-    to reach excess eps grows faster than k_cross(N) = Theta(log N).
-    Verify the boundary is genuine: a source with Delta_k ~ a/k^{1+s}
-    (s>0, summable => convergent excess entropy) has escape OPEN; the
-    s=0 boundary Delta_k ~ a/k (divergent) has escape CLOSED for a above
-    a threshold tied to log sigma. We sweep s and report the transition.
+(D) THE DECISIVE BOUNDARY (corrects the naive intuition). For a FIXED
+    source (a = const, including infinite-order / DIVERGENT excess
+    entropy via harmonic Delta_k = a/k), rho_k -> 0 faster than the
+    residual, so the joint excess -> 0 for EVERY decay law and the escape
+    STAYS OPEN. (This refutes the strong reading of Remark 7.27d(ii):
+    "genuinely neural = non-finite-order Markov" does NOT close the
+    escape.) The escape closes ONLY when the coefficient a = a(N) -> inf,
+    i.e. a triangular array whose effective Markov horizon outruns
+    k_cross(N) = Theta(log N / log^2 sigma). We verify both halves.
 
-PASS = (A) crossover at k ~ log_sigma N; (B1,B2) joint rate excess -> 0
-(escape open); (C) joint excess bounded away from 0 (escape closed);
-(D) summable-excess => open, log-divergent-excess => closed, matching
-the k_cross = Theta(log N) prediction.
+PASS = (A) crossover at k ~ log_sigma N / log sigma; (B1,B2) joint rate
+excess -> 0 for fixed finite-context / exp-mixing sources (escape OPEN);
+(C) growing-horizon source => joint excess Theta(1) (escape CLOSED);
+(D) fixed source (every decay) OPEN, growing horizon CLOSED, matching
+the k_cross prediction; (E) byte-alphabet rho_1=1 crossover at N ~ 2^188.
 """
 
 from __future__ import annotations
@@ -373,9 +375,10 @@ def main() -> int:
     print()
     if fails == 0:
         print("PASS: crossover at k=Theta(log N/log^2 sigma); escape OPEN for "
-              "finite-context / exp-mixing (summable-excess) sources; escape "
-              "CLOSES only for log-divergent-excess-entropy sources whose "
-              "modelling horizon grows with N. Cor 7.27e characterizes the "
+              "EVERY FIXED stationary source (finite-context, exp-mixing, even "
+              "harmonic / divergent-excess-entropy); escape CLOSES only for "
+              "TRIANGULAR-ARRAY sources whose modelling horizon grows with N. "
+              "Cor 7.27e characterizes the "
               "escape-closed class; the converse is CONDITIONAL, not universal "
               "for all neural predictors.")
         return 0
