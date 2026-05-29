@@ -8536,10 +8536,15 @@ strictly contains both the sub-block schemes of Definition 10.3 and the
 state-snapshot schemes of Theorem 10.4, and is the maximal class in
 which dense predictor recomputation --- hence the $\mathrm{cost}(M)$
 factor --- is forced. The $\log N$ factor is the seek-index
-identifier-length floor and survives into Corollary 7.27c. For genuinely
-neural (non-finite-order-Markov) predictors the Ferragina--Venturini
-escape closes (Remark 7.27d(ii)) and the existence of any model-free
-$O(1)$-access Shannon-near structure reverts to open.
+identifier-length floor and survives into Corollary 7.27c. For
+genuinely neural (non-finite-order-Markov) predictors the
+Ferragina--Venturini escape closes \emph{only} when the source's
+effective Markov horizon grows super-logarithmically in $N$ (Corollary
+7.27e, which corrects Remark 7.27d(ii): for every \emph{fixed} stationary
+source, even infinite-order, FV still attains Shannon-near rate at build
+order $o(\log_2 N/\log_2^2\sigma)$); in that growing-horizon regime the
+existence of any model-free $O(1)$-access Shannon-near structure reverts
+to open.
 
 \emph{Comparison with classical cell-probe and succinct-data-structure
 lower bounds.} The $\sqrt{N}$ time-space trade-off for sub-block
@@ -8819,6 +8824,164 @@ succinct index can attain Shannon-near rate with $o(\sqrt{N})$ query for
 such sources remains genuinely open --- now sharpened from ``is there a
 general converse?'' to ``is there a model-free Shannon-near
 random-access structure for non-Markov neural-compressible sources?''.
+Corollary 7.27e below settles the Ferragina--Venturini half of that
+question quantitatively (whether \emph{FV itself} closes) by computing
+the redundancy-vs-order crossover; it corrects the over-broad reading of
+Remark 7.27d(ii) and isolates the genuinely residual case.
+
+\textbf{Corollary 7.27e (Ferragina--Venturini escape-closure crossover;
+correction and sharpening of Remark 7.27d(ii)).} \emph{Fix an alphabet
+size $\sigma \geq 2$ and write $L_\sigma(N) := \log_\sigma N = \log_2 N /
+\log_2 \sigma$. For a stationary source let
+$\Delta_k := H(X_{k+1} \mid X_1^k) - h(X) \geq 0$ be the order-$k$
+conditional-entropy excess (decreasing, $\Delta_k \downarrow 0$ by the
+entropy-rate theorem, Cover--Thomas 2006 Theorem 4.2.1), so that the
+Crutchfield--Feldman excess entropy is $\mathbf{E} = \sum_{k \geq 0}
+\Delta_k \in [0, \infty]$. Applying the Ferragina--Venturini (TCS 372(1)
+(2007) 115--121) structure at empirical order $k$ to a realisation
+$x = X^N$ yields, almost surely as $N \to \infty$ with $k = o(L_\sigma
+(N))$, a total per-symbol rate}
+\[
+  r_k(N) \;=\; h(X) \;+\; \underbrace{\Delta_k + o(1)}_{\text{model gain}}
+  \;+\; \underbrace{\Theta\!\Bigl(\tfrac{(k+1)\log_2\sigma + \log_2\log_2 N}
+  {L_\sigma(N)}\Bigr)}_{\rho_k(N),\ \text{FV redundancy}} ,
+\]
+\emph{where the $o(1)$ inside the model gain is the per-context
+estimation error (each order-$k$ context recurs $\Theta(N/\sigma^k)$
+times a.s.\ for $k = o(L_\sigma(N))$, so $H_k(x) = h(X) + \Delta_k +
+o(1)$). The FV redundancy obeys}
+\[
+  \rho_k(N) = o(1) \iff k = o\!\bigl(L_\sigma(N)/\log_2\sigma\bigr)
+  = o\!\bigl(\log_2 N / \log_2^2 \sigma\bigr),
+\]
+\emph{so the build order at which FV's structural overhead reaches a
+constant bits/symbol is $k_{\mathrm{cross}}(N) = \Theta(\log_2 N /
+\log_2^2\sigma)$. Consequently:}
+\begin{itemize}
+\item[\emph{(a)}] \emph{(Escape stays OPEN for every \textbf{fixed}
+stationary source --- correction of Remark 7.27d(ii).) For any fixed
+source ($\Delta_k$ a fixed $N$-independent sequence with $\Delta_k
+\downarrow 0$), the optimal FV order $k^\star(N) := \arg\min_k
+[\Delta_k + \rho_k(N)]$ gives $\min_k [\Delta_k + \rho_k(N)] \to 0$, so
+FV attains the Theorem 7.2 Shannon-near rate with $O(1)$ query and the
+escape of Theorem 7.27$'$ \textbf{does not close}. This holds even for
+\textbf{infinite Markov order} ($\Delta_k > 0$ for all $k$) and even for
+\textbf{divergent excess entropy} ($\mathbf{E} = \infty$): e.g.\ for
+$\Delta_k = \Theta(1/k)$ (harmonic, $\mathbf{E} = \infty$) the joint
+minimum is $\min_k [a/k + \Theta(k/L_\sigma(N))] = \Theta(\sqrt{a /
+L_\sigma(N)}) \to 0$, attained at $k^\star = \Theta(\sqrt{a\,
+L_\sigma(N)}) = o(L_\sigma(N))$. Thus ``genuinely neural $=$
+non-finite-order Markov'' is \textbf{not sufficient} to close the FV
+escape; Remark 7.27d(ii)'s assertion that the escape closes for all
+neural predictors is too strong.}
+\item[\emph{(b)}] \emph{(Escape CLOSES iff the modelling horizon grows
+super-logarithmically.) Let $k_\epsilon(N) := \min\{k : \Delta_k^{(N)}
+\leq \epsilon\}$ be the order needed to reach excess $\epsilon$, allowing
+a triangular-array source whose excess sequence $\Delta_k^{(N)}$ may
+depend on $N$. The FV escape closes --- no fixed-order FV index attains
+$r_k(N) = h(X) + o(1)$ --- if and only if}
+\[
+  \inf_{k = o(L_\sigma(N))} \bigl[\Delta_k^{(N)} + \rho_k(N)\bigr]
+  \;=\; \Omega(1),
+\]
+\emph{equivalently iff for every $\epsilon > 0$ the order to reach excess
+$\epsilon$ grows as $k_\epsilon(N) = \omega(\log_2 N / \log_2^2\sigma)$
+(the source's effective Markov horizon outruns the FV crossover). A
+canonical witness is the triangular array $\Delta_k^{(N)} =
+c_0 L_\sigma(N)/k$ for $k \leq L_\sigma(N)$ (modelling horizon $\propto
+L_\sigma(N)$): the unconstrained AM--GM optimum of $c_0 L_\sigma(N)/k +
+\Theta(k/L_\sigma(N))$ sits at $k = \Theta(L_\sigma(N))$, \emph{outside}
+FV's validity range $k = o(L_\sigma(N))$, so on the admissible range the
+objective is still on its decreasing branch and $\inf_{k = o(L_\sigma
+(N))}[\Delta_k^{(N)} + \rho_k(N)] = \Theta(c_0) = \Omega(1)$, bounded
+away from $0$ --- the escape closes.}
+\item[\emph{(c)}] \emph{(Byte-granular practical closure.) For
+$\sigma = 256$, $k_{\mathrm{cross}}(N) = \log_2 N / 64$, and solving
+$\rho_1(N) = (2\log_2\sigma + \log_2\log_2 N)/L_\sigma(N) = 1$ gives
+$\rho_1(N) > 1$ bit/symbol for all $N \lesssim 2^{188} \approx 10^{57}$.
+Hence on byte data at any physically realisable $N$ the FV redundancy
+already exceeds a bit/symbol at $k = 1$, and the escape is
+\textbf{practically closed} unless the source is Shannon-near already at
+$k = 0$ (i.i.d.). The
+$\Theta(1)$-bits/symbol FV overhead at small build orders is the
+operative obstruction at deployment scale; the asymptotic $k_\epsilon$
+vs.\ $k_{\mathrm{cross}}$ race of (a)--(b) is the obstruction in the
+$N \to \infty$ limit.}
+\end{itemize}
+\emph{The verify script
+\texttt{scripts/verify/thm\_7\_27e\_neural\_fv\_escape\_crossover.py}
+locates the crossover (A), exhibits open joint-excess decay for fixed
+finite-context and exp-mixing sources (B), closed $\Omega(1)$ joint
+excess for growing-horizon sources (C), the fixed-vs-growing boundary
+(D), and the byte-alphabet practical-closure regime (E).}
+
+\emph{\textbf{Proof.}} The rate decomposition is the FV space bound
+(Ferragina--Venturini 2007; equivalently Sadakane--Grossi, as recorded
+at the FV structure citation above)
+$|\mathrm{FV}_k| = N H_k(x) + O\bigl(\tfrac{N}{L_\sigma(N)}((k+1)\log_2
+\sigma + \log_2\log_2 N)\bigr)$ divided by $N$, with $H_k(x) = h(X) +
+\Delta_k + o(1)$ a.s.\ (Manzini 2001 $H_k$ definition together with the
+order-$k$ Markov AEP of Theorem 7.27$'$ Step~1, the $o(1)$ being the
+empirical-to-true conditional gap, which vanishes when each context
+recurs $\Theta(N/\sigma^k) \to \infty$ times, i.e.\ for $k = o(L_\sigma
+(N))$). The redundancy equivalence is algebra: $\rho_k(N) = o(1)$ iff
+$(k+1)\log_2\sigma = o(L_\sigma(N)) = o(\log_2 N/\log_2\sigma)$, i.e.\
+$k = o(\log_2 N/\log_2^2\sigma)$; the $\log_2\log_2 N / L_\sigma(N) =
+o(1)$ term is always lower order. For (a), with $\Delta_k$ fixed and
+$\downarrow 0$: given any $\eta > 0$ pick $k_0$ with $\Delta_{k_0} <
+\eta/2$ (possible since $\Delta_k \to 0$); then for $N$ large enough that
+$\rho_{k_0}(N) < \eta/2$ (possible since $k_0$ is fixed and $\rho_{k_0}
+(N) \to 0$), $\min_k[\Delta_k + \rho_k(N)] \leq \Delta_{k_0} +
+\rho_{k_0}(N) < \eta$; as $\eta$ was arbitrary the minimum $\to 0$. The
+harmonic computation is the AM--GM minimisation of $a/k + bk$ with $b =
+\Theta(1/L_\sigma(N))$, giving minimum $2\sqrt{ab} = \Theta(\sqrt{a/
+L_\sigma(N)})$ at $k^\star = \sqrt{a/b} = \Theta(\sqrt{a L_\sigma(N)})$,
+which is $o(L_\sigma(N))$ since $a$ is constant; both the model-gain and
+redundancy conditions are met, so FV is Shannon-near. For (b), if the
+displayed infimum is $\Omega(1)$ then by definition no $k = o(L_\sigma
+(N))$ achieves $r_k(N) = h(X) + o(1)$ (and $k = \Omega(L_\sigma(N))$ is
+outside FV's validity and anyway makes $\rho_k = \Omega(1)$), so FV
+cannot be Shannon-near; conversely if the infimum is $o(1)$ the
+minimising $k$ gives a Shannon-near FV index. The $k_\epsilon$
+reformulation follows because $\Delta_k + \rho_k(N)$ is small only where
+both summands are small, and $\rho_k(N) = o(1)$ caps the admissible $k$
+at $o(k_{\mathrm{cross}}(N))$; the witness $\Delta_k^{(N)} = c_0 L_\sigma
+(N)/k$ has $a = c_0 L_\sigma(N)$, so the unconstrained AM--GM optimum
+$k^\star = \sqrt{a/b} = \Theta(L_\sigma(N))$ lies on the boundary of FV
+validity. Restricting to the admissible $k = o(L_\sigma(N))$ leaves the
+objective on its decreasing branch, where $\Delta_k^{(N)} + \rho_k(N) \geq
+\Delta_{cL_\sigma(N)}^{(N)} = c_0/c = \Theta(1)$ for any $k = cL_\sigma(N)
++ o(L_\sigma(N))$; taking the infimum over the admissible range gives
+$\Theta(c_0)$, a positive constant independent of $N$. (The verify
+script's (C)/(D) cap $k$ at $\tfrac12 L_\sigma(N)$ and report the
+matching $\approx 2c_0$ value, not the smaller unconstrained $\sqrt
+{c_0}$.) Claim (c) substitutes $\sigma = 256$, $\log_2\sigma = 8$ into
+$k_{\mathrm{cross}}(N) = \log_2 N/\log_2^2\sigma = \log_2 N/64$ and
+solves $\rho_1(N) = (2\log_2\sigma + \log_2\log_2 N)/L_\sigma(N) = 1$,
+i.e.\ $16 + \log_2\log_2 N = (\log_2 N)/8$, whose root is $\log_2 N
+\approx 188$ (so $\rho_1(N) > 1$ for $N \lesssim 2^{188} \approx
+10^{57}$). \hfill$\blacksquare$
+
+\emph{Net effect on the open problem.} Corollary 7.27e \textbf{narrows}
+the residual open question of Corollary 7.27c piece (3) but does
+\textbf{not} fully close it. It establishes: \emph{(i)} the
+Ferragina--Venturini escape itself does not close for fixed neural
+(infinite-order, even divergent-excess) sources --- so against such
+sources a general converse is \emph{false} via FV, exactly as for
+finite-order Markov; the honest scope of Theorem 7.27$'$'s refutation is
+therefore \emph{every fixed stationary source}, not merely finite-order
+Markov. \emph{(ii)} The escape closes precisely for triangular-array
+sources whose effective Markov horizon grows as $\omega(\log_2 N /
+\log_2^2\sigma)$ (and, at deployment scale, for byte data essentially
+always, by (c)). What remains genuinely open is the \emph{same} residual
+as before but now correctly delimited: for an escape-\emph{closed} source
+(horizon $\omega(\log_2 N)$, e.g.\ a model whose context grows with the
+corpus), is there \emph{some other} (non-FV) model-free succinct
+random-access structure attaining Shannon-near rate with $o(\sqrt{N})$
+query, or does a converse force $\Omega(\sqrt{N})$ there? Corollary 7.27e
+removes the false premise (``neural $\Rightarrow$ FV closes'') and pins
+the open case to the growing-horizon regime, where the question is
+genuinely hard and unresolved.
 
 
 \textbf{Theorem 7.28 (Non-asymptotic CLT for $L^{\mathrm{rep}}$:
@@ -11489,23 +11652,35 @@ listed below.)
   ($\epsilon = 0$) and Theorem 10.4 state-snapshot schemes ($\epsilon =
   O(1/K)$, the natural non-sub-block witness), and \emph{excludes} the
   Ferragina--Venturini escape ($\epsilon = 1$). \emph{(3) The residual
-  open problem (genuinely open).} The refutation in piece (1) relies on
-  the source being finite-order Markov, so that $H_k \to h(X)$ at fixed
-  $k$. For \emph{genuinely neural} predictors $M$ whose conditionals are
-  not finite-order Markov, the Ferragina--Venturini surrogate $H_k$ is
-  not Shannon-near at any fixed $k$ (Remark 7.27d(ii)), and the escape
-  closes. Whether \emph{some other} model-free succinct random-access
-  structure can attain the Theorem 7.2 Shannon-near rate with
-  $o(\sqrt{N})$ query time --- and hence beat the predictor-faithful
-  product --- for non-Markov neural-compressible sources is open. The
-  open question is thereby \emph{sharpened} from ``is there a general
-  converse?'' (answer: not universally --- piece (1)) to ``is there a
-  model-free Shannon-near random-access structure for non-finite-order
-  -Markov sources, or does some converse force $\Omega(\sqrt N)$ query
-  there?''. A negative answer (no such structure) would restore a
-  general converse on the neural-predictor sources that motivate RNR; a
-  positive answer would exhibit a second escape beyond Ferragina
-  --Venturini.
+  open problem (genuinely open, now correctly delimited by Corollary
+  7.27e).} The refutation in piece (1) was stated for finite-order Markov
+  sources. Corollary 7.27e computes the Ferragina--Venturini
+  redundancy-vs-order crossover $k_{\mathrm{cross}}(N) = \Theta(\log_2 N /
+  \log_2^2\sigma)$ and thereby \emph{corrects} the over-broad reading of
+  Remark 7.27d(ii): for \emph{every fixed} stationary source --- including
+  genuinely neural ones with infinite Markov order, and even divergent
+  Crutchfield--Feldman excess entropy --- the FV escape \emph{does not}
+  close (the optimal build order $k^\star(N) = o(k_{\mathrm{cross}}(N))$
+  makes both the model gain $\Delta_{k^\star}$ and the FV redundancy
+  $\rho_{k^\star}(N)$ vanish), so the universal converse is false against
+  every fixed stationary source, not merely finite-order Markov. The FV
+  escape closes \emph{only} for triangular-array sources whose effective
+  Markov horizon $k_\epsilon(N)$ outruns the crossover, i.e.\
+  $k_\epsilon(N) = \omega(\log_2 N / \log_2^2\sigma)$ for some $\epsilon
+  > 0$ (Corollary 7.27e(b)); at deployment scale on byte data the escape
+  is moreover practically closed, since $\rho_1(N) > 1$ bit/symbol for all
+  $N \lesssim 2^{188} \approx 10^{57}$ (Corollary 7.27e(c)). The residual
+  genuinely-open
+  question is thus pinned to this growing-horizon regime: for an
+  escape-\emph{closed} source (horizon $\omega(\log_2 N)$, e.g.\ a model
+  whose context window grows with the corpus), is there \emph{some other}
+  (non-FV) model-free succinct random-access structure attaining the
+  Theorem 7.2 Shannon-near rate with $o(\sqrt{N})$ query time, or does a
+  converse force $\Omega(\sqrt N)$ query there? A negative answer would
+  establish a general converse on the growing-horizon sources; a positive
+  answer would exhibit a second escape beyond Ferragina--Venturini.
+  Corollary 7.27e removes the false premise (``neural $\Rightarrow$ FV
+  closes'') that previously over-stated this entry.
 \end{itemize}
 
 \textbf{13.3 Out of scope: engineering deferrals}
