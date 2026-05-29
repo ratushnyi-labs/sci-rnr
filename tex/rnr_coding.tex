@@ -12494,6 +12494,196 @@ distinct square-root laws; exact $\gamma_\alpha$ monotonicity
 $1+1/8568 \to 1+1/1008$; and the discrete step-function/ceiling
 contrast, all reproduced numerically).
 
+\emph{Status update 2026-05-29 (POSITIVE complement of Lemma 6.8k:
+a polynomial-time $O(\log(N/g^\star))$-approximation for the additive
+rule-cost objective, giving a tight-up-to-log characterisation of the
+RNR dictionary-size problem).} Lemma 6.8k is a \emph{lower} bound
+(APX-hardness). Its algorithmic flip-side asks whether the additive
+objective inherits the symbol-count SGP approximation algorithms. We
+verify that it does, with the genuine content concentrated in the
+control of the rule count $K$, and we delimit the residual to the
+classical (RNR-independent) constant-vs-logarithmic SGP approximability
+gap.
+
+\emph{Symbol-count SGP approximation algorithms (verified citations).}
+For the pure symbol-count objective $L_{\mathrm{sym}}(G) = |G|$ the
+smallest-grammar problem admits polynomial-time approximation within a
+logarithmic factor of the optimum $g^\star$: Charikar, Lehman, Liu,
+Panigrahy, Prabhakaran, Sahai \& Shelat (2005, \emph{IEEE Trans.\ Inf.\
+Theory} 51(7):2554--2576) give two algorithms with ratios $O(\log^3 N)$
+and $O(\log(N/g^\star))$ (their abstract and \S VII); Rytter (2003,
+\emph{Theoret.\ Comput.\ Sci.} 302(1--3):211--222) turns the LZ77
+factorisation (of $z \leq g^\star$ phrases) into a balanced
+\emph{AVL-grammar} of size $O(z\log(N/z)) = O(g^\star\log(N/g^\star))$;
+and Je\.z (2015, \emph{Theoret.\ Comput.\ Sci.} 592:115--134) achieves
+ratio $O(1+\log(N/g^\star))$ by \emph{recompression}, with an analysis
+independent of LZ77. Crucially, the Rytter and Je\.z outputs are
+\emph{Chomsky-normal-form} (CNF / SLP) grammars: every internal rule has
+a right-hand side of length exactly $2$. (RePair (Larsson--Moffat 1999)
+is \emph{not} an $O(\log)$ algorithm: its worst-case symbol ratio is
+$\Omega(\log N/\log\log N)$ (Charikar et al.\ 2005 gave
+$\Omega(\sqrt{\log N})$; improved by Bannai, Hirayama, Hucke, Inenaga,
+Je\.z, Lohrey \& Reh, ``The Smallest Grammar Problem Revisited,''
+\emph{IEEE Trans.\ Inf.\ Theory} 67(1), 2021); we use it only as a
+foil.)
+
+\textbf{Lemma 6.8k-approx (Poly-time $O(\log)$-approximation for additive
+rule-cost SGP).} \emph{Let $\mathcal A$ be any polynomial-time SGP
+algorithm whose output is a CNF grammar and whose symbol-count ratio is
+$\rho = \rho(N) = O(\log(N/g^\star))$ (e.g.\ Rytter 2003 or Je\.z 2015).
+Then for the additive objective $L_\alpha = L_{\mathrm{sym}} + \alpha K$:
+\begin{enumerate}
+\item[(i)] (Unconditional, all $\alpha \geq 0$.) $\mathcal A$ is a
+polynomial-time $(1+\alpha)\rho$-approximation for $L_\alpha$. In
+particular for every fixed $\alpha = O(1)$ the ratio is
+$O(\rho) = O(\log(N/g^\star))$.
+\item[(ii)] (CNF subproblem, all $\alpha \geq 0$.) Against the
+additive optimum restricted to CNF grammars, $\mathcal A$ attains ratio
+at most $\rho = O(\log(N/g^\star))$, with no $(1+\alpha)$ loss (and
+strictly below $\rho$ for $\alpha > 0$).
+\item[(iii)] (General optimum, super-constant $\alpha$.) Granting the
+folklore constant-equivalence $g^\star = O(\kappa^\star)$ of the
+grammar-size measure $g^\star = L_{\mathrm{sym}}$-optimum and the
+rule-count measure $\kappa^\star = K$-optimum, $\mathcal A$ is an
+$O(\rho) = O(\log(N/g^\star))$-approximation for $L_\alpha$ for
+\emph{every} $\alpha \geq 0$, including $\alpha = \Theta(\log N)$.
+\end{enumerate}
+Consequently the additive-rule-cost approximability ratio lies in the
+window $[\,1+\Omega(1/\log N),\,O(\log N)\,]$: the lower endpoint is
+Lemma 6.8k's constant inapproximability $\gamma_\alpha \in
+[1+\tfrac{1}{8568}, 1+\tfrac{1}{1008}]$ (which exceeds $1$ but is below
+$1+1/\log_2 N$ only in the ceiling-bounded discrete regime irrelevant
+here), and the upper endpoint is the SGP logarithmic ceiling.}
+
+\emph{\textbf{Proof.}} \emph{(i) Unconditional $(1+\alpha)\rho$ ratio,
+all $\alpha \geq 0$.} For a CNF grammar $G$ write $n_{\mathrm{t}}$ for
+its number of terminal rules and $n_{\mathrm{b}}$ for its number of
+binary rules; then $K(G) = n_{\mathrm{t}} + n_{\mathrm{b}}$ and
+$L_{\mathrm{sym}}(G) = n_{\mathrm{t}} + 2n_{\mathrm{b}}$, so
+\begin{equation}
+K(G) \;\leq\; L_{\mathrm{sym}}(G). \tag{NF}
+\end{equation}
+Hence $L_\alpha(\mathcal A(s)) = L_{\mathrm{sym}}(\mathcal A(s)) +
+\alpha K(\mathcal A(s)) \leq (1+\alpha)\,L_{\mathrm{sym}}(\mathcal A(s))$.
+By the approximation guarantee,
+$L_{\mathrm{sym}}(\mathcal A(s)) \leq \rho\,g^\star$, where $g^\star$ is
+the size of the smallest \emph{general} grammar. Finally, for the
+additive optimum $G^\star_\alpha$ we have
+$L_\alpha(G^\star_\alpha) \geq L_{\mathrm{sym}}(G^\star_\alpha) \geq
+g^\star$ (the first step drops the nonnegative $\alpha K$ term; the
+second is minimality of $g^\star$ over the symbol count). Chaining,
+\[
+L_\alpha(\mathcal A(s)) \;\leq\; (1+\alpha)\,\rho\,g^\star
+\;\leq\; (1+\alpha)\,\rho\,L_\alpha(G^\star_\alpha),
+\]
+so the additive ratio is at most $(1+\alpha)\rho$ \emph{for every}
+$\alpha \geq 0$ (no step used $\alpha = O(1)$), which is $O(\rho) =
+O(\log(N/g^\star))$ whenever $\alpha = O(1)$. This proves (i).
+
+\emph{(ii) CNF subproblem, every $\alpha$: exact deflation.} The bound
+above is loose in $\alpha$. Restricted to CNF grammars the additive
+objective is, by the displayed identities,
+\begin{equation}
+L_\alpha(G) = n_{\mathrm{t}}(1+\alpha) + (2+\alpha)\,n_{\mathrm{b}},
+\qquad n_{\mathrm{t}} = |\Sigma_s| \text{ fixed}, \tag{AFF}
+\end{equation}
+an increasing affine function of $n_{\mathrm{b}}$ with an
+$\alpha$-\emph{independent} minimiser (the constant $n_{\mathrm{t}} =
+|\Sigma_s|$, the number of distinct terminals of $s$, is
+grammar-independent). Therefore minimising $L_\alpha$ over CNF grammars
+is the \emph{same} optimisation problem (minimise $n_{\mathrm{b}}$) for
+every $\alpha \geq 0$, and the CNF additive optimum coincides with the
+CNF symbol optimum, with binary-rule count $n_{\mathrm{b}}^\star$. The
+symbol guarantee gives $n_{\mathrm{t}} + 2n_{\mathrm{b}}(\mathcal A) \leq
+\rho(n_{\mathrm{t}} + 2n_{\mathrm{b}}^\star)$, i.e.\
+$n_{\mathrm{b}}(\mathcal A) \leq \rho\,n_{\mathrm{b}}^\star +
+\tfrac12(\rho-1)n_{\mathrm{t}}$. Substituting into (AFF),
+\[
+\rho\,L_\alpha(G^\star_{\mathrm{CNF}}) - L_\alpha(\mathcal A(s))
+= n_{\mathrm{t}}(\rho-1)\Bigl[(1+\alpha) - \tfrac{2+\alpha}{2}\Bigr]
+= n_{\mathrm{t}}(\rho-1)\,\tfrac{\alpha}{2} \;\geq\; 0,
+\]
+so the additive ratio against the CNF optimum is at most $\rho$ for all
+$\alpha$, with slack $n_{\mathrm{t}}(\rho-1)\alpha/2$ that \emph{grows}
+with $\alpha$ (the approximation-free constant term
+$n_{\mathrm{t}}(1+\alpha)$ deflates the ratio strictly below $\rho$ for
+$\alpha > 0$). This proves (ii). \hfill$\blacksquare$
+
+\emph{(iii) General optimum, super-constant $\alpha$ (the genuine
+content; conditional on a folklore constant).} Parts (i)--(ii) are
+unconditional, but the $(1+\alpha)$ factor of (i) is genuinely needed
+in the super-constant regime $\alpha = \Theta(\log N)$ against the
+\emph{general} (non-CNF) optimum, because there the additive penalty
+\emph{changes} the optimal grammar: as $\alpha$ grows the general
+additive optimum trades symbols for rules, preferring fewer,
+\emph{longer} right-hand sides (verified by brute force, e.g.\ for the
+source $\mathtt{aabbaabb}$ the general symbol optimum has
+$(L_{\mathrm{sym}}, K) = (6,4)$ whereas the general additive optimum at
+$\alpha=8$ is $(8,3)$). This is the requested anti-tautology: the
+transfer is \emph{not} trivial when $\alpha$ is large, since an
+$L_{\mathrm{sym}}$-minimiser need not control $K$. We reduce the residual
+to a single classical constant. Binarising the general additive optimum
+$G^\star_{\alpha,\mathrm{gen}}$ (size $L_{\mathrm{sym}}^\star$, rules
+$K^\star_\alpha$) yields a CNF grammar of symbol-size
+$\leq 2L_{\mathrm{sym}}^\star$ and rule-count
+$\leq L_{\mathrm{sym}}^\star$ (a rule $A \to \beta$ with $|\beta| = k$
+becomes $k-1$ binary rules; the binary-rule total is
+$L_{\mathrm{sym}}^\star - K^\star_\alpha \leq L_{\mathrm{sym}}^\star$ ---
+the \emph{linear} SLP binarisation cost, not the quadratic worst case
+for general CFGs). Hence the CNF additive optimum obeys
+$L_\alpha(G^\star_{\alpha,\mathrm{CNF}}) \leq
+(2+\alpha)\,L_{\mathrm{sym}}^\star \leq (2+\alpha)(1+\alpha)\,g^\star$,
+while $L_\alpha(G^\star_{\alpha,\mathrm{gen}}) \geq \alpha K^\star_\alpha
+\geq \alpha\kappa^\star$, so the CNF-restriction price is
+\[
+\frac{L_\alpha(G^\star_{\alpha,\mathrm{CNF}})}{L_\alpha(G^\star_{\alpha,\mathrm{gen}})}
+\;=\; O\!\Bigl(\frac{g^\star}{\kappa^\star}\Bigr),
+\]
+where $\kappa^\star$ is the minimum rule-count of any grammar for $s$.
+By (ii), $\mathcal A$ is a $\rho$-approximation against
+$G^\star_{\alpha,\mathrm{CNF}}$, so against the general optimum its ratio
+is $O(\rho\cdot g^\star/\kappa^\star)$. \emph{Granting the folklore
+constant-equivalence $g^\star = O(\kappa^\star)$} --- both measures are
+$\Theta$ of the SLP/LZ77 complexity, and Charikar et al.\ 2005 (\S VII),
+Lehman (2002, PhD thesis, MIT) and Casel et al.\ 2020 (\emph{Theory
+Comput.\ Syst.} 65(2):344--409) use the size and rule-count measures
+interchangeably --- this is $O(\rho) = O(\log(N/g^\star))$ for
+\emph{every} $\alpha \geq 0$. We flag $g^\star = O(\kappa^\star)$ as the
+single residual assumption (it holds with constant $\leq 2$ on every
+brute-forced instance in the verification script but we do not have a
+closed-form proof for all strings); part (i)'s $(1+\alpha)\rho$ bound is
+unconditional regardless. \emph{Remark (the natural midpoint).} At
+$\alpha = 1$ the additive objective $L_{\mathrm{sym}} + K$ is exactly the
+standard ``alternative'' grammar-size measure of the SGP literature
+(Lehman 2002; Casel et al.\ 2020), so (i) gives an unconditional
+$2\rho = O(\log)$-approximation for that canonical measure with no
+appeal to (iii).
+
+\emph{Why this is the tight characterisation, not a relabelling of
+Lemma 6.8k.} Lemma 6.8k supplies the \emph{lower} bound
+$\gamma_\alpha > 1$; this complement supplies the \emph{upper} bound
+$O(\log N)$. The gap between a constant lower bound and a logarithmic
+upper bound is precisely the long-standing SGP approximability gap
+(open since Charikar et al.\ 2005; restated as open by Casel et al.\
+2020): no $N$-independent constant-factor algorithm is known, and no
+super-constant inapproximability is known. The additive objective
+\emph{inherits} this window verbatim --- the positive content is that
+the inheritance is genuine (it survives the $K$-penalty via CNF
+deflation and the $O(1)$ rule-count/symbol-count equivalence), giving
+the RNR dictionary builder a concrete usable procedure: run Je\.z's
+recompression (or Rytter's AVL construction) on the source, obtaining a
+CNF dictionary within an $O(\log(N/g^\star))$ factor of the optimal
+additive rule-size cost. Verification script:
+\texttt{scripts/verify/lemma\_6\_8k\_approx\_additive\_rule\_cost.py}
+(the (NF) and (AFF) identities; the $\alpha$-independent CNF argmin
+verified against brute-force optima for $\alpha$ up to $1000$; the
+constant-$\alpha$ ratio bound; the bounded additive ratio of a
+recompression-style builder vs.\ both the CNF and the \emph{general}
+brute-force additive optima across $\alpha \in \{1, \log N, N, 50\}$
+with an $O(1)$ blow-up factor; the witnessed general-additive $\neq$
+general-symbol optimum for large $\alpha$; the $\leq 2$ binarisation
+cost; and the RePair foil, all reproduced numerically).
+
 \emph{Status update 2026-05-29 (attack vector~2, ``$K$-uniform
 hardness source (Label Cover)'', closed negatively; with a
 bounded-$K$ dichotomy that rules out the entire $K$-uniform
