@@ -12340,6 +12340,97 @@ case) remain open; the present finding makes vector~1 look unpromising,
 since flatness-above-$0$ is forced by the affine identity and a non-flat
 $A_s$ trivialises the objective.
 
+\emph{Status update 2026-05-29 (non-count objective; route~(c) closed
+negatively \emph{within} Type-II, with a structural invariance
+characterisation).} We pursued the route flagged immediately above and in
+Lemma 5.7d route~(c): replace the contained-substructure \emph{count} by a
+\emph{non-count} (entropy / partition-functional) objective, in the hope
+that a concave/log functional escapes the affine $n_0(S)$ dilution. We
+verified the relevant entropy-hardness literature and reached a negative
+verdict for Type-II, together with a clean structural reason that
+\emph{extends the unified obstacle from counts to all partition
+functionals}.
+
+\emph{(i) The candidate non-count hard problems are genuinely non-affine.}
+\textsc{Max-Entropy Sampling} (MESP; Ko--Lee--Queyranne, \emph{Oper.\ Res.}\
+43(4):684--691, 1995) maximises $\tfrac12\log\det\Sigma_S$ over size-$s$
+principal submatrices of a covariance $\Sigma$ and is NP-hard; the closely
+related \textsc{Log-Determinant Maximisation} / DPP-MAP is NP-hard to
+approximate within $5/4$ (unconstrained) and within $1+10^{-10^{13}}$
+(size-constrained monotone) under $\mathrm P\neq\mathrm{NP}$, and the
+\emph{unconstrained} DPP-MAP is inapproximable within $2^{\beta n}$,
+$\beta=10^{-10^{13}}$ (Ohsaka, \emph{J.\ Artif.\ Intell.\ Res.}, 2022;
+PMLR 130, 2021, improving the $9/8-\varepsilon$ of Kulesza--Taskar 2012).
+Crucially these gaps live on a \emph{spectral} functional $\log\det K_S$
+that does \emph{not} reduce to any count: subsets $S,S'$ with the same
+induced-edge (correlated-pair) count have different $\log\det K_S$
+(witnessed in \texttt{scripts/verify}, check~B), so the affine identity of
+Lemma 5.7c simply does not apply and the multiplicative gap \emph{would}
+survive. So a log-det objective is exactly the kind of non-count functional
+sought.
+
+\emph{(ii) But the Type-II cost is provably a count-functional, so no such
+objective is the Type-II cost.} The actual Type-II support-selection cost
+is the Theorem 5.3 enumerative residual
+$\mathbb E_\mu[A_s(|T\setminus S|)]$ with
+$A_s(\alpha)=\log_2\binom{s}{k_v-\alpha}+\log_2\binom{N-s}{\alpha}$. Each
+atom $T$ contributes $A_s(|T\setminus S|)$, a function of the integer
+\emph{overlap} $|T\cap S|$ \emph{alone}; hence \emph{any} functional of the
+per-atom Type-II contributions --- the expected code length, the Shannon
+entropy of the induced within-support overlap law, or any other
+``entropy of the partition restricted to $S$'' --- is a function of the
+(weighted) overlap histogram $(W_0,\dots,W_d)$, $W_\alpha:=\sum_{T:\,
+|T\setminus S|=\alpha}\mu(T)$, and \emph{therefore} of $n_0(S)$ for
+$2$-ary atoms at the Lemma 5.7c collapse point. Equivalently, the Type-II
+cost is \emph{invariant} under every relabelling of positions/atoms that
+preserves the overlap histogram, whereas a DPP/MESP $\log\det K_S$ is
+\emph{not} invariant under such relabellings (it depends on the off-diagonal
+kernel entries). The two functionals have \emph{different invariance
+groups}, so no kernel $K$ satisfies $\text{Type-II-cost}(S)=\log\det K_S$
+identically (\texttt{scripts/verify}, checks~A and~C). The discrete
+entropy-of-partition objective the route proposed thus collapses to the
+same affine $n_0(S)$ dilution as the count: its transferred gap is again
+$1+\Theta(D_{\mathrm{YES}}/m)$, vanishing on sparse instances.
+
+\emph{(iii) Where the non-count gap really lives: Type-III-C, not Type-II.}
+The log-det functional \emph{does} arise in the RNR framework --- it is
+exactly the Gaussian total correlation $\mathrm{TC}(X)=\tfrac12[\sum_i
+\log_2(1+a_i)-\sum_j\log_2(1+b_j)]$ of Lemma 5.6j, a \emph{differential}
+entropy of a continuous latent (Cover--Thomas 2006, Thm 8.4.1). By the
+type taxonomy (Definitions 3.2 / 3.5; the discussion at the end of \S 1.2:
+``Type-II as defined in \S 3.2 is partition-based,'' while a continuous
+latent ``fits into Type-III-C''), a log-det cost is a Type-III-C
+(continuous-dictionary / variational-posterior) cost, \emph{not} a Type-II
+partition cost. Importing MESP/DPP hardness as a ``Type-II objective''
+would therefore require silently replacing the discrete partition cost by an
+arbitrary spectral functional --- precisely the substitution the anti-
+tautology requirement forbids. The non-count gap is real, but it belongs to
+the continuous (Type-III-C) optimal-support question, which is a
+\emph{different} open problem from OP4.
+
+\emph{(iv) Verdict: negative for Type-II, extending the unified obstacle to
+all partition functionals.} Route~(c) does not close OP4. The unified
+obstacle now reads in its strongest form: \emph{the Type-II cost is a
+function of the overlap histogram, hence invariant under
+histogram-preserving relabellings; every objective with this invariance
+(every count, and every entropy/partition-functional built from the
+discrete partition cost) maps through the affine $n_0(S)$ identity and
+inherits the density-governed dilution $1+\Theta(D_{\mathrm{YES}}/m)$,
+collapsing to $1$ on sparse hard instances. The only functionals that
+escape (MESP/DPP $\log\det K_S$) lack this invariance and are therefore not
+the Type-II cost --- they are continuous Type-III-C costs.} This does
+\emph{not} weaken the prospect of OP4 closure by other means (a non-affine
+gap-amplifying $A_s$ that nonetheless encodes a hard count, vector~1; or an
+average-case route, vector~3, both still open); it only rules out the
+``swap the count for an entropy'' route by showing the swap leaves the
+Type-II invariance class. Verified in
+\texttt{scripts/verify/op4\_noncount\_entropy\_objective.py} (checks A, A$'$,
+B, B$'$, C: discrete entropy/enumerative objective is a count-functional and
+affine in $n_0(S)$; MESP $\log\det$ is a genuine non-count functional whose
+gap survives but is a continuous cost; the Type-II cost is a sum of
+log-binomials of integer counts with the wrong invariance group to be any
+DPP $\log\det$).
+
 \emph{What would constitute closure:} either a polynomial-time
 $O(\log N)$-approximation for general support selection (matching
 DkS upper bound), or APX-hardness with explicit constant under
