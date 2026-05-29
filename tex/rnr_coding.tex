@@ -12384,6 +12384,42 @@ information beyond marginal), TC $\geq N \delta = \Theta(N)$. Show
 that natural classes satisfy this with measurable $\delta$.
 \end{enumerate}
 
+\emph{Remark (attack vector~3 reduces to the chain rule; the open
+part is empirical $\delta$-estimation).} The inequality in
+attack vector~3 is \emph{not} an independent mathematical lemma: it
+is the multi-information chain rule
+$\mathrm{TC}(D_N) = \sum_{k=2}^{N} I(X_k; X_{1:k-1})$ (Cover \&
+Thomas 2006, already used in \S5.6 --- e.g.\ the tree-MRF bound
+``$I(X_u; X_v) \geq \varepsilon$ for every edge $\Rightarrow
+\mathrm{TC} \geq (N-1)\varepsilon$'' of Lemma 5.6g is the identical
+termwise-lower-bound move applied to sequential conditionals)
+combined with the trivial observation that a sum of $N-1$ terms each
+$\geq \delta$ is $\geq (N-1)\delta$. Two points of rigour, neither of
+which yields new theory. \emph{(i) Random vs.\ expected.} The
+quantity $D(P_{X_i \mid X_{<i}=x} \,\|\, P_{X_i})$ is a \emph{random}
+pointwise relative entropy (it depends on the realisation $x$ of
+$X_{<i}$, and can lie above or below its mean); the quantity that
+enters the chain rule is its expectation,
+$\mathbb{E}_{X_{<i}}\!\bigl[D(P_{X_i \mid X_{<i}=x} \,\|\, P_{X_i})\bigr]
+= I(X_i; X_{<i})$. The correct hypothesis is therefore
+$I(X_i; X_{<i}) \geq \delta$ (expected/mutual-information form);
+``$D \geq \delta$ for every realisation $x$'' is a strictly stronger
+\emph{sufficient} condition and is not what natural-data
+$\delta$-estimates measure. \emph{(ii) No gain over Lemma 5.6c.} For
+\emph{stationary} sources this lower bound is already subsumed by
+Lemma 5.6c ($\mathrm{TC} = N E - \delta_N$ with $E = H(X_1) - h(X)$),
+and the genuinely \emph{non-stationary} (e.g.\ AMS) cases are covered
+by Lemma 5.6f; in every case the inequality is the chain rule, so the
+bounded-$\delta$ framing contributes no information-theoretic content
+beyond \S5.6. The substantive open part of attack vector~3 is purely
+\emph{empirical}: exhibiting a non-combinatorial natural-data class
+with a \emph{measured} $\delta = \inf_i I(X_i; X_{<i}) > 0$ bounded
+away from $0$ (the Shannon-1951 English-text estimates
+$E_{\mathrm{bigram}} \approx 0.71$, $E_{\mathrm{en}} \approx 3.08$
+bits/letter of Lemma 5.6c are illustrative but not a proof for a
+fixed class). This is the §11 estimation question, not a missing
+lemma.
+
 \emph{What would constitute closure:} an explicit construction of a
 natural-data class (not combinatorially defined) with rigorously
 proven $\mathrm{TC}(D_N) = \Theta(N)$, plus an explicit polynomial-time
