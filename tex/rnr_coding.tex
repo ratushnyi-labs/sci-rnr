@@ -11659,10 +11659,16 @@ $d$-ary atoms, so the affine identity and its dilution apply verbatim,
 with the dilution exponent rising from $1$ to $d-1$. Attack vector~2 is
 therefore closed negatively. The unified obstacle now reads: \emph{any
 count-of-contained-substructures objective (DkS edges, DkSH hyperedges)
-maps to Type-II through the affine $n_0(S)$ identity, and any
-multiplicative source gap $g$ in the natural small-density regime
-dilutes to $1+\Theta\!\bigl((D_{\mathrm{YES}}/m)\bigr)=1+\Theta(g^{-(r-1)})$
-for $r$-uniform atoms.} Escaping OP4 hence requires a Type-II hardness
+maps to Type-II through the affine $n_0(S)$ identity, so the transferred
+multiplicative gap is always $1+\Theta(D_{\mathrm{YES}}/m)$ --- governed
+by the YES-instance \emph{density} $D_{\mathrm{YES}}/m$, not by the source
+gap factor. Whenever the hard instances are sparse ($D_{\mathrm{YES}}/m
+\to 0$), the transferred gap collapses to $1$.} For Applebaum's
+fractional-gap $p$-DSH family this density is exactly
+$D_{\mathrm{YES}}/m=p^{\,r-1}=g^{-(r-1)}$ for $r$-uniform atoms (gap
+$g=1/p$), so the larger the source gap the smaller the transferred gap,
+and the $r\ge 3$ hypergraph case dilutes worse than the $r=2$ DkS case
+by the extra exponent. Escaping OP4 hence requires a Type-II hardness
 source that is \emph{not} a contained-substructure count --- e.g.\ an
 entropy- or partition-functional objective whose minimiser does not
 reduce to $\max n_0(S)$ --- as already flagged in Lemma 5.7d, route~(c).
