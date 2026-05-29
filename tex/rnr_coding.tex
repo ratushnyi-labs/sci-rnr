@@ -3966,8 +3966,13 @@ unaffected by the dilution; the MULTIPLICATIVE-approximation gap
 suffers a regime-dependent dilution determined by the formula above.
 Manurangsi's ETH-hardness in the sparse-DkS regime does not transfer
 its full $n^{1/(\log\log n)^c}$ gap to Type-II under natural log-binomial
-$A_s$; only the dense-DkS regime preserves polynomial gap (open whether
-any natural Type-II family lies in this regime).}
+$A_s$; the dense-DkS regime preserves the dilution \emph{formula} but
+\textbf{not a transferable gap} --- the everywhere-dense regime it requires
+($m=\Theta(n^2)$, $k=\Theta(n)$) is exactly the Arora--Karger--Karpinski
+(STOC 1995) PTAS regime where DkS is itself $(1+\varepsilon)$-approximable,
+so no super-constant source gap survives (the natural Type-II family is
+therefore gap-capped at the constant $1+O(1/\log s)$ in both the dense and
+sub-dense regimes; resolved in \S13.4.4, status update 2026-05-29).}
 
 \emph{\textbf{Proof.}} The combinatorial identification of (a) follows
 directly from $n_0(S) = |\{j : T_j \subseteq S\}|$ when each atom
@@ -4008,17 +4013,28 @@ collapses the gap to $1 + o(1)$. \emph{Type-II is therefore approximation-
 robust against sparse-instance hardness inflation}; the information-
 theoretic cost flattens the gap.
 
-\emph{(II)} In the dense-DkS regime with normalised $A_s$ ($A_s(0) = 0$),
-the gap survives, but it is open whether natural Type-II problem families
-have this density structure. For the Lemma 5.7c construction (atoms = edges
-of a CLIQUE-derived graph), the natural density regime is sparse.
+\emph{(II)} In the dense-DkS regime with the idealised normalised $A_s$
+($A_s(0) = 0$), the dilution \emph{formula} (b2) does not collapse --- but
+this is illusory as a hardness source. First, $A_s(0) = 0$ requires a
+fully-contained atom to cost literally zero bits, which no genuine
+enumerative code achieves; the natural log-binomial has $A_s(0) = \log_2
+\binom{s}{2} > 0$, capping the saturation at the constant $A_s(1)/A_s(0) = 1
++ O(1/\log s)$. Second, and decisively, the everywhere-dense regime the
+formula needs ($D_{\mathrm{YES}}/m \to 1$, forcing $m = \Theta(n^2)$, $k =
+\Theta(n)$) is exactly the regime where DkS itself admits a $(1+\varepsilon)$
+PTAS (Arora--Karger--Karpinski, STOC 1995), so there is no super-constant
+source gap to transfer regardless of $A_s$. The dense-vs-sparse residual is
+resolved negatively in \S13.4.4 (status update 2026-05-29): \emph{no natural
+Type-II family yields a polynomial inapproximability}, since the dense
+regime is PTAS-approximable and the sub-dense regime dilutes to $1 + o(1)$.
 
-Closing OP1.5 fully requires either (a) improving DkS upper bound
-(currently $O(n^{1/4 + \varepsilon})$ Bhaskara et al.\ 2010,
-arXiv:1001.2891), (b) identifying a natural Type-II family in the
-dense-DkS-transferable regime, or (c) developing a Type-II-specific
-hardness reduction that bypasses the DkS dilution by a different
-information-theoretic structure (e.g., entropy of the support
+Closing OP1.5/OP4 fully now requires either (a) improving the DkS upper
+bound (currently $O(n^{1/4 + \varepsilon})$ Bhaskara et al.\ 2010,
+arXiv:1001.2891) to settle the worst-case adversarial intermediate-density
+regime, or (b) [\emph{now known to be a dead end}: \S13.4.4 shows the dense
+regime that would transfer a gap is PTAS-approximable], or (c) developing a
+Type-II-specific hardness reduction that bypasses the DkS dilution by a
+different information-theoretic structure (e.g., entropy of the support
 distribution rather than affine cost).
 
 For comparison, in the factorized regime of Section 5.3, per-position
@@ -13558,6 +13574,127 @@ affine in $n_0(S)$; MESP $\log\det$ is a genuine non-count functional whose
 gap survives but is a continuous cost; the Type-II cost is a sum of
 log-binomials of integer counts with the wrong invariance group to be any
 DPP $\log\det$).
+
+\emph{Status update 2026-05-29 (the dense-vs-sparse residual of
+Lemma 5.7d is resolved \textbf{negatively for the positive branch}: no
+natural Type-II family yields a polynomial inapproximability).} Lemma 5.7d
+left precisely one residual open: ``open whether any natural Type-II family
+lies in [the dense] regime'' where the multiplicative gap survives. We close
+it. The resolution has two prongs and a structural witness.
+
+\emph{(i) Two independent reasons the positive (dense) branch carries no
+polynomial gap for natural $A_s$.} \emph{Reason~A (unconditional, the primary
+resolution).} Reading the exact dilution formula of Lemma 5.7d(b),
+\[
+\rho_{\mathrm{Type\text{-}II}}
+= 1 + \frac{(D_{\mathrm{YES}} - D_{\mathrm{NO}})/m}
+            {\frac{A_s(1)}{A_s(1) - A_s(0)} - D_{\mathrm{YES}}/m},
+\]
+a \emph{polynomial-in-$N$} gap can arise only if the denominator $\to 0$,
+i.e.\ $D_{\mathrm{YES}}/m \to A_s(1)/(A_s(1) - A_s(0))$. For the
+\emph{idealised} normalised cost $A_s(0) = 0$ this threshold is $1$ (a
+diverging gap as $D_{\mathrm{YES}}/m \to 1$), but for the \emph{natural}
+log-binomial $A_s(0) = \log_2\binom{s}{2} > 0$ the denominator is bounded
+below by $A_s(0)/(A_s(1) - A_s(0)) = \Theta(\log s) > 0$ \emph{for all}
+$D_{\mathrm{YES}}/m \le 1$, so $\rho_{\mathrm{Type\text{-}II}}$ saturates at
+the \emph{constant} $A_s(1)/A_s(0) = 1 + O(1/\log s)$ \emph{regardless of the
+density}. Under the genuine code cost the gap is therefore $O(1)$ in
+\emph{every} regime, dense or sparse --- the dense regime cannot produce a
+polynomial gap at all. \emph{Reason~B (the idealised-$A_s$ escape hatch is
+also closed).} Even granting the non-physical $A_s(0) = 0$, the regime where
+its formula diverges is $D_{\mathrm{YES}}/m \to 1$ --- which is
+\emph{disjoint} from Manurangsi's hard regime $D_{\mathrm{YES}}/m \to 0$, so
+the diverging idealised ratio is never transferred from a Manurangsi-hard
+source. Concretely, $D_{\mathrm{YES}}/m \to 1$ splits into two sub-cases,
+both gap-free. \emph{(B1)} If additionally the graph is \emph{everywhere
+dense} ($m = \Theta(N^2)$, $k = s = \Theta(N)$, average degree $\Omega(N)$),
+then DkS \emph{itself} admits a polynomial-time $(1+\varepsilon)$-
+approximation: Arora--Karger--Karpinski (STOC 1995; JCSS 58(1):193--210,
+1999, \emph{Polynomial time approximation schemes for dense instances of
+NP-hard problems}) give an additive-$\varepsilon N^2$ PTAS for dense graph
+maximisation (average degree $\Omega(N)$, by exhaustive sampling), and since
+the dense optimum is $\max n_0(S) = \Theta(N^2)$ the additive guarantee
+converts to a multiplicative $(1+\varepsilon)$ factor (the DkS survey
+arXiv:2303.14467 and Manurangsi--Raghavendra, STACS 2016, arXiv:1507.04391,
+state DkS with $m = \Omega(N^2)$, $k = \Omega(N)$ has a PTAS). \emph{(B2)} If
+instead $m = o(N^2)$ (a \emph{sparse} edge set) yet $D_{\mathrm{YES}}/m \to
+1$, then a $(1-o(1))$-fraction of all edges concentrates inside the chosen
+$S$ --- a configuration to which \emph{no known super-constant DkS
+inapproximability applies}: Manurangsi's $N^{1/(\log\log N)^c}$ gap
+\emph{provably} requires the opposite regime $D_{\mathrm{YES}}/m \to 0$ (i.e.\
+$D_{\mathrm{YES}} = O(k^2)$, $m = \Theta(N^2)$, where the affine cost flattens
+it), and the Bhaskara et al.\ $O(N^{1/4+\varepsilon})$ algorithm is itself a
+$(1+o(1))$-approximation once $D_{\mathrm{YES}} = (1-o(1))m$ (the trivial
+upper bound $D_{\mathrm{NO}} \le m$ then forces ratio $D_{\mathrm{YES}}/
+D_{\mathrm{NO}} \le m/D_{\mathrm{NO}}$, and greedy recovery of the
+edge-concentrated set is observed to attain gap $\approx 1$, see
+\texttt{scripts/verify} PART~I Reason~B2). So in both sub-cases the idealised
+gap is transferred from a source carrying no \emph{established} super-constant
+gap. Either way: \emph{the b2 dilution formula is correct but transfers a gap
+that is non-existent (under natural $A_s$, Reason~A) or unestablished
+anywhere it could be non-trivial (under idealised $A_s$, Reason~B)}.
+
+\emph{(ii) Where natural instances actually sit: both regimes occur, and
+both are gap-free.} The OP1.5 optimisation object is the support of the
+\emph{joint law} of $M_v$ (the predictor's positive-probability position
+pairs), \emph{not} a single realised block. We measured its edge-density
+$m/\binom{N}{2}$ and scaling $m \sim N^\beta$ on real-ish $n$-gram streams.
+For any source with \emph{full marginal support} (the generic noisy case ---
+i.i.d.\ Zipf, order-1 Markov: $\beta \approx 2$, density $\to 1$) the support
+graph fills toward the complete graph as the corpus grows, so the natural
+instance \emph{is dense} ($b2$) --- resolved by prong~(i)'s PTAS. For a
+genuinely low-diversity finite corpus (the measured text-byte stream: $\beta
+\approx 0.18$, density $\to 0.02$ at $N = 256$) the support is \emph{sub-dense}
+($b1$) --- resolved by the Lemma 5.7d(b1) dilution to $1 + o(1)$. The
+$b1$-sparse \emph{hard} regime of Manurangsi requires the joint law to vanish
+on almost all pairs, a measure-zero structural condition not produced by a
+natural source. Either way the natural multiplicative gap is capped at the
+constant $1 + O(1/\log s)$.
+
+\emph{(iii) Structural witness (conditional).} Within a single realised
+block the positions are \emph{partitioned} by symbol class ($M_v = \{i : x_i
+= v\}$ pairwise disjoint, §5.3), so the realised ``co-occupied-position''
+graph is a \emph{disjoint union of cliques} (cluster graph), on which DkS is
+poly-time \emph{exact} (maximise $\sum_i \binom{x_i}{2}$ s.t.\ $\sum_i x_i =
+s$, $0 \le x_i \le c_i$; convexity of $\binom{\cdot}{2}$ puts the optimum at
+the largest-cliques-first extreme point). This is the \emph{conditional}
+object, distinct from the distributional optimisation, but it confirms that
+the partition structure of Type-II is intrinsically benign; the NP-hard
+instances of Lemma 5.7c require atoms that do \emph{not} form an equivalence
+relation (a class spanning a position-\emph{pair}, e.g.\ the $C_5$ test),
+which a single partition-based Type-II layer on natural data does not
+generate.
+
+\emph{Verdict.} The dense-vs-sparse dichotomy is resolved, and for the
+natural cost it is in fact \emph{moot}: \emph{no natural Type-II
+support-selection family yields a polynomial inapproximability}. The decisive
+fact is Reason~A --- under the genuine log-binomial $A_s$ the transferred
+ratio saturates at the constant $A_s(1)/A_s(0) = 1 + O(1/\log s)$ for
+\emph{every} density, so the question of which regime natural instances
+occupy does not even need to be answered to rule out a polynomial gap. The
+regime characterisation then confirms the picture concretely: the dense
+regime (generic full-support sources) is independently
+$(1+\varepsilon)$-approximable by Arora--Karger--Karpinski; the sub-dense
+regime (low-diversity sources) dilutes to $1 + o(1)$ by Lemma 5.7d(b1); the
+per-realisation structure is a cluster graph (poly-time exact). The Lemma
+5.7c \emph{decision} NP-hardness is unaffected (it lives on adversarial
+intermediate-density non-cluster graphs); the multiplicative
+\emph{inapproximability} does not bite for natural data. This narrows
+OP4/OP1.5: for the natural log-binomial $A_s$ the worst-case multiplicative
+gap is provably constant on natural inputs (Reason~A holds unconditionally),
+so the only remaining route to a genuine natural-instance hardness is
+average-case (attack vector~3, planted-clique), not worst-case multiplicative
+inapproximability. (Attack vector~1, a contrived gap-amplifying non-natural
+$A_s$, is not closed here, but is irrelevant to the \emph{natural} family by
+Reason~A.) Verified in
+\texttt{scripts/verify/op1\_5\_natural\_typeii\_density\_regime.py} (PART~I:
+dense-regime greedy/brute gap stays $\approx 1$, PTAS-consistent, the
+natural-$A_s$ saturation is a constant $1 + O(1/\log s)$, and Reason~B2
+sparse-concentrated instances are greedily recoverable with gap $\approx 1$;
+PART~IIa: per-realisation cluster-graph + exact convex-knapsack DkS $=$ brute
+over all small $(N,s)$; PART~IIb: distributional support density on
+i.i.d./Markov/text streams spans $b1$ and $b2$; PART~III: adversarial $C_5$
+non-cluster boundary).
 
 \emph{What would constitute closure:} either a polynomial-time
 $O(\log N)$-approximation for general support selection (matching
