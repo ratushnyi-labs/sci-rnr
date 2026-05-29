@@ -14351,6 +14351,69 @@ like-for-like guard, log-det value scale vs $\det$ vs rooted volume; T6: the
 rooted $(1+\epsilon)$ bridges to a $(1+o(1))$ value-scale factor only as the
 over-sampling ratio $s/d\to\infty$).
 
+\textbf{Remark 6.9d (The $\Sigma\succeq I$ / noise-floor calibration of the
+greedy guarantee is \emph{necessary}, not cosmetic: a concrete failure of the
+raw $e/(e-1)$ bound below the entropy threshold).} The greedy
+$\tfrac{e}{e-1}$ guarantee of Remark 6.9c and the additive-regret transfer of
+Corollary 6.9b are both stated on a \emph{monotone, non-negative} log-det set
+function --- in Remark 6.9c via the calibration $\Sigma\succeq I$ (Ohsaka's
+Thm.\ 3.2 frame, monotone by Sharma et al.\ 2015 Prop.\ 2), in Corollary 6.9b
+via the noise floor $\sigma^2\ge\tfrac1{2\pi e}$ that makes the
+differential-entropy objective $M(T)=\tfrac12\log_2\det(2\pi e\,\Sigma_T)$
+non-negative. It is worth recording, against the temptation to drop the
+calibration as a harmless normalisation, that it is \emph{load-bearing}: the
+Nemhauser--Wolsey--Fisher ratio is multiplicative and a multiplicative bound is
+not invariant under the additive shift that calibration performs, so on the
+\emph{raw} (uncalibrated) entropy the $(1-\tfrac1e)$ guarantee can fail
+outright.
+
+\emph{Counterexample (single block, $N=3$, $s=1$, $t=2$).} Take
+$A:=2\pi e\,\Sigma=\bigl(\begin{smallmatrix}1.1&0&\frac1{\sqrt2}\\
+0&1.1&\frac1{\sqrt2}\\ \frac1{\sqrt2}&\frac1{\sqrt2}&1.2\end{smallmatrix}\bigr)$,
+with spectrum $\{0.149,\,1.1,\,2.151\}$, so $\Sigma\succ0$ but
+$\lambda_{\min}(\Sigma)=0.149/(2\pi e)\approx0.0087<\tfrac1{2\pi e}$ --- the
+sub-threshold regime. Maximising the raw $M(T)=\tfrac12\log_2\det A_T$ over
+$|T|=2$: greedy first takes index $3$ ($M(\{3\})=\tfrac12\log_2 1.2$, the
+largest singleton), then is forced into $\det A_{\{1,3\}}=\det A_{\{2,3\}}=
+1.1\cdot1.2-\tfrac12=0.82$, giving $M(T_{\mathrm{greedy}})=\tfrac12\log_2
+0.82\approx-0.143$; but the optimum is $T^\star=\{1,2\}$ with $\det A_{\{1,2\}}=
+1.21$, $M(T^\star)=\tfrac12\log_2 1.21\approx+0.137$. The raw bound
+$M(T_{\mathrm{greedy}})\ge(1-\tfrac1e)M(T^\star)$ \emph{fails}: the left side is
+$-0.143$, the right $+0.087$. Equivalently the na\"ive additive transfer with
+the \emph{raw} optimum, $C_{\mathrm{greedy}}-C^\star\le\tfrac1e M(T^\star)$,
+also fails ($0.281\not\le0.050$). After the calibration shift $g(T)=M(T)+\tfrac{|T|}2
+\log_2\alpha$ with $\alpha=1/\lambda_{\min}(A)$ (so $\lambda_{\min}(\alpha A)=1$,
+$g\ge0$ monotone) the guarantee is restored --- $g(T_{\mathrm{greedy}})\approx
+2.606\ge(1-\tfrac1e)g(T^\star)\approx1.825$, and the additive deficit obeys
+$C_{\mathrm{greedy}}-C^\star=g(T^\star)-g(T_{\mathrm{greedy}})\le\tfrac1e
+g(T^\star)$ with the \emph{calibrated} $g(T^\star)$ --- confirming that the
+deficit is shift-invariant but the \emph{bound} must use the non-negative
+$g(T^\star)$, never the raw $M(T^\star)$.
+
+\emph{Two consequences, both honest caveats on the surrounding results.}
+\emph{(i)} The monotonicity condition is \emph{sufficient, not necessary}: a
+strongly-correlated $\Sigma$ with $\lambda_{\min}<\tfrac1{2\pi e}$ can still
+have every conditional variance $\mathrm{Var}(X_i\mid X_T)\ge\tfrac1{2\pi e}$
+and hence a monotone $M$ (e.g.\ $\Sigma=\bigl(\begin{smallmatrix}100&99.95\\
+99.95&100\end{smallmatrix}\bigr)$ has $\lambda_{\min}=0.05<\tfrac1{2\pi e}$ yet
+$\mathrm{Var}(X_2\mid X_1)=0.0999>\tfrac1{2\pi e}$, so $M$ is monotone). The
+exact condition is ``all conditional variances $\ge\tfrac1{2\pi e}$'';
+$\Sigma\succeq\tfrac1{2\pi e}I$ is the clean sufficient proxy used in
+Corollary 6.9b / Remark 6.9c. \emph{(ii)} The calibration is always available
+(scale up; it preserves greedy choices and the size-$t$ optimum because it adds
+a constant to every size-$t$ set and to every per-step marginal gain), so the
+guarantees of Corollary 6.9b and Remark 6.9c hold as stated --- the present
+remark only certifies that their stated hypothesis cannot be silently removed.
+Verified in
+\texttt{scripts/verify/remark\_6\_9d\_calibration\_necessity.py} (R1: the
+$N=3$ raw bound fails and the calibrated bound holds; R2: across random
+sub-threshold $\Sigma$ the raw $(1-\tfrac1e)$ bound fails on a positive
+fraction while the calibrated one always holds; R3: the conditional-variance
+condition is the exact monotonicity boundary, with the $\lambda_{\min}\ge
+\tfrac1{2\pi e}$ proxy sufficient but not necessary; R4: the additive deficit
+is shift-invariant and bounded by $\tfrac1e g(T^\star)$ on the calibrated
+scale).
+
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
 
