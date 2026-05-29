@@ -12169,6 +12169,31 @@ max-degree-3 instances with $K_{\rm NO} - K_{\rm YES}$ equal to the
 cover gap; the $O(1/c_f)$ skeleton dilution with $c_f \geq 196$;
 and the Casel Thm~11/12 dichotomy, all reproduced numerically).
 
+\emph{Status update 2026-05-29 (SGP-constant literature survey:
+the residual requires a sharper constant than any known).} The
+ceiling-discontinuity residual closes if the symbol-count SGP
+inapproximability constant exceeds $1 + 1/\log_2 N$ (so that a single
+ceiling jump cannot erase it). A survey of the SGP-hardness literature
+2005--2026 confirms no such constant is known: Charikar et al.\ 2005
+give $\gamma_{\rm SGP} = 8569/8568$ (inheriting Berman--Karpinski
+$145/144$ diluted by the $15|V|+3|E|$ grammar encoding, factor
+$\approx 59.5$); the fixed-alphabet sharpenings (Casel et al.\ 2020;
+Arpe--Reischuk-style $24c$ and Bannai et al.\ $6c$ alphabet-transfer
+multipliers) all preserve a constant that must still descend to
+$\approx 1.000117$ for the binary NP-hardness statement, hence remain
+below $1 + 1/\log_2 N$ for every $N < 2^{8568}$. No 2005--2026 result
+supplies a constant ($N$-independent) multiplicative gap for SGP, and
+direct gap amplification on the SGP objective is blocked because
+grammar size does not compose multiplicatively under instance product
+(unlike CSP value under parallel repetition). \emph{Net:} the residual
+of OP2(a) is precisely a sharper SGP inapproximability constant than
+Charikar's --- itself a $20$-year open problem in the SGP literature,
+independent of the RNR framework. Verification script:
+\texttt{scripts/verify/op2a\_sgp\_constant\_survey\_check.py}
+(reproduces $\gamma_{\rm SGP}$, the $1/144 \to 1/8568$ encoding
+dilution, the $1/8568 < 1/\log_2 N$ frontier for all practical $N$,
+and the alphabet-transfer multipliers, all numerically).
+
 \emph{What would constitute closure:} a polynomial-time
 $(\gamma_{\rm bit} - \varepsilon)$-approximation algorithm for some
 explicit $\gamma_{\rm bit} > 1$, OR a polynomial-time reduction
