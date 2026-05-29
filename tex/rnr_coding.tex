@@ -1370,6 +1370,102 @@ learned-code labeling problem beyond Theorem 4.3 + Remark 4.3c
 (inverse-linear gap of $1 + 1/(n-1)$); a sound constant-gap reduction
 into the Hamming-restricted geometry is left as an open problem.
 
+\textbf{Remark 4.3d (Gap-locus characterization: the $E_{12}$
+obstacle is the missing dilation-$1$/robust-NO promise gap, not affine
+dilution and not row-stochasticity).}
+\emph{We isolate, exactly, what a constant-gap reduction into $E_{12}$
+must supply, and show that the failure of the known candidate sources
+(Remark 4.3c) is not the affine-dilution / row-stochastic obstacle that
+blocks the continuous-cost open problems (cf.\ the Type-II support and
+Type-III-C dictionary objectives), but a separate ``no robust NO
+promise'' barrier inherited from the metric geometry of partial cubes.}
+
+\emph{(i) Exact gap identity.} For any symmetric nonnegative $F$ write
+the off-diagonal mass $w = \sum_{i<j} F_{ij}$, and recall every
+injective labeling sends each support edge to Hamming distance
+$\geq 1$. Hence the ``all support edges at distance one'' value $2w$ is
+a universal lower bound on $C_F$, attained iff the weighted support
+graph $G_F$ is a \emph{dilation-$1$} (subgraph) embedding into $Q_m$.
+Writing $\mathrm{OPT} = \min_E C_F(E)$, the multiplicative ratio
+\[
+\rho(F) \;=\; \frac{\mathrm{OPT}}{2w}
+\;=\; 1 \;+\; \frac{1}{2w}\!\!\sum_{i<j} 2F_{ij}\,
+\bigl(d_H(E^\star(i),E^\star(j)) - 1\bigr)
+\;=\; 1 + \frac{\text{forced weighted excess}}{2w},
+\]
+so the inapproximability factor is governed \emph{solely} by the
+fraction of weighted edge mass that every injective labeling is forced
+to push beyond distance one. A constant-gap inapproximability for
+$E_{12}$ is therefore equivalent to an NP-hard promise gap between
+\textbf{(YES)} $G_F$ embeds at dilation $1$, cost $=2w$, and
+\textbf{(NO)} every injective labeling stretches a \emph{constant
+fraction} $\varepsilon_0 > 0$ of the weighted mass, cost
+$\geq (1+\varepsilon_0)\,2w$.
+
+\emph{(ii) Row-stochasticity is not the obstacle.} The ratio
+$\rho(F)$ is invariant under global rescaling of $F$: replacing the
+row-stochastic edge weight $1/\Delta$ by a uniform weight $1$ multiplies
+both $\mathrm{OPT}$ and $2w$ by $\Delta$ and leaves $\rho$ unchanged.
+Row-stochasticity only enforces the mass bound $w \leq n/2$; it neither
+caps the forced excess fraction nor forces it to vanish. This is in
+pointed contrast to the continuous-relaxation obstacles elsewhere in
+the paper, where normalization of an \emph{affine} cost dilutes any
+multiplicative source gap; here the cost is a quadratic
+(assignment-type) functional of $E$, the gap survives normalization,
+and the per-instance excess fraction can be a genuine constant
+(e.g.\ $K_{2,4}$ at $m=3$ gives $\rho = 3/2$, and $K_{3,3}$ at $m=3$
+gives $\rho = 13/9$; both are normalization-invariant, verified in
+\texttt{scripts/verify/remark\_4\_3d\_e12\_constant\_gap\_dilution.py}).
+
+\emph{(iii) Why Wagner-Corneil dilutes specifically, and why the
+candidate amplifications fail.} The Wagner-Corneil family is a
+\emph{tree}: it is always dilation-$1$ embeddable when $2^m \geq n$,
+and a NO instance arises only from the \emph{packing} constraint that
+$m$ is too small to seat all neighbors of a high-degree vertex at
+distance one. The forced excess is then a single bumped edge of weight
+$1/\Delta$ over a baseline of $\Theta(n/\Delta)$, giving the additive
+$+2/\Delta$ and hence $\rho = 1 + 1/(n-1) \to 1$. Amplifying this gap
+requires a family that is simultaneously (a) dilation-$1$ embeddable in
+the YES case (so a YES instance exists at all) and (b) robustly
+non-embeddable --- constant fraction stretched --- in the NO case. The
+two requirements collide with two literature facts. First, the class of
+dilation-$1$ embeddable graphs is exactly the \emph{partial cubes}
+(isometric--subgraph case) / hypercube subgraphs, recognizable in
+polynomial time (Djokovi\'c 1973; Winkler 1984; quadratic-time
+algorithm of Eppstein 2008); so the embeddability predicate alone is
+not NP-hard, and any hardness must come (as in Wagner-Corneil) from the
+\emph{dimension/packing} side, where the slack is inherently
+$O(1/n)$. Second, dense graphs that \emph{would} force a constant
+stretch fraction (complete bipartite, expanders) are \emph{never}
+dilation-$1$ embeddable for any $m$ --- e.g.\ $K_{2,3}$ is not a
+hypercube subgraph in any dimension --- so they possess no YES instance
+and yield a ratio between two stretched configurations rather than a
+promise gap from the $2w$ baseline. This is the same degeneracy that
+prevents the no-constant-approximation status of Minimum Linear
+Arrangement (Ambühl-Mastrolilli-Svensson 2011, no PTAS under
+subexponential-ETH) from being a clean constant multiplicative-gap APX
+statement, and it explains why the lattice/coding hardness of NCP and
+CVP (Arora-Babai-Stern-Sweedyk 1997; Dinur-Kindler-Raz-Safra 2003),
+though constant- and superconstant-hard, does not transfer: those
+problems minimize distance from a fixed received word to a linear
+\emph{code} (a coset), not a pairwise quadratic sum over an
+\emph{injective labeling} into $Q_m$, and no gap-preserving map between
+the two geometries is known.
+
+\emph{(iv) Verdict (NEGATIVE, with a sharpened locus).} The
+constant-gap inapproximability of $E_{12}$ (OP4) remains open, and the
+obstruction is now localized: it is \emph{neither} affine dilution
+\emph{nor} the row-stochastic promise, but the absence of a
+gap-amplified hypercube-embedding source exhibiting a YES dilation-$1$
+instance together with a constant-fraction robust-NO instance. By
+(i)--(ii) any such source immediately yields the constant gap; by (iii)
+the natural candidates fail for structurally distinct reasons
+(partial-cube tractability on the embeddable side, absence of a YES
+baseline on the dense side). Constructing a robust gap version of the
+hypercube subgraph embedding problem --- or a gap-preserving reduction
+from Label Cover that lands in the injective-into-$Q_m$ geometry while
+preserving a dilation-$1$ YES case --- is the precise remaining step.
+
 \textbf{4.7 Worked numerical example}
 
 Consider a block of $N = 4096$ bytes drawn from a source where the
