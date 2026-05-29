@@ -13156,6 +13156,126 @@ $O(\log N)$-approximation for general support selection (matching
 DkS upper bound), or APX-hardness with explicit constant under
 P $\neq$ NP or a standard cryptographic assumption.
 
+\emph{Status update 2026-05-29 (the non-count gap's genuine home:
+\textbf{Type-III-C continuous} support selection \emph{is} APX-hard via
+MESP in the fixed-field regime --- a positive transfer in the regime that
+mirrors Theorems 6.7/6.8, with free-field absorption re-blocking the rest;
+\textsc{Partial}).} The previous update closed the non-count route
+\emph{within Type-II} and observed that the genuine non-count gap
+``belongs to the continuous (Type-III-C) optimal-support question, which is
+a \emph{different} open problem from OP4.'' We now attack that question
+directly. \emph{This is not a relabelling of the Type-II finding:} there
+the log-det was a foreign functional that does not match the partition cost
+(the forbidden substitution); here the log-det \emph{is} the actual
+Type-III-C coding cost, so the import is legitimate.
+
+\textbf{Lemma 6.9 (Type-III-C continuous support selection is APX-hard via
+MESP in the fixed-field regime).} \emph{Let $X\sim\mathcal N(0,\Sigma)$ be
+the Gaussian entropy field of a Type-III-C source on $\mathbb R^N$
+(Definition 3.5; the continuous-latent / bits-back limit of \S 1.2 and
+Theorem 6.6), with $\Sigma$ supplied by the model description (the
+continuous analogue of the fixed predictor/dictionary of Theorems
+6.7/6.8). The \emph{fixed-field support-selection problem} is: choose a
+coded set $S$, $|S|=s$, coding $X_S$ and reconstructing $X_{\bar S}$ from
+the field model, so as to minimise the per-block residual rate. Then:}
+\begin{enumerate}
+\item \emph{(The cost is a log-det.) By Theorem 6.6 the bits-back
+Type-III-C rate is $H_D(X\mid Y)+\mathrm{KL}$, and for the Gaussian field
+the residual of coding $X_S$ given $X_{\bar S}$ is the conditional
+differential entropy}
+\[
+h(X_S\mid X_{\bar S}) \;=\; \tfrac12\log_2\det\!\bigl(2\pi e\,
+\Sigma_{S\mid\bar S}\bigr),\qquad
+\Sigma_{S\mid\bar S}=\Sigma_{SS}-\Sigma_{S\bar S}\Sigma_{\bar S\bar
+S}^{-1}\Sigma_{\bar S S}
+\]
+\emph{(Schur complement; Cover--Thomas 2006, Thm 8.4.1). The marginal
+selection variant $\min_{|S|=s}\tfrac12\log_2\det\Sigma_S$ is the Gaussian
+differential entropy, equal to the total-correlation log-det of Lemma 5.6j
+($\mathrm{TC}=\tfrac12[\sum_i\log_2\Sigma_{ii}-\log_2\det\Sigma]$).}
+\item \emph{(The selection is MESP / $0$-$1$ D-optimal.) Minimising this
+conditional entropy over size-$s$ supports is exactly the maximum-entropy
+sampling / $D$-optimal design objective on principal submatrices of
+$\Sigma$ (Ko--Lee--Queyranne, \emph{Oper.\ Res.}\ 43(4):684--691, 1995),
+which is NP-hard, and which the unconstrained log-determinant maximisation
+form makes NP-hard to approximate within $5/4$ and the size-constrained
+monotone form within $1+10^{-10^{13}}$ (Ohsaka, \emph{JAIR} 2022; AISTATS
+2021). Hence the fixed-field Type-III-C support-selection problem inherits
+the MESP/Ohsaka multiplicative inapproximability: it is APX-hard with
+constant $5/4$ (unconstrained log-det form) under $\mathrm P\neq\mathrm{NP}$.}
+\item \emph{(The transfer is legitimate, unlike Type-II.) The gap is
+genuinely non-count: two supports with identical induced correlated-pair
+counts have different $\log\det\Sigma_S$, so the Lemma 5.7c affine $n_0(S)$
+identity does not apply and the gap does not dilute. Crucially the log-det
+here \emph{is} the Type-III-C cost (item 1), not an arbitrary functional
+substituted for the partition cost; the anti-tautology objection that
+sinks the Type-II import (no kernel $K$ makes the Type-II cost a $\log\det
+K_S$) does not arise, because no substitution is performed.}
+\item \emph{($\Sigma$-restriction does not kill the hardness.) For the
+Lemma 5.6j manifold form $\Sigma=U\Lambda U^T+\sigma^2 I_N$, the MESP gap
+survives in the informative regime $\bar\lambda\gg N\sigma^2$ (high SNR):
+the per-coordinate spread of $\log\det\Sigma_S$ is $\Theta(1)$ and collapses
+only as $\sigma^2\to\infty$ (when $\Sigma\to\sigma^2 I$ and all subsets tie).
+This is consistent with MESP being NP-hard even for rank-deficient
+covariance, so the low-rank-plus-noise restriction does not reduce the
+complexity at high SNR.}
+\end{enumerate}
+
+\emph{Why this is \textsc{Partial} and not a full closure of the free-field
+problem (the predictor-absorption boundary).} Lemma 6.9 establishes
+hardness for the \emph{fixed-field} problem --- $\Sigma$ given, the encoder
+selecting only $S$. The full RNR Type-III-C cost is $L(M)+L(D)+L(R\mid Y)$
+with $M$ \emph{free}, and there the predictor-absorption obstacle of Remark
+6.8b re-enters in a precise, quantified form. A free $M$ may condition on a
+learned side channel $Y$ ($X\mid Y$ Gaussian with conditional covariance
+$\Sigma_{\mid Y}$), shrinking the per-block residual $\tfrac12\log_2\det
+\Sigma_{S\mid Y}$; but by the mutual-information identity $h(X_S)=h(X_S\mid
+Y)+I(X_S;Y)$ \emph{every bit removed from the residual is paid, one for one,
+in the information $I(X;Y)$ that $M$ must describe} (no free lunch /
+data-processing). The consequence is a clean dichotomy:
+\begin{itemize}
+\item \emph{Single-block / non-amortised regime} (\S 3.4, single-block
+case): $L(M)$ is paid in full, so the total never drops below the marginal
+entropy floor, and the only lever is the \emph{choice} of $S$ --- which is
+MESP. The $5/4$ gap survives. Lemma 6.9 holds verbatim.
+\item \emph{Amortised regime} (\S 3.4, the regime RNR assumes for the main
+results): $L(M)/m\to0$, so a free $M$ can pay the one-time $I(X;Y)$ to drive
+the per-block residual towards zero \emph{symmetrically across all field
+realisations}, diluting the multiplicative gap --- exactly the Remark 6.8b /
+Lemma 13.4.2a absorption, now realised continuously as ``$M$ learns the
+field covariance once.'' The fixed-field reduction does not transfer to the
+free-field amortised cost.
+\end{itemize}
+This is the \emph{same} restricted-versus-unrestricted boundary already
+present for the discrete dictionary: Theorem 6.8 is APX-hard with the fixed
+predictor, while the free-predictor OP2(b) is open precisely because of
+absorption (Remark 6.8b). Lemma 6.9 is the continuous (Type-III-C, log-det)
+counterpart of Theorem 6.8's discrete (SGP, symbol-count) restricted
+APX-hardness: \emph{the genuine non-count gap that L showed cannot live in
+Type-II does live here, and it is captured exactly when --- and only when ---
+the field model is fixed.} Whether the free-field amortised Type-III-C
+log-det problem is APX-hard is therefore \emph{the OP2(b) question for the
+continuous objective}, and is blocked by the same absorption obstacle; it is
+not closed by the present lemma.
+
+\emph{Verdict: \textsc{Partial}.} A genuine Type-III-C APX-hardness (MESP,
+constant $5/4$ under $\mathrm P\neq\mathrm{NP}$; Ohsaka 2022) holds for the
+fixed-field support-selection problem and survives the Lemma 5.6j
+$\Sigma$-restriction at high SNR, legitimately (the log-det is the actual
+cost, not a substituted functional). It does \emph{not} extend to the
+free-field amortised regime, where continuous predictor-absorption (Remark
+6.8b, Lemma 13.4.2a) dilutes the gap. The result locates the non-count gap's
+true home (Type-III-C, as L predicted), realises it as a hardness theorem in
+the fixed-field regime, and pins the residual obstacle to free-field
+absorption --- the continuous mirror of OP2(b). Verified in
+\texttt{scripts/verify/lemma\_6\_9\_typeiiic\_mesp\_support\_selection.py}
+(C1: the cost is a Schur-complement log-det and the Lemma 5.6j TC identity
+holds; C2: the selection has a genuine multiplicative MESP spread; C3: the
+gap is non-count, defeating the affine identity; C4: the no-free-lunch
+conservation $h_{\mathrm{marg}}=h_{\mathrm{cond}}+I(X;Y)$, giving the
+single-block-survives / amortised-re-blocks dichotomy; C5: the Lemma 5.6j
+restriction keeps the gap at high SNR).
+
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
 
