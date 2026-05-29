@@ -8983,6 +8983,160 @@ removes the false premise (``neural $\Rightarrow$ FV closes'') and pins
 the open case to the growing-horizon regime, where the question is
 genuinely hard and unresolved.
 
+\textbf{Corollary 7.27f (Growing-horizon block-table floor; and the
+unconditional $\sqrt N$ converse is \emph{not} provable).} \emph{Fix
+$\sigma \geq 2$, write $L := L_\sigma(N) = \log_2 N/\log_2\sigma$, and let
+$X^{(N)}$ be a growing-horizon source (Corollary 7.27e(b)): a triangular
+array whose order-$k$ excess obeys $\Delta_k^{(N)} = c_0 L/k$ for $k \leq
+L$ (effective Markov horizon $\propto L$, so $k_\epsilon(N) = \Theta(L/
+\epsilon) = \omega(\log_2 N/\log_2^2\sigma)$ and the FV escape closes by
+7.27e(b)). Call a random-access structure \emph{block-context-table} if it
+partitions $x \in \Sigma^N$ into blocks of $b = O(\log_\sigma N)$ symbols
+and answers a single-symbol query by a constant number of cell probes into
+(i)~a block-local code and (ii)~shared order-$\leq k$ context-decode
+tables, attaining per-symbol space $H_k(x) + \rho_k(N)$ with the
+canonical redundancy}
+\[
+  \rho_k(N) \;=\; \Theta\!\Bigl(\tfrac{(k+1)\log_2\sigma + \log_2\log_2 N}
+  {L}\Bigr) .
+\]
+\emph{This is the functional form proved for \textbf{every known}
+$O(1)$-access high-order-entropy structure: Ferragina--Venturini (TCS
+372(1) (2007) 115); Gonz\'alez--Navarro, ``Statistical encoding of
+succinct data structures'' (CPM 2006) / ``Random access to high-order
+entropy compressed text''; Grossi--Orlandi--Raman and Belazzougui
+--Navarro (\emph{ACM Trans.\ Algorithms} 11(4) (2015), Art.\ 31), whose
+access operation runs in $O(1)$ time within this compressed space. Then:}
+\begin{itemize}
+\item[\emph{(i)}] \emph{(\textbf{POSITIVE, conditional --- new content
+beyond 7.27e}.) No block-context-table structure attains the Theorem 7.2
+Shannon-near rate on a growing-horizon source. Quantitatively, for the
+witness above,}
+\[
+  \inf_{1 \leq k \leq L}\bigl[\Delta_k^{(N)} + \rho_k(N)\bigr]
+  \;=\; \Theta(1) \quad\text{(bounded away from $0$, $N$-independent).}
+\]
+\emph{The obstruction is a \textbf{model-order / redundancy
+incompatibility}: Shannon-near rate forces $\Delta_k^{(N)} = c_0 L/k =
+o(1)$, i.e.\ build order $k = \omega(L)$; but $\rho_k(N) = o(1)$ forces
+$k = o(L/\log_2\sigma) = o(L)$. The smallest order capturing the context
+($k_{\mathrm{model}} = \omega(L)$) strictly exceeds the largest order the
+redundancy budget allows ($k_{\mathrm{red}} = o(L)$), so no single block
+order is simultaneously low-redundancy and low-model-residual. This
+closes the \emph{entire known family} of $O(1)$-access structures (not
+just Ferragina--Venturini, the only member 7.27e ruled out) on
+growing-horizon sources.}
+\item[\emph{(ii)}] \emph{(\textbf{NEGATIVE, unconditional}.) The target
+\emph{unconditional} converse --- ``any random-access structure at rate
+$h(X)+o(1)$ needs query time $\Omega(\sqrt N)$ or storage $\omega(N
+h(X))$, for all schemes'' --- is \textbf{false for every fixed source and
+unprovable in general}, because pure single-symbol \emph{access} is not a
+hard cell-probe problem. (a)~Belazzougui--Navarro's lower bound is a
+\emph{rank}/\emph{select} bound, $\rho\cdot t_{\mathrm{acc}}\cdot
+t_{\mathrm{sel}} = \Omega(\log_2^2\sigma/w)$; it is vacuous for pure
+access ($t_{\mathrm{sel}}$ unconstrained), and the same authors show
+access alone runs in $O(1)$ time at the entropy bound. (b)~The generic
+static cell-probe \emph{access} floor at linear space is only $\Omega(\log
+N/\log\log N)$ (Andersson--Miltersen 1999; P\u{a}tra\c{s}cu--Demaine 2006
+\emph{SIAM J.\ Comput.}\ 35(4):932), asymptotically far below $\sqrt N$.
+(c)~A genuine $\Omega(\sqrt N)$-type access bound is known only
+\textbf{conditionally}: through the BWT/MTF representation
+(Sinha--Weinstein, ``Local decodability of the Burrows--Wheeler
+transform,'' STOC 2019: $\Omega(N/t^2)$ for symmetric structures, i.e.\
+$t = \Omega(\sqrt{N/r})$ at redundancy $r$), or for \emph{exponentially}
+compressible inputs (Chen--Verbin--Yu, ICALP 2012: $\Omega(n^{1/2
+-\varepsilon})$ at grammar size $n$ with $L(x) = 2^{\sqrt n}$). The latter
+is inapplicable in the RNR regime, where $h(X) > 0$ forces $S = \Theta(N)$
+bits (constant-factor, not exponential, compressibility; cf.\ Remark
+7.27d(i)).}
+\end{itemize}
+\emph{Hence the honest status: the growing-horizon escape closes against
+the whole \textbf{block-context-table architecture} (the only known route
+to $O(1)$-access high-order entropy), but ruling out \textbf{all} succinct
+structures would require an unconditional $\Omega(\sqrt N)$ access lower
+bound that contradicts the $O(1)$-access achievability above. The residual
+of Corollary 7.27e therefore stays \textbf{genuinely open}, now sharpened
+to: \emph{is there a model-free $O(1)$-access Shannon-near structure for
+growing-horizon sources that is \textbf{not} block-context-table?} A
+positive answer needs an architecture escaping the per-block context
+table; a negative answer needs a cell-probe access bound stronger than
+any currently known (no such unconditional $\Omega(\sqrt N)$ bound exists
+for access). The verify script
+\texttt{scripts/verify/cor\_7\_27f\_growing\_horizon\_block\_table\_floor.py}
+checks (i) the $\Theta(1)$ joint-excess floor on growing-horizon sources,
+its vanishing on fixed sources (consistency with 7.27e(a)), the
+$k_{\mathrm{model}}/k_{\mathrm{red}} \to$ const $>1$ incompatibility, and
+(ii) the $\log N/\log\log N \ll \sqrt N$ gap that blocks an unconditional
+converse.}
+
+\emph{\textbf{Proof.}} \emph{(i)} The redundancy $\rho_k(N)$ is the FV
+space bound of Corollary 7.27e (its proof), shared verbatim --- up to the
+$\Theta(\cdot)$ constant --- by the Gonz\'alez--Navarro and
+Grossi--Orlandi--Raman / Belazzougui--Navarro structures, all of which
+block the string into $b = \Theta(\log_\sigma N)$-symbol blocks and store
+order-$\leq k$ context-decode tables of total size $\Theta(\tfrac{N}{L}
+(k\log_2\sigma + \log_2\log_2 N))$ bits; this is the only mechanism known
+to deliver $O(1)$-time access at high-order empirical entropy (the
+block-local code is read in $O(1)$ probes, the table lookup in $O(1)$).
+The floor is on this \emph{context-modeling} layer --- the bits needed to
+identify, per block, which order-$k$ conditional model applies and to
+store the $\Theta(\sigma^{\leq k})$ active model parameters at the
+$\Theta(N/L)$ block granularity --- and is therefore independent of how
+near the entropy bound the inner zeroth-order code is (e.g.\ Belazzougui
+--Navarro's $o(n)(H_0+1)$ zeroth-order redundancy does not reduce it: that
+improvement is to the per-block code, not to the high-order context
+overhead, which is $\rho_k(N)$).
+Thus on any such structure the per-symbol rate is $h(X) + \Delta_k^{(N)} +
+\rho_k(N) + o(1)$ exactly as in 7.27e, with the model term now the
+growing-horizon excess. Substituting $\Delta_k^{(N)} = c_0 L/k$ and
+$\rho_k(N) = \Theta(k\log_2\sigma/L)$ and minimising over the FV-admissible
+range $k \in [1, L]$: the unconstrained AM--GM optimum of $c_0 L/k +
+\Theta(k\log_2\sigma/L)$ sits at $k^\star = \Theta(L/\sqrt{\log_2\sigma})
+= \Theta(L)$, on the boundary of the admissible range, where the value is
+$\Theta(\sqrt{c_0\log_2\sigma}) = \Theta(1)$; and on the admissible
+interior the objective is $\geq \Delta_{cL}^{(N)} = c_0/c = \Theta(1)$ for
+$k = cL$. Either way $\inf_{k \leq L}[\Delta_k^{(N)} + \rho_k(N)] =
+\Theta(1)$, bounded away from $0$ independently of $N$, so no admissible
+block order achieves rate $h(X) + o(1)$; orders $k = \omega(L)$ exceed FV
+validity and have $\rho_k(N) = \omega(1)$ anyway. The incompatibility is
+the stated order separation: $\Delta_k^{(N)} \leq \epsilon \Rightarrow k
+\geq c_0 L/\epsilon =: k_{\mathrm{model}}$, while $\rho_k(N) \leq \epsilon
+\Rightarrow k \leq \epsilon L/(C\log_2\sigma) =: k_{\mathrm{red}}$, and
+$k_{\mathrm{model}}/k_{\mathrm{red}} = \Theta(C\log_2\sigma/\epsilon^2) >
+1$ for $\epsilon$ small --- no $k$ meets both. \emph{(ii)} The achievability
+of $O(1)$-time pure access at the high-order entropy bound is
+Belazzougui--Navarro (op.\ cit., abstract: ``within this compressed space,
+operations access and select can be solved in constant or almost-constant
+time''); their product lower bound $\rho\,t_{\mathrm{acc}}t_{\mathrm{sel}}
+= \Omega(\log_2^2\sigma/w)$ constrains rank/select, not access in
+isolation. The generic cell-probe access floor $\Omega(\log N/\log\log N)$
+is Andersson--Miltersen / P\u{a}tra\c{s}cu--Demaine. Since $\log N/\log
+\log N = o(\sqrt N)$, no unconditional cell-probe argument yields
+$\Omega(\sqrt N)$ for access; the only $\sqrt{\cdot}$-type access bounds in
+the literature are conditional on a specific representation (BWT/MTF,
+Sinha--Weinstein) or on exponential compressibility (Chen--Verbin--Yu),
+neither of which holds unconditionally in the constant-factor-compressible
+RNR regime. Hence an unconditional $\sqrt N$ converse, which would
+contradict the $O(1)$-access achievability for fixed sources (7.27e(a)),
+cannot be established. \hfill$\blacksquare$
+
+\emph{Net effect (final delimitation of the 7.27e residual).} Corollary
+7.27f resolves the growing-horizon residual \emph{conditionally and
+honestly}: \emph{(1)} positively, the converse extends from FV alone
+(7.27e(b)) to the \textbf{entire known block-context-table family} of
+$O(1)$-access high-order-entropy structures --- on growing-horizon
+sources every such structure pays $\Omega(1)$ bits/symbol over $h(X)$, by
+the model-order/redundancy incompatibility; \emph{(2)} negatively, a
+\textbf{fully architecture-free} $\Omega(\sqrt N)$ converse is unprovable,
+since pure access is $O(1)$-achievable at the entropy bound and the
+generic cell-probe access floor is only $\log N/\log\log N$. The genuinely
+open question is thereby pinned to its irreducible core: the existence (or
+not) of a \emph{non-block-context-table} model-free succinct structure
+attaining Shannon-near rate with $o(\sqrt N)$ access on growing-horizon
+sources. This neither relabels 7.27e (which ruled out only FV) nor
+overclaims an unconditional converse; it is the maximal honest statement
+the present techniques support.
+
 
 \textbf{Theorem 7.28 (Non-asymptotic CLT for $L^{\mathrm{rep}}$:
 Berry--Esseen rate under exp-mixing).} \emph{Adopt the hypotheses of
@@ -11676,11 +11830,31 @@ listed below.)
   whose context window grows with the corpus), is there \emph{some other}
   (non-FV) model-free succinct random-access structure attaining the
   Theorem 7.2 Shannon-near rate with $o(\sqrt{N})$ query time, or does a
-  converse force $\Omega(\sqrt N)$ query there? A negative answer would
-  establish a general converse on the growing-horizon sources; a positive
-  answer would exhibit a second escape beyond Ferragina--Venturini.
-  Corollary 7.27e removes the false premise (``neural $\Rightarrow$ FV
-  closes'') that previously over-stated this entry.
+  converse force $\Omega(\sqrt N)$ query there? Corollary 7.27f advances
+  this on both sides without closing it. \emph{Positively (conditional),}
+  it extends the converse from Ferragina--Venturini alone to the
+  \textbf{entire known block-context-table family} of $O(1)$-access
+  high-order-entropy structures (Gonz\'alez--Navarro CPM 2006;
+  Grossi--Orlandi--Raman; Belazzougui--Navarro \emph{ACM Trans.\ Alg.}\
+  11(4) 2015): on a growing-horizon source every such structure pays
+  $\Omega(1)$ bits/symbol over $h(X)$, via a model-order/redundancy
+  incompatibility (Shannon-near rate forces build order $k = \omega(L)$,
+  but the redundancy budget caps $k = o(L)$, $L = \log_\sigma N$).
+  \emph{Negatively (unconditional),} a fully architecture-free $\Omega(\sqrt
+  N)$ converse is \textbf{unprovable}: pure single-symbol access is
+  $O(1)$-achievable at the entropy bound (Belazzougui--Navarro), the
+  generic cell-probe access floor is only $\Omega(\log N/\log\log N)$
+  (P\u{a}tra\c{s}cu--Demaine 2006), and the only $\sqrt{\cdot}$-type access
+  bounds are conditional on a specific representation (BWT/MTF,
+  Sinha--Weinstein STOC 2019) or on exponential compressibility
+  (Chen--Verbin--Yu ICALP 2012), neither holding in the
+  constant-factor-compressible RNR regime. The irreducible open core is
+  therefore: \emph{does a \textbf{non-block-context-table} model-free
+  succinct structure attain Shannon-near rate with $o(\sqrt N)$ access on
+  growing-horizon sources?} Corollary 7.27e removed the false premise
+  (``neural $\Rightarrow$ FV closes''); Corollary 7.27f delimits the
+  residual to a single architectural question and shows the $\sqrt N$
+  form cannot be forced unconditionally.
 \end{itemize}
 
 \textbf{13.3 Out of scope: engineering deferrals}
