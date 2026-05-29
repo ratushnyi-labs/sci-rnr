@@ -5802,6 +5802,146 @@ online universal models pay no $L(M)$ but incur regret-based
 $\varepsilon_{\mathrm{KL}} = O(d \log N / N)$. The trade-off is
 between predictor storage and adaptation cost.
 
+\textbf{Theorem 7.6$'$ (Tight minimax regret for universal online RNR:
+the leading constant is $d/2$, not $d$, and it is unimprovable).}
+\emph{Under the hypotheses of Theorem 7.6, with $\mathcal{M}_d$ a
+$d$-dimensional smooth parametric family (an exponential family or
+order-$W'$ Markov class with $d = |\Sigma|^{W'}(|\Sigma|-1)$
+free parameters, satisfying the Clarke--Barron regularity conditions:
+finite and nonsingular Fisher information $I(\theta)$ on a compact
+parameter set, twice-differentiable log-likelihood), the online
+universal predictor of Theorem 7.6 may be taken to be the
+Bayesian mixture under Jeffreys' prior --- equivalently the
+Krichevsky--Trofimov estimator on each Markov context --- and then
+the regret of Theorem 7.6 sharpens to}
+\[
+\mathrm{Regret}_{\mathcal{M}_d}(N)
+\;=\;
+\tfrac{d}{2}\,\log_2 N \;+\; C_{\mathcal{M}_d} \;+\; o(\log N),
+\qquad
+C_{\mathcal{M}_d} = \log_2\!\!\int_\Theta\!\!\sqrt{\det I(\theta)}\,d\theta
+- \tfrac{d}{2}\log_2(2\pi e) + o(1),
+\]
+\emph{with $C_{\mathcal{M}_d} = O(1)$ in $N$. Moreover this constant is
+\emph{tight}: for any online RNR predictor whatsoever (any sequential
+probability assignment $q$ over $\Sigma^N$, hence any prefix-code
+RNR encoder), and for Lebesgue-almost every source parameter
+$\theta \in \Theta$,}
+\[
+\mathrm{Regret}_{q}(N;\theta) \;\geq\; \tfrac{d}{2}\,(1-\varepsilon)\,\log_2 N
+\quad\text{for every }\varepsilon>0\text{ and all sufficiently large }N.
+\]
+\emph{Consequently the online-RNR per-position cross-entropy excess is
+$\varepsilon_{\mathrm{KL}}(N) = \tfrac{d}{2}\log_2 N / N \,(1+o(1))$,
+exactly half the bound implied by Theorem 7.6's
+$d\log N$, and no online scheme can do asymptotically better on a
+typical source. The RNR archive size satisfies}
+\[
+\mathbb{E}\bigl[L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N;M'_{\mathrm{universal}})\bigr]
+= N h(X) + \tfrac{d}{2}\log_2 N + O(1)
++ m\,\delta_\infty + \varepsilon_{\mathrm{ac}}^{\mathrm{total}},
+\]
+\emph{the Shtarkov/Rissanen minimax pointwise-redundancy form.}
+
+\emph{\textbf{Proof.}}
+\emph{(Upper bound.)} Fix the Markov order $W'$ (the i.i.d.\ case is
+$W'=0$). Within each of the $|\Sigma|^{W'}$ contexts the source emits
+i.i.d.\ symbols over $\Sigma$, an exponential family of dimension
+$|\Sigma|-1$; the joint family $\mathcal{M}_d$ has
+$d = |\Sigma|^{W'}(|\Sigma|-1)$ parameters. Use the Bayesian mixture
+$q(x^N) = \int_\Theta p_\theta(x^N)\,w_J(\theta)\,d\theta$ with the
+Jeffreys prior $w_J(\theta) \propto \sqrt{\det I(\theta)}$; on a
+product-of-Dirichlet parametrisation this is exactly the
+Krichevsky--Trofimov rule
+$q(a\mid\text{context }c,\text{history}) = (n_{c,a}+\tfrac12)/(n_c + |\Sigma|/2)$
+applied per context (Krichevsky \& Trofimov 1981, \emph{IEEE
+Trans.\ Inf.\ Theory} 27(2):199--207). Clarke \& Barron (1990,
+\emph{IEEE Trans.\ Inf.\ Theory} 36(3):453--471, ``Information-theoretic
+asymptotics of Bayes methods''), under the stated regularity
+conditions, give the exact mixture redundancy
+\[
+\mathbb{E}_\theta\!\bigl[\log_2 p_\theta(X^N)/q(X^N)\bigr]
+= \tfrac{d}{2}\log_2\tfrac{N}{2\pi e}
++ \log_2\!\!\int_\Theta\!\!\sqrt{\det I}\,d\theta
+- \log_2 w_J(\theta) + o(1),
+\]
+and with the Jeffreys choice $w_J = \sqrt{\det I}/\!\int\!\sqrt{\det I}$
+the $\theta$-dependent terms cancel, leaving the uniform constant
+$C_{\mathcal{M}_d}$ above. Since the regret against the offline ML
+optimum equals this redundancy up to $o(1)$ (the ML codelength and
+$\log_2 p_\theta$ differ by $O(1)$ in expectation by the same
+Laplace expansion), $\mathrm{Regret}_{\mathcal{M}_d}(N) =
+\tfrac{d}{2}\log_2 N + C_{\mathcal{M}_d} + o(\log N)$. The
+worst-case (pointwise) constant is the Shtarkov/NML value
+$\tfrac{d}{2}\log_2\tfrac{N}{2\pi} + \log_2\!\int\!\sqrt{\det I}$
+(Rissanen 1996, \emph{IEEE Trans.\ Inf.\ Theory} 42(1):40--47,
+``Fisher information and stochastic complexity''; Shtarkov 1987),
+which differs from the expected constant only by the $O(1)$ term
+$\tfrac{d}{2}\log_2 e$ and likewise has leading coefficient $d/2$.
+Substituting $\varepsilon_{\mathrm{KL}} = \tfrac{d}{2}\log_2 N / N
+(1+o(1))$ into Theorem 7.4's KL accounting yields the stated archive
+size. The mixture predictor is still described in $O(1)$ bits (the
+KT/Jeffreys algorithm), so the $L(M)$ contribution remains $O(1)$,
+preserving Theorem 7.6's no-pre-training conclusion.
+
+\emph{(Lower bound / matching converse.)} The leading coefficient
+$d/2$ cannot be reduced. By Rissanen's converse (Rissanen 1984,
+\emph{IEEE Trans.\ Inf.\ Theory} 30(4):629--636, ``Universal coding,
+information, prediction, and estimation''; sharpened by Merhav \&
+Feder 1995, \emph{IEEE Trans.\ Inf.\ Theory} 41(3):714--722, ``A
+strong version of the redundancy--capacity theorem of universal
+coding''), for \emph{any} sequence of distributions $q$ on $\Sigma^N$
+and every $\varepsilon>0$, the set of parameters
+$\theta\in\Theta$ for which
+$\mathbb{E}_\theta[\log_2 p_\theta(X^N)/q(X^N)] <
+\tfrac{d}{2}(1-\varepsilon)\log_2 N$ infinitely often has Lebesgue
+measure zero. Every online RNR predictor is precisely such a $q$
+(the chain rule turns a sequential probability assignment into a
+joint law on $\Sigma^N$, and conversely any prefix-code RNR encoder
+induces a $q$ by Kraft's inequality), so the redundancy bound applies
+verbatim. Finally the regret (excess over the offline ML optimum)
+dominates this redundancy in expectation, since
+$\max_{\theta'} p_{\theta'}(X^N) \geq p_\theta(X^N)$ gives
+$\mathbb{E}_\theta[\log_2 \max_{\theta'} p_{\theta'}(X^N)/q(X^N)]
+\geq \mathbb{E}_\theta[\log_2 p_\theta(X^N)/q(X^N)]$; hence
+for almost every source the online-RNR regret is at least
+$\tfrac{d}{2}(1-\varepsilon)\log_2 N$ eventually. Combined with the
+upper bound, $d/2$ is the exact leading constant. The
+redundancy--capacity identity (Merhav--Feder) further shows this
+$d/2$ equals the normalised channel capacity
+$\lim_N C_N/\log_2 N$ of the family $\{p_\theta\}$, the
+information-theoretic price of \emph{not} knowing $\theta$.
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} Theorem 7.6$'$ does three things beyond
+Theorem 7.6. (i) It halves the regret constant from $d$ to $d/2$ by
+committing to the Jeffreys/KT mixture rather than a generic
+$O(1)$-per-bit universal estimator; the factor of two is not
+cosmetic --- for an order-$W'$ Markov class with $d = |\Sigma|^{W'}
+(|\Sigma|-1)$ parameters it removes $\tfrac{d}{2}\log_2 N$ bits from
+the archive, which for $|\Sigma|=256$, $W'=2$, $N=10^9$ is on the
+order of $10^7$ bits. (ii) It supplies a \emph{matching lower bound},
+upgrading the result from an achievability statement to a
+characterisation: $\varepsilon_{\mathrm{KL}} = \tfrac{d}{2}\log_2 N/N$
+is optimal for online RNR on a typical source, so no cleverer
+predictor (Vovk aggregation, mirror descent, follow-the-regularised-
+leader) can beat the KT mixture by more than $o(\log N)$. (iii) It
+identifies the constant as the Shtarkov/NML minimax value, locating
+online RNR exactly within the universal-coding hierarchy: the
+$d/2\log N$ term is the same parametric ``model cost'' that appears
+in MDL stochastic complexity (§2.5), now paid online and amortised
+into the repair stream rather than as a header. The verification
+script \texttt{thm\_7\_6prime\_shtarkov\_tight\_regret.py} runs the KT
+mixture on i.i.d.\ and order-$1$ Markov sources and confirms the
+measured leading constant is $d/2$ (e.g.\ each doubling of $N$ adds
+exactly $d/2$ bits of redundancy, not $d$). The limitation inherited
+from Theorem 7.6 is unchanged: the result needs $d=\mathrm{polylog}(N)$
+for the $\tfrac{d}{2}\log N$ term to stay $o(N)$, and the converse is a
+``for almost every $\theta$'' statement (atypical, e.g.\ near-degenerate,
+sources may have smaller regret, but cannot be identified in advance
+without prior knowledge of $\theta$, which is exactly what the online
+setting forbids).
+
 \textbf{Theorem 7.7 (Lossy RNR via Shannon rate-distortion: byte-granular
 random access with controlled per-position distortion).}
 \emph{Let $X = (X_n)_{n \geq 1}$ satisfy the hypotheses of Theorem 7.2
