@@ -14243,6 +14243,114 @@ not SNR; D: the end-to-end encoder attains total per-block rate $h(X)$ with
 residual within the additive regret of optimal, in $\mathrm{poly}(N)$, greedy
 near-optimal on the benign low-rank-plus-isotropic instance).
 
+\textbf{Remark 6.9c (the Type-III-C support-selection approximability
+\emph{threshold}: two-sided, by budget regime; tight only by over-sampling
+past the rank, a constant gap otherwise).} Lemma 6.9 pins one side --- the
+fixed-field Type-III-C selection is the log-determinant / maximum-entropy
+sampling (MESP) problem, hence APX-hard. It is worth pinning the
+\emph{matching algorithm} so the approximability is bracketed on both sides,
+because the threshold is genuinely \emph{regime-dependent} and the regime RNR
+occupies is not the tight one. Throughout, ``ratio'' is the multiplicative
+approximation factor on the \emph{log-determinant value} $f(S)=\log\det
+\Sigma_S$ --- the same scale on which Ohsaka (\emph{JAIR} 2022) states his
+hardness (his proof of Thm.\ 3.2 fixes $f(S):=\log_2\det A_S$, monotone when
+$\lambda_{\min}(A)\ge 1$ by Sharma et al.\ 2015, and proves $k$-\textsc{LogDetMax}
+hard to approximate ``within a factor $>1+10^{-10^{13}}$'' \emph{on $f$}),
+\emph{not} the multiplicative-on-$\det$ scale of his Thm.\ 3.1 ($5/4$) nor the
+$(\det)^{1/s}$ rooted-volume scale of \c{C}ivril--Magdon-Ismail
+(\emph{Algorithmica} 65, 2013), whose exponential $2^{-ck}$ inapproximability
+is for a \emph{different} (rooted, not additive) objective and must not be
+imported here --- that would be the like-for-unlike move the Lemma~6.9
+anti-tautology guards against. The complete two-sided picture from the
+2015--2026 literature, like-for-like:
+\begingroup\footnotesize\sloppy
+\setlength{\tabcolsep}{5pt}
+\noindent\begin{tabular}{@{}p{3.7cm}p{3.6cm}p{4.7cm}@{}}
+\hline
+\textbf{regime / objective} & \textbf{hardness (log-det value)} &
+\textbf{best algorithm $\Rightarrow$ status}\\
+\hline
+Unconstrained log-det
+& $5/4$ (Ohsaka 2022, Thm 3.1)
+& $2$ (Buchbinder--Feldman 2018) $\Rightarrow$ gap $[5/4,2]$\\
+Size-constrained \emph{monotone}, $|S|{=}s$, $\Sigma\succeq I$
+& $1+10^{-10^{13}}$ (Ohsaka 2022, Thm 3.2)
+& greedy $\tfrac{e}{e-1}\!\approx\!1.58$ (Han--Gillenwater 2020;
+Sharma 2015) $\Rightarrow$ gap $[1{+}\epsilon_0,1.58]$\\
+Large budget, $s\ge d+d/\epsilon$ (over-sampling)
+& \emph{(no hardness $>1$)}
+& $1+\epsilon$ (Allen-Zhu 2017; Madan 2019, Thm 1; NST 2019:
+const.\ $e$ at $s{=}d$) $\Rightarrow$ \textsc{tight}\\
+\hline
+\end{tabular}
+\par\endgroup
+Two facts make this a genuine characterisation and not a relabelling of
+Lemma~6.9.
+
+\emph{(a) MESP and D-optimal design are the \underline{same} log-det selection
+problem, separated only by the budget-vs-rank crossover.} For a rank-$d$
+covariance ($\Sigma=V^TV$, $V\in\mathbb R^{d\times n}$), $\det\Sigma_S=
+\prod(\text{$s$ largest eigenvalues of }\sum_{i\in S}v_iv_i^T)$ (Li--Xie,
+\emph{Oper.\ Res.}\ 2023, Obs.\ 1): the MESP principal-submatrix objective
+\emph{is} the D-optimal information-matrix objective on the same selection. The
+non-trivial MESP regime is $s\le d$ (for $s>d$ the value is $-\infty$); ``when
+$d\le s\le n$, MESP becomes the well-known D-optimal design problem''
+(\emph{ibid.}, after eq.\ (2)). So the \emph{tight} $(1+\epsilon)$ guarantee
+lives strictly in the \emph{over-sampled} regime $s\ge d+d/\epsilon>d$ ---
+budget \emph{exceeding} the rank, reached only by repetitions (multiset
+designs). The MESP / principal-submatrix selection (no repetition, $s\le d$)
+\emph{cannot enter it}. (The Allen-Zhu/Madan $(1+\epsilon)$ is stated on the
+rooted $\det(M)^{1/d}$ objective; on the log-det \emph{value} scale used here it
+reads $1+\tfrac{\log(1+\epsilon)}{\log(s/d)}\to1$ as the over-sampling ratio
+$s/d\to\infty$, so the tightness holds on the same scale as the gap below ---
+but is driven precisely by $s/d>1$, vacuous at the MESP cap $s\le d$.)
+
+\emph{(b) In the budget-capped regime $s\le d$ the gap is real and
+rank-localised, not closed by any known algorithm.} On the monotone
+($\Sigma\succeq I$) log-det value scale the best provable factor is the greedy
+$e/(e-1)\approx1.58$, against Ohsaka's $1+10^{-10^{13}}$ lower bound: a
+\emph{constant gap} $[1+\epsilon_0,\,1.58]$ that no result in the surveyed
+literature closes for size-constrained log-det. The verification
+(\texttt{scripts/verify/lemma\_6\_9c\_typeiiic\_threshold.py}) measures the
+achieved greedy factor on synthetic Lemma~5.6j fields: it stays $\le e/(e-1)$
+per instance (the monotone-submodular guarantee), is maximised at budgets
+$s\approx d_{\mathrm{eff}}$ (the informative rank) and decays towards $1$ as
+$s\to K$, confirming the gap is \emph{rank-localised}; a $1$-swap local-search
+post-pass drives the achieved factor to $\approx1$ on tractable $K$, an honest
+caveat that the worst-case hardness is asymptotic, not generic at small sizes.
+
+\emph{RNR mapping (the decisive item).} In the Type-III-C encoder the
+selection acts inside a sub-block of size $K=\Theta(\sqrt N)$ (Theorem 7.5),
+on a covariance $\Sigma=U\Lambda U^T+\sigma^2 I$ (Lemma 5.6j) whose informative
+spectrum has effective rank $d_{\mathrm{eff}}\ll K$ in the high-SNR regime
+where the Lemma~6.9 gap lives. The principal-submatrix selection admits no
+repetition and codes $s\le d_{\mathrm{eff}}$ informative coordinates. Hence
+\emph{RNR sits in the budget-capped (gap) regime, not the tight one}: the
+$(1+\epsilon)$ large-budget guarantee is structurally unreachable because it
+demands a budget past the rank, which $s\le d_{\mathrm{eff}}$ forbids. The
+sharpened verdict is therefore: \emph{Type-III-C fixed-field support selection
+is APX-hard (Lemma 6.9) and its approximability is bracketed in
+$[\,1+10^{-10^{13}},\ e/(e-1)\,]$ on the monotone log-det value scale (and in
+$[5/4,2]$ unconstrained); it becomes tight $(1+\epsilon)$ only under
+over-sampling past the rank ($s\ge d+d/\epsilon$), a regime the RNR
+principal-submatrix encoder does not occupy.} The residual open question is
+correspondingly sharp and \emph{purely worst-case-algorithmic}: closing the
+constant gap $[1+\epsilon_0,\,e/(e-1)]$ between Ohsaka's hardness and the greedy
+bound for size-constrained monotone log-det. This is orthogonal to the
+free-field question: Remark 6.9a places the \emph{free-field amortised}
+Type-III-C rate problem in $\mathrm P$ (predictor absorption makes it easy),
+so the only Type-III-C hardness that survives is the fixed-field /
+single-block one of Lemma 6.9, and the only slack in \emph{its}
+characterisation is the present hardness-vs-algorithm gap $[1+\epsilon_0,
+\,e/(e-1)]$ --- not predictor absorption, which is now resolved. Verified
+in \texttt{scripts/verify/lemma\_6\_9c\_typeiiic\_threshold.py} (T1:
+MESP$=$D-optimal, same log-det problem; T2: greedy gap real and $\le e/(e-1)$;
+T3/T4: gap rank-localised at $s\approx d_{\mathrm{eff}}$, tight regime
+$s\ge d+d/\epsilon$ out of range when $s\le d_{\mathrm{eff}}$; T5:
+like-for-like guard, log-det value scale vs $\det$ vs rooted volume; T6: the
+rooted $(1+\epsilon)$ bridges to a $(1+o(1))$ value-scale factor only as the
+over-sampling ratio $s/d\to\infty$).
+
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
 
