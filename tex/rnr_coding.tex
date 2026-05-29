@@ -13827,6 +13827,122 @@ conservation $h_{\mathrm{marg}}=h_{\mathrm{cond}}+I(X;Y)$, giving the
 single-block-survives / amortised-re-blocks dichotomy; C5: the Lemma 5.6j
 restriction keeps the gap at high SNR).
 
+\textbf{Remark 6.9a (Continuous OP2(b) characterised: the free-field
+amortised Type-III-C rate problem is EASY (in P); Lemma 6.9's fixed-field /
+single-block restriction is the sharp worst-case hardness boundary).}
+\emph{Lemma 6.9 pinned the residual obstacle to ``the continuous mirror of
+OP2(b)'': whether the free-field amortised Type-III-C log-det problem is
+APX-hard. We resolve that status. With the predictor $M$ free and amortised
+($L(M)/m\to0$, the regime of \S 3.4 and the main results), the problem is in
+$\mathrm P$, and the optimum is achieved by an explicit poly-time
+decoder-reproducible encoder.}
+
+\emph{Formalisation.} The free-field continuous OP2(b) problem is: over all
+computable predictors $M$, dictionaries $D$, and repairs $\{R_i\}$ for a
+Gaussian field source $X\sim\mathcal N(0,\Sigma)$ on $\mathbb R^N$
+(Definition 3.5), minimise the amortised Type-III-C cost
+$L_{\mathrm{amort}}(M,D,\{R_i\}) := L(M)+L(D)+\frac1m\sum_{i=1}^m L(R_i\mid
+Y,M,D)$ of Lemma 13.4.2a, where the $m$ blocks are i.i.d.\ draws from the
+field. (``Free $M$'' is the most permissive class --- arbitrary computable
+predictors --- so an \textsc{Easy} verdict here is the strongest form: no
+restriction of the predictor class can make the problem harder.)
+
+\emph{Verdict: \textsc{Easy} (in $\mathrm P$), unconditionally for the
+amortised rate objective.} The optimal encoder is the \emph{full
+sample-covariance maximum-likelihood plug-in}: on a shared prefix of $m_0$
+blocks visible to both encoder and decoder, both run the identical
+deterministic estimator $\hat\Sigma=\frac1{m_0}\sum_i X_iX_i^\top$ (the
+\emph{unstructured} Gaussian MLE: the unconstrained maximiser of the Gaussian
+log-likelihood is the sample covariance in closed form --- Anderson,
+\emph{An Introduction to Multivariate Statistical Analysis}, 3rd ed.\ 2003,
+Thm 3.2.1 --- computable in $O(N^2m_0)$ time; for the structured linear-model
+case the log-likelihood is moreover essentially convex once $m_0\gtrsim 14N$,
+Zwiernik--Uhler--Richards, \emph{J.\ R.\ Stat.\ Soc.\ B}\ 79(4):1269--1292,
+2017), then code each subsequent block under $M^\star=\mathcal N(0,\hat\Sigma)$. Three facts make this optimal and the
+problem easy, each verified numerically:
+\begin{enumerate}
+\item \emph{(The MESP combinatorial object dissolves under a free field.)}
+Lemma 6.9's $5/4$ hardness \emph{is} the MESP support selection
+$\min_{|S|=s}\tfrac12\log_2\det\Sigma_{S\mid\bar S}$. That object exists only
+because the fixed-field problem imposes a hard budget $|S|=s$ and \emph{forbids
+transmitting} $X_{\bar S}$ (the complement must be reconstructed from the
+frozen model). A free amortised $M$ has no such budget: it codes the whole
+block at the support-\emph{invariant} rate $h(X)=\tfrac12\log_2\det(2\pi e\,
+\Sigma)$, a single scalar with no subset to choose. By the chain rule
+$h(X_S)+h(X_{\bar S}\mid X_S)=h(X)$ for \emph{every} $S$, so the
+combinatorial selection that carried the gap is gone (D1).
+\item \emph{(Learning $\Sigma$ is poly-time and decoder-reproducible.)}
+The plug-in rate is the cross-entropy $\mathbb E[-\log_2 p_{\hat\Sigma}(X)]
+=h(X)+\mathrm{KL}(\mathcal N(0,\Sigma)\,\|\,\mathcal N(0,\hat\Sigma))\to
+h(X)$ as $m_0\to\infty$, attaining the Slepian--Wolf / differential-entropy
+floor. Both parties run the \emph{same} deterministic MLE on the \emph{same}
+prefix, so $\hat\Sigma$ is bit-identical at encoder and decoder (a
+universal-Slepian--Wolf shared model; the decoder-reproducibility constraint
+adds no complexity --- Tan--Kosut 2014), and $L(M^\star)=O(N^2\log(1/
+\varepsilon))$ bits amortises away ($L(M^\star)/m\to0$) (D2).
+\item \emph{(The only candidate residual hardness --- sparse PCA --- does not
+obstruct the rate.)} Hardness in covariance learning lives only in the
+\emph{sparse} spiked regime of the Lemma 5.6j manifold $\Sigma=U\Lambda
+U^\top+\sigma^2I$ with $U$ $k$-sparse and the signal in the band
+$\sqrt{k\log N/m}<\theta<k/\sqrt m$ ($\log N<k<\sqrt N$): the average-case
+sparse-PCA / spiked-covariance statistical--computational gap, conjecturally
+hard via planted clique (Berthet--Rigollet, \emph{COLT} 2013, PMLR 30:1046--1066;
+Brennan--Bresler--Huleihel, \emph{COLT} 2018, PMLR 75:48--166). This is \emph{average-case detection}
+hardness, not worst-case multiplicative APX-hardness, and it vanishes above
+the Baik--Ben~Arous--P\'ech\'e threshold $\theta>\sqrt{N/m}$ and for dense $U$
+(where plain PCA recovers the spike in poly time --- consistent with Lemma
+6.9's own item (4), the gap dying as $\Sigma\to\sigma^2 I$) (D3).
+Decisively, the sparse-PCA gap concerns efficiently \emph{recovering the
+sparse support of $U$}, which the coding objective never requires: the
+\emph{full} MLE drives the rate to $h(X)$ with no sparse recovery even inside
+the hard band (D4). The gap is therefore irrelevant to the amortised rate.
+\end{enumerate}
+
+\emph{Why this is not a relabelling of Lemma 6.9, and where the two meet.}
+Lemma 6.9 is the \emph{fixed-field / single-block} statement and stands
+verbatim: with $\Sigma$ supplied and the $|S|=s$ budget enforced (or
+equivalently $L(M)$ paid in full on a single block), the MESP $5/4$ gap is
+real. Remark 6.9a is the complementary \emph{free-field / amortised}
+statement: lifting the budget collapses the same problem to the entropy
+floor. The boundary is exactly Lemma 6.9's stated dichotomy (single-block
+survives / amortised re-blocks), now resolved on the easy side --- the
+``re-block'' is not a hardness but the trivial fact that a free $M$ pays the
+one-time $I(X;Y)$ and thereafter codes at $h(X)$.
+
+\emph{Why the continuous problem resolves while discrete OP2(b) stays open.}
+The contrast is structural, not merely a statement that one is currently
+proved and the other is not. For the discrete objective the only known route
+to \emph{any} hardness past the Lemma 13.4.2a absorption is a
+Kolmogorov-incompressible instance family, available solely through a
+cryptographic PRG and yielding average-case \emph{decision} hardness
+(\S 13.4.2, 2026-05-29 update), never worst-case APX --- so even the lone
+surviving lever does not deliver APX-hardness, leaving the status open. The
+continuous problem has \emph{no} such lever at all: the ``family'' is i.i.d.\
+samples from one Gaussian law, and a PSD covariance cannot be made
+computationally incompressible from its own samples (the sample covariance is
+a consistent poly-time estimator for every $\Sigma$). The single complexity
+mechanism on which discrete OP2(b) hardness would have to rest is therefore
+structurally unavailable in the continuous setting, and continuous OP2(b)
+collapses unconditionally to $\mathrm P$. (This does not claim a complexity
+separation between the two problems --- discrete OP2(b) may itself be in
+$\mathrm P$; it claims that the continuous problem is \emph{resolved} in
+$\mathrm P$ whereas the discrete one is open precisely because its only
+candidate hardness source has no continuous counterpart.)
+
+\emph{Verdict: \textsc{Easy}.} Free-field amortised continuous OP2(b) is in
+$\mathrm P$; the optimal encoder is the full sample-covariance MLE plug-in,
+poly-time and decoder-reproducible, achieving rate $h(X)$ for every PSD
+$\Sigma$ (including the sparse-spiked manifold). Lemma 6.9's fixed-field /
+single-block restriction is therefore the \emph{sharp} worst-case hardness
+boundary for Type-III-C support selection: hardness exists exactly on its
+restricted side and nowhere in the free-field amortised regime. Verified in
+\texttt{scripts/verify/remark\_6\_9a\_continuous\_op2b\_easy.py} (D1: the MESP
+object dissolves under a free field via the chain rule; D2: the poly-time MLE
+plug-in achieves rate $\to h(X)$ and is encoder/decoder bit-identical; D3: the
+only candidate hard core is the average-case sparse-PCA gap, with dense /
+above-BBP easy; D4: even that gap is irrelevant to the coding rate ---
+full-MLE attains $h(X)$ without support recovery).
+
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
 
