@@ -13943,6 +13943,116 @@ only candidate hard core is the average-case sparse-PCA gap, with dense /
 above-BBP easy; D4: even that gap is irrelevant to the coding rate ---
 full-MLE attains $h(X)$ without support recovery).
 
+\textbf{Corollary 6.9b (operational Gaussian-on-manifold RNR: an
+\emph{additive-regret} end-to-end encoder, fixed-field).} \emph{Assemble Lemma
+5.6j (rate), Lemma 6.9 (fixed-field hardness), and the matching poly-time
+support-selection approximation (the monotone-submodular greedy MESP selector;
+sibling Lemma 6.9a). Let $X\sim\mathcal N(0,\Sigma)$ be a Gaussian-on-manifold
+source with $\Sigma=U\Lambda U^T+\sigma^2 I_N$ satisfying the Lemma 5.6j
+delocalisation / reach hypotheses (Haar-spread tangent $U$,
+$\rho=\bar\lambda/(N\sigma^2)>0$), with $\Sigma$ supplied by the model (the
+fixed-field regime of Lemma 6.9; the regime that is non-trivial precisely
+because Remark 6.9a places the \emph{free}-field problem in $\mathrm P$), and
+assume the monotonicity noise floor $\sigma^2\ge 1/(2\pi e)\approx 0.0585$ (the
+isotropic floor makes the differential-entropy set function $M(T):=h(X_T)=
+\tfrac12\log_2\det(2\pi e\,\Sigma_T)$ non-negative and monotone submodular ---
+$\log\det$ is submodular by Kelmans--Kimelfeld / Krause--Guestrin 2008). Fix a
+coding budget $s$, write $t:=N-s$, and recall the complementation identity: the
+per-block residual $C(S)=h(X_S\mid X_{\bar S})=h(X)-M(\bar S)$, so
+$\min_{|S|=s}C(S)$ is exactly $\max_{|T|=t}M(T)$ over the reconstruction set
+$T=\bar S$ (an exact bijection). Let $S^\star$ be the optimal coded support and
+$\widehat S$ the support produced by greedy submodular maximisation of $M$ on
+$\widehat T=\overline{\widehat S}$. Then the end-to-end encoder} ((i)
+estimate/read $\Sigma$; (ii) select $\widehat S$ by greedy MESP; (iii) code
+$X_{\widehat S}$ at its conditional entropy and reconstruct the complement by
+linear MMSE) \emph{runs in $\mathrm{poly}(N)$ time, and its residual obeys the
+\emph{additive-regret} bound}
+\[
+C(\widehat S)\;-\;C(S^\star)\;=\;M(T^\star)-M(\widehat T)\;\le\;
+\tfrac1e\,M(T^\star)\;\le\;\tfrac1{e-1}\,M(\widehat T),
+\tag{6.9b.1}
+\]
+\emph{i.e.\ the encoder's excess cost over the information-theoretic optimum is
+at most the Nemhauser--Wolsey--Fisher 1978 greedy slack: the multiplicative
+guarantee $M(\widehat T)\ge(1-\tfrac1e)M(T^\star)$ gives $M(T^\star)-M(\widehat
+T)\le\tfrac1e M(T^\star)$ (equivalently $\le\tfrac1{e-1}M(\widehat T)$ in terms
+of the achieved value). The total per-block rate is
+$C(S)+M(\bar S)=h(X)$ for every $S$ by the chain rule; the joint code realising
+$h(X)$ carries the Lemma 5.6j compression advantage $\mathrm{TC}(X)=\tfrac12
+N\,c_d(\rho)+o(N)$ over independent-coordinate coding.}
+
+\emph{Why the composition is additive-regret, not the na\"ive $(c\cdot 5/4)$.}
+The two factors do \emph{not} multiply. (a) The Lemma 6.9 hardness ($5/4$,
+Ohsaka 2022) and the greedy ratio ($e/(e-1)$, Nemhauser--Wolsey--Fisher 1978;
+submodular monotone $M$) are an inapproximability lower bound and an algorithmic
+upper bound \emph{on the maximisation objective $M$}, not stages to be composed.
+(They are not even on the identical objective form: the $5/4$ is Lemma 6.9's
+\emph{unconstrained} log-det hardness, whereas the $e/(e-1)$ greedy is for the
+\emph{size-constrained monotone} maximisation Lemma 6.9 item~2 shows is hard only
+within $1+10^{-10^{13}}$. The two bracket the difficulty of selection but do not
+multiply into one ratio.) (b) The multiplicative $e/(e-1)$ ratio holds on $M$
+but \emph{not} on the residual $C$: since $C=h(X)-M$ is a \emph{difference}, a
+multiplicative bound on $M$ transfers to $C$ only \emph{additively} (subtraction
+does not preserve ratios; Ohsaka 2022 notes $\log$-det and $\det$ hardness are
+incomparable), which is precisely (6.9b.1). A clean multiplicative rate factor
+$(c\cdot 5/4)$ on the residual would require a multiplicative $\log$-det
+approximation of $C$ directly, for which no constant-factor algorithm is known
+in general (\c{C}ivril--Magdon-Ismail 2013, \emph{Algorithmica} 65:159--176; the
+greedy guarantee is purchased by the RNR-specific monotone-submodular structure
+of $M$, not by a general $C$-approximation). The honest end-to-end statement is
+therefore the additive-regret (6.9b.1).
+
+\emph{Hypothesis compatibility (the substantive check).} The pieces are
+\emph{simultaneously} satisfiable. Lemma 5.6j wants delocalised $U$ and $\rho>0$
+(and high SNR, $\bar\lambda\gg N\sigma^2$, for the Lemma 6.9 selection gap to be
+$\Theta(1)$ per coordinate); the greedy approximation wants $\sigma^2\ge
+1/(2\pi e)$ for monotonicity. These coexist: take $\sigma^2=0.25\ (\ge 0.0585)$
+and $\bar\lambda=N\rho\sigma^2$ with $\rho=4$, so SNR is high \emph{and} the
+noise floor holds. (Below $\sigma^2=1/(2\pi e)$ the entropy objective can be
+non-monotone; a modular shift restores monotonicity without changing greedy
+choices, so the corollary extends there at the cost of the shift bookkeeping.)
+The concrete witness $N=14$, $d=3$, $s=7$, $\rho=4$, $\sigma^2=0.25$ satisfies
+all hypotheses; see check~A of the verification script.
+
+\emph{Fixed-field scope; sharpened by Remark 6.9a.} Corollary 6.9b is a
+\emph{fixed-field} statement: $\Sigma$ is given (step~(i) reads or estimates a
+\emph{fixed} field, not a learned per-instance side channel). This is exactly ---
+and, by Remark 6.9a, \emph{only} --- where the synthesis has content: in the
+free-field amortised regime Remark 6.9a shows the support-selection object
+dissolves (the full sample-covariance MLE plug-in codes at rate $h(X)$ for every
+$\Sigma$, in $\mathrm P$), so the regret (6.9b.1) and the selection lever vanish
+identically. Thus Corollary 6.9b is the operational content of the \emph{hard}
+side of the Lemma 6.9 / Remark 6.9a dichotomy, and is silent on (because subsumed
+by the $h(X)$-floor on) the easy free-field side.
+
+\emph{Novelty: synthesis; the value-add is the composition and the
+compatibility check.} Corollary 6.9b introduces no new information-theoretic or
+complexity-theoretic content beyond Lemma 5.6j, Lemma 6.9, the greedy-submodular
+approximation, and Remark 6.9a. Its contribution is (i)~the \emph{compatibility
+verification} --- a single concrete source provably meeting all hypotheses,
+including the previously-unstated interaction between Lemma 5.6j's high-SNR
+requirement and the greedy selector's noise-floor $\sigma^2\ge1/(2\pi e)$ ---
+and (ii)~the \emph{correct composition}: the end-to-end guarantee is the
+\emph{additive regret} (6.9b.1), \emph{not} the multiplicatively-composed
+$(c\cdot 5/4)$ the surface forms suggest, because the residual is a difference of
+the entropy objective. The practical payload (\S 10/\S 11) is a concrete
+$\mathrm{poly}(N)$ encoder for fixed-field manifold-structured data with a stated
+additive regret over the optimum; the natural-image classes of \S 13.4.5 fall
+under it \emph{only} insofar as their tangent statistics are (a)~well-approximated
+by a fixed Gaussian field and (b)~delocalised --- the two empirical conditions
+\S 13.4.5 leaves open --- so the corollary does \emph{not} close \S 13.4.5.
+Verified in \texttt{scripts/verify/cor\_6\_9a\_operational\_manifold\_rnr.py}
+(A: one source satisfies all hypotheses, including $\sigma^2\ge 1/(2\pi e)$ and
+high SNR; B: the residual transfer is additive ---
+$C_{\mathrm{greedy}}-C_{\mathrm{opt}}=M_{\mathrm{opt}}-M_{\mathrm{greedy}}$ ---
+and the $(c\cdot5/4)$-multiplicative prediction on $C$ is shown false on a
+greedy-suboptimal instance; C: the per-coordinate regret is governed by the
+greedy slack, vanishing in the near-modular (curvature $c\to0$) regime --- the
+dependence on SNR is \emph{non-monotone}, so the honest control is curvature,
+not SNR; D: the end-to-end encoder attains total per-block rate $h(X)$ with
+residual within the additive regret of optimal, in $\mathrm{poly}(N)$, greedy
+near-optimal on the benign low-rank-plus-isotropic instance).
+
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
 
