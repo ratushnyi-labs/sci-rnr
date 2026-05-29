@@ -8294,10 +8294,15 @@ side-cache of memoised $M$-outputs). Then:}
   \bigl\lceil \log_2(N \cdot h_{\min}) \bigr\rceil
   \;\geq\; (1 - o(1)) \cdot N \cdot \mathrm{cost}(M) \cdot \log_2 N.
 \]
-\emph{The bound is invariant in $K$: increasing $K$ trades $C(K)$ up
-linearly while reducing $S(K)$ reciprocally, and vice versa. The
-geometric-mean balance point $K^{**} = \sqrt{N \cdot \log_2 N /
-\mathrm{cost}(M)}$ (worst-case parameters, no operational
+\emph{The displayed bound holds uniformly in $K$ for the fixed-width
+seek-index realisation of Definition 10.3 (each offset stored in
+$\lceil\log_2 L(R)\rceil$ bits); for an index that uses succinct
+monotone (Elias--Fano) encoding the same $\Theta(N\,\mathrm{cost}(M)
+\log N)$ floor holds at the order-optimal balance $K=\Theta(\sqrt N)$
+but degrades by up to a $\log N$ factor at $K=O(1)$ (Lemma 7.27b
+Remark). Increasing $K$ trades $C(K)$ up linearly while reducing
+$S(K)$; the geometric-mean balance point $K^{**} = \sqrt{N \cdot
+\log_2 N / \mathrm{cost}(M)}$ (worst-case parameters, no operational
 $\alpha Q$ weighting; to be distinguished from $K^*$ of T7.5 which
 adds $\alpha Q$ and the Crutchfield-Feldman constant $\gamma$) is
 one specific point on the iso-product curve
@@ -8367,44 +8372,91 @@ $p - P + 1 = K$ and $C(K) \geq K \cdot \mathrm{cost}(M)$.
 
 \emph{Lemma 7.27b (sync-overhead storage lower bound).} Under
 Definition 10.3 with uniform sync spacing and $m = \lceil N/K
-\rceil$ sync points, the sync-overhead storage $S(K)$ satisfies
+\rceil$ sync points, the sync-overhead storage $S(K)$ satisfies the
+information-theoretic floor
 \[
-  S(K) \;\geq\; m \cdot \bigl\lceil \log_2 L(R) \bigr\rceil
+  S(K) \;\geq\; \log_2 \binom{L(R)+1}{m}
+  \;=\; m \log_2\!\frac{L(R)}{m} + \Theta(m)
+  \;\geq\; \frac{N}{K}\,\log_2\!\bigl(h_{\min} K\bigr) ,
+\]
+and, \emph{for the fixed-width-offset realisation of the seek index}
+(each entry an explicit $\lceil \log_2 L(R)\rceil$-bit pointer, the
+form whose size the Definition 10.3 budget quotes), the stronger
+per-entry bound
+\[
+  S_{\mathrm{fw}}(K) \;=\; m \cdot \bigl\lceil \log_2 L(R) \bigr\rceil
   \;\geq\; \frac{N}{K} \cdot \bigl\lceil \log_2(N \cdot h_{\min})
   \bigr\rceil .
 \]
 
 \emph{Proof of Lemma 7.27b.} By Definition 10.3 the seek index has
-exactly $m = \lceil N/K \rceil$ entries, each storing a bit-offset
-pointer into $R$ that must distinguish among $L(R) + 1$ possible
-values (offsets in $\{0, 1, \ldots, L(R)\}$). By Shannon's noiseless
-source-coding lower bound (Cover-Thomas 2006, Theorem 5.3.1) applied
-to an injective mapping from $m$ distinct sync-point indices to
-$L(R) + 1$ offset values, the worst-case index size is at least
-$m \cdot \lceil \log_2(L(R) + 1) \rceil$ bits (or $m \cdot \log_2 m
-+ m \cdot \log_2((L(R)+1)/m)$ in the average case via succinct
-encoding --- Munro-Raman 2001 \emph{SIAM J.\ Comput.}\ 31(3):762 ---
-but the worst-case-per-entry bound is $\lceil \log_2 L(R) \rceil$).
-Under the Theorem 7.2 rate hypothesis $L(R) \geq N \cdot h(X)$, and
-$h(X) \geq h_{\min} > 0$, so $L(R) \geq N \cdot h_{\min}$ and
-$\lceil \log_2 L(R) \rceil \geq \lceil \log_2(N \cdot h_{\min})
-\rceil = (1 - o(1)) \log_2 N$. \hfill$\square$
+exactly $m = \lceil N/K \rceil$ entries, encoding the strictly
+increasing offsets $0 \le o_1 < \cdots < o_m \le L(R)$ at which the
+$m$ sync points begin in $R$ (the sync-point identifier $j$ maps
+deterministically to the $j$-th smallest offset). Any such index
+determines, and is determined by, an $m$-element subset of
+$\{0,1,\ldots,L(R)\}$; by Shannon's noiseless source-coding lower
+bound (Cover--Thomas 2006, Theorem 5.3.1) it therefore requires at
+least $\log_2 \binom{L(R)+1}{m}$ bits, a floor attained up to
+$O(m)$ by the Elias--Fano / succinct-monotone encoding (Munro--Raman
+2001 \emph{SIAM J.\ Comput.}\ 31(3):762; Okanohara--Sadakane 2007,
+``Practical entropy-compressed rank/select dictionary''). Using
+$\binom{L(R)+1}{m}\ge (L(R)/m)^m$, the Theorem 7.2 rate hypothesis
+$L(R)\ge N h(X)\ge N h_{\min}$, and $m=\lceil N/K\rceil \le N$, gives
+$S(K)\ge m\log_2(L(R)/m)\ge (N/K)\log_2(N h_{\min}/m)
+= (N/K)\log_2(h_{\min} K)$, the first display. If instead the index
+is realised with \emph{fixed-width} entries --- each offset stored
+verbatim in $\lceil\log_2 L(R)\rceil$ bits --- then trivially
+$S_{\mathrm{fw}}(K)=m\lceil\log_2 L(R)\rceil$, and under the same
+rate hypothesis $\lceil\log_2 L(R)\rceil \ge \lceil\log_2(N
+h_{\min})\rceil = (1-o(1))\log_2 N$, the second display.
+\hfill$\square$
 
-\emph{Combining Lemmas 7.27a and 7.27b.} Multiply the two lower
-bounds:
+\emph{Remark (the index floor is not the per-entry floor at small
+$K$).} The two displays differ by the factor $\lceil\log_2
+L(R)\rceil / \log_2(h_{\min}K)$, which is $\Theta(1)$ exactly when
+$m=\lceil N/K\rceil = N^{\Theta(1)}$, e.g.\ at the balance
+$K=\Theta(\sqrt N)$ where both read $\tfrac12(1+o(1))\log_2 N$ per
+entry. For \emph{small} $K$ (many sync points, $m\to N$) the genuine
+succinct floor degrades: at $K=1$, $\log_2(h_{\min}K)=\log_2
+h_{\min}=O(1)$, so the storage floor is only $O(N)$ bits, a factor
+$\log_2 N$ below the fixed-width count. Hence the $K$-invariant
+product below holds rigorously for the fixed-width seek-index
+realisation; for an index free to use succinct monotone encoding the
+product floor is tight at the order-optimal balance
+$K=\Theta(\sqrt N)$ but is \emph{not} uniform in $K$ --- it can drop
+to $\Omega(N\,\mathrm{cost}(M))$ (a $\log N$ factor weaker) at
+$K=O(1)$. The operationally relevant regime is the balance point,
+where the converse is tight in either realisation.
+
+\emph{Combining Lemmas 7.27a and 7.27b.} Use the per-query bound
+$C(K)\ge K\,\mathrm{cost}(M)$ (Lemma 7.27a) with the storage bound
+(Lemma 7.27b). For the \emph{fixed-width seek-index realisation}
+($S_{\mathrm{fw}}(K)=m\lceil\log_2 L(R)\rceil$), multiplying the two
+lower bounds gives
 \begin{align*}
-C(K) \cdot S(K) &\;\geq\; \bigl(K \cdot \mathrm{cost}(M)\bigr)
+C(K) \cdot S_{\mathrm{fw}}(K) &\;\geq\; \bigl(K \cdot \mathrm{cost}(M)\bigr)
 \cdot \bigl(\lceil N/K \rceil \cdot \lceil \log_2(N h_{\min}) \rceil\bigr) \\
 &\geq\; N \cdot \mathrm{cost}(M) \cdot
 \lceil \log_2(N h_{\min}) \rceil ,
 \end{align*}
 where the second inequality uses $K \cdot \lceil N/K \rceil \geq N$
-for any integer $K \geq 1$. The product is $K$-invariant: the factor
+for any integer $K \geq 1$. This product is $K$-invariant: the factor
 of $K$ in the per-query bound cancels the $1/K$ in the sync-overhead
 bound, leaving a quantity depending only on $N$, $\mathrm{cost}(M)$,
 and $\log N$. For $h_{\min} \in (0, 1]$ fixed and $N \to \infty$,
 $\lceil \log_2(N h_{\min}) \rceil = (1 + o(1)) \log_2 N$, so
-$C(K) \cdot S(K) \geq (1 - o(1)) N \cdot \mathrm{cost}(M) \cdot \log_2 N$.
+$C(K) \cdot S_{\mathrm{fw}}(K) \geq (1 - o(1)) N \cdot \mathrm{cost}(M)
+\cdot \log_2 N$. For an index free to use \emph{succinct monotone}
+encoding the storage floor is the first display of Lemma 7.27b,
+$S(K)\ge (N/K)\log_2(h_{\min}K)$, and the product becomes
+$C(K)\cdot S(K) \ge N\,\mathrm{cost}(M)\,\log_2(h_{\min}K)$, which
+equals $(1-o(1))\,\tfrac12\,N\,\mathrm{cost}(M)\log_2 N$ at the
+balance $K=\Theta(\sqrt N)$ but degrades to
+$\Omega(N\,\mathrm{cost}(M))$ as $K\to O(1)$ (Remark above). In
+either realisation the converse is $\Theta(N\,\mathrm{cost}(M)\log N)$
+at the order-optimal balance point; the uniform-in-$K$ form is
+specific to fixed-width offsets.
 
 \emph{Balance point.} Setting $C(K) = S(K)$ (the AM-GM minimum of
 the sum $C + S$ under fixed product) gives $K \cdot \mathrm{cost}(M)
@@ -12626,9 +12678,14 @@ yields a working encoder that researchers can adapt to their specific
 data class.
 
 The restriction to \emph{unambiguous} CFGs is essential: counting
-distinct strings in an ambiguous CFL is \#P-hard in general, since
-$\#$DNF-SAT reduces to it (Bertoni-Goldwurm-Sabadini 1991, \emph{Theoret.\
-Comput.\ Sci.}\ 86:373--391). Most natural data classes admit
+distinct length-$N$ strings in an ambiguous CFL is \#P-hard in
+general --- Bertoni--Goldwurm--Sabadini (1991, \emph{Theoret.\
+Comput.\ Sci.}\ 86(2):325--342) show the counting function is
+computable in $\mathrm{NC}^2$ for unambiguous CFLs but \#P-hard
+already for languages of ambiguity degree two (specifically, unions
+of two unambiguous linear CFLs), so the unique-parse hypothesis that
+makes the recurrence of Step 1 exact is exactly the boundary of
+tractability. Most natural data classes admit
 unambiguous CFG presentations (Dyck words, balanced parenthesis,
 RFC-3986 URIs, ISO-8601 dates as a regular subset, and the LL/LR-parsable
 subclasses of programming languages); ambiguity-free presentations of

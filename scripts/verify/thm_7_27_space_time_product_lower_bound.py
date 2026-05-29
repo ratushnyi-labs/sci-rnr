@@ -57,16 +57,36 @@ def per_query_lower_bound(K: int, cost_M: int) -> int:
 
 
 def sync_storage_lower_bound(N: int, K: int, h_min: float) -> int:
-    """Lemma 7.27b: S(K) >= ceil(N / K) * ceil(log_2(N * h_min)) bits.
+    """Lemma 7.27b (fixed-width realisation): S_fw(K) =
+    ceil(N / K) * ceil(log_2(L(R))) bits, L(R) >= N * h_min.
 
-    Each sync-index entry is a bit-offset pointer into the repair
-    stream R, which is at least N * h_min bits long (Theorem 7.2
-    near-Shannon rate). So each pointer needs ceil(log_2(N * h_min))
-    bits, and there are ceil(N / K) sync points.
+    Each fixed-width sync-index entry is a bit-offset pointer into the
+    repair stream R, stored verbatim in ceil(log_2 L(R)) bits, and
+    there are ceil(N / K) sync points. This is the realisation for
+    which the product bound is K-INVARIANT.
     """
     m = math.ceil(N / K)
     pointer_bits = math.ceil(math.log2(max(N * h_min, 2)))
     return m * pointer_bits
+
+
+def sync_storage_succinct_floor(N: int, K: int, h_min: float) -> float:
+    """Lemma 7.27b (succinct/Elias-Fano floor): the true
+    information-theoretic lower bound for a MONOTONE seek index is
+    log_2 C(L(R)+1, m), NOT m*log_2 L(R). This equals
+    m*log_2(L(R)/m) + Theta(m) and DEGRADES at small K: at K=1
+    (m=N) it is only Theta(N) bits, a log N factor below fixed-width.
+
+    Returns the combinatorial floor log_2 C(L(R)+1, m).
+    """
+    from math import lgamma, log
+
+    LR = int(N * h_min)
+    m = math.ceil(N / K)
+    mm = min(m, LR)
+    if mm <= 0 or mm >= LR + 1:
+        return float(mm)  # degenerate; ~0..1 bit per entry
+    return (lgamma(LR + 2) - lgamma(mm + 1) - lgamma(LR + 1 - mm)) / log(2)
 
 
 def t727_product(N: int, K: int, cost_M: int, h_min: float) -> int:
@@ -216,6 +236,54 @@ def main() -> int:
         if ratio < 0.5 or ratio > 4.0:
             print(f"  FAIL: ratio {ratio:.3f} outside [0.5, 4.0] tolerance")
             total_fail += 1
+
+    # Succinct (Elias-Fano) floor: corrected Lemma 7.27b.
+    # The K-invariant product holds for the FIXED-WIDTH realisation; for a
+    # succinct monotone index the floor degrades at small K (down to a
+    # log N factor weaker at K=O(1)) but is tight at the sqrt(N) balance.
+    print("\n--- Corrected Lemma 7.27b: fixed-width K-invariant vs succinct floor ---")
+    N_s, cost_s, h_s = 10**6, 1000, 0.7
+    claimed = predicted_product_floor(N_s, cost_s, h_s)
+    print(f"  N={N_s}, cost(M)={cost_s}, h_min={h_s}; "
+          f"claimed (1-o(1)) N cost log = {claimed:.3e}")
+    print(f"  {'K':>9} {'prod_fixedwidth':>16} {'prod_succinct':>16} "
+          f"{'fw/claim':>9} {'succ/claim':>11}")
+    K_bal_s = int(t727_balance_point(N_s, cost_s, h_s))
+    succ_min = float("inf")
+    succ_min_K = None
+    for K in [1, 2, 64, 1024, K_bal_s, N_s // 10, N_s]:
+        if not (1 <= K <= N_s):
+            continue
+        C = per_query_lower_bound(K, cost_s)
+        prod_fw = C * sync_storage_lower_bound(N_s, K, h_s)
+        prod_su = C * max(sync_storage_succinct_floor(N_s, K, h_s), 0.0)
+        if prod_su < succ_min:
+            succ_min, succ_min_K = prod_su, K
+        tag = " <-- balance" if K == K_bal_s else (
+            " <-- K=1" if K == 1 else "")
+        print(f"  {K:>9} {prod_fw:>16.3e} {prod_su:>16.3e} "
+              f"{prod_fw / claimed:>9.3f} {prod_su / claimed:>11.4f}{tag}")
+    # Assertions encoding the CORRECTED claim:
+    #  (i) fixed-width product is K-invariant >= claimed (within ceil slack);
+    #  (ii) succinct product is tight (~0.5 x claimed) at the balance;
+    #  (iii) succinct product DROPS well below claimed at K=1 (the bug the
+    #        original per-entry lower bound missed).
+    prod_fw_k1 = per_query_lower_bound(1, cost_s) * sync_storage_lower_bound(N_s, 1, h_s)
+    prod_su_k1 = per_query_lower_bound(1, cost_s) * max(
+        sync_storage_succinct_floor(N_s, 1, h_s), 0.0)
+    prod_su_bal = per_query_lower_bound(K_bal_s, cost_s) * max(
+        sync_storage_succinct_floor(N_s, K_bal_s, h_s), 0.0)
+    if not (prod_fw_k1 >= 0.5 * claimed):
+        print("  FAIL: fixed-width product not K-invariant at K=1"); total_fail += 1
+    if not (prod_su_bal >= 0.25 * claimed):
+        print("  FAIL: succinct product not tight at balance"); total_fail += 1
+    if not (prod_su_k1 < 0.2 * claimed):
+        print("  FAIL: succinct floor should drop below claimed at K=1"); total_fail += 1
+    else:
+        print(f"  OK: succinct floor at K=1 = {prod_su_k1:.3e} is "
+              f"{prod_su_k1 / claimed:.4f}x claimed (log N factor weaker) -- "
+              f"matches corrected Lemma 7.27b Remark; uniform-in-K form is "
+              f"fixed-width-specific.")
 
     # Structural comparison with T7.5
     print("\n--- Structural T7.5 comparison ---")
