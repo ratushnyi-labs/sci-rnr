@@ -15,6 +15,12 @@
   \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  % unicode-math maps \setminus to U+29F5 (REVERSE SOLIDUS OPERATOR), which
+  % latinmodern-math.otf lacks (tectonic/lualatex emit "Missing character
+  % U+29F5"). Remap to U+2216 (SET MINUS) -- the glyph the font provides and
+  % that matches the pdfTeX/amssymb rendering. Output-preserving; silences the
+  % warning. Applies to all \setminus occurrences globally.
+  \AtBeginDocument{\renewcommand{\setminus}{\mathbin{\char"2216}}}
 \fi
 \usepackage{lmodern}
 \ifPDFTeX\else
