@@ -600,7 +600,11 @@ streaming encoders, cache-aware decoder, predictor-archive scaling,
 fail-safe store-mode fallback, cryptographic integrity, IRM-restricted
 decoder-latency tail bound, and LRU+IRM Markov-chain Chernoff
 concentration; §7.27 sub-block space-time product converse matching
-the T7.5 achievability). Section 8 states the
+the T7.5 achievability, with Theorem 7.27$'$ \emph{refuting} the
+general-scheme converse for finite-order-Markov sources (Ferragina
+--Venturini $O(1)$-access escape) and Corollary 7.27c recovering the
+$\mathrm{cost}(M)$ product on the predictor-faithful class, which
+covers state-snapshot schemes). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -8316,17 +8320,29 @@ Other non-sub-block scheme candidates include succinct data
 structures with random-access predictor invocation, or schemes that
 store predictor-state snapshots at non-uniform information-theoretic
 positions. The general converse across all random-access schemes is
-listed as an open problem in §13.2: the lower bound there is
-presently information-theoretic --- any scheme must store at least
-$N \cdot h(X) + o(N)$ bits per Theorem 7.2 --- but a matching
-time-space product bound across general decoders is not pinned
-down. A plausible conjecture: the product
-$(\text{query work}) \cdot (\text{total side storage})$ is bounded
-below by $\Omega(N \cdot \mathrm{cost}(M))$ for any decoder attaining
-Shannon-near rate, with Theorem 7.27 being the sub-block-restricted
-version with an additional $\log N$ factor from the seek-index
-identifier-length floor; verifying or refuting this conjecture
-remains open.
+addressed below by Theorem 7.27$'$, Remark 7.27d, and Corollary 7.27c
+(and the §13.2 entry is updated accordingly). The short version: the
+once-conjectured universal product $(\text{query work}) \cdot
+(\text{total storage}) \geq \Omega(N \cdot \mathrm{cost}(M))$ for every
+Shannon-near random-access scheme is \emph{false} for
+finite-order-Markov-expressible sources --- the Ferragina--Venturini
+(SODA 2007) entropy-bounded storage structure stores the realised string
+in $N h(X) + o(N)$ bits with $O(1)$-time random access and \emph{no}
+query-time predictor evaluations, giving $C \cdot S = O(N) = o(N\,
+\mathrm{cost}(M)\log N)$ (Theorem 7.27$'$). The sub-block restriction of
+Theorem 7.27 is therefore essential: the product bound is a property of
+the predictor-sequential decode architecture, not of the random-access
+task. What \emph{does} survive is the $\mathrm{cost}(M)$-bearing product
+$C_{\mathrm{work}} \cdot S \geq (1-o(1)) N \cdot \mathrm{cost}(M) \cdot
+\log N$ on the \emph{predictor-faithful} class (Corollary 7.27c), which
+strictly contains both the sub-block schemes of Definition 10.3 and the
+state-snapshot schemes of Theorem 10.4, and is the maximal class in
+which dense predictor recomputation --- hence the $\mathrm{cost}(M)$
+factor --- is forced. The $\log N$ factor is the seek-index
+identifier-length floor and survives into Corollary 7.27c. For genuinely
+neural (non-finite-order-Markov) predictors the Ferragina--Venturini
+escape closes (Remark 7.27d(ii)) and the existence of any model-free
+$O(1)$-access Shannon-near structure reverts to open.
 
 \emph{Comparison with classical cell-probe and succinct-data-structure
 lower bounds.} The $\sqrt{N}$ time-space trade-off for sub-block
@@ -8346,6 +8362,267 @@ versus storage in bits, whereas T7.27 trades $K \cdot \mathrm{cost}(M)$
 versus seek-index storage), but they are of the same product-tradeoff
 type and lend literature precedent to the sub-block-restricted
 converse.
+
+\textbf{Theorem 7.27$'$ (General-scheme converse is \emph{false}: a
+rate-respecting scheme beats the product bound).} \emph{The
+general-scheme analogue of Theorem 7.27 --- a product lower bound
+$C \cdot S \geq \Omega(N \cdot \mathrm{cost}(M))$ (with or without the
+$\log N$ factor) holding for every random-access scheme attaining the
+Theorem 7.2 Shannon-near rate --- is false. Concretely, for the class of
+stationary order-$k$ Markov sources (with $0 < h(X) < \log_2 \sigma$ and
+the predictor $M$ outputting the true order-$W$ conditionals, $W \geq
+k$, as in Lemma 5.1c), there is a random-access scheme with}
+\[
+  S_{\mathrm{tot}} \;=\; N \cdot h(X) + o(N) \quad\text{(total on-disk
+  storage; Shannon-near rate, hypothesis of Theorem 7.2 met)},
+\]
+\[
+  C \;=\; O(1) \text{ cell probes per single-byte query, with }
+  \textbf{zero}\text{ predictor evaluations,}
+\]
+\emph{so the time--space product is $C \cdot S = O(N) = o\bigl(N \cdot
+\mathrm{cost}(M) \cdot \log N\bigr)$ whenever $\mathrm{cost}(M) \cdot
+\log N = \omega(1)$. The scheme is the Ferragina--Venturini (SODA 2007;
+\emph{Theoret.\ Comput.\ Sci.}\ 372(1) (2007) 115--121) entropy-bounded
+storage structure applied to the realised string $X^N$.}
+
+\emph{Consequently the §13.2 ``general-scheme space-time converse'' is
+\textbf{resolved negatively}: Theorem 7.27's sub-block restriction
+(Definition 10.3) is not a technical artefact but \emph{essential} ---
+the product bound is a property of the sequential-decode architecture,
+not of the random-access task itself. The largest class for which a
+$\mathrm{cost}(M)$-bearing product bound survives is identified
+positively in Corollary 7.27c (the predictor-faithful class), and the
+gap between that class and the unrestricted class is exactly the
+Ferragina--Venturini escape.}
+
+\emph{\textbf{Proof.}} Let $X$ be stationary order-$k$ Markov on a
+$\sigma$-symbol alphabet with entropy rate $h(X) = H(X_{k+1} \mid
+X_1, \ldots, X_k) \in (0, \log_2 \sigma)$. Fix a realisation
+$x = X^N \in \Sigma^N$.
+
+\emph{Step 1 (the realised string is constant-factor compressible and an
+order-$k$ Markov predictor witnesses it).} The $k$-th order empirical
+entropy of $x$ is $H_k(x) = \frac{1}{N} \sum_{q \in \Sigma^k}
+|x_q|\, H_0(x_q)$, where $x_q$ is the subsequence of symbols immediately
+following occurrences of context $q$ in $x$ and $H_0$ is the zeroth-order
+empirical entropy (Manzini 2001, \emph{J.\ ACM} 48(3):407--430, the
+$H_k$ definition). For a stationary ergodic order-$k$ Markov source, the
+entropy rate is $h(X) = H(X_{k+1} \mid X_1^k)$ (Cover--Thomas 2006,
+Chapter 4, ``Entropy Rates of a Stochastic Process''), and $N \cdot
+H_k(x)$ equals the empirical negative log-likelihood
+$-\log_2 \hat{p}(x)$ under the maximum-likelihood order-$k$ model; by
+the law of large numbers applied to the per-context empirical
+distributions $\hat{p}(\cdot \mid q) \to p(\cdot \mid q)$ (each context
+$q$ recurs $\Theta(N)$ times a.s.\ by ergodicity), $H_k(x) \to
+H(X_{k+1}\mid X_1^k) = h(X)$ almost surely; equivalently this is the
+Shannon--McMillan--Breiman convergence $-\frac{1}{N}\log_2 p(x^N) \to
+h(X)$ (Cover--Thomas 2006, \S16.8, the general AEP) specialised to the
+order-$k$ Markov likelihood. Hence $N \cdot H_k(x) = N \cdot h(X) + o(N)$
+with probability $1 - o(1)$. The same conditional
+distributions $P(x_i \mid x_{i-k:i-1})$ are exactly what the order-$W$
+($W \geq k$) predictor $M$ of Lemma 5.1c outputs; thus the RNR sub-block
+encoder of Theorem 7.27 achieves rate $N h(X) + o(N)$ on this source
+(its Theorem 7.2 hypothesis is met), and so any scheme we compare it
+against is judged against the \emph{same} rate target.
+
+\emph{Step 2 (Ferragina--Venturini structure: entropy storage with
+$O(1)$ access, no predictor at query time).} Ferragina and Venturini
+construct, for any string $x \in \Sigma^N$, a static data structure
+of total size
+\[
+  N \cdot H_k(x) \;+\; O\!\left(\frac{N}{\log_\sigma N}
+  \bigl(k \log \sigma + \log\log N\bigr)\right)
+  \;=\; N \cdot H_k(x) + o(N \log \sigma)
+\]
+bits (valid for $k = o(\log_\sigma N)$, which holds for the fixed
+order $k$ here), that retrieves any substring of $x$ of length $\ell$ in
+$O(1 + \ell \log \sigma / N) = O(1)$ time for $\ell = O(N/\log\sigma)$,
+in particular any \emph{single} symbol $x_p$ in $O(1)$ time. The
+retrieval is a table lookup plus a constant number of cell probes; it
+performs \textbf{no} predictor evaluation --- the predictor $M$ is used
+\emph{only at construction time} to certify the entropy bound (Step 1)
+and is not invoked when answering a query. Combining with Step 1,
+$S_{\mathrm{tot}} = N H_k(x) + o(N\log\sigma) = N h(X) + o(N)$ almost
+surely (for fixed $\sigma$ the $o(N\log\sigma)$ lower-order term is
+$o(N)$, dominated by the $\Theta(N)$ leading term), and the worst-case
+single-byte query cost is $C = O(1)$ cell probes.
+
+\emph{Step 3 (the product is beaten).} The total storage in bits is
+$S = S_{\mathrm{tot}} = \Theta(N)$ (since $h(X) > 0$); the per-query
+work is $C = O(1)$. Hence $C \cdot S = O(N)$. Theorem 7.27's sub-block
+product, on the \emph{same} source and rate target, is $C(K) \cdot S(K)
+\geq (1-o(1)) N\, \mathrm{cost}(M) \log_2 N$. The ratio is
+\[
+  \frac{C \cdot S}{C(K) \cdot S(K)}
+  \;=\; O\!\left(\frac{N}{N\, \mathrm{cost}(M) \log_2 N}\right)
+  \;=\; O\!\left(\frac{1}{\mathrm{cost}(M) \log_2 N}\right)
+  \;\to\; 0
+\]
+whenever $\mathrm{cost}(M)\log_2 N \to \infty$ (true for any
+non-degenerate predictor as $N \to \infty$). Thus the Ferragina
+--Venturini scheme strictly beats the product bound while meeting the
+Shannon-near rate hypothesis, refuting the universal converse.
+\hfill$\blacksquare$
+
+\textbf{Remark 7.27d (why the escape does not contradict Theorem 7.27,
+and what it costs).} The Ferragina--Venturini scheme does \emph{not}
+contradict Theorem 7.27, because it is not a Definition 10.3 sub-block
+scheme: it neither resets predictor state at sync points nor decodes
+sequentially from a sync point. It replaces the predictor-sequential
+decode by a \emph{precomputed, model-free} succinct index whose internal
+tables encode the order-$k$ statistics once at build time. Three honest
+observations sharpen the picture. \emph{(i) The escape is genuine, not
+an accounting trick.} The structure's total on-disk size $N H_k(x) +
+o(N)$ is counted in full (tables included); there is no hidden side
+storage. It is the constant-factor compressibility of the RNR regime
+($h(X) = \Theta(1) > 0$ a fixed positive constant, hence $S_{\mathrm{tot}} = \Theta(N)$) that
+makes $O(1)$ entropy-compressed access possible --- in sharp contrast to
+the \emph{exponentially} compressible regime ($L = 2^{\sqrt n}$, grammar
+size $n$) where Chen--Verbin--Yu (\emph{Data structure lower bounds on
+random access to grammar-compressed strings}, ICALP 2012; journal version
+\emph{Algorithmica}) prove an $\Omega(n^{1/2 - \varepsilon})$ query lower
+bound. The RNR product bound is thus architecture-specific, not
+information-theoretic. \emph{(ii) The escape pays at build time and in
+generality.} Ferragina--Venturini fixes the model to fixed-order
+empirical statistics and bakes them into the index; it forfeits the
+RNR framework's central feature of plugging in an \emph{arbitrary}
+$W$-bounded neural predictor $M$ whose conditionals are not order-$k$
+Markov for any fixed $k$. For a genuine neural $M$ (a transformer
+LM) the order-$k$ surrogate $H_k$ that Ferragina--Venturini compresses
+to satisfies $H_k(x) \to h(X)$ only as $k \to \infty$, while the
+lower-order term $O(N k \log\sigma / \log_\sigma N)$ blows up as
+$k$ grows; so for predictors that genuinely beat all finite-order Markov
+models, the Ferragina--Venturini rate is \emph{not} Shannon-near at any
+fixed $k$ and the escape closes. The refutation therefore holds for
+finite-order-Markov-expressible sources but \emph{not} for the
+neural-predictor sources that primarily motivate RNR; on the latter, no
+$O(1)$-access escape is known and the question reverts to open (see
+§13.2). \emph{(iii) The $\mathrm{cost}(M)$ factor is non-universal
+regardless.} Even setting Ferragina--Venturini aside, a scheme may
+\emph{partially} pre-cache: store $M(C_i)$ at the $o(N)$ positions of a
+sparse set $\Pi$ with $|\Pi| \log_2\sigma = o(N)$ (rate-respecting).
+Queries landing in $\Pi$ skip the predictor, violating Theorem 7.27's
+per-query $K\,\mathrm{cost}(M)$ bound (Lemma 7.27a, which required
+\emph{every} window position to be recomputed). Hence no bound with $C$
+measured in predictor \emph{evaluations} can carry $\mathrm{cost}(M)$
+universally; the factor survives only when dense recomputation is
+forced, which is the predictor-faithful condition of Definition 7.27b.
+
+\textbf{Definition 7.27b (Predictor-faithful decoder).} Fix a decode
+window granularity $K$ (the analogue of sub-block spacing; for a general
+scheme, $K$ is the number of consecutive source positions whose joint
+decoding a single query triggers). A decoder $\mathcal{D}$ for a scheme
+with predictor $M$ is \emph{$\epsilon$-predictor-faithful} if, on every
+first-access single-byte query, at most an $\epsilon$ fraction of the
+$K$ positions in the triggered window have their predictor output
+$M(C_i)$ or recurrent state available verbatim in the archive (so that
+the decoder may read it without an $M$-evaluation); equivalently, the
+decoder must \emph{recompute} $M$ at $\geq (1-\epsilon) K$ of the
+window positions. The archive may still store the seek index, the
+compressed payload, and $o(N)$-density auxiliary data; what
+$\epsilon$-faithfulness forbids is a \emph{dense} stored shadow of the
+predictor's outputs/states across the window. Equivalently:
+$\epsilon$-faithful decoders are those that retain the RNR
+predictor-sequential decode architecture (up to an $\epsilon$-sparse
+cache), as opposed to model-free succinct indices like Ferragina
+--Venturini ($\epsilon = 1$: the predictor is never invoked at query
+time, so the faithful bound below is vacuous --- correctly, since that
+is exactly the escape scheme of Theorem 7.27$'$).
+
+\textbf{Corollary 7.27c (Predictor-faithful product bound: $\mathrm{cost}
+(M)$ survives, strictly beyond sub-blocks).} \emph{Let $(A,
+\mathcal{D})$ be an $\epsilon$-predictor-faithful scheme (Definition
+7.27b) with a $W$-bounded or non-$W$-bounded predictor $M$ of
+per-evaluation cost $\mathrm{cost}(M)$, achieving the Theorem 7.2
+Shannon-near rate, with seek-index-style storage of $m = \lceil N/K
+\rceil$ bit-offset entries. Let $C_{\mathrm{work}}(K)$ be the worst-case
+first-access per-query \emph{computational work} (predictor evaluations
+$\times \mathrm{cost}(M)$ plus bit operations) and let $S(K)$ be the
+seek-index storage in bits. Then}
+\[
+  C_{\mathrm{work}}(K) \;\geq\; (1 - \epsilon)\, K \cdot \mathrm{cost}(M),
+  \qquad
+  S(K) \;\geq\; \frac{N}{K} \cdot \bigl\lceil \log_2(N h_{\min})
+  \bigr\rceil,
+\]
+\emph{and therefore}
+\[
+  C_{\mathrm{work}}(K) \cdot S(K) \;\geq\; (1 - \epsilon)\, N \cdot
+  \mathrm{cost}(M) \cdot \bigl\lceil \log_2(N h_{\min}) \bigr\rceil
+  \;=\; (1 - \epsilon)(1 - o(1))\, N \cdot \mathrm{cost}(M) \cdot \log_2 N.
+\]
+\emph{The predictor-faithful class strictly contains: (a) Definition
+10.3 sub-block schemes ($\epsilon = 0$: nothing is stored beyond the
+bit-offset index, so every window position is recomputed --- this
+recovers Theorem 7.27 exactly); and (b) Theorem 10.4 state-snapshot
+schemes, which store $\Theta(N/K) = o(N)$ recurrent-state snapshots,
+hence have predictor state available at only the $m = N/K$ sync points
+and must recompute $M$ at the other $K-1$ positions per window, giving
+$\epsilon = O(1/K) \to 0$. State-snapshot schemes are \emph{not}
+sub-block schemes (they store source-dependent recurrent state, exiting
+Definition 10.3, cf.\ the open-extension note after Lemma 5.1e), so
+Corollary 7.27c is a strict generalisation of Theorem 7.27 within the
+predictor-faithful regime. The class \emph{excludes} the Ferragina
+--Venturini escape ($\epsilon = 1$), consistent with Theorem 7.27$'$.}
+
+\emph{\textbf{Proof.}} The storage bound on $S(K)$ is Lemma 7.27b
+verbatim (it depends only on the seek index having $m = \lceil N/K
+\rceil$ bit-offset entries into a repair stream of length $L(R) \geq N
+h_{\min}$, which holds for any scheme with a sync-point bit-offset
+index, sub-block or not). For the work bound, by $\epsilon$
+-faithfulness the decoder reads stored $M$-data at $\leq \epsilon K$ of
+the $K$ window positions; at the remaining $\geq (1-\epsilon)K$
+positions it has no stored predictor output or state and, by the
+black-box no-shortcut property of $M$ (Definition 10.2, exactly as in
+the proof of Lemma 7.27a: any skipped or approximated $M$-evaluation
+diverges the entropy-coder state by Theorem 10.1 bit-exactness and
+corrupts the decoded byte), it must perform a fresh $M$-evaluation.
+Hence $C_{\mathrm{work}}(K) \geq (1-\epsilon) K \cdot \mathrm{cost}(M)$.
+Multiplying the two bounds and using $K \cdot \lceil N/K \rceil \geq N$
+gives the product. For (a), $\epsilon = 0$ reduces to Theorem 7.27. For
+(b), a state-snapshot scheme stores the recurrent state at the $m =
+\lceil N/K \rceil$ sync points and only there; on a first-access query
+to a window of $K$ positions, the snapshot provides the boundary state
+at the single sync point $P = K\lfloor p/K\rfloor$, after which the
+decoder must run $M$ forward at every position in $[P, p]$ (Theorem
+10.4 proof: ``decode forward as in Theorem 10.3, cost $O((K+k)\,
+\mathrm{cost}(M))$''), i.e.\ at $\geq K - 1$ of the $K$ positions; thus
+the fraction with stored predictor \emph{output} available is $0$ and
+the fraction with stored \emph{state} available is $1/K$, giving
+$\epsilon \leq 1/K \to 0$ and $C_{\mathrm{work}}(K) \geq (1 - 1/K) K\,
+\mathrm{cost}(M) = (K-1)\mathrm{cost}(M)$. \hfill$\blacksquare$
+
+\emph{Consistency and significance.} Corollary 7.27c reproduces Theorem
+7.27's product at $\epsilon = 0$ and extends it to the non-sub-block
+state-snapshot architecture (Theorem 10.4) at $\epsilon = O(1/K)$, so
+the $\sqrt N$ balance point $K^{**} = \sqrt{N \log_2 N / \mathrm{cost}
+(M)}$ and the T7.5 operational balance $K^{*} = \sqrt{\gamma N /
+(\alpha Q)}$ both lie on the predictor-faithful iso-product curve (under
+the worst-case identification $\gamma \leftrightarrow \log_2 N$,
+$\alpha Q \leftrightarrow \mathrm{cost}(M)$); the verify script
+\texttt{thm\_7\_27\_prime\_general\_scheme\_converse.py} checks this
+identity at machine precision and exhibits the Ferragina--Venturini
+escape numerically (its $C \cdot S = \Theta(N)$ sits a factor
+$\mathrm{cost}(M)\log N$ below the faithful product). The honest
+resolution of the §13.2 open problem is therefore three-part:
+\emph{(1)} the unrestricted general-scheme product bound is \emph{false}
+for finite-order-Markov-expressible sources (Theorem 7.27$'$: the
+Ferragina--Venturini structure achieves Shannon-near rate with $O(1)$
+query and no query-time predictor calls); \emph{(2)} the
+$\mathrm{cost}(M)$-bearing product $C_{\mathrm{work}} \cdot S =
+\Omega(N\,\mathrm{cost}(M)\log N)$ holds exactly on the
+predictor-faithful class (Corollary 7.27c), which strictly contains the
+sub-block and state-snapshot architectures and is the maximal class for
+which dense predictor recomputation is forced; \emph{(3)} for genuinely
+neural predictors $M$ whose conditionals are not finite-order Markov,
+the Ferragina--Venturini escape closes (its $H_k$ surrogate is not
+Shannon-near; Remark 7.27d(ii)), so whether \emph{some other} model-free
+succinct index can attain Shannon-near rate with $o(\sqrt{N})$ query for
+such sources remains genuinely open --- now sharpened from ``is there a
+general converse?'' to ``is there a model-free Shannon-near
+random-access structure for non-Markov neural-compressible sources?''.
+
 
 \textbf{Theorem 7.28 (Non-asymptotic CLT for $L^{\mathrm{rep}}$:
 Berry--Esseen rate under exp-mixing).} \emph{Adopt the hypotheses of
@@ -10985,25 +11262,53 @@ listed below.)
   question; the qualitative scaling is fixed.
 \item
   General-scheme space-time converse for random access
-  (\emph{Theorem 7.27 sub-block restriction}). Theorem 7.27
-  establishes a tight product bound $C(K) \cdot S(K) \geq
+  (\emph{Theorem 7.27 sub-block restriction}) --- \textbf{resolved
+  negatively for finite-order-Markov sources; partially open for neural
+  predictors} (Theorem 7.27$'$, Remark 7.27d, Corollary 7.27c).
+  Theorem 7.27 establishes a tight product bound $C(K) \cdot S(K) \geq
   (1 - o(1)) N \cdot \mathrm{cost}(M) \cdot \log N$ for any
-  sub-block-based random-access scheme satisfying
-  Definition 10.3. The converse for the \emph{general} random-access
-  class --- arbitrary decoders that need not partition the archive
-  into sub-blocks --- is open. The natural candidates for such
-  schemes are succinct-data-structure (Munro-Raman 2001) or
-  cell-probe (Pătraşcu-Demaine 2006 \emph{SIAM J.\ Comput.}\
-  35(4):932; Larsen 2012 \emph{52nd FOCS}, pp.\ 293--301)
-  decoders with non-sequential predictor invocation, and the
-  open question is whether such schemes can strictly beat the
-  $N \cdot \mathrm{cost}(M) \cdot \log N$ product lower bound
-  while still achieving the Theorem 7.2 Shannon-near rate
-  $L^{\mathrm{rep}}_{\mathrm{RNR}} = N h(X) + o(N)$. A negative
-  answer (impossibility) would close the random-access converse
-  in full generality; a positive answer (constructive example)
-  would refine Theorem 7.27's scope and motivate a new
-  optimization regime beyond the $K = \sqrt{N}$ sub-block balance.
+  sub-block-based random-access scheme satisfying Definition 10.3. The
+  question whether this product holds for the \emph{general}
+  random-access class --- arbitrary decoders that need not partition the
+  archive into sub-blocks --- is now settled in three honest pieces.
+  \emph{(1) Refutation for Markov-expressible sources (Theorem 7.27$'$,
+  proved).} The universal product is \emph{false}: for stationary
+  order-$k$ Markov sources, the Ferragina--Venturini (SODA 2007;
+  \emph{Theoret.\ Comput.\ Sci.}\ 372(1):115) entropy-bounded storage
+  structure stores the realised string in $N h(X) + o(N)$ bits (Shannon
+  -near, by the Markov AEP $H_k \to h(X)$) and answers any single-byte
+  query in $O(1)$ time with \emph{zero} query-time predictor
+  evaluations, so $C \cdot S = O(N) = o(N\,\mathrm{cost}(M)\log N)$. The
+  sub-block restriction of Theorem 7.27 is thus essential, not a
+  technical artefact: the product is a property of the
+  predictor-sequential decode architecture. \emph{(2) Positive maximal
+  class (Corollary 7.27c, proved).} The $\mathrm{cost}(M)$-bearing
+  product $C_{\mathrm{work}} \cdot S \geq (1-\epsilon)(1-o(1)) N \cdot
+  \mathrm{cost}(M) \cdot \log N$ holds exactly on the
+  \emph{predictor-faithful} class (Definition 7.27b: dense predictor
+  recomputation is forced, the decoder storing $M$-outputs/states at no
+  more than an $\epsilon$ fraction of any decode window). This class
+  \emph{strictly contains} both Definition 10.3 sub-block schemes
+  ($\epsilon = 0$) and Theorem 10.4 state-snapshot schemes ($\epsilon =
+  O(1/K)$, the natural non-sub-block witness), and \emph{excludes} the
+  Ferragina--Venturini escape ($\epsilon = 1$). \emph{(3) The residual
+  open problem (genuinely open).} The refutation in piece (1) relies on
+  the source being finite-order Markov, so that $H_k \to h(X)$ at fixed
+  $k$. For \emph{genuinely neural} predictors $M$ whose conditionals are
+  not finite-order Markov, the Ferragina--Venturini surrogate $H_k$ is
+  not Shannon-near at any fixed $k$ (Remark 7.27d(ii)), and the escape
+  closes. Whether \emph{some other} model-free succinct random-access
+  structure can attain the Theorem 7.2 Shannon-near rate with
+  $o(\sqrt{N})$ query time --- and hence beat the predictor-faithful
+  product --- for non-Markov neural-compressible sources is open. The
+  open question is thereby \emph{sharpened} from ``is there a general
+  converse?'' (answer: not universally --- piece (1)) to ``is there a
+  model-free Shannon-near random-access structure for non-finite-order
+  -Markov sources, or does some converse force $\Omega(\sqrt N)$ query
+  there?''. A negative answer (no such structure) would restore a
+  general converse on the neural-predictor sources that motivate RNR; a
+  positive answer would exhibit a second escape beyond Ferragina
+  --Venturini.
 \end{itemize}
 
 \textbf{13.3 Out of scope: engineering deferrals}
@@ -11288,6 +11593,104 @@ either bypass Charikar's encoding entirely or supply a hardness gap
 whose preserved form is not multiplicatively diluted by the encoding
 (e.g., via gap amplification on the source string rather than on
 the underlying graph).
+
+\emph{Status update 2026-05-29 (attack vector~3, ``$K$-escape budget'',
+closed negatively; with a new alphabet-floor sharpening that
+isolates the residual obstacle as the ceiling discontinuity).} Item~3
+proposed proving an exponential $K$-escape \emph{budget}: that any
+grammar $G$ for a Berman--Karpinski NO source $s$ with $K(G) \leq
+K_{\rm YES}/2$ must pay $\Omega(L_{\rm sym})$ extra symbols, the budget
+dominating the log-factor saving and thereby closing OP2(a). We
+attempted the budget lower bound and find it \emph{does not dominate},
+for three independent reasons; the attack vector is closed negatively.
+We record a positive by-product (the alphabet-floor observation)
+that reduces the residual obstacle to exactly the ceiling-jump
+discontinuity already flagged for Conjecture 6.8d.
+
+\emph{(a)~The budget is real but additive $O(N)$, not a
+gap-protector.} The Charikar source $s$ has length $|s| = \Theta(N)$
+with $N := |V|$, alphabet $|\Sigma| = \Theta(N)$ (one terminal per
+vertex), and Charikar-optimal grammar $L^*_{\rm sym}(s) = 15|V| +
+3|E| + \mathrm{minVC}(H) = \Theta(N)$ realised at $K^*_{\rm sym} =
+\Theta(N)$. Because every vertex name $v_i$ is a \emph{distinct}
+terminal and each occurs only $\mathrm{occ}(v_i) = 3 + \deg(v_i) =
+O(1)$ times (max-degree-3), the marginal value of a vertex
+nonterminal $A_i \to \#v_i$ is $\mathrm{occ}(v_i) - 2 = 1 +
+\deg(v_i) = O(1)$ symbols. Hence dropping $\Theta(N)$ nonterminals to
+reach $K \leq K_{\rm YES}/2$ inflates $L_{\rm sym}$ by only
+$\Theta(N) \cdot O(1) = O(N)$ symbols --- a constant-\emph{factor}
+increase, not a super-constant blowup. This reproduces and rigorously
+confirms the prior finding $L_{\rm sym}(K = N/2) = O(N)$ and the
+Codex ``Pareto-frontier-flat'' analysis (the achievable $L_{\rm
+sym}(K)$ frontier has slope $O(1)$ in the partial-cover region): no
+exponential or super-linear budget exists. The required theorem
+``$L_{\rm sym}(G) \geq (1 + \Omega(1)) L^*_{\rm sym}(G_{\rm NO})$
+\emph{forced} by $K \leq K_{\rm YES}/2$'' is \emph{false} --- the
+infimum of $L_{\rm sym}$ over $K \leq K_{\rm YES}/2$ stays within a
+$1 + o(1)$ factor of $L^*_{\rm sym}$ because $K_{\rm YES}/2 =
+\Theta(N) = \Theta(K^*_{\rm sym})$ already lies in the flat region.
+
+\emph{(b)~Vector~3 targets the wrong $K$ regime; the relevant escape
+is deep and symmetric.} At $K = K_{\rm YES}/2 = \Theta(N)$ the
+log-factor saving is negligible: with $|\Sigma| = \Theta(N)$ and
+$K_{\rm YES} = \Theta(N)$, both $\log_2(|\Sigma| + K_{\rm YES})$ and
+$\log_2(|\Sigma| + K_{\rm YES}/2)$ equal $\log_2 N + O(1)$, so the
+multiplicative log saving from halving $K$ is $1 + O(1/\log N) \to 1$.
+A budget is therefore not even \emph{needed} at $K_{\rm YES}/2$:
+escape to that regime yields essentially no bit-cost benefit, so the
+theorem of item~3 (even if true) would not close OP2(a). The
+bit-cost-relevant escape is the \emph{deep} regime $K = o(N)$ (down
+to $O(1)$), where the log-factor saving is largest --- but even there
+it is only $\log_2(|\Sigma| + K_{\rm YES})/\log_2|\Sigma| = 1 +
+O(1/\log N)$, since $|\Sigma| = \Theta(N)$ floors $\log_2(|\Sigma| +
+K)$ at $\log_2 N - O(1)$ even at $K = O(1)$ (see (c)). Moreover the deep
+escape acts \emph{symmetrically} on the YES and NO sources: they
+share the identical vertex-block and edge-gadget structure (differing
+only in the $\mathrm{minVC}$ cover term), so any $L_{\rm sym}$
+inflation from deep escape raises both bit-costs and does \emph{not}
+differentially protect the $\mathrm{minVC}$-driven $\gamma_{\rm SGP}$
+gap. Whether the $\mathrm{minVC}$ signal even \emph{persists} in
+$L_{\rm sym}(K)$ at deep $K$ (as opposed to appearing only at
+$K = \Theta(N)$) is precisely the unresolved Pareto-frontier question;
+the budget argument does not settle it in either direction.
+
+\emph{(c)~Alphabet-floor sharpening, and why it fails by exactly the
+ceiling discontinuity.} A by-product of (a)--(b) is a cleaner
+reduction of the residual obstacle. Since $|\Sigma| = \Theta(N)$
+\emph{floors} the per-symbol cost at $\log_2|\Sigma| = \log_2 N -
+O(1)$ regardless of $K$, and $K \leq K^*_{\rm sym} = \Theta(N)$
+\emph{caps} it at $\log_2 N + O(1)$, the continuous log-factor is
+pinned to $\log_2 N \cdot (1 \pm O(1/\log N))$ for \emph{every}
+feasible $K$. Combined with $\min_K L_{\rm sym}^{\rm branch}(K) =
+L^*_{\rm sym}({\rm branch})$ (the escape never reduces the
+symbol-count optimum below the Charikar value, and the $O(1/\log N)$
+log saving cannot pay for any constant-factor $L_{\rm sym}$
+increase), this gives, for the \emph{continuous} objective,
+$L^{\rm cont}\text{-OPT}({\rm branch}) = L^*_{\rm sym}({\rm branch})
+\cdot \log_2 N \cdot (1 \pm O(1/\log N))$ and hence
+gap${} = \gamma_{\rm SGP} \cdot (1 \pm O(1/\log N))$ --- an
+independent re-derivation of Lemma 6.8e via the alphabet floor rather
+than the first-order $\log b / \log a$ expansion. The discrete
+objective, however, is \emph{not} closed by this: the ceiling
+$\lceil \cdot \rceil$ contributes a full additive bit, i.e.\ a
+\emph{multiplicative} $1 \pm O(1/\log N)$ perturbation, and
+$\gamma_{\rm SGP} - 1 = 1/8568 < 1/\log_2 N$ for \emph{all} $N <
+2^{8568}$ (an astronomical threshold). Thus a single ceiling jump ---
+the NO optimum crossing a power-of-two boundary of $|\Sigma| + K$
+below the YES optimum --- erases the entire $\gamma_{\rm SGP}$ gap at
+those instance sizes, and the reduction is not gap-preserving across
+all $N$. This is exactly the Gemini-flagged ceiling-discontinuity
+blocker behind the weak form of Conjecture 6.8d. \emph{Net:} the
+$K$-escape budget does not dominate (reasons (a),(b)); the
+alphabet-floor refinement closes the \emph{continuous} case (already
+Lemma 6.8e) but the \emph{discrete} ceiling case --- the actual
+residual of OP2(a) --- survives, blocked by the same ceiling
+discontinuity as before. Attack vector~3 is closed negatively;
+OP2(a) (discrete bit-cost) remains open. Verification script:
+\texttt{scripts/verify/op2a\_k\_escape\_budget\_check.py} (budget
+additivity, flat Pareto slope, $O(1/\log N)$ log saving at $K_{\rm
+YES}/2$, and the ceiling-jump gap erasure for $N < 2^{8568}$,
+all reproduced numerically).
 
 \emph{What would constitute closure:} a polynomial-time
 $(\gamma_{\rm bit} - \varepsilon)$-approximation algorithm for some
