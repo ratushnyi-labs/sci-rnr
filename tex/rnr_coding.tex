@@ -8178,10 +8178,15 @@ verbatim, or schemes based on succinct data structures with
 non-sequential predictor invocation), the product bound does
 \emph{not} apply directly --- such schemes may sidestep the
 $K \cdot \mathrm{cost}(M)$ per-query lower bound by avoiding
-sequential predictor evaluation entirely, at the cost of
-abandoning the Shannon-near rate of Theorem 7.2. The general
-converse (across all random-access schemes, not just sub-block) is
-listed as an open problem in §13.2.
+sequential predictor evaluation entirely. Crucially, this can be done
+\emph{without} abandoning the Shannon-near rate: Theorem 7.27$'$ below
+exhibits the Ferragina--Venturini entropy-bounded structure, which
+attains rate $N h(X) + o(N)$ with $O(1)$ query and no query-time
+predictor calls for finite-order-Markov sources, refuting the
+general-scheme converse. The sub-block restriction is therefore
+essential; the §13.2 open problem is resolved negatively for
+Markov-expressible sources (Theorem 7.27$'$) and remains open only for
+genuinely neural predictors (Remark 7.27d).
 
 \emph{\textbf{Proof.}} The proof combines two component lower bounds:
 (a) per-query work, and (b) sync-overhead storage.
@@ -8301,7 +8306,7 @@ subject of Theorems 7.20 / 7.24 / 7.26 (which give expected and
 tail bounds for warm-cache cost), and Theorem 7.27 supplies the
 matching cold-start converse.
 
-\emph{Non-sub-block converse (open).} The theorem applies only to
+\emph{Non-sub-block converse (resolved negatively; see Theorem 7.27$'$ below).} The theorem applies only to
 schemes that fit Definition 10.3's sub-block template
 (sync-point-aligned seek index containing bit-offsets only,
 predictor-state reset at each sync point, sequential decode from
