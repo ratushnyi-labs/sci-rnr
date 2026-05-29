@@ -8347,6 +8347,261 @@ versus seek-index storage), but they are of the same product-tradeoff
 type and lend literature precedent to the sub-block-restricted
 converse.
 
+\textbf{Theorem 7.28 (Non-asymptotic CLT for $L^{\mathrm{rep}}$:
+Berry--Esseen rate under exp-mixing).} \emph{Adopt the hypotheses of
+Theorem 7.25: $X = (X_1, \ldots, X_N)$ stationary $\alpha$-mixing with
+$\alpha_X(k) \leq C_\alpha e^{-c k}$; per-position cost
+$\ell_i := -\log_2 Q_i(X_i \mid \mathrm{ctx}_i)$ bounded,
+$0 \leq \ell_i \leq B = \log_2(1/\eta)$, depending on a window of $W_N$
+coordinates of $X$; with marginal variance
+$\sigma_\ell^2 := \mathrm{Var}(\ell_1)$ and long-run variance
+\[
+  v^2 \;:=\; \sigma_\ell^2 + 2 \sum_{k \geq 1}
+  \mathrm{Cov}(\ell_0, \ell_k) ,
+\]
+which is finite and strictly positive (the series converges absolutely
+by Davydov's inequality under exp-mixing; positivity is the standard
+non-degeneracy assumption, satisfied whenever $(\ell_i)$ is not an
+a.s.\ coboundary). Let $\Phi$ be the standard normal CDF and
+$\kappa := m_3 / (B\, v^2)$ the dimensionless third-moment ratio, where
+$m_3 := \mathbb{E}|\ell_1 - \mathbb{E}\ell_1|^3 \leq B \sigma_\ell^2$
+(so $\kappa \leq \sigma_\ell^2 / v^2$). Then there is a constant
+$C_{\mathrm{BE}}$, depending only on $(c, C_\alpha)$ and on $\kappa$,
+such that for all $N \geq 2$,
+\[
+  \sup_{x \in \mathbb{R}}
+  \left|
+    \Pr\!\left(
+      \frac{L^{\mathrm{rep}}(X) - \mathbb{E}[L^{\mathrm{rep}}(X)]}
+           {\sqrt{N\, v^2}}
+      \leq x
+    \right)
+    - \Phi(x)
+  \right|
+  \;\leq\;
+  C_{\mathrm{BE}} \cdot
+  \frac{B \,(\log N)^2}{v \,\sqrt{N}} .
+\]
+Equivalently, the Kolmogorov distance between the law of the normalised
+repair length and the standard Gaussian is $O\!\bigl(N^{-1/2}
+(\log N)^2\bigr)$, the implied constant scaling linearly in the
+dependence ratio $\kappa = \Theta(\sigma_\ell^2/v^2)$.}
+
+\emph{Scope, significance, and the log factor.} Theorem 7.28
+\emph{complements} Theorem 7.25: where T7.25 gives a one-sided
+\emph{tail bound} (an upper bound on $\Pr(|L^{\mathrm{rep}} - \mu|
+\geq \varepsilon)$), T7.28 gives a two-sided \emph{distributional
+approximation} --- the full CDF of $L^{\mathrm{rep}}$ is uniformly
+close to a Gaussian. The operational payoff is \emph{exact} two-sided
+confidence intervals: at confidence $1 - \delta$,
+$L^{\mathrm{rep}} \in \mathbb{E}[L^{\mathrm{rep}}] \pm
+z_{1-\delta/2}\sqrt{N v^2}$ where $z_{1-\delta/2} = \Phi^{-1}(1 -
+\delta/2)$ is the Gaussian quantile, valid up to the additive CDF
+error above. For moderate $\delta$ this is strictly tighter than the
+Bernstein band of T7.25, because the Gaussian quantile $z_{1-\delta/2}$
+replaces the Bernstein factor $\sqrt{2\log(2/\delta)}$ (at
+$\delta = 10^{-6}$: $z \approx 4.89$ versus $\sqrt{2\log(2/\delta)}
+\approx 5.27$, a $\approx 7\%$ reduction in the deviation scale before
+constants).
+
+The crucial point --- and the reason this is \emph{not} a routine
+``CLT holds'' statement --- is the \emph{explicit log factor}. For
+\emph{independent} summands Berry--Esseen gives the log-free rate
+$O(N^{-1/2})$, but for strongly mixing summands the best known (and,
+for the Kolmogorov metric, generally unavoidable) rate carries a
+$(\log N)^2$ correction. This is Tikhomirov's (1980) theorem: under
+$\alpha(k) \leq K e^{-\beta k}$ and a finite $(2+\delta)$ absolute
+moment, the rate is $O\bigl(N^{-\delta/2}(\log N)^{1+\delta}\bigr)$ for
+$0 < \delta \leq 1$; the bounded case $|\ell_i| \leq B$ has all moments,
+so we take $\delta = 1$ and obtain $O(N^{-1/2}(\log N)^2)$. (The same
+leading term $A N^{-1/2}(\log N)^2$ appears in the recent mixing
+Berry--Esseen synthesis; cf.\ the survey rate in
+\texttt{arXiv:2604.03712}, Remark~1. Sunklodas 2007 obtains the milder
+$O(N^{-1/2}\log N)$ but only for \emph{smooth} / Lipschitz test
+functions; passing to indicator test functions --- i.e.\ Kolmogorov
+distance --- costs the extra logarithm.) A statement of T7.28 with a
+bare $N^{-1/2}$ rate would be \emph{incorrect}: the verify script shows
+the $(\log N)^2 \approx 429$ factor at $N = 10^9$ inflates the naive
+estimate by two orders of magnitude.
+
+\emph{Reliability regime (honest limitation).} With a literature-order
+constant $C_{\mathrm{BE}} \in [1, 5]$, the certified CDF error at the
+enwik9 scale ($N = 10^9$, $v^2 \approx 2.1 \cdot 10^4$, $v \approx
+145$, $B = 32$) is $D_N = C_{\mathrm{BE}} B (\log N)^2 / (v\sqrt{N})
+\approx 3 \cdot 10^{-3}$ to $1.5 \cdot 10^{-2}$. Under the usual rule
+that a Gaussian tail estimate at level $\delta$ is trustworthy only
+when $\delta \gtrsim 10\,D_N$, the \emph{rigorous} worst-case bound
+certifies the Gaussian CI only for $\delta \gtrsim 1.5 \cdot 10^{-1}$
+--- so for the extreme tail $\delta = 10^{-6}$, T7.28's certificate is
+\emph{vacuous} and Theorem 7.25's Bernstein bound remains the rigorous
+tool. (This estimate already treats $C_{\mathrm{BE}}$ as order-unity;
+the worst-case $W_N$-dependence of the Tikhomirov constant noted in the
+proof, Step 1, could inflate it further, only reinforcing the deferral
+to T7.25 for rigorous extreme tails.) We state this limitation plainly.
+The redeeming empirical fact
+(verified below) is that the \emph{realised} constant is far smaller
+than the worst-case $C_{\mathrm{BE}}$ (consistent with $\kappa \leq
+\sigma_\ell^2/v^2 \approx 1$ and $B/v \approx 0.22$ at enwik9): the
+simulated KS statistic obeys $\mathrm{KS} \cdot \sqrt{N} / (\log N)^2
+\approx 0.01$, giving an \emph{actual} CDF error $\approx 1.4 \cdot
+10^{-4}$ at enwik9 --- roughly $100\times$ below the certified worst
+case --- so the Gaussian CI is \emph{practically} accurate for moderate
+$\delta \gtrsim 10^{-3}$, the regime T7.28 is intended for. T7.28 is
+thus the sharp inner estimate (exact CIs for moderate $\delta$); T7.25
+is the rigorous outer envelope (certified tails for extreme $\delta$);
+the two are numerically consistent (below).
+
+\emph{\textbf{Proof.}} The argument has three steps: (1) the cost
+sequence inherits exp-mixing; (2) it satisfies the hypotheses of a
+Berry--Esseen theorem for strongly mixing sequences; (3) the
+moving-function window only shifts the mixing lag and does not alter
+the rate.
+
+\emph{Step 1 (mixing inheritance).} Exactly as in the proof of
+Theorem 7.25: for $k > W_N$, $\ell_i$ and $\ell_{i+k}$ are functions of
+disjoint coordinate windows of $X$, so $\alpha_\ell(k) \leq
+\alpha_X(k - W_N) \leq C_\alpha e^{-c(k - W_N)} = (C_\alpha e^{c W_N})
+e^{-c k}$ (Bradley 2007, Vol.~1, §5, measurable-function inheritance);
+for $k \leq W_N$ the trivial bound $\alpha_\ell(k) \leq 1$ is dominated
+by $(\max(1,C_\alpha) e^{c W_N}) e^{-c k}$, since the latter is
+$\geq e^{c(W_N - k)} \geq 1$ for $k \leq W_N$. Hence $(\ell_i)$ is
+stationary $\alpha$-mixing with exponential rate $\alpha_\ell(k) \leq
+C'_\alpha e^{-c k}$, $C'_\alpha := \max(1, C_\alpha) e^{c W_N}$. The
+mixing constant is inflated by the window-dependent factor $e^{c W_N}$
+but the \emph{rate} $c$ is preserved; this is the only place the
+moving-function structure enters, and it affects $C_{\mathrm{BE}}$
+(through $C'_\alpha$), not the $N$-dependence.
+
+A caution on this repackaging. Writing $\alpha_\ell(k) \leq C'_\alpha
+e^{-ck}$ with $C'_\alpha = e^{c W_N}$ is legitimate but \emph{lossy}:
+the BE constant of Tikhomirov's theorem (and of the
+\texttt{arXiv:2604.03712} synthesis) depends polynomially on the
+mixing prefactor $K = C'_\alpha$, so this packaging would make the
+\emph{rigorous} worst-case constant scale like $e^{O(c W_N)}$ ---
+catastrophic at $W_N = 2048$. The non-lossy quantity is the
+\emph{cumulative} mixing budget $\sum_{k \geq 1} \alpha_\ell(k) \leq
+W_N + \sum_{j \geq 1}\alpha_X(j) \leq W_N + C_\alpha/(e^c - 1)$, which
+is \emph{linear} in $W_N$; dependence-measure formulations of
+Berry--Esseen (Jirak 2016, \emph{Ann.\ Probab.}\ 44(3):2024--2063) are
+controlled by such cumulative sums, suggesting the constant grows only
+polynomially in $W_N$. We do not pin down the exact $W_N$-dependence
+of $C_{\mathrm{BE}}$ here; for the operational claim this does not
+matter, because (a) the \emph{rate in $N$} is unaffected, and (b) the
+$\delta$-regime in which T7.28 is recommended (moderate $\delta$, where
+the \emph{empirically realised} constant governs) is exactly the regime
+where the worst-case $W_N$-blowup is irrelevant. For rigorous
+extreme-tail guarantees we defer to T7.25 regardless (see the
+reliability paragraph and Remark 7.28b). The exact $W_N$-scaling of the
+optimal BE constant for moving-window functionals is an open
+refinement.
+
+\emph{Step 2 (Berry--Esseen for mixing).} The centred sequence
+$Y_i := \ell_i - \mathbb{E}[\ell_i]$ is stationary, bounded
+($|Y_i| \leq B$, hence has a finite third absolute moment,
+$\delta = 1$), $\alpha$-mixing with $\alpha_\ell(k) \leq C'_\alpha
+e^{-ck}$, and has strictly positive long-run variance $v^2 =
+\lim_{N} N^{-1}\mathrm{Var}(L^{\mathrm{rep}}) > 0$ (the limit exists
+and equals $\sigma_\ell^2 + 2\sum_{k} \mathrm{Cov}(\ell_0,\ell_k)$ by
+stationarity and absolute summability of the covariances;
+Ibragimov--Linnik 1971, Theorem 18.5.3). These are precisely the
+hypotheses of Tikhomirov's Berry--Esseen theorem (Tikhomirov 1980,
+\emph{Theory Probab.\ Appl.}\ 25(4):800--818, the main theorem for
+$\alpha$-mixing sequences): for an exponentially $\alpha$-mixing
+stationary sequence with finite $(2+\delta)$ absolute moment,
+$0 < \delta \leq 1$, and $\mathrm{Var}(S_N) \sim N v^2$ with $v^2 > 0$,
+\[
+  \sup_x \left| \Pr\!\Bigl( \tfrac{S_N - \mathbb{E} S_N}{\sqrt{N v^2}}
+  \leq x \Bigr) - \Phi(x) \right|
+  \;\leq\; A_{\delta}\, \frac{m_{2+\delta}}{v^{2+\delta}}\,
+  N^{-\delta/2} (\log N)^{1+\delta} ,
+\]
+where $m_{2+\delta} := \mathbb{E}|Y_1|^{2+\delta}$ and $A_\delta$
+depends only on $(\delta, c, C'_\alpha)$ (the explicit form of the
+dependence is in Tikhomirov's Theorem; see also the exposition in Rio
+2017, \emph{Asymptotic Theory of Weakly Dependent Random Processes},
+Ch.~7, and the mixing synthesis in \texttt{arXiv:2604.03712}).
+Specialising to $\delta = 1$ and $S_N = L^{\mathrm{rep}}$: the third
+absolute moment satisfies $m_3 = \mathbb{E}|Y_1|^3 = \mathbb{E}\bigl[
+|Y_1|\, Y_1^2 \bigr] \leq B\, \mathbb{E}[Y_1^2] = B\, \sigma_\ell^2$
+(using $|Y_1| \le B$, valid for the nonnegative cost
+$0 \le \ell_i \le B$ since then $|Y_1| = |\ell_1 - \mathbb{E}\ell_1|
+\le B$); hence the moment ratio is
+\[
+  \frac{m_3}{v^3} \;\leq\; \frac{B\, \sigma_\ell^2}{v^3}
+  \;=\; \frac{B}{v}\cdot \frac{\sigma_\ell^2}{v^2}
+  \;=\; \frac{B}{v}\cdot \kappa' , \qquad
+  \kappa' := \frac{\sigma_\ell^2}{v^2} ,
+\]
+a \emph{dimensionless} factor. Writing $C_{\mathrm{BE}} := A_1 \kappa'$
+(an absolute constant once the mixing rate $(c, C'_\alpha)$ and the
+dependence ratio $\kappa'$ are fixed) yields
+\[
+  \sup_x \left| \Pr\!\Bigl( \tfrac{L^{\mathrm{rep}} - \mathbb{E}
+  L^{\mathrm{rep}}}{\sqrt{N v^2}} \leq x \Bigr) - \Phi(x) \right|
+  \;\leq\; A_1 \kappa'\, \frac{B (\log N)^2}{v \sqrt{N}}
+  \;=\; C_{\mathrm{BE}}\, \frac{B (\log N)^2}{v \sqrt{N}} ,
+\]
+which is the claim. The constant $C_{\mathrm{BE}}$ depends on
+$(c, C'_\alpha)$ and on the dimensionless dependence ratio
+$\kappa' = \sigma_\ell^2/v^2$ (and hence, via Step 1, on $W_N$ through
+$C'_\alpha$, but \emph{not} on $N$). In the positive-dependence regime
+typical of log-loss costs ($\sigma_\ell^2 \leq v^2$, i.e.\
+$\kappa' \leq 1$) the ratio is $O(1)$; the verify script measures
+$\kappa' \approx 1.0$ for the two-state Markov source.
+
+\emph{Step 3 (no rate change from the moving window).} The only effect
+of the $W_N$-window moving-function structure is, via Step 1, the
+inflation $C_\alpha \mapsto C'_\alpha = \max(1,C_\alpha) e^{c W_N}$ of
+the mixing prefactor; the exponential \emph{rate} $c$ is unchanged, so
+$\sum_k \alpha_\ell(k) < \infty$ with the same geometric decay and the
+Tikhomirov hypotheses hold verbatim. Consequently the
+$N^{-1/2}(\log N)^2$ rate is identical to the non-moving (independent
+window) case; the window enters only through the constant. \hfill
+$\blacksquare$
+
+\emph{Remark 7.28a (numerical confirmation; consistency with T7.25).}
+The verify script \texttt{thm\_7\_28\_berry\_esseen\_l\_rep.py}
+simulates $L^{\mathrm{rep}}$ for the two-state Markov source of T7.25
+(matched predictor, $\eta = 2^{-32}$, $B = 32$) and (i) computes the
+one-sample Kolmogorov--Smirnov distance between the empirical CDF of
+$(L^{\mathrm{rep}} - \hat\mu)/\hat\sigma$ and $\Phi$ across
+$N \in \{125, \ldots, 8000\}$, fitting $\mathrm{KS} \sim N^{a}$ with
+$a \approx -0.42$ (consistent with $-1/2$ mildly flattened by the
+$(\log N)^2$ factor; $\mathrm{KS}\cdot\sqrt{N}/(\log N)^2 \approx 0.01$
+is roughly flat, confirming the \emph{shape} of the rate); (ii)
+verifies empirical quantiles at $p \in \{0.01, 0.5, 0.99\}$ match the
+Gaussian predictions $\hat\mu + \hat\sigma\, \Phi^{-1}(p)$ to within
+$0.5$ bits at $N = 8000$. The Gaussian quantile $\Phi^{-1}$ is computed
+by the Beasley--Springer--Moro / Acklam rational approximation
+\emph{with both numerator and denominator polynomials} and a Halley
+refinement step, verified to give $\Phi^{-1}(1 - 5\cdot10^{-7}) =
+4.8916$ (round-trip error $3\cdot10^{-15}$); a prior implementation
+that dropped the denominator returned the spurious value $729$ and is
+explicitly guarded against. At the enwik9 scale the script reports the
+rigorous worst-case CDF error $D_N \approx 3\cdot10^{-3}$ to
+$1.5\cdot10^{-2}$ (constant $C_{\mathrm{BE}} \in [1,5]$) --- documenting
+that the bound is \emph{not} below $\delta = 10^{-6}$ --- alongside the
+empirical error $\approx 1.4\cdot10^{-4}$, and checks that the Gaussian
+$\delta = 10^{-6}$ band $z\sqrt{N v^2} \approx 2.68\,\mathrm{MB}$
+($z = 4.8916$) is the \emph{inner} estimate of T7.25's Bernstein band
+$2.1$--$4.2\,\mathrm{MB}$, the gap being the factor
+$z / \sqrt{2\log(2/\delta)} \approx 0.93$ together with the
+$C_1 \in [1,2]$ Bernstein constant.
+
+\emph{Remark 7.28b (which bound to use).} For \emph{point estimates and
+moderate confidence} ($\delta \gtrsim 10^{-3}$): use T7.28's Gaussian
+CI $\mathbb{E}[L^{\mathrm{rep}}] \pm z_{1-\delta/2}\sqrt{N v^2}$ --- it
+is exact up to the (empirically tiny) Berry--Esseen error and tighter
+than Bernstein. For \emph{rigorous extreme-tail guarantees}
+($\delta \leq 10^{-6}$, e.g.\ a hard storage-budget certificate): use
+T7.25's Bernstein bound, whose validity does not degrade with $\delta$.
+For \emph{worst-case / non-mixing} sources: use T7.14's Azuma bound.
+The three results are nested in sharpness (Azuma $\subseteq$ Bernstein
+$\subseteq$ Gaussian-CLT, loosest to tightest deviation scale) and in
+rigor-robustness (Gaussian-CLT $\subseteq$ Bernstein $\subseteq$ Azuma,
+by breadth of validity), so the operator selects by the $\delta$ regime
+and the available knowledge of the source.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
