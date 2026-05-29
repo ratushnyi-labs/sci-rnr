@@ -12138,6 +12138,224 @@ oracle access or pseudo-random generators, both falling outside
 poly-time-samplable inputs), or hardness objects whose description
 is super-polynomial in $n$.
 
+\emph{Status update 2026-05-29 (PRG-conditional): the cryptographic
+escape from Lemma~13.4.2a yields average-case \textbf{decision}
+hardness, not worst-case multiplicative APX-hardness; OP2(b)-APX
+remains open.} The previous update isolated one surviving escape from
+the Lemma~13.4.2a absorption: a hardness object that is
+\emph{Kolmogorov-incompressible} so that no $\mathrm{poly}(n)$-bit
+predictor $M^*$ can reproduce the family. The only complexity-theoretic
+mechanism producing such an object inside a \emph{poly-time-samplable}
+distribution is a cryptographic pseudo-random generator (PRG): under
+the assumption that secure PRGs exist (equivalently, one-way functions
+exist; H{\aa}stad--Impagliazzo--Levin--Luby 1999, \emph{SIAM J.\ Comput.}\
+28(4):1364--1396), a samplable distribution can produce strings that
+are computationally incompressible --- indistinguishable from uniform
+by any polynomial-time $M$. We formalise what this escape does and does
+not deliver. We adopt throughout the joint Type-III-C amortised cost
+$L_{\mathrm{amort}}(M,D,\{R_i\}) := L(M)+L(D)+\frac1N\sum_{i=1}^N
+L(R_i \mid Y, M, D)$ of Lemma~13.4.2a, with side information $Y$
+retained (a prior attempt --- the abandoned 2026-05-27 Lemma~6.8g ---
+silently dropped $Y$ and reduced to a different, side-info-free
+problem; we do not repeat that).
+
+\emph{(1)~The construction and why absorption genuinely fails.}
+Fix a secure length-doubling PRG $G:\{0,1\}^n \to \{0,1\}^{\ell(n)}$
+with stretch $\ell(n)=n^{c}$, $c>1$. Draw $N=N(n)=2^{\Theta(n)}$
+independent seeds $\sigma_i \stackrel{\$}{\leftarrow}\{0,1\}^n$ and a
+fresh Charikar SGP-hard prefix $p$ of length $m(n)$ carrying the
+$\gamma_{\mathrm{SGP}}=8569/8568$ grammar-size gap (the same prefix on
+every instance: the YES/NO bit is a global property of $p$, not of
+$i$). Set $s_i := G(\sigma_i)\,\Vert\,p$ and let $\mathcal{F}_n=\{s_i\}$
+be sampled from $D$. \emph{Absorption fails:} the family-storing
+predictor $M^*=\langle d_n,\mathrm{Red}_n\rangle$ of Lemma~13.4.2a
+requires a $\mathrm{poly}(n)$-bit description that reproduces every
+$s_i$; but reproducing $s_i$ requires reproducing $G(\sigma_i)$, and
+the $N$ seeds carry $N\cdot n = 2^{\Theta(n)}$ bits of fresh entropy.
+No $\mathrm{poly}(n)$-bit $M$ can encode them, and by PRG security no
+$\mathrm{poly}(n)$-time $M$ can predict $G(\sigma_i)$ from a short
+description with non-negligible advantage. Hence the
+$L(M^*)=O(\mathrm{poly}(n))$ collapse of Lemma~13.4.2a does
+\emph{not} apply to $\mathcal{F}_n$: this is a genuine,
+non-tautological escape from the structural obstacle. So far so good.
+
+\emph{(2)~But the construction does not \emph{manufacture} a
+multiplicative gap --- it merely \textbf{reduces OP2(b)-amortised to
+OP2(a)-single-string bit-cost} on the prefix, leaving the multiplicative
+gap conditional on the \emph{open} Conjecture~6.8d, not on the PRG.} We
+must analyse, honestly, what the incompressible family does to the gap.
+Because the suffixes are incompressible, the optimal free encoder stores
+the seed $\sigma_i$ ($n$ bits) in $R_i$ and recomputes $G(\sigma_i)$ in
+the decoder (the PRG \emph{expands}, so storing the $n$-bit seed beats
+storing the $\ell(n)$-bit output). The shared prefix $p$ is identical
+across $i$, so the optimal predictor places \emph{one} program for $p$
+inside $M$ --- and, $M$ being a \emph{free} predictor, this program is
+the unrestricted shortest time-bounded grammar/program for $p$, whose
+length is by definition the OP2(a) unrestricted bit-cost SGP optimum
+$L^{\mathrm{SGP}}_{\mathrm{bit}}(p)$. Writing the objective out
+\emph{with the correct weighting} ($L(M)$ and $L(D)$ appear undivided;
+only the residual average is divided by $N$):
+\[
+  L_{\mathrm{amort}}
+  \;=\; \underbrace{L^{\mathrm{SGP}}_{\mathrm{bit}}(p)}_{\subseteq\, L(M),\ \text{undivided}}
+  \;+\; \underbrace{O(1)}_{L(D),\,G\text{-code}}
+  \;+\; \underbrace{\tfrac1N\textstyle\sum_{i=1}^N \big(n+o(n)\big)}_{\text{seed, per instance}}
+  \;=\; L^{\mathrm{SGP}}_{\mathrm{bit}}(p) \;+\; n \;+\; o(n).
+\]
+\textbf{Correction of a tempting error:} the prefix term is
+$\Theta(m)$ \emph{undivided}, \emph{not} $\Theta(m/N)$ --- it lives in
+$L(M)$, which is not amortised. (A first draft of this note divided it
+by $N$ and wrongly concluded a $1+o(1)$ washout; that arithmetic was
+incorrect.) Consequently the YES/NO amortised ratio is
+\[
+  \frac{L_{\mathrm{amort}}^{\mathrm{NO}}}{L_{\mathrm{amort}}^{\mathrm{YES}}}
+  \;=\;\frac{\gamma_{\mathrm{SGP}}\,L^{\mathrm{SGP}}_{\mathrm{bit}}(p)+n+o(n)}
+           {L^{\mathrm{SGP}}_{\mathrm{bit}}(p)+n+o(n)},
+\]
+which, for a Charikar prefix with $L^{\mathrm{SGP}}_{\mathrm{bit}}(p)
+=\Theta(m)=\omega(n)$ (take $m=n^2$, so the additive seed term $n$ is
+negligible), tends to $\gamma_{\mathrm{SGP}}$. \emph{So the gap survives
+multiplicatively --- but only exactly as much as it survives for the
+underlying single string $p$.} The PRG suffix has not created hardness;
+it has only neutralised the \textbf{family-absorption} objection of
+Lemma~13.4.2a, reducing the amortised-family question to the
+\emph{single-string} unrestricted bit-cost SGP question on $p$, plus an
+additive incompressible shift. The multiplicative gap on
+$L_{\mathrm{amort}}$ holds \emph{if and only if} unrestricted bit-cost
+SGP has a multiplicative gap on $p$ --- which is \textbf{exactly
+Conjecture~6.8d (OP2(a)-APX)}, an \emph{open} problem blocked by the
+ceiling-discontinuity obstacle of §13.4.1, conditional on
+$\mathrm{P}\neq\mathrm{NP}$ and \emph{not} on the PRG. The PRG
+assumption contributes nothing to closing this gap; it only removes the
+absorption objection. Hence the honest implication is the \emph{relative}
+one
+\[
+  \text{PRG exists} \;\wedge\; \text{Conjecture~6.8d (OP2(a)-APX)}
+  \;\Longrightarrow\; \text{OP2(b)-amortised APX-hardness},
+\]
+which still rests on the open combinatorial conjecture; it is \emph{not}
+a PRG-only closure of OP2(b)-APX.
+
+\emph{(2$'$)~The alternative --- distinct per-instance prefixes ---
+gives nothing PRG-only either.} If instead each $s_i$ carries its own
+SGP-prefix $p_i$ (so the prefixes cannot be shared in $M$), two
+exhaustive sub-cases arise. (a)~If $\{p_i\}$ is produced by a poly-time
+reduction $\mathrm{Red}(d_n,i)\mapsto p_i$, then $\{p_i\}$ has a
+$\mathrm{poly}(n)$-bit description and Lemma~13.4.2a \emph{absorbs} it
+($M^*=\langle d_n,\mathrm{Red}\rangle$, $R_i=(i,\sigma_i)$,
+$L_{\mathrm{amort}}=O(\mathrm{poly}(n))+n$); the gap dies symmetrically,
+and the PRG suffix is irrelevant. (b)~If $\{p_i\}$ is itself
+incompressible \emph{with a planted YES/NO gap}, then planting a
+guaranteed multiplicative gap requires knowing the SGP answer, which is
+a short description (returning to case~(a)) --- or it requires a
+\emph{samplable distribution of SGP instances that is APX-hard on
+average}. The latter is a strictly stronger open problem in average-case
+complexity (not known to follow from $\mathrm{P}\neq\mathrm{NP}$, and
+\emph{not} supplied by PRG existence). So no configuration --- shared
+prefix (case~2) or distinct prefix (case~2$'$) --- extracts
+OP2(b)-amortised APX-hardness from PRG existence \emph{alone}.
+
+\emph{(3)~What the route \textbf{does} give: average-case decision /
+additive-$K^t$ hardness.} The honest positive statement is the one
+already recorded in §13.2's Liu--Pass paragraph, now anchored to this
+construction. Under the OWF/PRG assumption, Liu \& Pass (FOCS 2020 / J
+ACM 2023, arXiv:2009.11514) give the equivalence OWF $\Leftrightarrow$
+mild average-case hardness of the Minimum-$K^t$-Complexity Problem
+(MKtP) on samplable distributions, for the time-bounded measure
+$K^t(x)=\min\{|p|:U(p)=x$ in $\le t(|x|)$ steps$\}$ with $t$ a fixed
+polynomial. By Lemma~6.8g the joint Type-III-C cost satisfies
+$L(M)+L(D)+L(R\mid Y,M,D)\le K^t(s\mid Y)+c\log_2(|s|+|Y|+1)+c$.
+Hence:
+
+\textbf{Theorem 13.4.2b (PRG-conditional average-case decision hardness
+of joint Type-III-C, no APX).} \emph{Assume secure pseudo-random
+generators exist. Then there is a polynomial-time samplable
+distribution $D$ over sources $s$ (with side information $Y$) and a
+threshold $\theta=\theta(|s|)$ such that no probabilistic
+polynomial-time algorithm, given $(s,Y)$, decides whether the joint
+Type-III-C cost $\min_{M,D,R}\{L(M)+L(D)+L(R\mid Y,M,D)\}$ is
+$\le\theta$ or $>\theta+\omega(\log|s|)$, with success probability
+$\ge\tfrac12+1/\mathrm{poly}(|s|)$ over $s\sim D$. The hardness is
+\textbf{average-case} (over $D$), \textbf{decision} (a threshold gap of
+additive size $\omega(\log|s|)$ in $K^t$-bits), and does \textbf{not}
+provide any multiplicative inapproximability factor $\gamma'>1$ on
+$L_{\mathrm{amort}}$.}
+
+\emph{Proof sketch.} $D$ is the MKtP-hard samplable distribution of Liu
+\& Pass (the 2021 extension, ECCC TR21-082, gives the statement for an
+arbitrary samplable $D$ from OWFs; the 2020 FOCS version suffices for
+the canonical PRG-output $D$ used here). The reduction maps an MKtP
+instance $x$ to the source $s=x$, $Y=\bot$, so that deciding the joint
+Type-III-C threshold decides MKtP via the two-sided sandwich of
+Lemma~6.8g (upper bound) and the trivial $K^t(s\mid Y)\le
+L_{\mathrm{total}}+O(\log)$ (lower bound, Lemma~6.8g scope statement).
+The gap is the additive $K^t$-threshold gap of MKtP; it is not
+multiplicative because both sides of the sandwich are additive in
+$\log$. $\Box$
+
+\emph{Scope note on $Y$ (addressing a prior pitfall).} The proof sets
+$Y=\bot$, so Theorem~13.4.2b is, strictly, average-case decision
+hardness of the \emph{side-information-free} specialisation
+$\min_{M,D,R}\{L(M)+L(D)+L(R\mid M,D)\}$. The 2026-05-27 abandoned
+Lemma~6.8g made the same $Y=\bot$ substitution but \emph{silently},
+overclaiming it as full OP2(b); we instead state it openly. The
+side-info-free case is a legitimate sub-problem: a free predictor with
+$Y=\bot$ is a special case of one with arbitrary $Y$, so hardness here
+lower-bounds the worst-case-over-$Y$ joint Type-III-C problem (side
+information can only reduce cost, never the adversary's job of \emph{deciding}
+the $Y=\bot$ instance). It does \emph{not} establish hardness for any
+\emph{particular} informative $Y$, and the §11 natural-data regime ---
+where $Y$ is a genuine context, not $\bot$ --- is untouched. This is a
+real scope restriction, recorded honestly rather than papered over.
+
+\emph{Honest delineation (what is and is not closed).}
+\begin{itemize}
+\item Theorem~13.4.2b is \textbf{not} a relabelling of the abandoned
+Lemma~6.8g: it (i)~keeps $K^t$ (Liu--Pass), not Levin $\mathrm{Kt}$
+(the 2026-05-27 fatal misnaming); (ii)~states \textbf{decision},
+\textbf{not} APX (the 2026-05-27 fatal conflation --- the very error
+this update exists to avoid repeating); (iii)~retains $Y$ in the
+objective statement (the proof's $Y=\bot$ specialisation is flagged
+above, not hidden). It is the precise numbered form of §13.2's prose,
+no stronger.
+\item It is \textbf{average-case}, over a \textbf{PRG-output}
+distribution $D$. As noted in the OP2 attempts journal, hardness on
+PRG-output is of limited interest for the natural-data compression of
+§11; Theorem~13.4.2b is a complexity-theoretic anchor, not a statement
+about enwik9-style corpora.
+\item \textbf{OP2(b)-APX (Conjecture~6.8d's worst-case multiplicative
+form) remains open.} Step~(2) shows the PRG escape, although it
+genuinely defeats Lemma~13.4.2a's family-absorption, does not by itself
+\emph{create} a multiplicative gap: with a shared SGP-prefix it
+\emph{reduces} OP2(b)-amortised to single-string OP2(a)-bit-cost (plus
+an additive incompressible seed shift), so the multiplicative gap is
+exactly Conjecture~6.8d --- open, and conditional on
+$\mathrm{P}\neq\mathrm{NP}$ rather than on the PRG. With distinct
+prefixes (step~2$'$) it either re-collapses into Lemma~13.4.2a
+absorption or requires an average-case-APX-hard SGP distribution that
+PRG existence does not supply. The PRG assumption removes the absorption
+objection but contributes no multiplicative gap; the cryptographic route
+is intrinsically additive/decision.
+\end{itemize}
+
+\emph{Verdict.} The PRG-conditional route is the unique escape from the
+Lemma~13.4.2a worst-case-combinatorial obstacle, and it closes a
+\emph{different} problem cleanly: average-case \textbf{decision}
+hardness of joint Type-III-C on samplable distributions, under PRG/OWF
+existence (Theorem~13.4.2b). It does \textbf{not} yield free-predictor
+worst-case multiplicative APX-hardness: defeating the family-absorption
+of Lemma~13.4.2a with an incompressible PRG suffix merely reduces the
+amortised-family problem back to single-string OP2(a)-bit-cost on the
+SGP-prefix (step~2), whose multiplicative inapproximability is the
+\emph{open} Conjecture~6.8d --- so the PRG removes one objection but
+supplies no gap. Combined with Lemma~13.4.2a (all worst-case
+combinatorial routes absorbed) and §13.4.2's item~3 (MSGP absorbed), the
+complete current characterisation of OP2(b) is: \emph{worst-case
+multiplicative APX-hardness is open and resists every known route
+(the PRG escape reduces it to the equally-open OP2(a)-APX); the only
+established conditional hardness is average-case decision hardness under
+PRG/OWF (Theorem~13.4.2b).}
+
 \textbf{13.4.3 OP3$''$ (Efficient enumerative encoders for specific
 natural-data classes).}
 
