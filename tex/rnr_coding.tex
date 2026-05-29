@@ -12238,6 +12238,144 @@ additivity, flat Pareto slope, $O(1/\log N)$ log saving at $K_{\rm
 YES}/2$, and the ceiling-jump gap erasure for $N < 2^{8568}$,
 all reproduced numerically).
 
+\emph{Status update 2026-05-29 (POSITIVE side-result, Lemma 6.8k:
+additive rule-size SGP is APX-hard for every $\alpha \geq 0$, with a
+ceiling-free gap that \emph{increases} with $\alpha$; this is a new
+hardness result for a real RNR objective, not a closure of the
+discrete-bit-cost residual).} The journal's untried path was to adapt
+Casel et al.'s number-of-rules--aware size measure to the additive
+objective $L_\alpha(G) := L_{\mathrm{sym}}(G) + \alpha\,K(G)$ for general
+$\alpha > 0$. We close this path \emph{positively} as a standalone
+result, and verify (decisively) that it is \emph{not} a relabeling of
+the continuous-bit-cost Lemma 6.8e.
+
+\textbf{Lemma 6.8k (Additive rule-size SGP inherits Charikar
+APX-hardness for every $\alpha \geq 0$; ceiling-free gap monotone in
+$\alpha$).} \emph{For a straight-line grammar $G$ with $L_{\mathrm{sym}}(G)$
+right-hand-side symbols and $K(G)$ rules (nonterminals), define the
+additive rule-size objective $L_\alpha(G) := L_{\mathrm{sym}}(G) +
+\alpha\,K(G)$, $\alpha \geq 0$. Then SGP under $L_\alpha$ is APX-hard:
+for every fixed $\alpha \geq 0$ there is a constant
+$\gamma_\alpha > 1$ such that no polynomial-time
+$\gamma_\alpha$-approximation exists unless $\mathrm{P} = \mathrm{NP}$.
+On the Berman--Karpinski--hard Charikar family the inapproximability
+constant satisfies $\gamma_0 = \gamma_{\mathrm{SGP}} = 1 + 1/8568$ and is
+strictly increasing in $\alpha$, with
+$\lim_{\alpha \to \infty} \gamma_\alpha = 1 + 1/1008$.}
+
+\emph{\textbf{Proof.}} \emph{(APX-hardness, all $\alpha \geq 0$.)} Casel
+et al.\ (2021; conference version ICALP 2016, Theorem 7) reduce
+\textsc{Vertex Cover} on subcubic graphs to SGP so that a minimal
+grammar for the source word $w_G$ has $L_{\mathrm{sym}} = f(m,n) +
+|\Gamma|$, where $\Gamma$ is the encoded cover and $f$ is a polynomial
+independent of $\Gamma$ (their \S3, Lemma 6 and the displayed
+equivalence $|G| \leq f(m,n) + |\Gamma|$). In that construction each
+covered vertex $v_i$ contributes exactly one extra rule
+$V_i \to \#V_i$, so the rule count is $K = r_0(m,n) + |\Gamma|$ with
+$r_0$ likewise independent of $\Gamma$. Hence
+\[
+L_\alpha(G) = \bigl(f(m,n) + \alpha\,r_0(m,n)\bigr) + (1+\alpha)\,|\Gamma|,
+\]
+a strictly increasing affine function of $|\Gamma|$ for every
+$\alpha \geq 0$. Therefore the $L_\alpha$-minimal grammar encodes a
+\emph{minimum} vertex cover, exactly as for the pure symbol-count
+objective ($\alpha = 0$). Berman--Karpinski (1999/2003) APX-hardness of
+subcubic \textsc{Vertex Cover} (with the $145/144$ gap) thus transfers
+through the same gap-preserving encoding: a $\gamma_\alpha$-approximation
+of $L_\alpha$ would $\gamma_\alpha$-approximate the cover, contradicting
+$\mathrm{P} \neq \mathrm{NP}$ for a suitable $\gamma_\alpha > 1$.
+
+\emph{(Gap value and monotonicity, BK--Charikar family.)} On the
+Berman--Karpinski extremal instances the YES and NO optima differ
+\emph{only} in the cover term: writing $\tau$ for the optimal cover size
+and $\Delta := \tau_{\mathrm{NO}} - \tau_{\mathrm{YES}} = (1/144)\tau$
+(the BK promise inflation), both $L_{\mathrm{sym}}$ and $K$ shift by the
+\emph{same} additive $\Delta$ across the two branches. With Charikar's
+accounting $L_{\mathrm{sym}}^{\mathrm{YES}} = 15|V| + 3|E| + \tau =
+\tfrac{119}{6}|V|$ and $K^{\mathrm{YES}} = 2|V| + \tau = \tfrac{7}{3}|V|$
+(at $|E| = \tfrac32|V|$, $\tau = \tfrac13|V|$; the $2|V| + |C^*|$
+nonterminal count of Observation 6.8f), the per-branch ratios are
+\[
+\frac{L_{\mathrm{sym}}^{\mathrm{NO}}}{L_{\mathrm{sym}}^{\mathrm{YES}}}
+  = 1 + \frac{\Delta}{L_{\mathrm{sym}}^{\mathrm{YES}}} = 1 + \frac{1}{8568} = \gamma_{\mathrm{SGP}},
+\qquad
+\frac{K^{\mathrm{NO}}}{K^{\mathrm{YES}}}
+  = 1 + \frac{\Delta}{K^{\mathrm{YES}}} = 1 + \frac{1}{1008}.
+\]
+The additive gap is the $\Delta$-mediant
+\[
+\gamma_\alpha
+= \frac{L_{\mathrm{sym}}^{\mathrm{NO}} + \alpha K^{\mathrm{NO}}}{L_{\mathrm{sym}}^{\mathrm{YES}} + \alpha K^{\mathrm{YES}}}
+= 1 + \frac{\Delta\,(1+\alpha)}{L_{\mathrm{sym}}^{\mathrm{YES}} + \alpha K^{\mathrm{YES}}}.
+\]
+Since $K^{\mathrm{YES}} < L_{\mathrm{sym}}^{\mathrm{YES}}$, the
+denominator-per-$(1+\alpha)$ is a decreasing convex combination of the
+two bases, so $\gamma_\alpha$ is strictly increasing in $\alpha$, from
+$\gamma_0 = \gamma_{\mathrm{SGP}} = 1 + 1/8568$ up to
+$\lim_{\alpha\to\infty}\gamma_\alpha = K^{\mathrm{NO}}/K^{\mathrm{YES}} =
+1 + 1/1008$. \hfill$\blacksquare$
+
+\emph{Why this is genuinely different from Lemma 6.8e (anti-tautology).}
+The additive $L_\alpha$ is \emph{not} a monotone function of the
+continuous bit-cost $L^{\mathrm{cont}}(G) = L_{\mathrm{sym}}(G)\cdot
+\log_2(|\Sigma| + K(G))$, hence Lemma 6.8k is \emph{not} Lemma 6.8e
+relabeled. Concretely, for a fixed source ($|\Sigma| = 1000$) the two
+grammars with $K_1 = 64$ and $K_2 = 392$ on the model curve
+$L_{\mathrm{sym}}(K) = K + cN/K$ ($N = 1000$, $c = 50$) are ranked
+\emph{oppositely}: $L_1(G_1) = 909.3 < L_1(G_2) = 911.6$ (additive
+prefers the low-$K$ grammar $G_1$) while $L^{\mathrm{cont}}(G_1) =
+8499 > L^{\mathrm{cont}}(G_2) = 5426$ (bit-cost prefers the low-symbol
+grammar $G_2$). The discordance is structural: the additive objective
+penalises $K$ \emph{linearly} ($\alpha K$), whereas the bit-cost
+penalises $K$ only \emph{logarithmically} (inside $\log_2(|\Sigma|+K)$,
+where the $L_{\mathrm{sym}}$ factor dominates the product). Their
+$K$-optimal points scale differently as well: the additive sum is
+minimised at $K^* = \sqrt{cN/(1+\alpha)}$ (an $\alpha$-dependent
+square-root law) whereas the continuous-bit-cost product is minimised at
+$K^* = \sqrt{cN}$ ($\alpha$-free in the $|\Sigma| \gg K$ regime).
+
+\emph{Why it does not close the discrete-bit-cost residual of OP2(a).}
+$L_\alpha$ is \emph{continuous} (indeed affine) in $K$ and carries
+\emph{no} ceiling. The discrete bit-cost multiplier
+$\lceil \log_2(|\Sigma| + K)\rceil$ is, by contrast, a step function of
+$K$: for all $K$ with $|\Sigma| + K$ in one power-of-two band the
+multiplier is constant, so the discrete objective is \emph{blind} to $K$
+within a band (e.g.\ at $|\Sigma| = 1100$ the grammars $K = 500$ and
+$K = 800$ have identical discrete bit-cost $11\,L_{\mathrm{sym}}$ when
+$L_{\mathrm{sym}}$ is equal, while $L_1$ separates them), and it
+\emph{jumps} by a full multiplicative bit when $|\Sigma| + K$ crosses
+$2^b$. The OP2(a) residual is exactly this ceiling discontinuity
+(\S13.4.1 vector 3, Conjecture 6.8d): $\gamma_{\mathrm{SGP}} - 1 =
+1/8568 < 1/\log_2 N$ for all $N < 2^{8568}$, so one ceiling jump can
+erase the gap. Lemma 6.8k \emph{lacks} that discontinuity, so it cannot
+resolve it; it is a hardness result for a different, ceiling-free
+objective.
+
+\emph{What it bounds for RNR.} The additive objective is a faithful RNR
+\emph{dictionary rule-size} cost: $L_{\mathrm{sym}}$ is the total
+right-hand-side symbol count of the token dictionary (a straight-line
+grammar, \S6.5), and $\alpha K$ is the per-token header overhead --- each
+of the $K$ dictionary entries needs a fixed-size record (length field,
+type tag, or pointer), so $\alpha$ is the per-rule header width in
+symbols. Lemma 6.8k therefore establishes, unconditionally modulo
+$\mathrm{P}\neq\mathrm{NP}$, that minimising the RNR dictionary
+rule-size (symbols plus per-entry header) is APX-hard for any fixed
+header width, with an inapproximability constant between
+$\gamma_{\mathrm{SGP}} = 1 + 1/8568$ and $1 + 1/1008$ on
+Berman--Karpinski--hard inputs. This is a \emph{stronger} clean gap than
+the symbol-count $\gamma_{\mathrm{SGP}}$ alone (the nonterminal-count gap
+$1/1008$ exceeds the symbol-count gap $1/8568$ because the same minVC
+inflation $\Delta$ sits on a smaller $K$-base $\tfrac73|V|$ than the
+$L_{\mathrm{sym}}$-base $\tfrac{119}{6}|V|$), and it is ceiling-free ---
+but it is a result about the additive dictionary cost, \emph{not} the
+multiplicative integer bit-cost whose APX-hardness (OP2(a),
+discrete) remains open. Verification:
+\texttt{scripts/verify/op2a\_additive\_rule\_cost\_check.py} (Casel
+robustness for all $\alpha$; rank-discordance witness $K_1=64,K_2=392$;
+distinct square-root laws; exact $\gamma_\alpha$ monotonicity
+$1+1/8568 \to 1+1/1008$; and the discrete step-function/ceiling
+contrast, all reproduced numerically).
+
 \emph{Status update 2026-05-29 (attack vector~2, ``$K$-uniform
 hardness source (Label Cover)'', closed negatively; with a
 bounded-$K$ dichotomy that rules out the entire $K$-uniform
