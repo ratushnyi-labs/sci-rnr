@@ -11572,6 +11572,105 @@ average-case hard (under planted-clique conjecture, hardness for
 $k \leq \sqrt{N}$ subgraphs), this gives conditional hardness.
 \end{enumerate}
 
+\emph{Status update 2026-05-29 (attack vector 2 closed negatively;
+the DkSH gap dilutes \textbf{worse} than DkS, and a citation correction).}
+We pursued attack vector~2 (Densest-$k$-Subhypergraph, DkSH) and
+verified the literature, with one correction. The attribution
+``Chuzhoy--Manurangsi--Schroeppel 2020'' above is a mis-citation: the
+DkSH inapproximability is due to \textbf{Applebaum} (\emph{Pseudorandom
+generators with long stretch and low locality from random local one-way
+functions}, SIAM J.\ Comput.\ 42(5):2008--2037, 2013; ECCC TR11-007;
+STOC 2012), and the nontrivial algorithmic upper bounds are due to
+Chlamt\'ac--Dinitz--Konrad--Kortsarz--Rabanca (\emph{The Densest
+$k$-Subhypergraph Problem}, APPROX-RANDOM 2016 / SIAM J.\ Discrete
+Math.\ 32(2), 2018, arXiv:1605.04284). We adopt the corrected citations.
+
+\emph{(i) Verified DkSH hardness.} Applebaum's $p$-Densest-Subhypergraph
+($p$-DSH) is the promise problem on $d$-uniform hypergraphs ($d$ constant,
+$n<m\le\mathrm{poly}(n)$) distinguishing: \textbf{YES} --- some node-set
+$S$ of density $p$ (size $pn$) contains a fraction
+$\ge p^{\,d-1}(1-o(1))$ of the hyperedges; \textbf{NO} --- every density-$p$
+set contains a fraction $\le p^{\,d}(1+o(1))$. By Applebaum's
+Thm.\ 7.1/1.2, for $m\ge n^{c}$ ($c>3$ constant) and every
+$n^{-(c-3)/2d}\le p\le \tfrac12$, $p$-DSH is intractable assuming
+$F_{m,Q}$ is $o(1/(\sqrt n\log n))$-pseudorandom (a cryptographic
+assumption, following from one-wayness of $F_{m_0,Q}$ for a large
+polynomial $m_0$). The multiplicative inapproximability factor is
+$g=p^{\,d-1}/p^{\,d}=1/p$, maximised at $p=n^{-(c-3)/2d}$ to
+$g=n^{(c-3)/2d}=n^{\varepsilon}$. So the hardness is conditional
+(cryptographic, not $\mathrm P\neq\mathrm{NP}$ nor ETH) and the strong
+$n^{\varepsilon}$ gap lives \emph{only} in the small-$p$ regime
+$p=n^{-\Theta(1)}\to 0$; at $p=\tfrac12$ one recovers only the
+constant-factor Feige--Khot ``quasi-random PCP'' hardness.
+
+\emph{(ii) Reduction sketch and its dichotomy.} A DkSH instance maps to
+Type-II by taking each hyperedge $T$ ($|T|=d$) as a $d$-ary atom and
+identifying $n_0(S):=|\{T:T\subseteq S\}|$ (the contained-hyperedge
+count, exactly the $p$-DSH objective) with the Type-II support
+substructure, with $s:=pn$. For $\mathbb E_\mu[A_s(|T\setminus S|)]$ to
+be a function of $n_0(S)$ \emph{alone} (the affine identity of
+Lemma 5.7c, the only structure that lets a cost-minimiser decide the
+combinatorial problem), one needs $A_s(1)=A_s(2)=\dots=A_s(d)$, i.e.\
+$A_s$ \emph{flat above $0$}; then
+$\mathbb E_\mu[A_s]=A_s(1)-(A_s(1)-A_s(0))\,n_0(S)/m$ as before. A
+\emph{genuinely affine} $A_s(j)=a+bj$ ($b>0$, the natural
+monotone-increasing code-length direction, since more out-of-support
+coordinates cost more) instead yields
+$\mathbb E_\mu[A_s]=a+b\,(dm-\sum_{v\in S}\deg v)/m$, whose minimiser is
+the $s$ highest-degree vertices --- a trivially polynomial
+max-degree-sum problem (greedy top-$s$) carrying no hardness (verified
+by brute force, \texttt{scripts/verify}). Thus only the flat-above-$0$
+$A_s$ encodes DkSH, and it lands in exactly the Lemma 5.7c/5.7d affine
+regime.
+
+\emph{(iii) Quantitative gap (does not survive; dilutes worse than DkS).}
+Plugging $D_{\mathrm{YES}}/m=p^{\,d-1}$, $D_{\mathrm{NO}}/m=p^{\,d}$ into
+the Lemma 5.7d dilution formula with normalised $A_s$
+($A_s(0)=0,A_s(1)=1$, the most gap-favourable choice) gives
+\[
+\rho_{\mathrm{Type\text{-}II}}
+=\frac{1-D_{\mathrm{NO}}/m}{1-D_{\mathrm{YES}}/m}
+=\frac{1-p^{\,d}}{1-p^{\,d-1}}
+=1+\frac{p^{\,d-1}(1-p)}{1-p^{\,d-1}}
+=1+\Theta\!\bigl(p^{\,d-1}\bigr)
+=1+\Theta\!\bigl(g^{-(d-1)}\bigr).
+\]
+The $n^{\varepsilon}$ DkSH gap is \emph{inverted and collapsed}: as the
+DkSH gap $g=1/p\to\infty$ (the regime where it exceeds DkS), the Type-II
+gap $\to 1$ \emph{polynomially}, and the larger the source gap the
+smaller the transferred gap. This is the same affine-dilution obstacle
+as Lemma 5.7d(b1), \emph{strengthened} by the exponent $d-1\ge 2$: the
+$d=2$ (DkS) case gives $1+\Theta(g^{-1})$, whereas $d$-uniform DkSH gives
+$1+\Theta(g^{-(d-1)})$, so moving from edges to hyperedges makes the
+dilution \emph{worse}, not better. (Verified numerically and
+symbolically across $d\in\{2,3,4,6\}$ and $p\in\{10^{-1},\dots,10^{-9}\}$,
+\texttt{scripts/verify}.) The intuition is structural: Applebaum's gap is
+already a \emph{fractional} (edge-density $p^{d-1}$ vs $p^{d}$) gap with
+both branches $o(1)$ in the hard regime, exactly the sparse regime the
+affine cost flattens; DkSH does not escape because, unlike DkS where a
+large count-ratio can coexist with $D_{\mathrm{NO}}=1$, here both
+densities are tied to the \emph{same} $p\to 0$.
+
+\emph{(iv) Verdict: negative, with a unification.} DkSH fails to close
+OP4 for the same reason DkS did, and quantitatively worse. The hyperedge
+structure does \emph{not} produce a different functional form for the
+Type-II objective: the contained-hyperedge count is just $n_0(S)$ with
+$d$-ary atoms, so the affine identity and its dilution apply verbatim,
+with the dilution exponent rising from $1$ to $d-1$. Attack vector~2 is
+therefore closed negatively. The unified obstacle now reads: \emph{any
+count-of-contained-substructures objective (DkS edges, DkSH hyperedges)
+maps to Type-II through the affine $n_0(S)$ identity, and any
+multiplicative source gap $g$ in the natural small-density regime
+dilutes to $1+\Theta\!\bigl((D_{\mathrm{YES}}/m)\bigr)=1+\Theta(g^{-(r-1)})$
+for $r$-uniform atoms.} Escaping OP4 hence requires a Type-II hardness
+source that is \emph{not} a contained-substructure count --- e.g.\ an
+entropy- or partition-functional objective whose minimiser does not
+reduce to $\max n_0(S)$ --- as already flagged in Lemma 5.7d, route~(c).
+Attack vectors~1 (gap-amplifying $A_s$) and 3 (planted-clique average
+case) remain open; the present finding makes vector~1 look unpromising,
+since flatness-above-$0$ is forced by the affine identity and a non-flat
+$A_s$ trivialises the objective.
+
 \emph{What would constitute closure:} either a polynomial-time
 $O(\log N)$-approximation for general support selection (matching
 DkS upper bound), or APX-hardness with explicit constant under
