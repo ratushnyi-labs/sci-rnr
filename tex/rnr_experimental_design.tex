@@ -295,7 +295,9 @@ exclude the diverging target from the conforming-target set.
 English Wikipedia, standard Hutter Prize corpus), RNR with a
 Chinchilla-70B-class transformer predictor produces a bitstream
 archive of $79 \pm 0.04\,\mathrm{MB}$ (CLT-based concentration at
-$\delta = 10^{-6}$ per T7.15's worked example; $\approx 12.0\times$
+$\delta = 10^{-6}$ per T7.15's worked example, now rigorously backed
+by the Berry--Esseen two-sided bound of T7.28 and the variance-aware
+Bernstein one-sided bound of T7.25; $\approx 12.0\times$
 \emph{bitstream-rate} compression, exclusive of the predictor
 itself), with byte-granular random-access query cost
 $\leq 50\,\mathrm{ms}$ per query on a single B100-class GPU. This

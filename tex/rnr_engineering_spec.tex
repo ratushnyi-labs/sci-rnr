@@ -978,7 +978,14 @@ $O(K \cdot R_{\mathrm{ecc}})$ ECC parity bits per sub-block.
 Implementers SHOULD use the concentration bound to size archive
 allocation buffers; the $\sqrt{N \log(1/\delta)}$ deviation at
 $\delta = 10^{-6}$ is typically $< 1\%$ of total archive size and
-suffices as a pre-allocation slack.
+suffices as a pre-allocation slack. For exp-mixing sources
+implementers SHOULD prefer the variance-aware Bernstein bound
+(Theorem 7.25) for buffer sizing --- it replaces the worst-case
+Lipschitz constant by the measured per-position-cost standard
+deviation $\sigma_\ell$ and is approximately $500\times$ tighter on
+enwik9 --- and MAY use the Berry--Esseen two-sided confidence
+intervals (Theorem 7.28) when a symmetric allocation band rather than
+a one-sided upper bound is required.
 
 \textbf{Theorem 7.15 (end-to-end Chinchilla numerical prediction)}
 → Reference benchmark for conformance test suite (§12). A

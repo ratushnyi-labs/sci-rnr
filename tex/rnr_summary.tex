@@ -435,6 +435,35 @@ approximation is hard. Pairs with 4.4 to give the framework a complete
 complexity classification of its two NP-hard problems.
 \end{quote}
 
+\textbf{Lemma 6.9 + Remarks 6.9a/c/d + Corollary 6.9b (continuous
+Type-III-C support selection) --- {[}complexity dichotomy{]}}
+
+\begin{quote}
+\emph{Statement.} For the Gaussian-field (bits-back limit) Type-III-C
+source, the per-block residual rate is the Schur-complement log-det
+$\tfrac12\log_2\det\Sigma_{S\mid\bar S}$. With the field \emph{fixed},
+minimising it over size-$s$ supports is maximum-entropy sampling,
+APX-hard with constant $5/4$ under $\mathrm{P}\neq\mathrm{NP}$
+(Lemma 6.9, via Ko--Lee--Queyranne 1995 / Ohsaka 2022;
+\textsc{Partial}). With the predictor \emph{free and amortised} the
+same objective is in $\mathrm{P}$ via a sample-covariance MLE plug-in
+(Remark 6.9a). The crossover budget is delimited in Remark 6.9c, the
+$\Sigma\succeq I$ calibration shown necessary in Remark 6.9d, and an
+operational additive-regret encoder synthesised in Corollary 6.9b.
+
+\emph{Proof.} Bits-back rate (Thm 6.6) $=$ conditional differential
+entropy $=$ Schur-complement log-det (Cover--Thomas Thm 8.4.1); MESP
+inapproximability for the fixed field; no-free-lunch identity
+$h(X_S)=h(X_S\mid Y)+I(X_S;Y)$ for the amortised collapse.
+
+\emph{Why it matters.} Locates the genuine \emph{non-count} hardness
+gap that provably cannot live in Type-II (it does not dilute under the
+affine identity) in the continuous Type-III-C objective, while honestly
+bounding it to the fixed-field/single-block regime --- the continuous
+mirror of OP2(b). Cite when asked whether any RNR support-selection
+problem is genuinely APX-hard for a real cost.
+\end{quote}
+
 \textbf{Sections 7--10 --- Composition, hardness, verification,
 reproducibility}
 
@@ -453,11 +482,13 @@ uniquely determined.
 composition is well-formed. No ambiguity in the decoding pipeline.
 \end{quote}
 
-\textbf{Theorems 7.2--7.24 --- RNR with byte-granular random access}
+\textbf{Theorems 7.2--7.28 --- RNR with byte-granular random access}
 
-The §7.2--7.24 expansion delivers a 23-theorem framework bridging the
-abstract RNR formalism (§§3--6) to a deployable neural-lossless-
-compression pipeline. Headline results, organized by theme:
+The §7.2--7.28 expansion delivers a 26-theorem framework (plus the
+7.6$'$/7.27$'$ refinements and the 7.11/7.27c/7.27e/7.27f corollaries)
+bridging the abstract RNR formalism (§§3--6) to a deployable
+neural-lossless-compression pipeline. Headline results, organized by
+theme:
 
 \textbf{Theorem 7.2 (byte-granular RA architecture) --- {[}construction{]}}
 
@@ -510,6 +541,25 @@ the basic random-access architecture. Covers the classical 5
 source-coding extensions in a unified framework.
 \end{quote}
 
+\textbf{Theorem 7.6$'$ (tight $d/2$ minimax regret) --- {[}sharp
+constant{]}}
+
+\begin{quote}
+\emph{Statement.} For a $d$-dimensional smooth parametric source
+class, the universal online RNR predictor (Jeffreys-prior mixture /
+per-context KT) attains regret $\tfrac{d}{2}\log_2 N + C + o(\log N)$,
+and this constant is tight: for a.e.\ source parameter no online RNR
+scheme beats $\tfrac{d}{2}(1-\varepsilon)\log_2 N$.
+
+\emph{Proof.} Upper bound: Clarke--Barron / Krichevsky--Trofimov
+asymptotic redundancy. Lower bound: Rissanen's $(d/2)\log N$ minimax
+converse (Shtarkov pointwise-redundancy form).
+
+\emph{Why it matters.} Sharpens T7.6's $d\log N$ to its true leading
+constant $d/2$ --- exactly half --- and certifies it unimprovable.
+The honest answer to ``what is the no-pre-training overhead?''.
+\end{quote}
+
 \textbf{Corollary 7.11 (lossy + ECC = lossless) --- {[}observation{]}}
 
 \begin{quote}
@@ -547,6 +597,48 @@ contributions; Azuma--Hoeffding.
 high-probability bound. The $(W_N+1+\rho/(1-\rho))$ factor was refined
 in response to a codex counterexample (W=0 persistent Markov chain
 defeats the naive $(W_N+1)$ bound under slow mixing).
+\end{quote}
+
+\textbf{Theorem 7.25 (variance-aware Bernstein concentration) ---
+{[}sharper deviation bound{]}}
+
+\begin{quote}
+\emph{Statement.} Under exp-mixing, $L^{\mathrm{rep}}$ concentrates
+with a Bernstein tail driven by the long-run variance
+$v^2 \approx \sigma_\ell^2(2W_N+1)$ (per-position-cost std
+$\sigma_\ell$) rather than the worst-case Lipschitz $B = \log_2(1/\eta)$
+of T7.14 --- an approximate $500\times$ tightening on enwik9
+(rigorous $\delta = 10^{-6}$ band $\approx 1.3\,\mathrm{GB} \to
+\approx 2$--$4\,\mathrm{MB}$).
+
+\emph{Proof.} Merlev\`ede--Peligrad--Rio 2009 Bernstein inequality for
+$\alpha$-mixing sums; Davydov 1968 covariance inequality for the
+long-run-variance proxy.
+
+\emph{Why it matters.} The preferred concentration bound for
+exp-mixing sources; closes most of the gap between the loose Azuma
+worst case and the (non-rigorous) CLT estimate. Use for archive
+pre-allocation sizing.
+\end{quote}
+
+\textbf{Theorem 7.28 (non-asymptotic Berry--Esseen CLT) ---
+{[}two-sided distributional bound{]}}
+
+\begin{quote}
+\emph{Statement.} The CDF of the normalised repair length is within
+$O(N^{-1/2}(\log N)^2)$ (Kolmogorov distance) of a Gaussian, giving
+\emph{exact} two-sided confidence intervals
+$L^{\mathrm{rep}} \in \mathbb{E}[L^{\mathrm{rep}}] \pm
+z_{1-\delta/2}\sqrt{N v^2}$ valid up to the additive CDF error.
+
+\emph{Proof.} Berry--Esseen for $\alpha$-mixing sequences (Sunklodas
+type) with the $(\log N)^2$ factor from the $W_N$-window dependence.
+
+\emph{Why it matters.} Completes the Azuma/Bernstein/Berry--Esseen
+trilogy: T7.14 gives a rigorous worst-case tail, T7.25 a tight
+variance-aware tail, T7.28 the full two-sided distributional
+approximation that rigorously justifies the CLT confidence bands used
+in the T7.15 enwik9 prediction.
 \end{quote}
 
 \textbf{Theorem 7.15 (end-to-end Chinchilla-on-enwik9 prediction) ---
@@ -679,8 +771,50 @@ hypotheses (commit ebb8e21) that survive disproof (``Attack failed'').
 
 \emph{Why it matters.} The cleanest demonstration in the validation
 record of the 3-step protocol catching its own errors. Provides a
-minimal honest production SLO tail bound; LRU+IRM finite-batch
-concentration is left as an open problem (§13.2).
+minimal honest production SLO tail bound; the LRU+IRM finite-batch
+concentration it sidestepped is now closed by Theorem 7.26.
+\end{quote}
+
+\textbf{Theorem 7.26 (LRU+IRM miss-count concentration) ---
+{[}operational SLO, general cache{]}}
+
+\begin{quote}
+\emph{Statement.} Under IRM workload with full-support popularity and
+an \emph{LRU} cache, the miss count over $Q$ queries concentrates with
+$\sqrt{Q}$-Hoeffding scaling, via the Lezaud--Gillman Markov-chain
+Chernoff bound on the augmented cache-state chain
+$(\mathrm{Cache}_t, X_t)$ (strictly positive spectral gap
+$\gamma_{\rm LRU} > 0$, with $\gamma_{\rm LRU} \geq \pi_{\min}$ from
+Dobrushin coupling).
+
+\emph{Proof.} Lezaud 1998 / Gillman 1998 Chernoff bound for
+finite-state Markov chains applied to the augmented cache-state chain.
+
+\emph{Why it matters.} Generalises T7.24 from static Perfect-LFU to
+the deployed LRU policy, closing the open question from earlier drafts
+of §13.2.
+\end{quote}
+
+\textbf{Theorem 7.27 (space-time product converse) --- {[}lower
+bound, tight{]}}
+
+\begin{quote}
+\emph{Statement.} For the sub-block random-access class (Def 10.3),
+per-query work $C(K)$ and seek-index storage $S(K)$ obey
+$C(K)\cdot S(K) \geq (1-o(1))\,N\,\mathrm{cost}(M)\log_2 N$, matching
+T7.5's achievability at $K=\Theta(\sqrt N)$. The general-scheme
+analogue is \emph{false} (T7.27$'$: a Ferragina--Venturini
+$O(1)$-access escape attains Shannon rate for finite-order-Markov
+sources), but Corollary 7.27c recovers the product on the
+predictor-faithful class (covers state-snapshot schemes).
+
+\emph{Proof.} Sync-index storage lower bound (Lemma 7.27b) $\times$
+sequential per-query predictor-evaluation cost; AM--GM balance.
+
+\emph{Why it matters.} The converse companion to T7.5: within the
+sub-block class the $\sqrt N$ trade-off is not just optimal-by-design
+but information-theoretically forced. The honest scope (sub-block,
+not general) is established by the T7.27$'$ refutation.
 \end{quote}
 
 \textbf{Theorem 8.1 (no universal dominance) --- {[}impossibility{]}}

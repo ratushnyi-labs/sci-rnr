@@ -101,7 +101,17 @@ fixed-byte-alphabet case ($|\Sigma| = 256$ as in canonical RNR)
 requires a separate gap-preserving construction and is open.
 Hardness of the unrestricted joint (model, dictionary, repair)
 problem and the analogous inapproximability for $E_{12}$ are also
-open. Worked numerical examples are
+open. For the continuous (Gaussian-field) Type-III-C limit the
+support-selection problem is characterised completely by complexity
+regime: with the field model fixed the per-block residual is a
+Schur-complement log-determinant whose minimisation is the
+maximum-entropy-sampling problem, hence APX-hard with constant $5/4$
+under $\mathrm{P} \neq \mathrm{NP}$ (Lemma 6.9, via Ko--Lee--Queyranne
+and Ohsaka; \textsc{Partial}, the gap surviving the manifold
+covariance restriction at high SNR), whereas with the predictor free
+and amortised the same objective is in $\mathrm{P}$ via a
+sample-covariance maximum-likelihood plug-in (Remark 6.9a), the
+crossover budget being characterised in Remark 6.9c. Worked numerical examples are
 given for Type-I, Type-II, and Type-III-B; III-A and III-C are
 illustrated through their composition and dictionary-construction
 sections respectively. Two structural results identify the
@@ -118,13 +128,17 @@ $K = \Theta(\sqrt{N})$ optimal sub-block sizing (Theorems 7.2--7.5),
 matched by a tight space-time product converse $C(K) \cdot S(K) =
 \Theta(N \log N \cdot \mathrm{cost}(M))$ for sub-block-based
 decoders (Theorem 7.27),
-extends to universal, Slepian--Wolf, lossy, successive-refinement,
+extends to universal (with a tight $d/2$ minimax-regret constant,
+Theorem 7.6$'$), Slepian--Wolf, lossy, successive-refinement,
 and functional RNR variants (Theorems 7.6--7.12), proves
-concentration bounds for archive-size deviation via Azuma's
-martingale inequality (Theorem 7.14) and a variance-aware
-Bernstein refinement (Theorem 7.25, replacing the worst-case
-Lipschitz $B$ by the per-position-cost std $\sigma_\ell$ for an
-approximate $500\times$ tightening on enwik9), and
+concentration bounds for archive-size deviation via a trilogy of
+sharpening estimates --- Azuma's martingale inequality
+(Theorem 7.14), a variance-aware Bernstein refinement (Theorem 7.25,
+replacing the worst-case Lipschitz $B$ by the per-position-cost std
+$\sigma_\ell$ for an approximate $500\times$ tightening on enwik9),
+and a non-asymptotic Berry--Esseen CLT giving two-sided confidence
+intervals at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$ (Theorem 7.28)
+--- and
 synthesises an end-to-end prediction for Chinchilla-class neural
 LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb; Theorem 7.15, with
 an explicit model-overhead caveat noting that the compression
@@ -431,6 +445,40 @@ This article makes the following contributions.
   unrestricted bit-cost APX-hardness over all (non-Charikar-format)
   grammars and unrestricted-predictor joint hardness remain open.
 \item
+  A complete complexity characterization of the \emph{continuous}
+  (Gaussian-field) Type-III-C support-selection problem by regime
+  (§13.4.4): with the field covariance $\Sigma$ fixed, the per-block
+  residual rate is the Schur-complement conditional log-determinant
+  $\tfrac12\log_2\det\Sigma_{S\mid\bar S}$, whose minimisation over
+  size-$s$ supports is the maximum-entropy-sampling / $D$-optimal
+  design problem, hence APX-hard with constant $5/4$ under
+  $\mathrm{P}\neq\mathrm{NP}$ (Lemma 6.9, via Ko--Lee--Queyranne 1995
+  and Ohsaka 2022), with the gap surviving the Lemma 5.6j manifold
+  covariance restriction $\Sigma=U\Lambda U^\top+\sigma^2 I$ at high
+  SNR --- a genuinely non-count gap (the log-det is the actual cost,
+  not a substituted functional) that, unlike the Type-II import,
+  does not dilute. This is \textsc{Partial}: with the predictor free
+  and amortised ($L(M)/m\to0$) the same objective is in $\mathrm{P}$,
+  the optimum attained by a decoder-reproducible sample-covariance
+  maximum-likelihood plug-in (Remark 6.9a), so the fixed-field
+  hardness is the sharp boundary; the budget regime at which the
+  multiplicative gap appears is delimited in Remark 6.9c, and the
+  $\Sigma\succeq I$ noise-floor calibration of the greedy log-det
+  guarantee is shown necessary in Remark 6.9d. Corollary 6.9b records
+  the operational consequence: an additive-regret Gaussian-on-manifold
+  RNR encoder synthesised from Lemma 5.6j and Lemma 6.9.
+\item
+  Additive rule-cost results for the discrete Type-III-C
+  smallest-grammar problem (§13.4.1): the additive rule-size SGP
+  objective inherits Charikar APX-hardness for all $\alpha$
+  (ceiling-free) via a ratio-preserving reduction (Lemma 6.8k),
+  matched by a poly-time $O(\log)$-approximation algorithm
+  (Lemma 6.8k-approx); a $K^{\mathrm{poly}}$ one-sided upper bound on
+  the joint Type-III-C cost (Lemma 6.8g, making no hardness claim);
+  and a K-monotone isolation observation (Observation 6.8f) that
+  retains discrete bit-cost hardness only by excluding the
+  $K$-escape obstacle by fiat.
+\item
   A no-universal-dominance result (Theorem 8.1) establishing the
   framework's claim as conditional, and a verification-discipline
   theorem (Theorem 9.1) ruling out cross-subblock error propagation
@@ -536,11 +584,13 @@ This article makes the following contributions.
   overhead $O(\log K_{\text{params}})$ for transmitting the chosen
   parameter values.
 \item
-  A 26-theorem RNR-with-random-access framework (Section 7.1--7.26)
+  A 27-theorem RNR-with-random-access framework (Section 7.1--7.28)
   that bridges the abstract framework to a practical neural-LM-based
   compression pipeline. Theorems 7.2--7.5 establish the basic
   byte-granular random-access architecture; Theorems 7.6--7.10 cover
-  source-coding extensions (universal online with KT-style regret,
+  source-coding extensions (universal online with KT-style regret ---
+  sharpened to the tight $d/2$ minimax-regret constant via the
+  Shtarkov--Rissanen pointwise-redundancy form in Theorem 7.6$'$ ---
   successive refinement, functional compression via Orlitsky--Roche
   characteristic-graph entropy, Shannon rate--distortion lossy mode,
   Slepian--Wolf / Wyner--Ziv side-information composition); Corollary
@@ -573,10 +623,50 @@ This article makes the following contributions.
   retraction of an earlier LRU-based version) gives a minimal honest
   Hoeffding tail bound on total decode latency under the restricted
   hypotheses of IRM workload, static Perfect-LFU cache, and bounded
-  per-miss cost. The full framework has been adversarially cross-
+  per-miss cost. Theorem 7.25 sharpens the Theorem 7.14 concentration
+  to a variance-aware Bernstein bound (per-position-cost std
+  $\sigma_\ell$ replacing the worst-case Lipschitz $B$, an approximate
+  $500\times$ tightening on enwik9); Theorem 7.26 closes the LRU+IRM
+  finite-batch concentration question left open by Theorem 7.24, via
+  Lezaud's Markov-chain Chernoff bound on the LRU stack-distance
+  chain; Theorem 7.27 establishes a tight space-time product converse
+  $C(K)\cdot S(K)=\Theta(N\log N\cdot\mathrm{cost}(M))$ for the
+  sub-block random-access class, matching the Theorem 7.5
+  achievability (with Theorem 7.27$'$ refuting the general-scheme
+  analogue via a Ferragina--Venturini $O(1)$-access escape for
+  finite-order-Markov sources, and Corollary 7.27c recovering the
+  product on the predictor-faithful class); and Theorem 7.28 gives a
+  non-asymptotic Berry--Esseen CLT for $L^{\mathrm{rep}}$ under
+  exp-mixing, yielding two-sided confidence intervals at Kolmogorov
+  rate $O(N^{-1/2}(\log N)^2)$. The full framework has been adversarially cross-
   validated across three independent model families (Claude / Gemini
   Pro 3.1 / OpenAI gpt-5.5) with all surviving statements verified
   numerically in \texttt{scripts/verify/thm\_7\_*}.
+\item
+  A concrete attack-vector roadmap for the remaining open problems
+  (§13.4), recording for each open question both the positive
+  sub-results obtained and the standard reductions that demonstrably
+  fail, so as to prevent re-attempts on known-dead paths. For OP2(a)
+  (unrestricted bit-cost SGP) the density-shifted Berman--Karpinski,
+  Dinur--Safra/FGLSS, $K$-escape-budget, $K$-uniform/Label-Cover, and
+  SGP-constant-import routes are each closed negatively (§13.4.1),
+  with the additive-rule-cost variant resolved positively
+  (Lemmas 6.8k, 6.8k-approx). For OP2(b) (free-predictor joint
+  Type-III-C) the GSGP/MSGP multi-string route is closed negatively
+  and the predictor-absorption obstacle isolated, leaving only a
+  PRG-conditional average-case decision-hardness escape that yields
+  hardness of decision, not APX-hardness (§13.4.2, Theorem 13.4.2b).
+  For OP3$''$ (efficient enumerative encoders) the unambiguous-CFL
+  sub-case is closed constructively with an explicit polynomial-time
+  rank/unrank encoder within $1/N$ bit/symbol of the Cover optimum
+  (Lemma 13.4.3a). For OP4 (general dependent-law support selection)
+  the Densest-$k$-Subhypergraph and non-count entropy/log-det routes
+  are closed negatively (§13.4.4), and for the $E_{12}$ constant-gap
+  locus the obstacle is identified as a missing robust-NO promise
+  rather than affine dilution (Remark 4.3d). The §13.4.5 refinement
+  of the TC-scaling programme adds the two new natural-data TC classes
+  Lemma 5.6i (combinatorial-uniform, sublinear $\mathrm{TC}$) and
+  Lemma 5.6j (Gaussian-on-manifold, log-det $\mathrm{TC}$).
 \item
   Worked numerical examples for Type-I (§4.7), Type-II (§5.7), and
   Type-III-B (§6.4), demonstrating concrete coding-length arithmetic
@@ -596,9 +686,10 @@ and Type-III-C are illustrated through the composition discussion in
 rather than through standalone worked examples. Section 7 covers
 composition, mode selection, runtime parameter selection (§§7.1--7.2),
 and the 27-theorem RNR-with-random-access framework
-(§§7.1--7.27, organized as: §§7.2--7.5 basic byte-granular
+(§§7.1--7.28, organized as: §§7.2--7.5 basic byte-granular
 random-access architecture; §§7.6--7.11 source-coding extensions
-including the lossy + ECC = lossless corollary; §§7.12--7.15
+including the tight $d/2$ minimax-regret refinement (Theorem 7.6$'$)
+and the lossy + ECC = lossless corollary; §§7.12--7.15
 multi-source, concentration, and end-to-end Chinchilla-class
 numerical synthesis; §§7.16--7.26 practical extensions covering
 adaptive sub-block sizing, content-defined chunking, parallel and
@@ -610,18 +701,31 @@ the T7.5 achievability, with Theorem 7.27$'$ \emph{refuting} the
 general-scheme converse for finite-order-Markov sources (Ferragina
 --Venturini $O(1)$-access escape) and Corollary 7.27c recovering the
 $\mathrm{cost}(M)$ product on the predictor-faithful class, which
-covers state-snapshot schemes). Section 8 states the
+covers state-snapshot schemes; and §7.28 a non-asymptotic
+Berry--Esseen CLT for the repair length, completing the
+Azuma/Bernstein/Berry--Esseen concentration trilogy of §§7.14,
+7.25, 7.28). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
 lists experimental predictions for empirical follow‑up, including the
 explicit T7.15 enwik9 prediction in §11.7. Section 12 surveys related
 work, and Section 13 reports the status of open problems, distinguishing
-resolved results (§13.1), remaining mathematical open questions (§13.2,
-including new questions exposed by the §7 expansion such as
-LRU+IRM finite-batch concentration and tightened concentration under
-slow mixing), and items explicitly deferred to engineering or empirical
-work (§13.3).
+resolved results (§13.1), remaining mathematical open questions (§13.2),
+items explicitly deferred to engineering or empirical work (§13.3), and
+a concrete attack-vector roadmap (§13.4) that for each remaining open
+problem records the positive sub-results obtained and the standard
+reductions shown to fail, so as to prevent re-attempts on known-dead
+paths --- including the continuous Type-III-C support-selection
+characterization (Lemma 6.9 fixed-field APX-hardness, Remark 6.9a
+free-field membership in $\mathrm{P}$, Remarks 6.9c/6.9d and
+Corollary 6.9b; §13.4.4), the additive rule-cost SGP results
+(Lemmas 6.8k, 6.8k-approx; §13.4.1), and the constructive
+unambiguous-CFL enumerative encoder (Lemma 13.4.3a; §13.4.3). The
+questions exposed by the §7 expansion --- LRU+IRM finite-batch
+concentration and tightened concentration under slow mixing --- are
+themselves now resolved within §7 (Theorems 7.26 and 7.25/7.28
+respectively).
 
 \textbf{2. Preliminaries and notation}
 
@@ -10992,7 +11096,7 @@ neural network.
 
 \textbf{12.8 Foundations used by the §7 extensions}
 
-The 26-theorem §7 framework draws on several established lines outside
+The 27-theorem §7 framework draws on several established lines outside
 the immediate compression literature, listed here for completeness.
 
 \emph{Concentration of measure and martingales.} Theorem 7.14's
@@ -11291,8 +11395,8 @@ point to the relevant theorems.
   same architecture as existing compressed-filesystem deployments.
 \item
   Byte-granular RA architecture with neural predictor and concrete
-  numerical end-to-end synthesis --- resolved by the §7.2--7.24
-  framework (24 theorems + 2 corollaries):
+  numerical end-to-end synthesis --- resolved by the §7.2--7.28
+  framework (26 theorems plus corollaries):
   \emph{architecture}: Theorem 7.2 establishes the basic sub-block
   byte-granular RA construction with cost
   $O(\log L(R) + K \cdot \mathrm{cost}(M'))$ per query and total
@@ -11353,11 +11457,19 @@ point to the relevant theorems.
   coupling: $\sqrt{Q}$-Hoeffding scaling under IRM with full-support
   popularity, closing the open question from earlier drafts of §13.2
   about finite-batch concentration of LRU decoder latency that
-  T7.24's static-LFU formulation sidestepped). The §7.24 history
+  T7.24's static-LFU formulation sidestepped). \emph{Converse and
+  distributional refinements}: T7.27 (tight space-time product
+  converse $C(K)\cdot S(K)=\Theta(N\log N\cdot\mathrm{cost}(M))$ for
+  the sub-block class, with T7.27$'$ refuting the general-scheme
+  analogue and Corollary 7.27c recovering it on the predictor-faithful
+  class) and T7.28 (non-asymptotic Berry--Esseen CLT for
+  $L^{\mathrm{rep}}$ at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$).
+  The §7.24 history
   (LRU version retracted under codex disproof, rewritten under
   restricted hypotheses, survived round 2) illustrates the
   validation discipline applied throughout.
-  All 26 theorems + 2 corollaries verified numerically in
+  All 27 theorems (plus the 7.6$'$/7.27$'$ refinements and the
+  7.11/7.27c/7.27e/7.27f corollaries) verified numerically in
   \texttt{scripts/verify/thm\_7\_*} and adversarially
   cross-validated by three independent model families
   (Claude / Gemini Pro 3.1 / OpenAI gpt-5.5).
@@ -14136,8 +14248,8 @@ full-MLE attains $h(X)$ without support recovery).
 \textbf{Corollary 6.9b (operational Gaussian-on-manifold RNR: an
 \emph{additive-regret} end-to-end encoder, fixed-field).} \emph{Assemble Lemma
 5.6j (rate), Lemma 6.9 (fixed-field hardness), and the matching poly-time
-support-selection approximation (the monotone-submodular greedy MESP selector;
-sibling Lemma 6.9a). Let $X\sim\mathcal N(0,\Sigma)$ be a Gaussian-on-manifold
+support-selection approximation (the monotone-submodular greedy MESP selector,
+whose calibrated $(1-1/e)$ guarantee is certified in Remark 6.9d). Let $X\sim\mathcal N(0,\Sigma)$ be a Gaussian-on-manifold
 source with $\Sigma=U\Lambda U^T+\sigma^2 I_N$ satisfying the Lemma 5.6j
 delocalisation / reach hypotheses (Haar-spread tangent $U$,
 $\rho=\bar\lambda/(N\sigma^2)>0$), with $\Sigma$ supplied by the model (the
