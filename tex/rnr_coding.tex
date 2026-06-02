@@ -652,10 +652,13 @@ This article makes the following contributions.
   SGP-constant-import routes are each closed negatively (§13.4.1),
   with the additive-rule-cost variant resolved positively
   (Lemmas 6.8k, 6.8k-approx). For OP2(b) (free-predictor joint
-  Type-III-C) the GSGP/MSGP multi-string route is closed negatively
-  and the predictor-absorption obstacle isolated, leaving only a
-  PRG-conditional average-case decision-hardness escape that yields
-  hardness of decision, not APX-hardness (§13.4.2, Theorem 13.4.2b).
+  Type-III-C) the predictor-absorption obstacle (Lemma 13.4.2a)
+  absorbs the grammar-size gap into $L(M)$ so the GSGP/MSGP route
+  does not \emph{directly} transfer; but that argument gives only a
+  common upper bound (not a collapse of the optimum ratio), and the
+  PRG construction neutralises it, reducing amortised OP2(b)-APX to
+  single-string OP2(a)-APX --- so OP2(b)-APX remains open
+  (Theorem 13.4.2b).
   For OP3$''$ (efficient enumerative encoders) the unambiguous-CFL
   sub-case is closed constructively with an explicit polynomial-time
   rank/unrank encoder within $1/N$ bit/symbol of the Cover optimum
@@ -13110,39 +13113,72 @@ optimum on this family satisfies $\mathrm{OPT}_{\mathrm{amort}}
 O(\mathrm{poly}(n))$, \emph{independent of} the underlying
 MSGP-objective gap. The MSGP grammar-size gap
 $\gamma_{\mathrm{SGP}} = 8569/8568$ on YES vs.\ NO instances
-does not transfer to a multiplicative gap on $L_{\mathrm{amort}}$:
-both YES and NO instances admit the same family-storing
-predictor $M^*$ with the same $O(\mathrm{poly}(n))$ amortised
-cost, so the YES/NO amortised ratio is $1 + o(1)$. The MSGP
-gap is absorbed because the family-storing predictor $M^*$
-achieves $L_{\mathrm{amort}}$ much smaller than the
+is \emph{absorbed} (not provably collapsed): both YES and NO
+admit the same family-storing predictor $M^*$ giving each a
+common $O(\mathrm{poly}(n))$ upper bound on $L_{\mathrm{amort}}$,
+so the \emph{grammar-size} coordinate on which
+$\gamma_{\mathrm{SGP}}$ acts disappears from $L_{\mathrm{amort}}$.
+(As corrected in Lemma~13.4.2a below, this common upper bound does
+\emph{not} by itself force the YES/NO optimum ratio to $1+o(1)$ ---
+a residual gap from differential family compressibility is not
+excluded.) The MSGP grammar-size gap is absorbed because the
+family-storing predictor $M^*$ achieves $L_{\mathrm{amort}}$
+much smaller than the
 per-instance MSGP-grammar cost $|G^*|/N = \Theta(n/\log n)$
 even when MSGP is solved optimally; the amortised objective
 structurally prefers family memorisation over MSGP solution.
 
-\textbf{Lemma 13.4.2a (unified amortised-objective absorption).}
+\textbf{Lemma 13.4.2a (unified amortised-objective absorption ---
+upper bound; corrected 2026-06).}
 \emph{Let $\Pi$ be any minimisation problem on inputs
 $\mathcal{F}_n = \{x_i\}_{i \in [N(n)]}$ produced by a
-deterministic polynomial-time reduction $\mathrm{Red}_n:
+deterministic reduction $\mathrm{Red}_n:
 \{0,1\}^{|d_n|} \times [N] \to \Sigma^*$ from a
-$\mathrm{poly}(n)$-bit family description $d_n$, with $N(n) =
-2^{\Theta(n)}$ and $|\mathrm{Red}_n| + |d_n| = \mathrm{poly}(n)$
-bits. The amortised-family bit-cost objective
+$\mathrm{poly}(n)$-bit family description $d_n$, runnable by a
+\emph{fixed-clock} machine (equivalently $\mathrm{Red}_n$ is given
+as a polynomial-size circuit / straight-line program, or as code
+carrying an explicit shared time bound $t(n) = \mathrm{poly}(n)$),
+with $N(n) = 2^{\Theta(n)}$ and $|\mathrm{Red}_n| + |d_n| =
+\mathrm{poly}(n)$ bits. The amortised-family bit-cost objective
 $L_{\mathrm{amort}}(M, D, \{R_i\}) := L(M) + L(D) +
 \frac{1}{N}\sum_{i=1}^N L(R_i \mid Y, M, D)$
 admits a free predictor $M^* := \langle d_n, \mathrm{Red}_n
 \rangle$ achieving $L_{\mathrm{amort}}(M^*, D^*, \{R_i^*\}) =
-O(\mathrm{poly}(n))$ for the universal decoder $D^*$ and
+O(\mathrm{poly}(n))$ for the fixed-clock universal decoder $D^*$
+(the explicit time bound makes $|D^*| = O(1)$ legitimate) and
 trivial residuals $R_i^* := i$. Consequently, the optimum
-amortised cost satisfies $\mathrm{OPT}_{\mathrm{amort}}(\mathcal{F}_n)
+amortised cost satisfies the \emph{upper bound}
+$\mathrm{OPT}_{\mathrm{amort}}(\mathcal{F}_n)
 \leq O(\mathrm{poly}(n))$ on any family $\mathcal{F}_n$
 produced by such a reduction, \emph{independent of} the
-underlying $\Pi$-objective gap. Hence APX-hardness of $\Pi$
-with any constant gap $\gamma_\Pi > 1$ on the $\Pi$-objective
-does \emph{not} transfer to APX-hardness of $L_{\mathrm{amort}}$
-on this family: both YES and NO instances admit the same
-family-storing predictor with the same $O(\mathrm{poly}(n))$
-amortised cost, so the amortised YES/NO ratio is $1 + o(1)$.}
+underlying $\Pi$-objective gap. Hence the $\Pi$-objective gap
+$\gamma_\Pi$ --- which acts on a quantity ($|G^*_\Pi|$,
+$|\mathrm{VC}^*|$, \dots) that does not appear in
+$L_{\mathrm{amort}}$ --- is \emph{absorbed into $L(M^*)$}: the NO
+instance is poly$(n)$-compressible by $M^*$, so the reduction is
+not gap-preserving for $L_{\mathrm{amort}}$ and the grammar-size /
+cover-size hardness of $\Pi$ is not directly inherited.}
+
+\emph{What this does \emph{not} establish (corrected after codex
+adversarial review, 2026-06).} The upper bound alone does
+\emph{not} imply the amortised YES/NO optimum ratio is $1 + o(1)$,
+nor that $L_{\mathrm{amort}}$ is APX-easy. ``Both YES and NO admit
+the \emph{same} poly$(n)$ witness $M^*$'' bounds both optima
+\emph{above} by $\mathrm{poly}(n)$ but says nothing about their
+\emph{ratio}: $A \leq P$ and $B \leq P$ do not bound $A/B$. A
+residual gap can survive within the poly$(n)$ envelope if the YES
+family is differentially more compressible than the NO family by
+\emph{some other} predictor $M' \neq M^*$ (e.g.\ an incompressible
+common prefix that any decoder/residual scheme must convey forces
+$\mathrm{OPT}_{\mathrm{amort}}(\text{NO}) = \Theta(n^2)$ while
+$\mathrm{OPT}_{\mathrm{amort}}(\text{YES}) = \Theta(n)$, ratio
+$\Theta(n)$). Refuting $L_{\mathrm{amort}}$ APX-hardness therefore
+requires a \emph{matching lower bound} $\mathrm{OPT}_{\mathrm{amort}}
+(\mathcal{F}_n) = \Omega(\mathrm{poly}(n))$ on the YES family
+(so that $M^*$ is a constant-factor approximation), which this
+lemma does not supply and which remains open. The lemma's
+established content is exactly the upper bound and the consequent
+non-inheritance of the \emph{specific} $\Pi$-objective gap.
 
 \emph{Proof.} Define $M^* := \langle d_n, \mathrm{Red}_n
 \rangle$ as a single string of $|d_n| + |\mathrm{Red}_n| =
@@ -13162,15 +13198,18 @@ $L_{\mathrm{amort}}(M^*, D^*, \{R_i^*\}) = L(M^*) + L(D^*) +
 $\mathrm{OPT}_{\mathrm{amort}}(\mathcal{F}_n) \leq
 L_{\mathrm{amort}}(M^*, D^*, \{R_i^*\}) = O(\mathrm{poly}(n))$.
 Since $M^*$ does not invoke any $\Pi$-solver --- it re-runs
-$\mathrm{Red}_n$ to reproduce the family --- the bound holds
-uniformly across YES and NO instances of any reduction
+$\mathrm{Red}_n$ to reproduce the family --- the \emph{upper}
+bound holds uniformly across YES and NO instances of any reduction
 $\Pi$-YES vs.\ $\Pi$-NO based on the same family-description
 format. Both admit the same $M^*$ construction (with the
-appropriate $d_n$), achieving the same $O(\mathrm{poly}(n))$
-amortised cost. The YES/NO amortised ratio is therefore
-$O(1)$ but does \emph{not} preserve $\gamma_\Pi$ since
-$\gamma_\Pi$ acted on a quantity ($|G^*_\Pi|$, $|\mathrm{VC}^*|$,
-etc.) that does not appear in $L_{\mathrm{amort}}$. $\Box$
+appropriate $d_n$), giving each optimum the same $O(\mathrm{poly}(n))$
+\emph{ceiling}. Since $\gamma_\Pi$ acted on a quantity
+($|G^*_\Pi|$, $|\mathrm{VC}^*|$, etc.) that does not appear in
+$L_{\mathrm{amort}}$, that specific gap is absorbed into $L(M^*)$.
+\emph{The proof establishes only this common upper bound; it does
+not bound the YES/NO optimum ratio (both being $\leq P$ does not
+constrain $A/B$), so no $1+o(1)$ ratio is claimed --- see the
+``what this does not establish'' paragraph above.} $\Box$
 
 \emph{Consequence (unification of all three attack vectors).}
 Lemma~13.4.2a unifies items~1, 2, and the present item~3 under
@@ -13192,28 +13231,47 @@ characterisation of the previous status update is incorrect:
 the MSGP hardness object \emph{is} absorbed by $L(M)$ via the
 family-reproducing predictor, exactly as items~1--2 absorb the
 reduction algorithm.
-\emph{Verdict (closure of attack vector~3).} Attack vector~3
-(GSGP / multi-string SGP) is closed negatively. The MSGP
+\emph{Verdict (attack vector~3, corrected 2026-06).} The MSGP
 grammar-size APX-hardness (via separator reduction to
-single-string SGP and Casel et al.\ 2020) holds but does not
-transfer to the amortised-bit-cost objective. The remaining
-worst-case combinatorial route to OP2(b)-APX is the
-cryptographic route via Liu--Pass / OWF (§13.2), which yields
-average-case decision hardness, \emph{not} worst-case
-multiplicative APX-hardness. No worst-case combinatorial-poly\-no\-mial-time route to OP2(b)-APX is currently known;
-Lemma~13.4.2a is the structural obstacle across all three
-attack vectors of this list.
+single-string SGP and Casel et al.\ 2020) holds, but its
+\emph{specific} grammar-size gap does not \emph{directly} transfer
+to the amortised-bit-cost objective: Lemma~13.4.2a's predictor
+$M^*$ absorbs the grammar-size quantity into $L(M)$, so the NO
+instance is poly$(n)$-compressible and the reduction is not
+gap-preserving for $L_{\mathrm{amort}}$ in the grammar-size
+coordinate. This is weaker than ``attack vector~3 closed'': as the
+corrected lemma notes, a \emph{residual} $L_{\mathrm{amort}}$ gap
+from differential family compressibility (a YES family compressible
+below poly$(n)$ by a non-$M^*$ predictor) is \emph{not} excluded,
+and would require a matching lower bound to rule out. So the honest
+status of the amortised route to OP2(b)-APX is \emph{open}, not
+closed --- the direct grammar-size transfer fails, but no proof
+that $L_{\mathrm{amort}}$ is APX-easy exists. The cryptographic
+route via Liu--Pass / OWF (§13.2) separately yields average-case
+decision hardness, \emph{not} worst-case multiplicative
+APX-hardness. Net: no worst-case combinatorial route is known to
+\emph{succeed}, and none is proven \emph{impossible}; OP2(b)-APX
+remains genuinely open, with Lemma~13.4.2a delimiting what the
+family-absorption argument can and cannot show.
 \end{enumerate}
 
 \emph{What would constitute closure:} APX-hardness of the
 amortised-family bit-cost objective with an explicit constant,
 under either standard P $\neq$ NP or cryptographic assumption.
-\emph{Updated 2026-05-28:} after the negative results on items
-1--3 of the attack-vector list (predictor absorption of the
-reduction algorithm in items~1--2, predictor bypass of the MSGP
-solver via family reproduction in item~3, all unified by
-Lemma~13.4.2a), no combinatorial-poly\-no\-mial-time route in
-this list survives.
+\emph{Updated 2026-05-28; further corrected 2026-06:} items 1--3
+of the attack-vector list (predictor absorption of the reduction
+algorithm in items~1--2, predictor bypass of the MSGP solver via
+family reproduction in item~3) are unified by Lemma~13.4.2a, which
+shows the $\Pi$-objective gap is \emph{absorbed} into $L(M^*)$ ---
+i.e.\ these routes do not gap-preservingly transfer. As corrected
+after codex adversarial review (see Lemma~13.4.2a), this is an
+\emph{upper-bound} obstacle, not a proof that $L_{\mathrm{amort}}$
+is APX-easy: a residual gap from differential family
+compressibility is not excluded, and the PRG construction
+(Theorem~13.4.2b) in fact neutralises the absorption, reducing the
+amortised question to single-string OP2(a). So no route in this
+list is proven to \emph{succeed}, and none is proven \emph{closed};
+OP2(b)-APX is open.
 The cryptographic route (Liu--Pass / OWF, §13.2) closes a
 different problem (average-case decision on samplable distributions),
 not free-predictor worst-case APX-hardness. Structurally novel
