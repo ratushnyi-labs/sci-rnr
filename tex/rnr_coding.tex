@@ -8640,6 +8640,59 @@ Verified in
 product-forward DP equals $\sum_y P(y)^\alpha$ for $\alpha=2,3$ to machine precision,
 no $|\Sigma|^{|T|}$ table; spectrum ordering; min-entropy maximiser).
 
+\emph{Remark 7.15e (Mapping the wall: the exact oracle is in $\mathrm{FP}^{\#P}$ and
+both natural attacks are obstructed --- the \#P-hardness route is self-defeating, the
+poly route is Blackwell-blocked).} A genuine attempt to settle the exact Shannon
+oracle of Remarks 7.15a/d. It does not break the wall, but pins it on both sides.
+\emph{(E1) Upper bound: the oracle is in $\mathrm{FP}^{\#P}$.} Computing
+$H(Y)=-\sum_{y\in\Sigma^r}P(y)\log_2 P(y)$ to $2^{-\mathrm{poly}}$ precision is a
+weighted sum, over an exponential index set, of terms each poly-time computable (the
+forward algorithm returns $P(y)$ as a poly-bit rational, and the transcendental
+$\log_2$ to $2^{-\mathrm{poly}}$ precision in poly time); approximating each
+$-P(y)\log_2 P(y)$ to guard bits, scaling to integers, and summing over $y$ with a
+$\#P$ oracle places the value in $\mathrm{FP}^{\#P}$ --- computable by a poly-time
+machine with a $\#P$ oracle. (The output is real/irrational, so this is an
+$\mathrm{FP}^{\#P}$ approximation, not a $\#P$ function; the logs do not push the
+class higher.) \emph{(E2) The
+predicate-encoding \#P-hardness route is self-defeating for bounded-order chains.}
+The general-AR \#P-hardness of the entropy oracle (Remark 7.15a, V5) encodes a
+\#P-hard predicate $E$ into a coordinate $Y=E\wedge B$, so $H(Y)=h_2(\Pr(E)/2)$
+reveals $\Pr(E)=\#E/|\Sigma|^n$. For a bounded-order-$w$ chain the coordinate $Y=E(a)$
+must be computed \emph{as the chain generates} $a=a_1\cdots a_n$ \emph{once}, tracking
+$E$ in its state of size $|\Sigma|^w$ --- i.e.\ $E$ is a width-$|\Sigma|^w$
+\emph{read-once} branching program. But a general CNF needs \emph{exponential}
+read-once width (it cannot be encoded), and for any read-once-encodable $E$,
+model-counting $\#E$ is in $\mathrm P$ (a bottom-up DP over the BP nodes;
+Van den Broeck--Suciu 2017). The gap positions do not provide a loophole: the
+unobserved gaps marginalise by \emph{the same} forward DP (a matrix-product
+walk-count, $\#\mathrm L\subseteq\mathrm{FP}$), the chain generates its sequence
+\emph{once} (so it cannot re-read for multi-pass power), and a \emph{memoryless}
+bounded-state chain cannot enforce the global (bijection / no-repeat) constraints
+that make counting $\#P$-hard --- the predicate bit must be produced by the bounded
+state regardless of where the assignment sits. So the \emph{direct} (inline)
+predicate-encoding route reveals only $\mathrm{FP}$-computable counts: \emph{it can
+exhibit only poly quantities, never \#P-hardness}. That is exactly the boundary
+between the general-AR oracle (\#P-hard) and the bounded-order open middle (open).
+(This bars the specific V5 mechanism, not every conceivable reduction.) \emph{(E3) The obvious
+poly algorithm is Blackwell-blocked.} $H(Y)=\sum_k H(Y_k\mid Y_{<k})$ needs the filter
+belief over the hidden state, whose reachable set does \emph{not} collapse (the
+Blackwell measure is generically infinitely supported --- the 7.15a open-middle
+probe), so the filtering sum branches exponentially; the finite-block entropy is a
+Lyapunov-type functional of random matrix products, whose rate has no closed form
+(Blackwell, \emph{The entropy of functions of finite-state Markov chains}, Trans.\
+First Prague Conf.\ on Information Theory, 1957, pp.\ 13--20; the generically
+infinite-dimensional predictive features are characterised by Jurgens--Crutchfield,
+\emph{Chaos} 2021, arXiv:2008.12886). \emph{Net:} the wall
+holds against both natural attacks --- the exact oracle sits in $[\,$poly (collision
+$H_2$, Remark 7.15d)$\,,\ \mathrm{FP}^{\#P}\,]$, with the standard \#P-hardness
+reduction obstructed (E2, read-once) and the standard algorithm obstructed (E3,
+Blackwell). It is \emph{not broken}; but the map shows any resolution needs a
+\emph{non-predicate-encoding} hardness construction or a \emph{non-filtering}
+algorithm. Verified in \texttt{scripts/verify/remark\_7\_15e\_wall\_map.py} (W1:
+read-once model-counting $=$ brute, poly; W2: the predicate-encoding reveals exactly
+that poly count; W3 illustrates the weighted-sum form --- the
+$\mathrm{FP}^{\#P}$ membership is the analytic argument above, not a numerical check).
+
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
 when local statistics vary).}
@@ -16157,7 +16210,15 @@ the min-entropy ($\alpha=\infty$) is NP-hard (HMM consensus, Lyng\o{}--Pedersen
 2002); and the operative Shannon point ($\alpha=1$) is not reached by either,
 though $H_2$ furnishes a free exact poly \emph{lower bound}. The exact Shannon
 complexity remains the open problem (now bracketed: poly $H_2$ below, FS
-approximation, NP-hard min-entropy above).
+approximation, NP-hard min-entropy above). Remark 7.15e then \emph{maps} this wall:
+the exact oracle lies in $\mathrm{FP}^{\#P}$ (a weighted exponential sum of
+poly-computable terms), and both natural attacks are provably obstructed --- the
+predicate-encoding \#P-hardness route (Remark 7.15a/V5) is self-defeating for
+bounded-order chains (they encode only read-once predicates, whose model-counting is
+in $\mathrm P$, and the gap-marginalisation adds only $\#\mathrm L\subseteq\mathrm{FP}$
+walk-counting), and the obvious filtering algorithm is blocked by the non-collapsing
+Blackwell measure. So a resolution needs a \emph{non-predicate-encoding} hardness
+construction or a \emph{non-filtering} algorithm --- the wall is pinned, not broken.
 
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
