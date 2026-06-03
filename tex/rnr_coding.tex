@@ -16006,6 +16006,33 @@ condition is the exact monotonicity boundary, with the $\lambda_{\min}\ge
 is shift-invariant and bounded by $\tfrac1e g(T^\star)$ on the calibrated
 scale).
 
+\emph{Discrete-deployment refinement and a new open problem (Remarks
+7.15a--7.15b).} The §6.9 picture above is for the Gaussian (bits-back-limit)
+field. Remarks 7.15a--7.15b port it to the \emph{discrete} autoregressive
+neural-LM field of Theorem 7.15 and record two effects with no Gaussian
+analogue. First, the submodularity is \emph{unconditional}: discrete entropy
+$H(X_T)$ is a polymatroid rank function for every law (Fujishige 1978), so the
+Remark 6.9d calibration is not needed --- the discrete result is strictly
+cleaner. Second, a \emph{value-oracle} obstacle appears that the Gaussian case
+(where the oracle is the $O(s^3)$ log-det) entirely lacks: the support-selection
+greedy needs $H(X_T)$, which for a discrete field is marginal inference, and is
+poly for order-$1$ arbitrary subsets and bounded-order contiguous blocks but
+\#P-hard (exact) for general high-order fields (Roth 1996). So the discrete
+deployment carries \emph{two} obstacles --- NP-hard selection (Max-Coverage,
+Feige 1998) \emph{and} a \#P-hard exact oracle --- versus the Gaussian one. This
+exposes a \textbf{new open problem}: the \emph{noncontiguous bounded-order}
+oracle is exactly the \emph{exact finite-block Shannon entropy of a hidden
+Markov / function-of-Markov-chain process}, for which neither a polynomial
+algorithm nor a \#P-/NP-hardness theorem is known (the adjacent results ---
+entropy \emph{rate} with no closed form, Blackwell 1957; most-likely string
+NP-hardness, Lyng\o{}--Pedersen 2002; automata relative-entropy
+PSPACE-completeness, Cortes--Mohri--Rastogi--Riley 2008 --- do not settle exact
+finite-block Shannon entropy, which is moreover tractable for unambiguous PFA).
+Remark 7.15b then shows this hardness is \emph{orthogonal} to the deployed
+encoder: causal coding and byte-granular random access condition only on the
+realised prefix (one forward pass), and the \#P-hard marginal arises solely in
+the optional non-contiguous selection lever.
+
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
 
