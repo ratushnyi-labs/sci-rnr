@@ -82,10 +82,18 @@ coding, divided into III-A (entropy-field meta-prediction), III-B
 (token-tensor coding over a learned hierarchically indexed
 dictionary). For Types I, II, III-A, and III-B we give concrete
 constructions and achievability bounds; for Type-III-C we give a
-greedy marginal-MDL admission criterion (Theorem 6.5) and a
-bits-back rate analysis (Theorem 6.6) but no standalone
+greedy marginal-MDL admission criterion (Theorem 6.5), a
+bits-back rate analysis (Theorem 6.6), and a standalone
 achievability bound for the learned hierarchical
-dictionary/token-cover construction. Matching converses are given
+dictionary/token-cover construction (Theorem 6.6b): when the
+dictionary is built by a universal grammar transform (an LZ78
+incremental parser or an irreducible-grammar transform in the sense of
+Kieffer--Yang 2000), the construction attains $N \cdot h(X) + o(N)$ for
+stationary ergodic sources, the hierarchical index being rate-neutral
+(Lemma 6.6a) and the $K = O(N/\log N)$ dictionary entries adding only
+$o(N)$ overhead; whether the specific greedy marginal-MDL builder of
+Theorem 6.5 is itself a universal transform is left open (Remark 6.6b).
+Matching converses are given
 for Type-I (Theorem 4.2) and Type-III-B (Theorem 6.3b, the byte
 coder cannot beat the joint conditional entropy $H(H,L\mid C)$, so
 the $I(H;L\mid C)$ advantage of Theorem 6.3 is exactly tight).
@@ -428,9 +436,14 @@ This article makes the following contributions.
   decompositions of the 256-byte alphabet achieve the same
   information-theoretic rate.
 \item
-  Five results on Type-III-C: the greedy MDL admission criterion
+  Six results on Type-III-C: the greedy MDL admission criterion
   (Theorem 6.5), the bits-back integration with an exact
-  cross-entropy plus KL-divergence accounting (Theorem 6.6),
+  cross-entropy plus KL-divergence accounting (Theorem 6.6), a
+  standalone entropy-rate achievability bound $N \cdot h(X) + o(N)$ for
+  the learned hierarchical dictionary under a universal grammar
+  transform (LZ78 or irreducible-grammar, Theorem 6.6b), with the
+  hierarchical family/variant index shown rate-neutral (Lemma 6.6a) and
+  the greedy-MDL builder's own universality left open (Remark 6.6b),
   NP-hardness of the restricted (constant-predictor, normal-form
   recursive dictionary, symbol-count objective) dictionary-learning
   problem (Theorem 6.7), APX-hardness of the same restricted
@@ -4734,6 +4747,292 @@ cross-entropy under the model marginal $P_X(\cdot \mid Y)$, not
 entropy unless $P_X(\cdot \mid Y) = D(\cdot \mid Y)$; the second
 term is the variational gap. When both vanish the rate is
 $H_D(X \mid Y)$. \hfill$\blacksquare$
+
+Theorems 6.5 and 6.6 govern, respectively, \emph{which} tokens a
+greedy builder admits and, \emph{given} a dictionary and a (model,
+posterior) pair, the bits-back repair rate. Neither bounds the
+expected Type-III-C code length $\mathbb{E}[L_{\mathrm{IIIC}}(X)]$ of
+the \emph{learned} dictionary as a self-contained quantity --- the gap
+the abstract flags. The next theorem closes it by the standard route
+that dictionary/grammar codes are \emph{universal}: a Type-III-C
+encoder whose dictionary is produced by a universal grammar transform
+achieves the entropy rate, with the hierarchical index of
+Definition~3.5 contributing only $o(N)$. This is achievability
+\emph{under a universal dictionary builder}; whether the specific
+greedy marginal-MDL builder of Theorem~6.5 is itself universal is a
+separate question we do not resolve (Remark~6.6b).
+
+We first isolate the index-accounting step, which is where the
+hierarchical structure of Definition~3.5 enters and where the new
+content beyond the classical grammar-code theorems lies.
+
+\textbf{Lemma 6.6a (The hierarchical token index is rate-neutral).}
+\emph{Let $D = \{\tau_0, \ldots, \tau_{K-1}\}$ be a dictionary of $K$
+tokens addressed by the grid factorization of Definition~3.5, $K = a
+\cdot b$ with $\mathrm{token\_id} = b \cdot \mathrm{family} +
+\mathrm{variant}$, $\mathrm{family} \in \{0,\ldots,a-1\}$,
+$\mathrm{variant} \in \{0,\ldots,b-1\}$. Let $P(\cdot)$ be any
+probability law over the $K$ token identifiers (the predictor's
+position-marginal at a fixed position, say), and let the hierarchical
+predictor factorize as
+$Q(k) = P(\mathrm{family}(k)) \cdot P(\mathrm{variant}(k) \mid
+\mathrm{family}(k))$ with the \emph{exact} induced conditionals. Then
+the ideal two-stage code length equals the flat code length token by
+token,}
+\[
+-\log_2 P(\mathrm{family}(k)) - \log_2 P(\mathrm{variant}(k) \mid \mathrm{family}(k))
+= -\log_2 P(k) \qquad \text{for every } k,
+\tag{6.5}
+\]
+\emph{so the expected hierarchical code length equals the flat
+expected code length $H(P)$ exactly; the two-level family/variant
+addressing adds zero bits at the ideal-coder level. At the level of a
+practical entropy coder the only excess is the coder's per-symbol
+redundancy applied twice instead of once, $O(1)$ bits per token, hence
+at most $O(K)$ bits over the whole stream.}
+
+\emph{\textbf{Proof.}} The map $k \mapsto (\mathrm{family}(k),
+\mathrm{variant}(k)) = (\lfloor k/b \rfloor, \; k \bmod b)$ is a
+bijection from $\{0,\ldots,K-1\}$ (extended to the full grid
+$\{0,\ldots,ab-1\}$) onto the product index set. Hence
+$P(k) = P(\mathrm{family}(k), \mathrm{variant}(k)) = P(\mathrm{family}(k))
+\cdot P(\mathrm{variant}(k) \mid \mathrm{family}(k))$ by the chain
+rule, and taking $-\log_2$ gives (6.5) identically. This is exactly
+Theorem~6.3 (the Type-III-B tree-coding invariance) specialized to the
+two-level tree whose first level is the $a$ families and whose second
+level is the $b$ variants within a family: the ideal entropy-coded
+length is invariant to the decomposition tree provided each decision
+is coded with its exact induced conditional. Taking expectation under
+$P$ gives $\mathbb{E}[-\log_2 P(k)] = H(P)$ on both sides. The
+practical-coder remark is the standard $+O(1)$-per-symbol redundancy
+of arithmetic/ANS coding (Witten--Neal--Cleary 1987; Duda 2009)
+incurred once per coded symbol; the two-stage scheme codes two symbols
+(family, then variant) per token rather than one, so the excess is at
+most a constant per token, $O(K)$ total. \hfill$\blacksquare$
+
+\textbf{Theorem 6.6b (Type-III-C standalone achievability under a
+universal dictionary builder).} \emph{Consider a Type-III-C encoder
+(Definition~3.5) in which the dictionary $D$ and the non-overlapping
+token cover of the source block $X^N = (x_1,\ldots,x_N)$ over a finite
+alphabet $\mathcal{A}$, $|\mathcal{A}| = \sigma$, are produced by a
+\emph{universal grammar transform}, in either of the two standard
+senses:}
+\begin{itemize}
+\item[(i)] \emph{(LZ78 parser.) $D$ is the set of LZ78 phrases of
+$X^N$ under the incremental parse of Ziv--Lempel (1978): each phrase
+is the shortest substring not previously seen, $D$ grows by one phrase
+per parse step, and the token-reference stream is the LZ78 codeword
+$(\mathrm{pointer}_i, \mathrm{symbol}_i)_{i=1}^{c(N)}$, where
+$\mathrm{pointer}_i$ addresses the prefix-phrase already in $D$ and
+$\mathrm{symbol}_i \in \mathcal{A}$ extends it.}
+\item[(ii)] \emph{(Irreducible grammar.) $D$ is the rule set of an
+\emph{irreducible} straight-line grammar $G_{X^N}$ representing $X^N$
+in the sense of Kieffer--Yang (2000, \S IV.B): $G_{X^N}$ is admissible
+($L(G) = \{X^N\}$, deterministic, no empty right-hand side, no useless
+symbols), distinct variables expand to distinct strings, every
+non-start variable occurs at least twice among the right-hand sides,
+and no digram (pair of adjacent symbols) repeats in non-overlapping
+positions across the right-hand sides. The token-reference stream is
+the grammar encoding $B(G_{X^N})$.}
+\end{itemize}
+\emph{Address the $K := |D|$ dictionary entries by the hierarchical
+grid of Definition~3.5. Then for every \emph{stationary} source $X$ on
+$\mathcal{A}$ the expected Type-III-C code length satisfies}
+\[
+\mathbb{E}\!\left[L_{\mathrm{IIIC}}(X^N)\right] \;\le\; N \cdot h(X) + o(N),
+\qquad\text{equivalently}\qquad
+\frac{1}{N}\,\mathbb{E}\!\left[L_{\mathrm{IIIC}}(X^N)\right] \xrightarrow[N\to\infty]{} h(X),
+\tag{6.6}
+\]
+\emph{where $h(X)$ is the entropy rate. The number of dictionary
+entries is sublinear,}
+\[
+K = c(N) \;\le\; \frac{N}{(1-\varepsilon_N)\,\log_\sigma N} \;=\; O\!\left(\frac{N}{\log N}\right),
+\qquad \varepsilon_N \to 0,
+\tag{6.7}
+\]
+\emph{and the code splits into a reference (pointer) stream that
+carries the entire entropy-rate term $N\,h(X) + o(N)$ and a genuinely
+additive overhead --- the per-token new-symbol stream, the dictionary
+header, and the index-addressing slack --- of size $O(K) = O(N/\log N)
+= o(N)$. The pointer stream, of size $O(N)$, is \emph{not} overhead: it
+is where the rate lives, equalling $N\,h(X) + o(N)$ (it is $\Theta(N)$
+exactly when $h(X) > 0$; in the degenerate $h(X) = 0$ case ---
+e.g.\ an eventually-constant source, where $c(N) = O(\sqrt{N})$ and the
+pointer stream is itself $o(N)$ --- the bound holds a fortiori). The
+hierarchical family/variant addressing is rate-neutral (Lemma~6.6a),
+adding only $O(K) = o(N)$ practical-coder slack. If in addition $X$ is
+\emph{ergodic}, the bound holds almost surely:
+$\tfrac{1}{N} L_{\mathrm{IIIC}}(X^N) \to h(X)$ a.s. Under route (ii)
+restricted to $k$th-order finite-state sources, the per-symbol
+redundancy is the maximal pointwise bound $O(\log\log N / \log N)$
+(Kieffer--Yang 2000, Theorems~7--8). Combined with the bits-back
+refinement of Theorem~6.6 on the residual stream, the construction is
+asymptotically optimal for stationary ergodic sources.}
+
+\emph{\textbf{Proof.}} The Type-III-C archive under either route
+consists of (a) the dictionary/grammar description and (b) the
+token-reference stream that reconstructs the exact token cover (the
+residual $R_C$ of Definition~3.5); the model $M$ here is the trivial
+universal parser, carried in $O(1)$ bits, so by the decomposition
+(3.1) the code length is $L_{\mathrm{IIIC}}(X^N) = (\text{header}) +
+(\text{reference stream}) + O(1)$.
+
+\emph{Route (i), LZ78.} The two parts together \emph{are} the LZ78
+codeword: the $c(N)$ phrases of $D$ are exactly the distinct phrases of
+the parse, and emitting $(\mathrm{pointer}_i, \mathrm{symbol}_i)$ for
+each phrase both \emph{defines} the phrase (it is a previous phrase
+plus one symbol, so the dictionary is reconstructed incrementally by
+the decoder) \emph{and} places it in the cover --- there is no separate
+header to pay. The total LZ78 length is
+$\sum_{i=1}^{c(N)} \left(\lceil\log_2 i\rceil + \lceil\log_2
+\sigma\rceil\right) + O(\log N) \le c(N)\,(\log_2 c(N) + \log_2 \sigma)
++ O(\log N)$. By the Lempel--Ziv phrase-count bound (Ziv--Lempel 1978;
+Cover--Thomas, \emph{Elements of Information Theory}, Lemma in \S13.5,
+$c(N) \le N/((1-\varepsilon_N)\log_\sigma N)$ with $\varepsilon_N \to
+0$), (6.7) holds, so $c(N) = O(N/\log N)$ and the entire codeword
+length is $\tfrac{1}{N} c(N) \log_2 c(N) + o(1)$ per symbol. The
+pointwise LZ78 optimality theorem (Ziv--Lempel 1978; Cover--Thomas,
+\emph{Elements of Information Theory}, 2nd ed., \S13.5, ``Optimality of
+Lempel--Ziv algorithms'') states that for a \emph{stationary ergodic}
+process the per-symbol LZ78 length converges \emph{almost surely} to
+the entropy rate,
+\[
+\frac{1}{N}\,L_{\mathrm{LZ78}}(X^N) = \frac{1}{N}\,c(N)\log_2 c(N) + o(1)
+\xrightarrow[N\to\infty]{} h(X) \qquad \text{a.s.},
+\]
+which is the almost-sure form of (6.6); the proof uses the
+Shannon--McMillan--Breiman theorem and hence requires ergodicity. The
+per-symbol length is uniformly bounded by $\log_2\sigma + o(1)$ (each
+symbol costs at most a raw literal), so bounded convergence upgrades
+the a.s.\ statement to the expectation statement
+$\tfrac{1}{N}\mathbb{E}[L_{\mathrm{LZ78}}(X^N)] \to h(X)$; for a merely
+\emph{stationary} (not necessarily ergodic) source the expectation
+statement still holds by the ergodic decomposition (a stationary $X$ is
+a mixture of ergodic components, $h(X) = \int h(X_\omega)\,d\omega$,
+and the bounded per-component rates integrate), recovering (6.6) for
+every stationary process. The
+hierarchical re-indexing of the $c(N)$ phrase pointers into
+$(\mathrm{family},\mathrm{variant})$ pairs is a bijection on the phrase
+identifiers, so by Lemma~6.6a it leaves the ideal code length
+unchanged and adds at most $O(c(N)) = o(N)$ practical-coder bits.
+
+\emph{Route (ii), irreducible grammar.} The Type-III-C dictionary in
+the recursive/straight-line case is precisely a straight-line grammar
+(§6.5; Kieffer--Yang 2000), and the archive is the grammar-based code
+$\epsilon_\phi(X^N) = B(G_{X^N})$ of Kieffer--Yang's \S V. Kieffer--Yang's
+Lemma~2 shows that irreducibility alone forces the grammar to be small,
+$|G_{X^N}|/N \le |\mathcal{A}|/N + 12\log|\mathcal{A}|/(\log N - 8\log
+|\mathcal{A}| - 8) = O(1/\log N)$, so the irreducible transform is
+asymptotically compact ($C_{\mathrm{irr}} \subseteq C_{\mathrm{ac}}$,
+their \S V) with $\nu_N = 1/\log N \to 0$. Kieffer--Yang's Theorem~8
+(irreducible transforms; equivalently Theorem~7 applied with this
+$\nu_N$) then gives maximal pointwise redundancy
+$\mathrm{Red}_N(\phi, \Lambda^k_{\mathrm{fs}}(\mathcal{A})) =
+O(\gamma(\nu_N)) = O\!\left(\nu_N \log(1/\nu_N)\right) = O\!\left(\frac{\log\log
+N}{\log N}\right)$
+with respect to the family $\Lambda^k_{\mathrm{fs}}(\mathcal{A})$ of
+$k$-state finite-state sources (in Kieffer--Yang's parameterization $k$
+is the number of \emph{states} of the source automaton, not a Markov
+order), for every $k$. An order-$m$ Markov source is a finite-state
+source with $k = \sigma^m$ states, so it lies in
+$\Lambda^{\sigma^m}_{\mathrm{fs}}$. Maximal pointwise
+redundancy $\to 0$ means $\tfrac{1}{N}|B(G_{X^N})| \le \tfrac{1}{N}
+\log_2 (1/\mu(X^N)) + O(\log\log N/\log N)$ uniformly over $X^N$ and
+over $\mu \in \Lambda^k_{\mathrm{fs}}$; taking expectations under any
+finite-state source $\mu = D$ (in particular an order-$m$ Markov source,
+$k = \sigma^m$) recovers (6.6) for that source with the explicit
+$O(\log\log N/\log N)$ rate. To pass from finite-state to a general
+\emph{stationary} source $X$, Kieffer--Yang's Remark~(ii) (\S V) notes
+that every code in $C_{\mathrm{ac}}(\mathcal{A})$ is weakly minimax
+universal for the family $\Lambda_{\mathrm{sta}}(\mathcal{A})$ of all
+stationary sources, via Markov approximation in the standard
+iterated-limit order (the same device by which LZ78 universality is
+extended from finite-order Markov to all stationary processes,
+Cover--Thomas \S13.5): for each fixed $k$, the
+maximal-pointwise-redundancy bound holds uniformly over
+$\Lambda^k_{\mathrm{fs}}$, so taking $X$'s $k$th-order conditional law as
+the source gives $\limsup_N \tfrac{1}{N}\mathbb{E}[|B(G_{X^N})|] \le
+H(X_{k+1}\mid X_1^k)$; then letting $k \to \infty$ and using
+$H(X_{k+1}\mid X_1^k) \downarrow h(X)$ (the conditional-entropy
+characterisation of the entropy rate of a stationary source,
+Cover--Thomas \S4.2) yields
+$\limsup_N \tfrac{1}{N}\mathbb{E}[|B(G_{X^N})|] \le h(X)$; the matching
+$\ge h(X)$ is the lossless-coding lower bound, giving (6.6). Lemma~6.6a
+again makes the hierarchical addressing of the $|D|$ rules
+rate-neutral.
+
+\emph{Index/header accounting.} It is worth separating the term that
+carries the rate from the term that is genuine overhead, since this is
+where the hierarchical structure of Definition~3.5 must be accounted
+for. The \emph{pointer/reference stream} costs $\sum_{i=1}^{c(N)}
+\lceil\log_2 i\rceil = c(N)\log_2 c(N) + O(c(N))$ bits; this stream is
+$O(N)$ and is precisely the term that converges to $N\,h(X)$, not
+overhead. (For a positive-entropy source $c(N) = \Theta(N/\log N)$ and
+$\log_2 c(N) = \Theta(\log N)$, so the stream is $\Theta(N)$; for a
+degenerate $h(X)=0$ source it is $o(N)$ and the bound is loose, which
+only helps.) The genuinely additive
+\emph{overhead} comprises: (a) the per-token new-symbol stream, $c(N)
+\log_2\sigma = O(N/\log N) = o(N)$; (b) the dictionary description ---
+absent in route (i) where the pointer stream defines $D$ incrementally,
+and in route (ii) the part of $B(G_{X^N})$ encoding $V(G)$, $T(G)$, and
+the rule lengths, bounded by $|\mathcal{A}| + 4|G| + \lceil H(G)\rceil$
+(Kieffer--Yang Theorem~6) $= O(|G|) = O(N/\log N) = o(N)$ since $|G| =
+O(N/\log N)$; and (c) the hierarchical re-indexing slack, $O(K) =
+O(N/\log N) = o(N)$ by Lemma~6.6a (the family/variant split is a
+bijection and so costs no information; the two-stage practical coder
+pays at most a constant per token). Note we do \emph{not} claim the
+index width itself is $o(N)$: each of the $c(N)$ references carries an
+address of $\Theta(\log K) = \Theta(\log N)$ bits, so the index
+\emph{stream} is $\Theta(N)$ --- but that is the rate-bearing pointer
+stream just accounted, not extra overhead. (If instead the dictionary
+were \emph{strictly} sub-Lempel--Ziv, $K = o(N/\log N)$, then even the
+full index $O(K\log K) = o(N)$ would be negligible; the $K =
+\Theta(N/\log N)$ LZ78 regime is the demanding case and is handled by
+charging the pointers to the rate.) Summing the $N h(X) + o(N)$ pointer
+rate with the $o(N)$ overhead (a)--(c) gives (6.6).
+
+\emph{Bits-back combination.} The residual stream $R_C$ may itself be
+coded by bits-back ANS when the per-token model is a continuous latent
+rather than an exact discrete pointer (Theorem~6.6); by (6.4) this
+contributes the cross-entropy of the residual under the model marginal
+plus the posterior KL gap, both $\to 0$ when the model marginal matches
+the data conditional and $q$ is the true posterior, so the refinement
+does not increase the leading $N h(X)$ term. Hence the combined
+construction attains $N h(X) + o(N)$ for stationary ergodic sources.
+\hfill$\blacksquare$
+
+\textbf{Remark 6.6b (What this does and does not assume; greedy-MDL
+universality is open).} The bound (6.6) is achievability
+\emph{conditional on the dictionary builder being a universal grammar
+transform} (LZ78, or any irreducible-grammar transform). This is the
+natural standalone bound: it says the Type-III-C \emph{construction}
+--- the hierarchical token-tensor archive of Definition~3.5 --- is not
+itself an obstacle to optimality, because once the dictionary is built
+universally the index and header are $o(N)$ and the reference stream
+reaches $h(X)$. What it does \emph{not} claim is that the specific
+greedy marginal-MDL admission rule of Theorem~6.5 produces an
+irreducible (hence universal) grammar. Greedy grammar heuristics in
+general need not be irreducible, and their worst-case grammar size can
+exceed the smallest grammar by a factor bounded away from $1$ (Charikar
+et al.\ 2005 prove constant-factor lower bounds for LZ78, \textsc{Bisection},
+\textsc{Sequential}, and other greedy transforms against the optimal
+grammar size); a large grammar inflates the header but, more
+importantly, a \emph{non-irreducible} transform is not covered by
+Kieffer--Yang's universality theorem, so its rate is not guaranteed to
+reach $h(X)$. Whether the Theorem~6.5 greedy-MDL builder is universal
+(equivalently, whether it can be post-processed into an irreducible
+transform without changing its admission decisions) is left open. The
+honest reading of Theorems 6.5, 6.6, and 6.6b together is: Theorem~6.5
+gives a tractable greedy admission rule, Theorem~6.6b shows
+\emph{some} tractable universal builder (LZ78, run as the dictionary
+transform) already attains the entropy rate within the Type-III-C
+container, and Theorem~6.6 shows the residual refinement is rate-exact;
+matching the \emph{specific} greedy-MDL builder to universality remains
+a gap. Practically, this means a Type-III-C implementation that wants a
+provable achievability guarantee should build its dictionary with an
+LZ78/irreducible-grammar pass (or verify irreducibility of its learned
+dictionary) rather than rely on unconstrained greedy MDL.
 
 \textbf{Theorem 6.7 (Restricted Type-III-C dictionary learning is
 NP-hard).} \emph{Consider the restricted Type-III-C problem in which
@@ -11427,6 +11726,27 @@ point to the relevant theorems.
   $H_D(X \mid Y)$ exactly when both KL terms vanish (model marginal
   matches data, and $q$ matches the true posterior).
 \item
+  Standalone achievability for the learned hierarchical Type-III-C
+  dictionary/token-cover --- resolved \emph{conditionally on a universal
+  dictionary builder} by Theorem 6.6b (with Lemma 6.6a). If the
+  dictionary is produced by a universal grammar transform --- an LZ78
+  incremental parser (Ziv--Lempel 1978; Cover--Thomas \S13.5) or an
+  irreducible-grammar transform (Kieffer--Yang 2000, Theorems 7--8) ---
+  the Type-III-C encoder attains $\mathbb{E}[L_{\mathrm{IIIC}}(X^N)] \le
+  N\,h(X) + o(N)$ for stationary ergodic $X$, i.e.\ per-symbol rate $\to
+  h(X)$. The hierarchical family/variant index of Definition 3.5 is
+  rate-neutral (Lemma 6.6a, a two-level specialization of the
+  tree-invariance Theorem 6.3), and the $K = c(N) = O(N/\log N)$
+  dictionary entries add only $o(N)$ index/header overhead by the
+  Lempel--Ziv phrase-count bound. The numerical check
+  (\texttt{scripts/verify/thm\_6\_6b\_typeiiic\_achievability.py})
+  exhibits the per-symbol gap $\to 0$ at the predicted
+  $O(\log\log N/\log N)$ rate on order-1 Markov sources and confirms the
+  re-index is rate-neutral to machine precision. The companion question
+  --- whether the \emph{specific} greedy marginal-MDL builder of
+  Theorem 6.5 is itself a universal (irreducible) transform --- is
+  \emph{not} resolved and is listed in §13.2.
+\item
   Computational complexity of joint dictionary-and-predictor
   learning --- partially resolved. Theorem 6.7 establishes
   NP-hardness of the \emph{restricted} dictionary-only case via
@@ -11853,6 +12173,29 @@ listed below.)
   lower bound on $L_{\mathrm{sym}}(K^*)$ for NO instances under
   Berman-Karpinski-hard inputs. All three are open research-level
   directions.
+\item
+  Universality of the greedy marginal-MDL Type-III-C dictionary builder
+  --- open. Theorem 6.6b establishes entropy-rate achievability for the
+  Type-III-C container \emph{under a universal grammar transform} (LZ78
+  or any irreducible-grammar transform, Kieffer--Yang 2000). It does
+  \emph{not} establish that the specific greedy admission rule of
+  Theorem 6.5 (admit $\tau$ iff its marginal MDL gain $\Delta L(\tau) <
+  0$, all else frozen) yields a universal --- equivalently, an
+  irreducible --- transform. Greedy grammar heuristics need not be
+  irreducible, and Charikar et al.\ (2005) prove constant-factor
+  grammar-size lower bounds for several greedy transforms (LZ78,
+  \textsc{Bisection}, \textsc{Sequential}) against the smallest grammar;
+  a non-irreducible transform is outside the hypothesis of
+  Kieffer--Yang's universality theorem, so its expected rate is not
+  guaranteed to reach $h(X)$. The open question is whether the
+  greedy-MDL builder (i) can be post-processed into an irreducible
+  transform without changing its admission decisions, or (ii) is
+  directly universal for some natural source class, or (iii) admits a
+  source family on which its per-symbol rate is bounded away from
+  $h(X)$. A positive answer to (i) or (ii) would upgrade Theorem 6.6b
+  from ``achievable under a universal builder'' to ``achievable by the
+  Theorem 6.5 builder''; a (iii)-style counterexample would show the
+  conditional form is necessary.
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
   natural-data classes --- partially resolved. Four explicit
