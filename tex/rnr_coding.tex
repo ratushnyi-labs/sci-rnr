@@ -8346,6 +8346,119 @@ is megabyte-scale. Theorem
 model itself is encoded as part of the archive (knowledge distillation
 to predictor $M''$ with bounded KL gap).
 
+\emph{Remark 7.15a (Support selection for the neural-LM field: the §6.9
+Gaussian-MESP picture transfers to the discrete autoregressive predictor,
+cleaner in submodularity but with a new \#P-hard value-oracle obstacle that
+has no Gaussian analogue).} The predictor $M'$ of Theorem 7.15 defines a
+\emph{discrete autoregressive entropy field} --- the Type-III-C field of the
+neural-LM deployment, with per-position conditionals
+$Q_i(\cdot\mid x_{<i})$ in place of the Gaussian $\mathcal N(0,\Sigma)$ of
+§6.9. We record how the §6.9 support-selection theory (Lemma 6.9 fixed-field
+APX-hardness; Remark 6.9a free-field easiness; Corollary 6.9b greedy
+additive-regret encoder) ports to this field. As in §6.9 the
+\emph{fixed-field} lever is the operative one for Theorem 7.15, where $M'$
+is a pre-trained \emph{shared} predictor: choose a coded set $S$ of
+sub-block positions, code $X_S$ and reconstruct $X_{\bar S}$ from $M'$;
+with the ideal predictor the per-block residual is, by the chain rule,
+\[
+C_{\mathrm{sel}}(S) \;=\; H(X_S\mid X_{\bar S})
+\;=\; H(X) - M(\bar S), \qquad M(T):=H(X_T),
+\]
+the exact discrete mirror of Lemma 6.9's $h(X_S\mid X_{\bar S})=\tfrac12
+\log_2\det(2\pi e\,\Sigma_{S\mid\bar S})$ with Shannon entropy replacing
+differential entropy / log-det, so minimising $C_{\mathrm{sel}}$ over
+size-$|\bar S|$ reconstruction sets is again a maximum-entropy-sampling
+(MESP) selection. Four facts (each verified numerically in
+\texttt{scripts/verify/remark\_7\_15a\_transformer\_support\_selection.py};
+V1--V5):
+\begin{enumerate}
+\item \emph{(Submodularity is unconditional --- strictly cleaner than the
+Gaussian case.)} $M(T)=H(X_T)$ is non-negative, monotone, and submodular
+for \emph{every} discrete joint law, because entropy is a polymatroid rank
+function (Fujishige, \emph{Information and Control} 39(1):55--72, 1978):
+$M(T\cup\{i\})-M(T)=H(X_i\mid X_T)\ge 0$ (monotone) and is non-increasing in
+$T$ (submodular, ``conditioning reduces entropy''). Unlike the Gaussian
+differential entropy --- which can be negative and whose monotonicity needs
+the calibration $\sigma^2\ge 1/(2\pi e)$ shown \emph{necessary} in Remark
+6.9d --- discrete entropy needs \emph{no} calibration: that noise floor
+simply vanishes (V1).
+\item \emph{(Greedy retains the $(1-1/e)$ guarantee and the additive-regret
+identity.)} Greedy maximisation of $M$ gives $M(T_{\mathrm{greedy}})\ge
+(1-1/e)\,M(T_{\mathrm{opt}})$ (Nemhauser--Wolsey--Fisher, \emph{Math.\
+Programming} 14:265--294, 1978), and the residual transfers \emph{additively}
+exactly as in Corollary 6.9b: $C_{\mathrm{sel}}(\text{greedy}) -
+C_{\mathrm{sel}}(\text{opt}) = M(T_{\mathrm{opt}}) - M(T_{\mathrm{greedy}})
+\le (1/e)\,M(T_{\mathrm{opt}})$ --- not a multiplicative ratio, since the cost
+is a difference $H(X)-M(\bar S)$ (V2).
+\item \emph{(The selection is NP-hard --- hardness is \emph{not} softened by
+discreteness.)} Free choice of a size-$s$ coded set to optimise $M$ is
+NP-hard already in the discrete setting: it contains \textsc{Max-Coverage}
+(NP-hard, Feige, \emph{JACM} 45(4):634--652, 1998). Reduction: $U$ latent
+independent fair coins $E_1,\dots,E_U$ (not selectable); one selectable
+\emph{position} per candidate set $C_i$ with value $X_i:=(E_e)_{e\in C_i}$,
+so $H(X_S)=\bigl|\bigcup_{i\in S} C_i\bigr|$ for any position-subset $S$ and
+$\max_{|S|=s}H(X_S)$ is \textsc{Max-Coverage} --- a \emph{free} per-position
+selection, faithful to Lemma 6.9's MESP rather than a candidate-restricted
+variant (the positions $X_i$ are tuple-valued, within the general
+discrete-field scope below). Here the value oracle $H(X_S)=|\bigcup C_i|$ is
+poly-time, so the selection is hard \emph{even with an easy oracle} (V4).
+\item \emph{(A new value-oracle complexity split with no Gaussian analogue.)}
+Greedy needs an efficient value oracle for $H(X_T)$; for an AR field this is
+marginal inference, and its complexity splits:
+\begin{itemize}
+\item[(a)] \emph{order-$1$ Markov, arbitrary $T$:} POLY-TIME. The induced
+subset process is again order-$1$ (the observed previous kept symbol is the
+full state, so no hidden-state belief branching), giving the chain-rule
+entropy $H(X_T)=H(X_{t_1})+\sum_k H(X_{t_k}\mid X_{t_{k-1}})$ in $O(r\,
+|\Sigma|^2)$ arithmetic for the entropy assembly plus $O(r\,|\Sigma|^3\log N)$
+for the gap-power pairwise marginals (transfer matrix / Chapman--Kolmogorov)
+--- polynomial, verified to equal the brute marginal entropy on
+every subset, with no $|\Sigma|^{|T|}$ table built;
+\item[(b)] \emph{bounded-order-$w$ Markov, \emph{contiguous} block
+$T=\{a,\dots,b\}$:} POLY-TIME via the forward algorithm,
+$O((b-a)\,|\Sigma|^{w+1})$ (poly for constant $w,|\Sigma|$). Contiguity is a
+\emph{sufficient} condition here, not shown necessary: for an \emph{arbitrary}
+subset of an order-$w\ge 2$ chain the order-$1$ reduction of (a) provably
+fails (the induced process is hidden-state, witnessed by
+$I(X_{t_k};X_{t_{k-2}}\mid X_{t_{k-1}})>0$ in V3b$'$), but whether its exact
+block entropy nonetheless admits a poly-time algorithm we leave \emph{open} ---
+this noncontiguous bounded-order case sits between the poly endpoints (a)/(b)
+and the \#P-hard general case (c), and our construction settles neither side
+for it;
+\item[(c)] \emph{general AR / high-order arbitrary $T$:} the \emph{exact}
+entropy value oracle is \#P-hard. Exact probabilistic inference is already NP-hard (Cooper,
+\emph{Artif.\ Intell.}\ 42(2--3):393--405, 1990) and its counting / marginal
+version is \#P-hard (Roth, \emph{Artif.\ Intell.}\ 82(1--2):273--302, 1996);
+probability reduces to the entropy oracle explicitly: for an
+event $E$ computed by a poly-size field coordinate, set $Y=E\wedge B$ with
+$B\sim\mathrm{Bern}(1/2)$ independent; then $\Pr(Y{=}1)=\Pr(E)/2\in[0,\tfrac12]$
+and $H(Y)=h_2(\Pr(E)/2)$, with $h_2$ strictly increasing on $[0,\tfrac12]$,
+so an entropy oracle recovers the \#P-hard marginal $\Pr(E)=2\,h_2^{-1}(H(Y))$
+(V5).
+\end{itemize}
+The Gaussian setting has \emph{neither} obstacle in (c): $\Sigma_T$ is read
+off in $O(N^2)$ and its log-det computed in $O(s^3)$. Thus the discrete
+neural-LM deployment carries \emph{two} independent obstacles --- NP-hard
+selection (3) \emph{and} a \#P-hard value oracle (4c) --- where the Gaussian
+theory of §6.9 carries only one (V3).
+\end{enumerate}
+\emph{Scope (honest, mirroring Lemma 6.9).} This is the \emph{fixed-field}
+lever, the regime of Theorem 7.15 ($M'$ pre-trained and shared). In the
+\emph{free-field amortised} regime the Remark 6.9a collapse applies verbatim:
+a free amortised predictor codes every block at the support-invariant rate
+$H(X)$, the chain rule $H(X_S)+H(X_{\bar S}\mid X_S)=H(X)$ erases the
+combinatorial selection, and the problem is in $\mathrm P$. The NP-/\#P-hardness
+of (3)--(4c) is established for \emph{general} discrete fields supplied by a
+poly-size representation; whether it persists on the restricted class of
+\emph{actual} transformer softmax fields is a separate question --- the
+discrete counterpart of Lemma 6.9's item-(4) $\Sigma$-restriction caveat ---
+and is left open. The transfer's two new contributions over §6.9 are
+therefore (i) unconditional/cleaner submodularity for the discrete field, and
+(ii) a representation-dependent value-oracle complexity split (poly endpoints
+vs.\ a \#P-hard general case, with the noncontiguous bounded-order regime left
+open) that locates the true practical bottleneck of the Theorem 7.15 encoder
+when it performs support selection.
+
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
 when local statistics vary).}
