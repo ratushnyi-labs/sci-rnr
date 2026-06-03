@@ -93,11 +93,23 @@ stationary ergodic sources, the hierarchical index being rate-neutral
 (Lemma 6.6a) and the $K = O(N/\log N)$ dictionary entries adding only
 $o(N)$ overhead; whether the specific greedy marginal-MDL builder of
 Theorem 6.5 is itself a universal transform is left open (Remark 6.6b).
-Matching converses are given
-for Type-I (Theorem 4.2) and Type-III-B (Theorem 6.3b, the byte
-coder cannot beat the joint conditional entropy $H(H,L\mid C)$, so
-the $I(H;L\mid C)$ advantage of Theorem 6.3 is exactly tight).
-Complexity results include NP-hardness of the
+Matching converses are given for Type-I (Theorem 4.2), Type-II
+(Theorem 5.3b), and Type-III-B (Theorem 6.3b, the byte coder cannot beat
+the joint conditional entropy $H(H,L\mid C)$, so the $I(H;L\mid C)$
+advantage of Theorem 6.3 is exactly tight). For Type-II the base bound
+$\mathbb{E}[L] \geq H(X \mid Y)$ holds for every code and is the operative
+converse, met (up to coder redundancy) by ideal joint coding of the
+partition and also by the count-plus-rank construction of
+Theorems 5.2--5.3 once its enumerative index is entropy-coded; the
+flat-enumerative candidate-set cost (the multinomial baseline when no
+support is used) is a converse only for the uniform-index scheme,
+equalling $H(X \mid Y)$ exactly when the conditional law is uniform on the
+decoder-available candidate set (so Theorem 5.3 is entropy-optimal there)
+and otherwise exceeding it by the recoverable within-candidate-set
+uniform deficit, a KL divergence that is the price of uniform indexing
+rather than of the partition representation. For Type-III-A and
+Type-III-C a standalone converse is open. Complexity results include
+NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3), a
 polynomial-time vs.\ NP-hard dichotomy in semi-non-factorized
 Type-II support selection (Lemma 5.7a polynomial-time for
@@ -379,6 +391,26 @@ This article makes the following contributions.
   multinomial baseline and an explicit escape-mode cost term,
   addressing two errors in earlier drafts that overstated the
   Type-II advantage.
+\item
+  A matching Type-II converse (Theorem 5.3b), completing the Type-II
+  proof matrix in the shape of the Type-I converse (Theorem 4.2(C)):
+  the base bound $\mathbb{E}[L_{\mathrm{II}}] \geq H(X \mid Y)$ holds
+  for every Type-II code and is the operative converse, met by ideal
+  joint coding of the partition and equally by the count-plus-rank
+  construction of Theorems 5.2--5.3 once its enumerative index is
+  entropy-coded. The flat-enumerative candidate-set cost
+  $\log_2 |\mathcal{C}(Y,\mathbf{k})|$ (the multinomial baseline only when
+  no support is used) is a converse only for the uniform-index scheme; it
+  equals $H(X \mid Y)$ exactly when the conditional law is uniform on the
+  decoder-available candidate set (so Theorem 5.3 is entropy-optimal
+  there) and otherwise exceeds it by the recoverable within-candidate-set
+  uniform deficit (a KL divergence, with source-dependent support metadata
+  charged). Three worked counterexamples ($N=4$, $\mathbf{k}=(1,3)$) show
+  this overhead is the price of uniform indexing on the candidate set ---
+  not of the partition representation, not measured against the full count
+  class once a support is used, and not evadable by source-dependent
+  support metadata (which is charged); it is thus not misattributed to
+  Type-II as such.
 \item
   An amortized separation theorem (Theorem 5.4) for
   semi-non-factorized Type-II via a specific linear-code
@@ -2308,6 +2340,364 @@ log-binomial vanishes and the formula reduces to
 $\sum_v \log_2 \binom{s'_v}{k_v}$ (with the chained $s'_v = |S_v \cap A_v|$,
 not the raw $s_v$), recovering the idealized oracle bound on the
 remaining universe at each step.
+
+\textbf{5.5a The Type-II converse}
+
+Theorems 5.2 and 5.3 are achievability statements: they upper-bound the
+length of explicit partition codes. We now supply the matching
+converse, completing the Type-II proof matrix in the same shape as the
+Type-I converse (Theorem 4.2(C)). It is important to separate three
+nested notions, because the multinomial / support cost is a converse for
+only the narrowest of them.
+\begin{itemize}
+\item[(i)] \emph{Any Type-II code} (the partition $\Pi$, in bijection
+with $X$, coded by any uniquely decodable scheme using $Y$).
+\item[(ii)] \emph{Count-plus-rank form}: first describe the count vector
+$\mathbf{k}$, then identify $\Pi$ within its count class by an
+enumerative index (``rank''), the index being coded by \emph{any}
+uniquely decodable scheme.
+\item[(iii)] \emph{Flat-enumerative form} (the literal Theorem 5.2 /
+Theorem 5.3 construction): the count-plus-rank form in which the rank is
+coded \emph{uniformly}, at the fixed length $\log_2$ of the number of
+candidate sets --- i.e.\ enumerative coding with no entropy coding of the
+index.
+\end{itemize}
+The result has two layers. The first is the clean Shannon bound
+$\mathbb{E}[L_{\mathrm{II}}] \geq H(X \mid Y)$ for \emph{every} Type-II
+code (i); it is tight, because an ideal joint coder of the partition
+reaches it with no overhead, and the count-plus-rank form (ii) also
+meets it with no excess (by entropy-coding the index). The structural
+content is the second layer, scoped to the \emph{flat-enumerative} form
+(iii): there the flat cost is the log of the decoder-available
+candidate-set size $\log_2 |\mathcal{C}(Y,\mathbf{k})|$ (the multinomial
+$\log_2 M(N;\mathbf{k})$ when no support is used, and
+$\sum_v \log_2 \binom{s'_v}{k_v}$ with a correct support), and it equals
+the within-class entropy $H(\Pi \mid Y, \mathbf{k})$ --- hence the
+information-theoretic optimum $H(X \mid Y)$ once the count cost is added
+--- exactly when the conditional partition law is uniform on its
+candidate set $\mathcal{C}(Y,\mathbf{k})$. In that regime Theorem 5.3 is
+entropy-optimal; otherwise its flatness leaves a strictly positive gap,
+the within-candidate-set uniform deficit, recovered by
+\emph{entropy-coding the same enumerative index} (staying in
+count-plus-rank form (ii)) or, equivalently in rate, by ideal joint
+coding. We are explicit throughout about which of (i)--(iii) a given
+claim addresses, so the flat-enumerative overhead is never misattributed
+to Type-II, nor to the count-plus-rank form, as such.
+
+\textbf{Theorem 5.3b (Type-II converse).} \emph{Let $X \sim D$ be a
+source over length-$N$ nibble blocks with partition representation
+$\Pi(X) = (M_0, \ldots, M_{15})$ (Definition 3.2; $\Pi$ is in bijection
+with $X$), and let $Y = M(C)$ be decoder-reproducible side information.
+Write $\mathbf{k} = (k_0, \ldots, k_{15})$, $k_v = |M_v|$, for the
+count vector.}
+\begin{itemize}
+\item[\textbf{(C)}] (\emph{Base converse; all Type-II codes.}) Any
+uniquely decodable Type-II code whose decoder uses only the codeword and
+$Y$ has expected length
+\[
+\mathbb{E}[L_{\mathrm{II}}(X)] \;\geq\; H(X \mid Y).
+\]
+This bound is tight: an ideal Type-II coder that arithmetic-codes
+$\Pi$ under its true conditional law $P(\Pi \mid Y)$ attains
+$H(X \mid Y) + \varepsilon_N$, with no count, support, or escape
+overhead. Hence the multinomial / support cost of Theorems 5.2--5.3 is
+\emph{not} a converse against arbitrary Type-II codes.
+\item[\textbf{(S)}] (\emph{Structural converse and the flat-enumerative
+overhead.}) For the \emph{count-plus-rank form} (ii) --- describe
+$\mathbf{k}$, then identify $\Pi$ within its count class by any uniquely
+decodable index code (the Theorem 5.2 / Theorem 5.3 chained scheme,
+support-restricted and escape variants included) --- the converse is
+again the base bound:
+\[
+\mathbb{E}[L_{\mathrm{II}}^{\mathrm{cr}}(X)] \;\geq\; H(\mathbf{k} \mid Y) + H(\Pi \mid Y, \mathbf{k}) \;=\; H(X \mid Y),
+\]
+so the count-plus-rank form never beats $H(X \mid Y)$ and, by
+entropy-coding the index, meets it (achievability of part T). No
+multinomial / support \emph{overhead} is forced by the count-plus-rank
+structure itself. The overhead appears only in the \emph{flat-enumerative
+form} (iii). One must account honestly for the support metadata. Let $Z$
+collect all \emph{source-dependent} side information the decoder uses to
+form the candidate set --- the declared supports $S_v$ and escape counts
+$\alpha_v$ when these depend on the block --- transmitted in the header;
+purely source-\emph{independent} structure (fixed by $Y$ and the model)
+contributes nothing to $Z$. Let $\mathcal{C}(Y, \mathbf{k}, Z)$ be the
+resulting candidate set (the count-$\mathbf{k}$ partitions consistent with
+$Y$ and $Z$), so flat enumeration codes the index uniformly at the fixed
+length $\log_2 |\mathcal{C}(Y, \mathbf{k}, Z)|$, and the header charges
+$Z$ at expected cost $\geq H(Z \mid Y, \mathbf{k})$. Provided the support
+is correct ($\Pi \in \mathcal{C}(Y, \mathbf{k}, Z)$ always, which the
+escape mechanism of Theorem 5.3 guarantees for the realized block), the
+flat payload decomposes \emph{conditioned on $Z$}:
+\[
+\underbrace{\mathbb{E}\!\left[\log_2 |\mathcal{C}(Y, \mathbf{k}, Z)|\right]}_{\text{flat rank payload}} = \underbrace{H(\Pi \mid Y, \mathbf{k}, Z)}_{\text{conditional index entropy}} + G_{\mathrm{within}}^{Z},
+\qquad
+G_{\mathrm{within}}^{Z} = \mathbb{E}\!\left[D\!\left(P_{\Pi \mid Y, \mathbf{k}, Z} \,\big\|\, U_{\mathcal{C}(Y, \mathbf{k}, Z)}\right)\right] \;\geq\; 0,
+\]
+where $U_{\mathcal{C}}$ is the uniform law on the candidate set and
+$G_{\mathrm{within}}^{Z}$ is the \emph{within-candidate-set uniform
+deficit}. Crucially, the rank payload alone can be made small (even $0$)
+by pushing the partition information into $Z$, but then the header pays
+for it: since $Z$ is a deterministic function of $\Pi$ (it is computed
+from the block), the chain rule gives total
+$\geq H(\mathbf{k} \mid Y) + H(Z \mid Y, \mathbf{k}) + H(\Pi \mid Y, \mathbf{k}, Z) = H(\mathbf{k}, Z, \Pi \mid Y) = H(\Pi \mid Y) = H(X \mid Y)$,
+recovering the base converse no matter how the support is chosen. The
+\emph{support-free} special case takes $Z$ empty,
+$\mathcal{C}(Y, \mathbf{k}) = \{$all partitions with counts $\mathbf{k}\}$,
+$|\mathcal{C}| = M(N; \mathbf{k})$ (the multinomial of Theorem 5.2), and
+$G_{\mathrm{within}}^{\varnothing} = \mathbb{E}[D(P_{\Pi \mid Y, \mathbf{k}} \| U_{\mathbf{k}})]$.
+A correct \emph{source-independent} support (one fixed by $Y$, so still
+$Z$ empty) shrinks $\mathcal{C}$ and lowers both the rank payload and the
+deficit for free; a source-\emph{dependent} support shrinks the rank
+payload but adds $H(Z \mid Y, \mathbf{k})$ to the header, with the two
+trading off so that the total never drops below $H(X \mid Y)$. The flat
+scheme is entropy-optimal ($G_{\mathrm{within}}^{Z} = 0$) exactly when the
+conditional law is uniform on its candidate set
+$\mathcal{C}(Y, \mathbf{k}, Z)$. Thus the flat scheme's total cost is
+$H(X \mid Y) + G_{\mathrm{within}}^{Z}$ (with the count and metadata
+headers charged at their entropies and $\varepsilon_N$); its only excess
+over the optimum is $G_{\mathrm{within}}^{Z}$, the price of \emph{uniform}
+indexing on the candidate set, not of the count-plus-rank decomposition
+--- it is removed by entropy-coding the index, without leaving form (ii).
+\item[\textbf{(T)}] (\emph{Tightness / order-optimality.}) The
+flat-enumerative scheme (iii) is entropy-optimal ---
+$G_{\mathrm{within}}^{Z} = 0$, flat rank payload
+$= H(\Pi \mid Y, \mathbf{k}, Z)$ --- exactly when the conditional law is
+uniform on its candidate set $\mathcal{C}(Y, \mathbf{k}, Z)$. Two clean
+cases realize this with zero total excess. (a) \emph{No support} ($Z$
+empty), with the conditional partition law uniform on the whole count
+class, where $|\mathcal{C}| = M(N; \mathbf{k})$ and
+\[
+\mathbb{E}_{Y, \mathbf{k}}\!\left[\log_2 M(N; \mathbf{k})\right] = H(\Pi \mid Y, \mathbf{k}),
+\qquad H(\mathbf{k} \mid Y) + \mathbb{E}_{Y, \mathbf{k}}\!\left[\log_2 M(N; \mathbf{k})\right] = H(X \mid Y).
+\]
+(b) A correct \emph{source-independent} support (one fixed by $Y$, so $Z$
+is still empty) that restricts $\mathcal{C}$ to a subclass on which the
+conditional law is uniform, where $\log_2 |\mathcal{C}| < \log_2 M$ but
+still $= H(\Pi \mid Y, \mathbf{k})$, again with no header cost for the
+support. A source-\emph{dependent} support reduces the rank payload but
+charges $H(Z \mid Y, \mathbf{k})$ in the header; the total is still
+$H(X \mid Y) + G_{\mathrm{within}}^{Z}$, entropy-optimal iff the law is
+uniform on $\mathcal{C}(Y, \mathbf{k}, Z)$. In all entropy-optimal cases
+the flat Theorem 5.3 code meets the converse up to the arithmetic-coder
+redundancy $\varepsilon_N$ and the header cost. Otherwise
+($G_{\mathrm{within}}^{Z} > 0$), the flat scheme overpays by exactly
+$G_{\mathrm{within}}^{Z}$, but the count-plus-rank form recovers the gap
+by entropy-coding the index under $P(\Pi \mid Y, \mathbf{k}, Z)$, costing
+$H(\Pi \mid Y, \mathbf{k}, Z)$ in expectation (Shannon achievability), so
+with the headers $\mathbb{E}[L^{\mathrm{cr}}] = H(\mathbf{k} \mid Y) + H(Z \mid Y, \mathbf{k}) + H(\Pi \mid Y, \mathbf{k}, Z) + \varepsilon_N = H(X \mid Y) + \varepsilon_N$.
+Thus Type-II is order-optimal in general (part C), entropy-optimal via
+the flat scheme exactly on the uniform-candidate-set regime, and
+entropy-optimal always within the count-plus-rank form by entropy-coding
+the index; the flat scheme's $G_{\mathrm{within}}^{Z}$ excess is the price
+of \emph{uniform} indexing on the candidate set rather than an
+unavoidable cost of the partition representation.
+\end{itemize}
+
+\emph{Sharpness of the scope (a counterexample to over-claiming).} The
+restriction of the $\log_2 M(N;\mathbf{k})$ lower bound to the
+\emph{flat-enumerative} form (iii), rather than to the broader
+count-plus-rank form (ii), is necessary. Take $N = 4$, no side
+information, alphabet $\{0,1\}$, and a deterministic count vector
+$\mathbf{k} = (1,3)$, so $H(\mathbf{k}) = 0$ and the count class has
+$M(4;\mathbf{k}) = \binom{4}{1} = 4$ partitions (indexed by the position
+of the single $0$). Let the conditional law over the four enumerative
+ranks be $(\tfrac12, \tfrac14, \tfrac18, \tfrac18)$, so
+$H(\Pi \mid \mathbf{k}) = 1.75 < 2 = \log_2 M$ and (support-free)
+$G_{\mathrm{within}}^{\varnothing} = 0.25$. The count-plus-rank code that
+sends an empty count prefix and then the Huffman index code
+$\{0 \mapsto 0,\, 1 \mapsto 10,\, 2 \mapsto 110,\, 3 \mapsto 111\}$ is
+prefix-free, decodes by unranking, and has expected length
+$\tfrac12\cdot1 + \tfrac14\cdot2 + \tfrac18\cdot3 + \tfrac18\cdot3 = 1.75$
+bits $= H(X)$. It stays strictly within the count-plus-rank form yet
+beats the flat multinomial payload $\log_2 M = 2$ by exactly
+$G_{\mathrm{within}}^{\varnothing}$. Hence $\log_2 M(N;\mathbf{k})$ is
+\emph{not} a converse for form (ii); the structural lower bound (part S)
+is the entropy $H(\Pi \mid Y, \mathbf{k})$, and the $\log_2 M$ value is a
+converse only for the support-free flat scheme.
+
+A second variant shows that even the \emph{flat} cost is the candidate-set
+size $\log_2 |\mathcal{C}|$, not $\log_2 M(N;\mathbf{k})$, once a
+\emph{source-independent} support is used. Keep $N = 4$,
+$\mathbf{k} = (1,3)$, but let the single $0$ be uniform on positions
+$\{1,2\}$ only: $P(0111) = P(1011) = \tfrac12$. Relative to the full count
+class $H(\Pi \mid \mathbf{k}) = 1 < 2 = \log_2 M$, a deficit of $1$. Yet a
+flat code with the fixed support $S_0 = \{1,2\}$ --- the same set for every
+block, so $Z$ is empty and no support header is paid --- has $\mathcal{C}$
+of size $\binom{2}{1} = 2$ and pays $\log_2 2 = 1 = H(\Pi \mid \mathbf{k})$,
+entropy-optimal: it does \emph{not} overpay by the full-class deficit.
+This is why part (S) measures the deficit against the uniform law on the
+decoder-available candidate set $\mathcal{C}$, with $\log_2 M$ recovered
+only in the support-free special case.
+
+A third variant shows why the support metadata $Z$ must be charged. Same
+source, but now let the code declare a \emph{source-dependent} support
+$S_0 = \{$the actual zero position$\}$. For every realized block the
+support is correct and $|\mathcal{C}(Y, \mathbf{k}, Z)| = 1$, so the flat
+\emph{rank} payload is $\log_2 1 = 0$ --- seemingly beating even the
+entropy. But $Z$ now identifies the zero's position, so
+$H(Z \mid \mathbf{k}) = 1$ bit must be transmitted in the header, and the
+total is $0 + 1 = 1 = H(X)$ again. The apparent free lunch is illusory:
+the partition information has merely moved from the rank into $Z$. This is
+why part (S) conditions the candidate set and the deficit
+$G_{\mathrm{within}}^{Z}$ on $Z$ and charges $H(Z \mid Y, \mathbf{k})$
+separately, exactly the source-dependent-header accounting that Lemma
+5.1e enforces in the sub-block setting; with $Z$ a deterministic function
+of $\Pi$, the total can never drop below $H(X \mid Y)$.
+
+\emph{\textbf{Proof.}} \textbf{(C)} Because $\Pi(X)$ is in bijection
+with $X$ (§5.2: ``encoding $X$ is equivalent to encoding $\Pi(X)$''),
+any Type-II code is a uniquely decodable code for $X$ whose decoder
+sees only the codeword and $Y$. Shannon's source-coding converse
+applied to each conditional law $P(X \mid Y = y)$ and averaged over $Y$
+(Cover and Thomas 2006, Theorem 5.4.1; Chapter 15 for the
+side-information form) gives $\mathbb{E}[L_{\mathrm{II}}] \geq H(X \mid Y)$,
+exactly as in Theorem 4.2(C). For tightness, code $\Pi$ directly under
+$P(\Pi \mid Y)$ with an arithmetic coder: since $\Pi \leftrightarrow X$,
+$H(\Pi \mid Y) = H(X \mid Y)$, and the coder attains
+$H(\Pi \mid Y) + \varepsilon_N$ (Cover and Thomas 2006, Theorem 5.4.1).
+No count vector, support, or escape stream appears, so the overhead of
+Theorems 5.2--5.3 is avoidable; it cannot be a converse against all
+Type-II codes.
+
+\textbf{(S)} A count-plus-rank code splits as a self-delimiting
+description of $\mathbf{k}$ followed by an identification of $\Pi$ within
+its count class (the chained per-symbol enumerative ranks of Theorem 5.3
+specify $\Pi$ given $\mathbf{k}$ and the supports, all decoder-available;
+$\mathbf{k}$ is logically prior since the candidate counts $\binom{\cdot}{k_v}$
+require it). By linearity of expectation the expected length is
+$\mathbb{E}[|c(\mathbf{k})|] + \mathbb{E}[|r(\Pi;\mathbf{k},Y)|]$. The
+prefix $c$ is a uniquely decodable code for $\mathbf{k}$ given $Y$, so
+$\mathbb{E}[|c|] \geq H(\mathbf{k} \mid Y)$ (Shannon converse on
+$\mathbf{k}$); conditioned on $(Y, \mathbf{k})$ the remainder $r$ is a
+uniquely decodable code for $\Pi$ over the count class, so
+$\mathbb{E}[|r|] \geq H(\Pi \mid Y, \mathbf{k})$ (Shannon converse on
+$\Pi$ within the class). Summing and using the chain rule
+$H(\Pi \mid Y) = H(\mathbf{k} \mid Y) + H(\Pi \mid Y, \mathbf{k})$
+(valid because $\mathbf{k}$ is a deterministic function of $\Pi$), and
+$H(\Pi \mid Y) = H(X \mid Y)$ from the bijection,
+\[
+\mathbb{E}[L_{\mathrm{II}}^{\mathrm{cr}}] \;\geq\; H(\mathbf{k} \mid Y) + H(\Pi \mid Y, \mathbf{k}) \;=\; H(X \mid Y).
+\]
+This is the converse for form (ii); the only structural lower bound on
+the index payload is the within-class \emph{entropy}
+$H(\Pi \mid Y, \mathbf{k})$, not $\log_2 M(N;\mathbf{k})$.
+
+The flat payload identity is separate, and must charge the support
+metadata. The flat-enumerative form (iii) transmits, beyond
+$\mathbf{k}$, any source-dependent support metadata $Z$ (the declared
+$S_v, \alpha_v$ when block-dependent), then codes the index uniformly at
+the fixed length $\log_2 |\mathcal{C}(y, \mathbf{k}, z)|$, where
+$\mathcal{C}(y, \mathbf{k}, z)$ is the count-$\mathbf{k}$ partition set
+consistent with $(y, z)$ (for the chained Theorem 5.3 scheme,
+$|\mathcal{C}| = \prod_v \binom{s'_v}{k_v - \alpha_v}\binom{|A_v| - s'_v}{\alpha_v}$,
+and $= M(N; \mathbf{k})$ when $Z$ is empty). The header pays $Z$ at
+expected cost $\geq H(Z \mid Y, \mathbf{k})$ (Shannon converse on $Z$).
+If the support is correct,
+$\mathrm{supp}\,P_{\Pi \mid Y=y, \mathbf{k}, z} \subseteq \mathcal{C}(y, \mathbf{k}, z)$,
+so by Cover and Thomas 2006 Theorem 2.6.4 the conditional entropy is at
+most $\log_2 |\mathcal{C}(y, \mathbf{k}, z)|$, with deficit
+\[
+G_{\mathrm{within}}^{Z} = \mathbb{E}\!\left[\log_2 |\mathcal{C}(Y,\mathbf{k},Z)| - H(\Pi\mid Y,\mathbf{k},Z)\right] = \mathbb{E}\!\left[D\!\left(P_{\Pi\mid Y,\mathbf{k},Z} \,\big\|\, U_{\mathcal{C}(Y,\mathbf{k},Z)}\right)\right] \geq 0,
+\]
+by the identity $D(P\|U) = \log_2|\mathrm{supp}\,U| - H(P)$ for $U$
+uniform on a finite set containing $\mathrm{supp}\,P$. The flat scheme's
+\emph{total} expected length is then at least
+\[
+H(\mathbf{k} \mid Y) + H(Z \mid Y, \mathbf{k}) + \mathbb{E}\!\left[\log_2 |\mathcal{C}(Y,\mathbf{k},Z)|\right] = H(\mathbf{k} \mid Y) + H(Z \mid Y, \mathbf{k}) + H(\Pi \mid Y, \mathbf{k}, Z) + G_{\mathrm{within}}^{Z}.
+\]
+Since $\mathbf{k}$ is a deterministic function of $\Pi$, the chain rule
+gives
+$H(\mathbf{k} \mid Y) + H(Z \mid Y, \mathbf{k}) + H(\Pi \mid Y, \mathbf{k}, Z) = H(\mathbf{k}, Z, \Pi \mid Y) = H(\Pi \mid Y) + H(Z \mid \Pi, Y) \geq H(\Pi \mid Y) = H(X \mid Y)$,
+with equality when $Z$ is a deterministic function of $\Pi$ (the typical
+case: the support is computed from the block, so $H(Z \mid \Pi, Y) = 0$).
+So the flat total is $\geq H(X \mid Y) + G_{\mathrm{within}}^{Z}$, no
+matter how the support metadata is chosen --- even a \emph{randomized} $Z$
+only adds the nonnegative $H(Z \mid \Pi, Y)$, so pushing partition
+information into $Z$ shrinks the rank payload but inflates the header by at
+least as much. (The deficit $G_{\mathrm{within}}^{Z}$ is the entropy
+below the \emph{candidate-set} maximum, not the full count-class maximum
+unless $Z$ is empty and the support uninformative; and it is \emph{not}
+the cross-position total correlation of Theorem 5.5, since
+$U_{\mathcal{C}}$ has correlated coordinates --- the counts and support
+are fixed --- so $\sum_i H_{\mathrm{marg}}(X_i \mid Y,\mathbf{k},Z) \neq \log_2 |\mathcal{C}(Y,\mathbf{k},Z)|$
+in general.)
+
+\textbf{(T)} If $\Pi$ is uniform on its candidate set
+$\mathcal{C}(Y, \mathbf{k}, Z)$ given $(Y, \mathbf{k}, Z)$, the maximizer
+is attained: $H(\Pi \mid Y, \mathbf{k}, Z) = \mathbb{E}[\log_2 |\mathcal{C}(Y,\mathbf{k},Z)|]$,
+$G_{\mathrm{within}}^{Z} = 0$, and by the collapse above the flat total
+equals $H(X \mid Y)$. With $Z$ empty this is the support-free case: take
+the Theorem 5.3 code with $\alpha_v = 0$ and $S_v = A_v$, under which the
+chained sum telescopes,
+\[
+\sum_{v=0}^{15} \log_2 \binom{|A_v|}{k_v} = \log_2 \binom{N}{k_0}\binom{N - k_0}{k_1}\cdots = \log_2 \frac{N!}{\prod_v k_v!} = \log_2 M(N; \mathbf{k}),
+\]
+so the flat payload equals $\log_2 M(N; \mathbf{k})$; with a correct
+source-independent support it is the smaller
+$\sum_v \log_2 \binom{s'_v}{k_v} = \log_2 |\mathcal{C}|$ (no $Z$ header),
+still $\geq H(\Pi \mid Y, \mathbf{k})$ by part (S). When $\Pi$ is uniform
+on $\mathcal{C}$ this equals $H(\Pi \mid Y, \mathbf{k})$, so adding the
+count description at its entropy $H(\mathbf{k} \mid Y) + O(\log N)$ and
+the coder redundancy $\varepsilon_N$ matches the converse up to lower-order
+terms; the flat scheme is entropy-optimal. For a general (non-uniform)
+law on $\mathcal{C}$, replace the uniform index code by an arithmetic code
+driven by the conditional rank law $P(\Pi \mid Y, \mathbf{k}, Z)$: this
+still has count-plus-rank structure (the rank is the same enumerative
+index), costs $H(\Pi \mid Y, \mathbf{k}, Z) + \varepsilon_N$ in
+expectation for the index (Cover and Thomas 2006, Theorem 5.4.1), and with
+the count and metadata headers gives total
+$H(X \mid Y) + \varepsilon_N + O(\log N)$ by the same collapse --- matching
+the converse without leaving form (ii). The flat scheme's excess
+$G_{\mathrm{within}}^{Z}$ is therefore the cost of uniform indexing on the
+candidate set alone. \hfill$\blacksquare$
+
+\emph{Relation to the sub-block converse (Lemma 5.1e).} Lemma 5.1e is a
+converse for a \emph{different} operational setting: byte-granular
+random access via $m$ independently decodable sub-blocks under a
+sequential (Type-I-style) per-position coder, giving
+$L_{\mathrm{synced}} \geq m \cdot H(D_K)$ with source-independent
+metadata. It bounds the \emph{sync overhead} of sequential sub-block
+coding, not the partition-rank cost of Type-II. Theorem 5.3b is the
+converse for the partition (Type-II) representation and is logically
+independent of Lemma 5.1e: the former concerns the count-plus-rank
+decomposition of a whole-block partition code; the latter concerns the
+sub-block decomposition of a sequential stream code. Where they touch is
+that both are instances of the same master principle --- a uniquely
+decodable code for a deterministic function of the data costs at least
+that function's conditional entropy --- applied to two different
+factorizations.
+
+\emph{Scope and honesty.} The converse for both the general Type-II
+class (i) and the count-plus-rank form (ii) is the same: $H(X \mid Y)$,
+with no structural overhead. Three coders attain it (up to
+$\varepsilon_N$): ideal joint arithmetic coding of $\Pi$ (i); the
+count-plus-rank coder with an entropy-coded index (ii); and, when the
+conditional law is uniform on its candidate set, the flat-enumerative
+Theorem 5.3 coder (iii). The flat-enumerative \emph{total}
+$H(Z \mid Y, \mathbf{k}) + \log_2 |\mathcal{C}(Y,\mathbf{k},Z)|$ for
+source-dependent support metadata $Z$ --- reducing to the multinomial
+$\log_2 M(N;\mathbf{k})$ when $Z$ is empty and no support is used --- is a
+converse \emph{only} for the flat form (iii), where it exceeds the optimum
+by the within-candidate-set uniform deficit $G_{\mathrm{within}}^{Z}$,
+zero exactly when the conditional law is uniform on
+$\mathcal{C}(Y,\mathbf{k},Z)$. The three counterexamples above show this
+overhead is genuinely specific to uniform indexing on the candidate set:
+it is not forced by the count-plus-rank decomposition (entropy-coding the
+index removes it), is not measured against the full count class once a
+source-independent support is used, and cannot be evaded by smuggling
+partition information into a source-dependent support (which is charged in
+$Z$, leaving the total $\geq H(X \mid Y)$) --- and a fortiori it is not a
+property of Type-II. This is the honest reading of ``matching converse'':
+Theorem 5.3 is entropy-optimal exactly on the uniform-candidate-set
+regime (where its flatness costs nothing), and is matched to the optimum
+elsewhere after its enumerative index is entropy-coded, the residual
+flat-indexing gap $G_{\mathrm{within}}^{Z}$ being fully characterized as a
+KL divergence to the candidate-set uniform law. We do \emph{not} claim
+that $\log_2 M(N;\mathbf{k})$ lower-bounds an arbitrary Type-II or
+count-plus-rank code, nor even an arbitrary \emph{support-restricted}
+flat code; for those, part (C)'s $H(X \mid Y)$ is the operative and tight
+bound, and the flat total is
+$H(Z \mid Y, \mathbf{k}) + \log_2 |\mathcal{C}(Y,\mathbf{k},Z)|$.
 
 \textbf{5.6 Type-II vs Type-I: a separation theorem}
 
@@ -11658,6 +12048,39 @@ point to the relevant theorems.
   the empirical class model $P_E$ and uniform within-class payload
   match the true conditional laws; under model misspecification the
   gap is cross-entropy plus KL, which can be $\Theta(N)$.
+\item
+  Type-II converse --- resolved by Theorem 5.3b. Part (C) gives the
+  base bound $\mathbb{E}[L_{\mathrm{II}}] \geq H(X \mid Y)$ for any
+  uniquely-decodable Type-II code (Shannon on the partition, which is
+  in bijection with $X$), the operative converse, met by ideal joint
+  coding of $\Pi$. Part (S) shows the count-plus-rank form (transmit
+  counts, then an enumerative index, coded by any scheme) also has
+  converse $H(\mathbf{k} \mid Y) + H(\Pi \mid Y, \mathbf{k}) = H(X \mid Y)$,
+  with the index's only structural lower bound being the within-class
+  entropy $H(\Pi \mid Y, \mathbf{k})$. The flat-enumerative
+  (uniform-index) candidate-set cost $\log_2 |\mathcal{C}(Y,\mathbf{k})|$
+  --- the multinomial baseline $\log_2 M(N; \mathbf{k})$ only when no
+  support is used --- is a converse only for that scheme; it equals the
+  entropy exactly when the conditional law is uniform on the
+  decoder-available candidate set (then Theorem 5.3 is entropy-optimal,
+  part T), and otherwise exceeds it by the recoverable
+  within-candidate-set uniform deficit $G_{\mathrm{within}}^{Z}$ (a KL
+  divergence), with any source-dependent support metadata $Z$ charged at
+  $H(Z \mid Y, \mathbf{k})$. Three explicit counterexamples ($N=4$,
+  $\mathbf{k}=(1,3)$) show $\log_2 M$ is not a converse for the broader
+  count-plus-rank form (entropy-coding the index recovers
+  $G_{\mathrm{within}}^{Z}$ without leaving that form), nor even for
+  support-restricted flat codes (whose cost is the smaller
+  $\log_2 |\mathcal{C}|$), and that smuggling partition information into a
+  source-dependent support cannot beat the bound (the metadata header
+  $H(Z \mid Y, \mathbf{k})$ pays it back, total $\geq H(X \mid Y)$ by the
+  chain-rule collapse $H(\mathbf{k}, Z, \Pi \mid Y) = H(\Pi \mid Y)$). So
+  Type-II is order-optimal in general and entropy-optimal in the
+  uniform-candidate-set regime; the flat-indexing overhead is the price of
+  uniform enumeration on the candidate set, not a property of Type-II or
+  even of the count-plus-rank decomposition. This is distinct from Lemma
+  5.1e, which converses sequential sub-block random access, not the
+  partition representation.
 \item
   Computational complexity of optimal $E_{12}$ --- partially
   resolved by Theorem 4.3 (NP-hardness of the varying-parameter
