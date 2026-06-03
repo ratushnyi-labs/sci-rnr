@@ -4702,10 +4702,15 @@ uniquely-decodable lossless Type-III-A code reproducing $Y$,}
 \mathbb{E}[L_{\mathrm{IIIA}}] \;\ge\; H(X \mid Y).
 \tag{6.2b.1}
 \]
-\emph{Moreover the per-tile-oracle target of Theorem 6.1, each tile
-coded by an entropy-coding mode, satisfies the chain}
+\emph{Moreover the \emph{committed-mode per-tile floor}
+$R_{\mathrm{tile}} := \sum_t \min_m \mathbb{E}[L_m(t)]$ --- the minimum
+expected length when one mode is committed per tile from its
+decoder-reproducible context (the operative flag-free regime of §6.2,
+where the predictor fixes $\hat m(t)$ ahead of the data) --- satisfies the
+chain}
 \[
-\sum_{t=1}^{T} \min_{m} \mathbb{E}[L_m(t)]
+R_{\mathrm{tile}}
+=\sum_{t=1}^{T} \min_{m} \mathbb{E}[L_m(t)]
 \;\ge\; \sum_{t=1}^{T} H(X_t \mid C_t)
 \;\ge\; \sum_{t=1}^{T} H(X_t \mid X_{<t}, Y)
 \;=\; H(X \mid Y),
@@ -4747,15 +4752,34 @@ conditioning on the larger set $(Y, X_{<t}) \supseteq C_t^{(m)}$ cannot
 increase entropy; hence $\min_m \mathbb{E}[L_m(t)] \ge
 H(X_t \mid X_{<t}, Y)$. Summing and applying the chain rule
 $\sum_t H(X_t \mid X_{<t}, Y) = H(X_1,\ldots,X_T \mid Y) = H(X \mid Y)$
-gives the floor. Writing $C_t$ for the richest context any selected mode
-uses, the first inequality of (6.2b.2) is equality iff that mode is
-expressive at $C_t$, and the second iff $C_t$ is causally sufficient
-($H(X_t \mid C_t) = H(X_t \mid X_{<t}, Y)$). For the block-independent
-specialization $C_t = Y$, the deficit (6.2b.3) becomes
+gives the floor. Writing $C_t$ for the context of the cost-minimizing
+mode at tile $t$, the first inequality of (6.2b.2) is equality iff that
+mode is expressive at $C_t$, and the second iff $C_t$ is causally
+sufficient ($H(X_t \mid C_t) = H(X_t \mid X_{<t}, Y)$). For the
+block-independent specialization $C_t = Y$, the deficit (6.2b.3) becomes
 $\sum_t H(X_t \mid Y) - H(X \mid Y) = \mathrm{TC}(X_1,\ldots,X_T \mid Y)$
-by definition (Watanabe 1960). The optimality characterization follows
-by comparing the Theorem 6.1 achievability (per-tile oracle $+ 2\sum_t
-\varepsilon_t$) with the floor. \hfill$\blacksquare$
+by definition (Watanabe 1960). \hfill$\blacksquare$
+
+\emph{Remark 6.2b$'$ (why the committed-mode floor, not the hindsight
+oracle of Theorem 6.1, is the operative rate).} Theorem 6.1 bounds the
+realized cost against the \emph{hindsight} envelope $\sum_t \min_m
+L_m(t)$, in which the mode is chosen after seeing the tile. Its
+expectation obeys $\mathbb{E}[\sum_t \min_m L_m(t)] \le \sum_t \min_m
+\mathbb{E}[L_m(t)] = R_{\mathrm{tile}}$ (because $\mathbb{E}[\min] \le
+\min[\mathbb{E}]$), and can in fact dip \emph{below} $H(X\mid Y)$: the
+hindsight envelope is not by itself a uniquely-decodable code, since the
+realized selection $m^\star(t)$ must be communicated. The selection
+information --- the per-tile mode flags charged whenever the encoder
+departs from the predicted $\hat m(t)$ --- is exactly what lifts the
+realized $\mathbb{E}[L_{\mathrm{IIIA}}]$ back to $\ge H(X\mid Y)$ via
+(6.2b.1). The operative Type-III-A of §6.2 commits to the predictor's
+$\hat m(t)$ ahead of the data, so its expected cost is at least
+$R_{\mathrm{tile}} \ge H(X\mid Y)$; the absolute floor and the
+context-deficit characterization therefore bind the operative scheme
+directly, independent of the optimistic hindsight envelope. The
+optimality characterization follows by comparing this committed-mode
+cost (and the additional $2\sum_t \varepsilon_t$ selection loss of
+Theorem 6.1) with the floor.
 
 \emph{Remark 6.2b (the governing quantity is the context deficit, not an
 inherent per-tile penalty).} The Type-III-A absolute gap is controlled
