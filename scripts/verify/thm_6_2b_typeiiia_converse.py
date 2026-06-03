@@ -5,9 +5,10 @@ Verify Theorem 6.2b: Type-III-A absolute-rate converse and optimality conditions
 Claims checked numerically on small explicit joint distributions:
 
   (6.2b.1) E[L_IIIA] >= H(X|Y)                          -- Shannon floor
-  (6.2b.2) sum_t min_m E[L_m(t)] >= sum_t H(X_t|C_t)
-                                  >= sum_t H(X_t|X_<t,Y) = H(X|Y)
-            (a) first ineq  equality iff modes per-tile-expressive
+  (6.2b.2) R_tile := sum_t E_{C_t}[ min_m E[L_m(t)|C_t] ]    (CAUSAL-ADAPTIVE)
+                  >= sum_t H(X_t|C_t)
+                  >= sum_t H(X_t|X_<t,Y) = H(X|Y)
+            (a) first ineq  equality iff per-context cost-min mode expressive
             (b) second ineq equality iff mode contexts causally sufficient
             (c) last step is the chain rule, EXACT
   (6.2b.3) context deficit = sum_t [H(X_t|C_t) - H(X_t|X_<t,Y)] >= 0;
@@ -22,9 +23,18 @@ inherent per-tile penalty. On a dependent-tile source:
     cross-tile -- close the gap EXACTLY to H(X|Y) (chain rule).
 So TC(.|Y) is the worst case, removable by autoregressive conditioning.
 
-PASS iff all relations hold to tolerance, the block-independent oracle on the
-dependent source exhibits the correctly-sized TC gap, AND the causal-context
-oracle attains the absolute floor there (gap 0).
+REGRESSION TEST (Source C, Remark 6.2b'): the OPERATIVE benchmark is the
+causal-adaptive floor (ii), NOT the global-commit cost (iii)
+sum_t min_m E[L_m(t)]. An earlier draft used (iii) and was refuted: with
+context-dependent mode selection the operative scheme legally beats (iii)
+flag-free. Source C is the refuting example -- global-commit OVER-estimates
+(3.1875) while the causal-adaptive selector attains the floor H(X)=2.75.
+The three benchmarks obey (i) hindsight <= (ii) causal-adaptive <= (iii)
+global-commit; only (ii) is the operative rate and only (ii) is a valid floor.
+
+PASS iff all relations hold to tolerance, the block-independent floor on the
+dependent source exhibits the correctly-sized TC gap, the causal-context floor
+attains H(X|Y), and Source C exhibits (i)<=(ii)<=(iii) with (ii)==H(X)<(iii).
 """
 import math
 
@@ -190,6 +200,40 @@ def main():
     print(f"    E[L | wrong mode q]   = {ce:.6f}")
     ok &= check("wrong-law mode pays strictly above H(X_1|Y) (gap = avg KL > 0)",
                 ce > h_true + 1e-3)
+
+    # ----------------------------------------------------------------
+    # Source C (Remark 6.2b' regression test): the OPERATIVE benchmark is the
+    # causal-adaptive floor (ii), NOT global-commit (iii). This is the example
+    # that refuted the global-commit draft.
+    #   T=2, Y empty. X1 ~ Bern(1/2), 1-bit code.
+    #   X2 in {a,b,c,d}: P(.|X1=0)=(1/2,1/4,1/8,1/8), P(.|X1=1)=(1/8,1/8,1/2,1/4).
+    #   Two prefix modes for tile 2: A lengths (1,2,3,3), B lengths (3,3,1,2).
+    # ----------------------------------------------------------------
+    print("\nSource C (Remark 6.2b' -- global-commit is NOT a floor):")
+    p0 = [1 / 2, 1 / 4, 1 / 8, 1 / 8]
+    p1 = [1 / 8, 1 / 8, 1 / 2, 1 / 4]
+    A = [1, 2, 3, 3]
+    B = [3, 3, 1, 2]
+    half = 0.5
+    HX = 1.0 + half * H(p0) + half * H(p1)          # H(X1) + H(X2|X1)
+    EA0 = sum(l * p for l, p in zip(A, p0)); EA1 = sum(l * p for l, p in zip(A, p1))
+    EB0 = sum(l * p for l, p in zip(B, p0)); EB1 = sum(l * p for l, p in zip(B, p1))
+    # (i) hindsight: per-realization-of-X2 best mode (chosen after seeing X2)
+    hindsight = 1.0 + half * sum(min(a, b) * p for a, b, p in zip(A, B, p0)) \
+                    + half * sum(min(a, b) * p for a, b, p in zip(A, B, p1))
+    # (ii) causal-adaptive: best mode per realization of C_2 = X1 (the operative selector)
+    causal = 1.0 + half * min(EA0, EB0) + half * min(EA1, EB1)
+    # (iii) global-commit: one mode fixed for the whole source
+    glob = 1.0 + min(half * EA0 + half * EA1, half * EB0 + half * EB1)
+    print(f"    H(X)                     = {HX:.4f}")
+    print(f"    (i)   hindsight          = {hindsight:.4f}")
+    print(f"    (ii)  causal-adaptive    = {causal:.4f}   (operative)")
+    print(f"    (iii) global-commit      = {glob:.4f}   (NOT a floor)")
+    ok &= check("C: ordering (i) <= (ii) <= (iii)", hindsight <= causal + TOL <= glob + TOL)
+    ok &= check("C: causal-adaptive (ii) == H(X) (operative attains floor)", abs(causal - HX) < TOL)
+    ok &= check("C: global-commit (iii) STRICTLY above H(X) (over-estimate, not a floor)",
+                glob > HX + 1e-3)
+    ok &= check("C: hindsight (i) <= H(X) (sub-floor, non-UD without flags)", hindsight <= HX + TOL)
 
     print("\n" + "=" * 64)
     print("RESULT:", "PASS" if ok else "FAIL")

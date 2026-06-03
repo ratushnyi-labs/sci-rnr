@@ -4702,27 +4702,31 @@ uniquely-decodable lossless Type-III-A code reproducing $Y$,}
 \mathbb{E}[L_{\mathrm{IIIA}}] \;\ge\; H(X \mid Y).
 \tag{6.2b.1}
 \]
-\emph{Moreover the \emph{committed-mode per-tile floor}
-$R_{\mathrm{tile}} := \sum_t \min_m \mathbb{E}[L_m(t)]$ --- the minimum
-expected length when one mode is committed per tile from its
-decoder-reproducible context (the operative flag-free regime of §6.2,
-where the predictor fixes $\hat m(t)$ ahead of the data) --- satisfies the
-chain}
+\emph{Assume the \emph{per-tile coding hypothesis}: each mode emits, from
+its context $C_t$, a uniquely-decodable codeword for $X_t$, so that
+$\mathbb{E}[L_m(t) \mid C_t] \ge H(X_t \mid C_t)$ (amortized cross-tile
+modes whose per-tile length is a mere accounting increment are governed
+instead by the aggregate bound (6.2b.1)). Because the operative selector
+$\hat m(t) = \arg\min_m U_m(t)$ is a function of the decoder-reproducible
+context $C_t$ --- not of the current tile value --- the relevant per-tile
+benchmark is the \emph{causal-adaptive floor}}
 \[
 R_{\mathrm{tile}}
-=\sum_{t=1}^{T} \min_{m} \mathbb{E}[L_m(t)]
+:= \sum_{t=1}^{T} \mathbb{E}_{C_t}\!\Bigl[\min_{m}
+   \mathbb{E}[L_m(t) \mid C_t]\Bigr]
 \;\ge\; \sum_{t=1}^{T} H(X_t \mid C_t)
 \;\ge\; \sum_{t=1}^{T} H(X_t \mid X_{<t}, Y)
 \;=\; H(X \mid Y),
 \tag{6.2b.2}
 \]
-\emph{where (a) the first inequality is equality iff the mode set is
-\emph{per-tile-expressive} --- for each tile some mode attains
-$\mathbb{E}[L_m(t)] = H(X_t \mid C_t)$ up to the coder redundancy
-$\varepsilon$; (b) the second is equality iff every tile's mode context
-is \emph{causally sufficient}, $H(X_t \mid C_t) = H(X_t \mid X_{<t}, Y)$
-for all $t$; and (c) the last step is the chain rule, exactly. The total
-slack above the floor is the \emph{context deficit}}
+\emph{where (a) the first inequality is equality iff at $P_{C_t}$-almost
+every context value the cost-minimizing mode is \emph{expressive}
+($\min_m \mathbb{E}[L_m(t)\mid C_t{=}c] = H(X_t \mid C_t{=}c)$ up to the
+coder redundancy $\varepsilon$); (b) the second is equality iff every
+tile's context is \emph{causally sufficient},
+$H(X_t \mid C_t) = H(X_t \mid X_{<t}, Y)$ for all $t$; and (c) the last
+step is the chain rule, exactly. The total slack above the floor is the
+\emph{context deficit}}
 \[
 \sum_{t} \bigl[ H(X_t \mid C_t) - H(X_t \mid X_{<t}, Y) \bigr]
 \;\ge\; 0,
@@ -4730,11 +4734,12 @@ slack above the floor is the \emph{context deficit}}
 \]
 \emph{which in the worst case of \emph{block-independent} modes
 ($C_t = Y$ for all $t$, no cross-tile conditioning) equals the
-inter-tile total correlation $\sum_t H(X_t \mid Y) - H(X \mid Y) =
-\mathrm{TC}(X_1,\ldots,X_T \mid Y)$. Consequently Type-III-A attains the
-absolute floor $H(X\mid Y)$ (within the $2\sum_t \varepsilon_t$ of
-Theorem 6.1) \textbf{iff the modes are per-tile-expressive AND causally
-context-sufficient}; otherwise it overpays by the mode-inexpressiveness
+inter-tile conditional total correlation $\sum_t H(X_t \mid Y) -
+H(X \mid Y) = \mathrm{TC}(X_1,\ldots,X_T \mid Y)$. Consequently
+Type-III-A attains the absolute floor $H(X\mid Y)$ (within the
+$2\sum_t \varepsilon_t$ of Theorem 6.1) \textbf{iff, per tile and per
+context value, the selected mode is expressive AND its context is
+causally sufficient}; otherwise it overpays by the mode-inexpressiveness
 gap plus the context deficit.}
 
 \emph{\textbf{Proof.}} (6.2b.1): the Type-III-A codeword, with the
@@ -4744,42 +4749,63 @@ McMillan's theorem (Cover \& Thomas 2006, Theorem 5.5.1) plus the
 conditional Shannon bound (Theorem 5.3.1, applied to $P(X \mid Y = y)$
 and averaged over $Y$) give $\mathbb{E}[L_{\mathrm{IIIA}}] \ge
 H(X \mid Y)$; the mode flags only add length and cannot lower it. For
-(6.2b.2), each tile is encoded by a single mode whose context
-$C_t^{(m)} \subseteq (Y, X_{<t})$ is decoder-reproducible. A
-uniquely-decodable mode satisfies $\mathbb{E}[L_m(t)] \ge
-H(X_t \mid C_t^{(m)}) \ge H(X_t \mid X_{<t}, Y)$, the second step because
-conditioning on the larger set $(Y, X_{<t}) \supseteq C_t^{(m)}$ cannot
-increase entropy; hence $\min_m \mathbb{E}[L_m(t)] \ge
-H(X_t \mid X_{<t}, Y)$. Summing and applying the chain rule
-$\sum_t H(X_t \mid X_{<t}, Y) = H(X_1,\ldots,X_T \mid Y) = H(X \mid Y)$
-gives the floor. Writing $C_t$ for the context of the cost-minimizing
-mode at tile $t$, the first inequality of (6.2b.2) is equality iff that
-mode is expressive at $C_t$, and the second iff $C_t$ is causally
+(6.2b.2), condition on the decoder-reproducible context $C_t \subseteq
+(Y, X_{<t})$. By the per-tile coding hypothesis each mode's codeword for
+$X_t$ from a context value $C_t = c$ is uniquely decodable, so
+$\mathbb{E}[L_m(t) \mid C_t = c] \ge H(X_t \mid C_t = c)$ (McMillan plus
+the conditional Shannon bound applied to $P(X_t \mid C_t = c)$); hence
+$\min_m \mathbb{E}[L_m(t) \mid C_t = c] \ge H(X_t \mid C_t = c)$.
+Averaging over $C_t$,
+$\mathbb{E}_{C_t}[\min_m \mathbb{E}[L_m(t)\mid C_t]] \ge
+\mathbb{E}_{C_t}[H(X_t \mid C_t)] = H(X_t \mid C_t)$. Since
+$C_t \subseteq (Y, X_{<t})$, conditioning on the larger set cannot
+increase entropy, $H(X_t \mid C_t) \ge H(X_t \mid X_{<t}, Y)$; summing
+and applying the chain rule $\sum_t H(X_t \mid X_{<t}, Y) =
+H(X_1,\ldots,X_T \mid Y) = H(X \mid Y)$ gives the floor. The first
+inequality is equality iff at $P_{C_t}$-a.e.\ context value the
+cost-minimizing mode is expressive; the second iff each $C_t$ is causally
 sufficient ($H(X_t \mid C_t) = H(X_t \mid X_{<t}, Y)$). For the
 block-independent specialization $C_t = Y$, the deficit (6.2b.3) becomes
-$\sum_t H(X_t \mid Y) - H(X \mid Y) = \mathrm{TC}(X_1,\ldots,X_T \mid Y)$
-by definition (Watanabe 1960). \hfill$\blacksquare$
+$\sum_t H(X_t \mid Y) - H(X \mid Y) = \mathrm{TC}(X_1,\ldots,X_T \mid Y)$,
+the conditional total correlation --- the standard conditioning of
+Watanabe's (1960) multi-information. \hfill$\blacksquare$
 
-\emph{Remark 6.2b$'$ (why the committed-mode floor, not the hindsight
-oracle of Theorem 6.1, is the operative rate).} Theorem 6.1 bounds the
-realized cost against the \emph{hindsight} envelope $\sum_t \min_m
-L_m(t)$, in which the mode is chosen after seeing the tile. Its
-expectation obeys $\mathbb{E}[\sum_t \min_m L_m(t)] \le \sum_t \min_m
-\mathbb{E}[L_m(t)] = R_{\mathrm{tile}}$ (because $\mathbb{E}[\min] \le
-\min[\mathbb{E}]$), and can in fact dip \emph{below} $H(X\mid Y)$: the
-hindsight envelope is not by itself a uniquely-decodable code, since the
-realized selection $m^\star(t)$ must be communicated. The selection
-information --- the per-tile mode flags charged whenever the encoder
-departs from the predicted $\hat m(t)$ --- is exactly what lifts the
-realized $\mathbb{E}[L_{\mathrm{IIIA}}]$ back to $\ge H(X\mid Y)$ via
-(6.2b.1). The operative Type-III-A of §6.2 commits to the predictor's
-$\hat m(t)$ ahead of the data, so its expected cost is at least
-$R_{\mathrm{tile}} \ge H(X\mid Y)$; the absolute floor and the
-context-deficit characterization therefore bind the operative scheme
-directly, independent of the optimistic hindsight envelope. The
-optimality characterization follows by comparing this committed-mode
-cost (and the additional $2\sum_t \varepsilon_t$ selection loss of
-Theorem 6.1) with the floor.
+\emph{Remark 6.2b$'$ (three selection benchmarks; the operative one is
+causal-adaptive, not global-commit).} Getting the per-tile benchmark
+right is essential, because three distinct quantities compete:
+\begin{itemize}
+\item[(i)] the \emph{hindsight} envelope $\sum_t \mathbb{E}[\min_m
+  L_m(t)]$, where the mode is chosen after seeing the tile (Theorem 6.1's
+  $m^\star(t)$); it is not by itself a uniquely-decodable code --- the
+  realized choice must be transmitted --- and can dip \emph{below}
+  $H(X\mid Y)$;
+\item[(ii)] the \emph{causal-adaptive} floor $R_{\mathrm{tile}} =
+  \sum_t \mathbb{E}_{C_t}[\min_m \mathbb{E}[L_m(t)\mid C_t]]$, where the
+  mode is chosen from the decoder-reproducible context $C_t$ (the
+  operative §6.2 selector $\hat m(t) = \arg\min_m U_m(t)$, a function of
+  $C_t$): flag-free yet context-sensitive, and the quantity bounded in
+  (6.2b.2);
+\item[(iii)] the \emph{global-commit} cost $\sum_t \min_m
+  \mathbb{E}[L_m(t)]$, where a single mode is fixed for the whole source.
+\end{itemize}
+These obey $(\mathrm{i}) \le (\mathrm{ii}) \le (\mathrm{iii})$, and
+(iii) is in general a \emph{strict over-estimate} of the operative cost:
+fixing one global mode cannot exploit context the way the operative
+selector does, so (iii) is \emph{not} a valid rate floor. Concretely,
+take $T = 2$, $Y$ empty, $X_1 \sim \mathrm{Bernoulli}(\tfrac12)$ coded in
+one bit, and $X_2 \in \{a,b,c,d\}$ with $P(\cdot \mid X_1{=}0) =
+(\tfrac12,\tfrac14,\tfrac18,\tfrac18)$, $P(\cdot \mid X_1{=}1) =
+(\tfrac18,\tfrac18,\tfrac12,\tfrac14)$, so $H(X) = 1 + \tfrac74 = 2.75$
+bits. With two prefix modes of lengths $(1,2,3,3)$ and $(3,3,1,2)$, the
+global-commit cost is $1 + \min(2.1875, 2.1875) = 3.1875$, whereas the
+operative causal-adaptive selector --- mode $A$ when $X_1{=}0$, mode $B$
+when $X_1{=}1$, chosen flag-free from the already-decoded $X_1$ ---
+attains $1 + 1.75 = 2.75 = H(X)$. Thus the binding floor is (ii):
+$R_{\mathrm{tile}} \ge H(X\mid Y)$ by (6.2b.2), and the realized
+$\mathbb{E}[L_{\mathrm{IIIA}}]$ adds at most the $2\sum_t \varepsilon_t$
+selection loss of Theorem 6.1. The hindsight envelope (i) lies below and,
+being non-UD, is reconciled with the converse (6.2b.1) by the mode flags
+charged whenever $m^\star(t) \ne \hat m(t)$.
 
 \emph{Remark 6.2b (the governing quantity is the context deficit, not an
 inherent per-tile penalty).} The Type-III-A absolute gap is controlled
