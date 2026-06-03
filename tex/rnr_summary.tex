@@ -333,6 +333,34 @@ cannot be improved without additional assumptions on the predictor's
 error structure.
 \end{quote}
 
+\textbf{Theorem 6.2b (Type-III-A absolute-rate converse) ---
+{[}converse{]}}
+
+\begin{quote}
+\emph{Statement.} Any uniquely-decodable Type-III-A code obeys
+$\mathbb{E}[L_{\mathrm{IIIA}}] \geq H(X \mid Y)$. Under the per-tile-UD
+coding hypothesis, the causal-adaptive floor
+$R_{\mathrm{tile}} = \sum_t \mathbb{E}_{C_t}[\min_m
+\mathbb{E}[L_m(t) \mid C_t]]$ satisfies $R_{\mathrm{tile}} =
+H(X \mid Y)$ iff, per tile and per context, the selected mode is
+expressive AND its context $C_t$ is causally sufficient; otherwise the
+slack is the context deficit, at most the inter-tile total correlation
+$\mathrm{TC}(X_1,\ldots,X_T \mid Y)$ (the block-independent worst case),
+and zero under causal-context modes.
+
+\emph{Proof.} McMillan plus the conditional Shannon bound for (6.2b.1);
+for the floor, $\min_m \mathbb{E}[L_m(t) \mid C_t] \geq H(X_t \mid C_t)
+\geq H(X_t \mid X_{<t}, Y)$, summed via the chain rule
+$\sum_t H(X_t \mid X_{<t}, Y) = H(X \mid Y)$.
+
+\emph{Why it matters.} Completes the achievability--converse matrix:
+with 6.2 (relative) and 6.2b (absolute), Type-III-A joins Types I, II,
+III-B, III-C in having both a coding bound and a matching converse. The
+operative cost is the \emph{causal-adaptive} floor --- a context-free
+per-tile commit over-estimates it, the hindsight envelope under-estimates
+it (and is non-UD).
+\end{quote}
+
 \textbf{Theorem 6.3 (byte-tensor mutual information advantage) ---
 {[}achievability{]}}
 
