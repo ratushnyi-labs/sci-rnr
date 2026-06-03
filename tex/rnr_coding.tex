@@ -4735,12 +4735,20 @@ step is the chain rule, exactly. The total slack above the floor is the
 \emph{which in the worst case of \emph{block-independent} modes
 ($C_t = Y$ for all $t$, no cross-tile conditioning) equals the
 inter-tile conditional total correlation $\sum_t H(X_t \mid Y) -
-H(X \mid Y) = \mathrm{TC}(X_1,\ldots,X_T \mid Y)$. Consequently
-Type-III-A attains the absolute floor $H(X\mid Y)$ (within the
-$2\sum_t \varepsilon_t$ of Theorem 6.1) \textbf{iff, per tile and per
-context value, the selected mode is expressive AND its context is
-causally sufficient}; otherwise it overpays by the mode-inexpressiveness
-gap plus the context deficit.}
+H(X \mid Y) = \mathrm{TC}(X_1,\ldots,X_T \mid Y)$. Consequently, within
+the per-tile-UD coding regime, the causal-adaptive floor meets the
+absolute bound, $R_{\mathrm{tile}} = H(X\mid Y)$, \textbf{iff, per tile
+and per context value, the selected mode is expressive AND its context
+is causally sufficient}; otherwise $R_{\mathrm{tile}}$ exceeds
+$H(X\mid Y)$ by the mode-inexpressiveness gap plus the context deficit,
+and the realized cost lies in $[R_{\mathrm{tile}}, R_{\mathrm{tile}} +
+2\sum_t \varepsilon_t]$ by Theorem 6.1. (Amortized cross-tile modes
+\emph{outside} the per-tile-UD regime can attain the aggregate floor
+(6.2b.1) directly --- e.g.\ coding $X_1 = X_2$ with a single shared bit,
+per-tile accounting $L_1 = 1$, $L_2 = 0$ --- by realizing the cross-tile
+dependence jointly rather than through a causally-sufficient per-tile
+context; such schemes are bounded by (6.2b.1), not by this per-tile
+characterization, and do not contradict it.)}
 
 \emph{\textbf{Proof.}} (6.2b.1): the Type-III-A codeword, with the
 decoder-reproducible $Y$ and per-tile mode flags, recovers $X$
@@ -4771,7 +4779,7 @@ the conditional total correlation --- the standard conditioning of
 Watanabe's (1960) multi-information. \hfill$\blacksquare$
 
 \emph{Remark 6.2b$'$ (three selection benchmarks; the operative one is
-causal-adaptive, not global-commit).} Getting the per-tile benchmark
+causal-adaptive, not context-free).} Getting the per-tile benchmark
 right is essential, because three distinct quantities compete:
 \begin{itemize}
 \item[(i)] the \emph{hindsight} envelope $\sum_t \mathbb{E}[\min_m
@@ -4785,22 +4793,25 @@ right is essential, because three distinct quantities compete:
   operative §6.2 selector $\hat m(t) = \arg\min_m U_m(t)$, a function of
   $C_t$): flag-free yet context-sensitive, and the quantity bounded in
   (6.2b.2);
-\item[(iii)] the \emph{global-commit} cost $\sum_t \min_m
-  \mathbb{E}[L_m(t)]$, where a single mode is fixed for the whole source.
+\item[(iii)] the \emph{context-free per-tile commit} $\sum_t \min_m
+  \mathbb{E}[L_m(t)]$, where each tile picks its marginally-best mode
+  \emph{without} using its context $C_t$ (distinct from --- and below ---
+  a single global mode $\min_m \sum_t \mathbb{E}[L_m(t)]$).
 \end{itemize}
 These obey $(\mathrm{i}) \le (\mathrm{ii}) \le (\mathrm{iii})$, and
 (iii) is in general a \emph{strict over-estimate} of the operative cost:
-fixing one global mode cannot exploit context the way the operative
-selector does, so (iii) is \emph{not} a valid rate floor. Concretely,
+committing each tile to its context-free best mode cannot exploit context
+the way the operative selector does, so (iii) is \emph{not} a valid rate
+floor. Concretely,
 take $T = 2$, $Y$ empty, $X_1 \sim \mathrm{Bernoulli}(\tfrac12)$ coded in
 one bit, and $X_2 \in \{a,b,c,d\}$ with $P(\cdot \mid X_1{=}0) =
 (\tfrac12,\tfrac14,\tfrac18,\tfrac18)$, $P(\cdot \mid X_1{=}1) =
 (\tfrac18,\tfrac18,\tfrac12,\tfrac14)$, so $H(X) = 1 + \tfrac74 = 2.75$
 bits. With two prefix modes of lengths $(1,2,3,3)$ and $(3,3,1,2)$, the
-global-commit cost is $1 + \min(2.1875, 2.1875) = 3.1875$, whereas the
-operative causal-adaptive selector --- mode $A$ when $X_1{=}0$, mode $B$
-when $X_1{=}1$, chosen flag-free from the already-decoded $X_1$ ---
-attains $1 + 1.75 = 2.75 = H(X)$. Thus the binding floor is (ii):
+context-free per-tile commit costs $1 + \min(2.1875, 2.1875) = 3.1875$,
+whereas the operative causal-adaptive selector --- mode $A$ when
+$X_1{=}0$, mode $B$ when $X_1{=}1$, chosen flag-free from the
+already-decoded $X_1$ --- attains $1 + 1.75 = 2.75 = H(X)$. Thus the binding floor is (ii):
 $R_{\mathrm{tile}} \ge H(X\mid Y)$ by (6.2b.2), and the realized
 $\mathbb{E}[L_{\mathrm{IIIA}}]$ adds at most the $2\sum_t \varepsilon_t$
 selection loss of Theorem 6.1. The hindsight envelope (i) lies below and,

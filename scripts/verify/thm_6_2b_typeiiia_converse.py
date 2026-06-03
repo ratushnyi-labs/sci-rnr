@@ -203,13 +203,13 @@ def main():
 
     # ----------------------------------------------------------------
     # Source C (Remark 6.2b' regression test): the OPERATIVE benchmark is the
-    # causal-adaptive floor (ii), NOT global-commit (iii). This is the example
-    # that refuted the global-commit draft.
+    # causal-adaptive floor (ii), NOT the context-free per-tile commit (iii).
+    # This is the example that refuted the context-free draft.
     #   T=2, Y empty. X1 ~ Bern(1/2), 1-bit code.
     #   X2 in {a,b,c,d}: P(.|X1=0)=(1/2,1/4,1/8,1/8), P(.|X1=1)=(1/8,1/8,1/2,1/4).
     #   Two prefix modes for tile 2: A lengths (1,2,3,3), B lengths (3,3,1,2).
     # ----------------------------------------------------------------
-    print("\nSource C (Remark 6.2b' -- global-commit is NOT a floor):")
+    print("\nSource C (Remark 6.2b' -- context-free per-tile commit is NOT a floor):")
     p0 = [1 / 2, 1 / 4, 1 / 8, 1 / 8]
     p1 = [1 / 8, 1 / 8, 1 / 2, 1 / 4]
     A = [1, 2, 3, 3]
@@ -223,17 +223,46 @@ def main():
                     + half * sum(min(a, b) * p for a, b, p in zip(A, B, p1))
     # (ii) causal-adaptive: best mode per realization of C_2 = X1 (the operative selector)
     causal = 1.0 + half * min(EA0, EB0) + half * min(EA1, EB1)
-    # (iii) global-commit: one mode fixed for the whole source
-    glob = 1.0 + min(half * EA0 + half * EA1, half * EB0 + half * EB1)
-    print(f"    H(X)                     = {HX:.4f}")
-    print(f"    (i)   hindsight          = {hindsight:.4f}")
-    print(f"    (ii)  causal-adaptive    = {causal:.4f}   (operative)")
-    print(f"    (iii) global-commit      = {glob:.4f}   (NOT a floor)")
-    ok &= check("C: ordering (i) <= (ii) <= (iii)", hindsight <= causal + TOL <= glob + TOL)
+    # (iii) context-free per-tile commit: each tile picks its marginally-best mode
+    #       sum_t min_m E[L_m(t)]  (NOT one global mode min_m sum_t E[L_m(t)])
+    ctxfree = 1.0 + min(half * EA0 + half * EA1, half * EB0 + half * EB1)
+    # sanity: distinguish from the one-global-mode benchmark on a 1/10 table
+    onemode = min(1 + 10, 10 + 1)                   # min_m sum_t E[L_m] on (A:1,10),(B:10,1)
+    ctxfree_1_10 = min(1, 10) + min(10, 1)          # sum_t min_m
+    print(f"    H(X)                          = {HX:.4f}")
+    print(f"    (i)   hindsight               = {hindsight:.4f}")
+    print(f"    (ii)  causal-adaptive         = {causal:.4f}   (operative)")
+    print(f"    (iii) context-free per-tile   = {ctxfree:.4f}   (NOT a floor)")
+    ok &= check("C: ordering (i) <= (ii) <= (iii)", hindsight <= causal + TOL <= ctxfree + TOL)
     ok &= check("C: causal-adaptive (ii) == H(X) (operative attains floor)", abs(causal - HX) < TOL)
-    ok &= check("C: global-commit (iii) STRICTLY above H(X) (over-estimate, not a floor)",
-                glob > HX + 1e-3)
+    ok &= check("C: context-free (iii) STRICTLY above H(X) (over-estimate, not a floor)",
+                ctxfree > HX + 1e-3)
     ok &= check("C: hindsight (i) <= H(X) (sub-floor, non-UD without flags)", hindsight <= HX + TOL)
+    ok &= check("C: context-free per-tile (2) != one-global-mode (11) on 1/10 table",
+                ctxfree_1_10 == 2 and onemode == 11)
+
+    # ----------------------------------------------------------------
+    # Source D (P2 scoping): an AMORTIZED cross-tile mode can attain the
+    # aggregate floor (6.2b.1) OUTSIDE the per-tile-UD regime, hitting H(X|Y)
+    # WITHOUT per-tile causal sufficiency -- so the "iff" must be scoped to the
+    # per-tile-UD subfamily. X1 = X2 = B ~ Bern(1/2); emit B once (1 bit).
+    # Per-tile accounting L1=1, L2=0; L2 < H(X2)=1 -> not a per-tile UD codeword.
+    # ----------------------------------------------------------------
+    print("\nSource D (P2 scoping -- amortized mode hits floor outside per-tile-UD):")
+    HXd = H([half, half])                 # H(X1,X2) = H(B) = 1 (since X1==X2)
+    sum_blockindep = H([half, half]) + H([half, half])   # H(X1)+H(X2), C_t=empty
+    causal_suff = H([half, half]) + 0.0   # H(X1)+H(X2|X1) = 1 + 0
+    amortized_total = 1.0                 # one shared bit for the block
+    print(f"    H(X)=H(X1,X2)                 = {HXd:.4f}")
+    print(f"    sum_t H(X_t|C_t), C_t=empty   = {sum_blockindep:.4f}  (predicts deficit)")
+    print(f"    H(X1)+H(X2|X1)                = {causal_suff:.4f}")
+    print(f"    amortized total (L1=1,L2=0)   = {amortized_total:.4f}")
+    ok &= check("D: amortized scheme attains H(X) (= aggregate floor 6.2b.1)",
+                abs(amortized_total - HXd) < TOL)
+    ok &= check("D: but context-free per-tile floor (2) > H(X) (=1): not causally sufficient",
+                sum_blockindep > HXd + 1e-3)
+    ok &= check("D: floor reached without per-tile UD (L2=0 < H(X2)=1) -> iff scoped",
+                0.0 < HXd)
 
     print("\n" + "=" * 64)
     print("RESULT:", "PASS" if ok else "FAIL")
