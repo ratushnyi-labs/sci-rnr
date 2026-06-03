@@ -11155,6 +11155,89 @@ rigor-robustness (Gaussian-CLT $\subseteq$ Bernstein $\subseteq$ Azuma,
 by breadth of validity), so the operator selects by the $\delta$ regime
 and the available knowledge of the source.
 
+\textbf{Theorem 7.29 (Second-order coding rate of RNR; the random-access /
+dispersion interplay).} \emph{Adopt the hypotheses of Theorem 7.28 ---
+\emph{stationary $\alpha$-mixing with exponentially decaying coefficients} ---
+with the ideal predictor $Q_i=P(\cdot\mid X_{i-W_N:i-1})$ on a context window
+$W_N=\Theta(\log N)$, so $\ell_i\to-\log_2 P(X_i\mid X_{<i})$. Under exp-mixing
+the windowed per-position information converges to the true information
+exponentially in $W_N$, so the long-run variance $v^2$ of Theorem 7.28 equals
+the source \emph{varentropy} $V:=\lim_N \mathrm{Var}\bigl(-\log_2 P(X^N)\bigr)/N$
+(finite, positive) up to a $O(\rho^{W_N})=N^{-\Theta(1)}$ relative error; the
+$m=N/K$ per-sub-block context resets add at most $O(m)=O(\sqrt N)$ to
+$\mathrm{Var}(L^{\mathrm{rep}})=NV(1+o(1))$ (an $o(\sqrt N)$ effect on the
+standard deviation in the balanced regime), so $\sqrt{N v^2}=\sqrt{N V}+
+o(\sqrt N)$. Let the
+sub-block spacing be $K$ and let $\delta_\infty>0$ be the per-sync-point excess
+overhead (Crutchfield--Feldman), so the sync cost is $m\,\delta_\infty=
+(N/K)\delta_\infty$. Write $Q^{-1}(\varepsilon):=\Phi^{-1}(1-\varepsilon)$ for the
+Gaussian \emph{tail}-quantile (the upper-$(1{-}\varepsilon)$ point; positive for
+$\varepsilon<\tfrac12$). Then:}
+\begin{enumerate}
+\item \emph{(Achievability.) For every $\varepsilon\in(0,1)$, with probability at
+least $1-\varepsilon$,}
+\[
+L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N)\;\le\;
+N h \;+\; \tfrac{N}{K}\,\delta_\infty \;+\; \sqrt{N V}\,Q^{-1}(\varepsilon)
+\;+\; o(\sqrt N),
+\]
+\emph{the $\sqrt{NV}\,Q^{-1}(\varepsilon)$ term coming from Theorem 7.28's
+uniform Berry--Esseen CLT --- its Kolmogorov (CDF) error $O((\log N)^2/\sqrt N)$
+translates, at the Gaussian density $\varphi(Q^{-1}(\varepsilon))$, into a
+\emph{quantile} error $O((\log N)^2)=o(\sqrt N)$ --- and the mean
+$Nh+(N/K)\delta_\infty$ from Theorem 7.15.}
+\item \emph{(Dispersion floor --- converse.) For a memoryless or finite-state
+irreducible aperiodic Markov source, the varentropy $V$ is the source dispersion:
+under the excess-length criterion ($\Pr[\,\mathrm{length}>L\,]\le\varepsilon$),
+the optimal fixed-to-variable codelength obeys $L^\star(N,\varepsilon)\ge
+Nh+\sqrt{NV}\,Q^{-1}(\varepsilon)-o(\sqrt N)$ (Kontoyiannis--Verd\'u, \emph{IEEE
+Trans.\ Inf.\ Theory}\ 60(2):777--795, 2014, DOI
+10.1109/TIT.2013.2291007). So $\sqrt{NV}\,Q^{-1}(\varepsilon)$ cannot be removed
+(for a general exp-mixing source the same floor holds wherever the
+information-density CLT of K-V's broader conditions applies).}
+\item \emph{(The interplay.) At the balanced spacing $K=c\sqrt N$ (Theorem 7.5)
+the random-access overhead and the dispersion are \emph{both} $\Theta(\sqrt N)$,}
+\[
+L^{\mathrm{rep}}_{\mathrm{RNR}}
+\;=\; N h \;+\; \sqrt N\Bigl[\,\tfrac{\delta_\infty}{c}
+\;+\; \sqrt V\,Q^{-1}(\varepsilon)\,\Bigr]\;+\;o(\sqrt N),
+\]
+\emph{with their ratio $\dfrac{\delta_\infty/c}{\sqrt V\,Q^{-1}(\varepsilon)}$
+\emph{independent of $N$}. Thus byte-granular random access \emph{as realised by
+this sub-block scheme} exacts a second-order rate penalty of the \emph{same
+order} as the intrinsic stochastic variability; the $\sqrt N$-coefficient
+decreases in the access budget $c=K/\sqrt N$ toward the irreducible dispersion
+floor $\sqrt V\,Q^{-1}(\varepsilon)$. \emph{(Scope: item 2 is a global source
+converse --- it does not assert the $(N/K)\delta_\infty$ overhead is mandatory.
+The $(\delta_\infty/c)\sqrt N$ penalty is what \emph{this} scheme pays
+(achievability); whether some non-sub-block random-access architecture could
+reach the dispersion floor without it --- a tight second-order converse for
+local decodability --- is open, cf.\ the space-time product of Theorem 7.27.)}}
+\end{enumerate}
+
+\emph{Significance.} Theorem 7.29 upgrades the first-order rate $Nh+o(N)$
+(Theorem 7.2) and the distributional CLT (Theorem 7.28) to an \emph{operational}
+second-order coding rate, and isolates an RNR-specific phenomenon: the price of
+byte-granular random access, $(N/K)\delta_\infty$, lives at exactly the $\sqrt N$
+scale of the fundamental source dispersion $\sqrt{NV}\,Q^{-1}(\varepsilon)$, so at
+the order-optimal $K=\Theta(\sqrt N)$ the two redundancies are comparable and add.
+Larger $K$ shrinks the access overhead toward the dispersion floor at the cost of
+$O(K)$ per-query work (Theorem 7.5); the dispersion floor itself is irreducible
+(item 2). \emph{Scope:} the identity $v^2=V$ uses the ideal predictor; a
+mismatched $Q$ shifts the mean by $N\varepsilon_{\mathrm{KL}}$ (Theorem 7.4) and
+replaces $V$ by the long-run variance of the cross-entropy density. The
+per-sync-point constant is more precisely the Theorem 7.5 sync constant
+$\gamma=\delta_\infty+\log_2(1/\eta)$ (the $\eta$-floor AC slack adds to the
+Crutchfield--Feldman excess $\delta_\infty$); the displayed $\Theta(\sqrt N)$
+interplay is unchanged with $\gamma$ in place of $\delta_\infty$. It assumes a
+\emph{fixed} source of finite, summable excess (it does not cover source families
+with non-summable excess). Verified in
+\texttt{scripts/verify/thm\_7\_29\_dispersion\_ra\_interplay.py} (V1: analytic
+varentropy $=$ empirical $\mathrm{Var}(\sum\ell_i)/N$; V2: the
+$(1-\varepsilon)$-quantile matches $Nh+\sqrt{NV}\,Q^{-1}(\varepsilon)$ to
+$o(\sqrt N)$; V3: the $\Theta(\sqrt N)$ overhead/dispersion ratio is
+$N$-independent).
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
