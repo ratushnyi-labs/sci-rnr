@@ -8596,6 +8596,50 @@ Verified in
 geometric over-estimate $\to H$; decay rate tracking the mixing; logarithmic depth
 budget; robust $(1-\tfrac1e)-O(\varepsilon)$ greedy).
 
+\emph{Remark 7.15d (R\'enyi spectrum of the open-middle oracle: every integer order
+is exactly poly, the min-entropy is NP-hard, the operative Shannon point is not
+reached).} Remark 7.15a
+left the \emph{exact} Shannon oracle $H(Y_1,\dots,Y_r)$ open and Remark 7.15c made it
+$\varepsilon$-approximable under (FS); we now \emph{locate} the difficulty exactly,
+via the R\'enyi spectrum $H_\alpha(Y)=\tfrac1{1-\alpha}\log_2\sum_y P(y)^\alpha$
+($H_1$ Shannon, $H_\infty$ min-entropy). For \emph{integer} $\alpha\ge2$,
+\[
+\sum_y P(Y_T{=}y)^\alpha \;=\; \Pr\bigl(\alpha\text{ i.i.d.\ copies of }X
+\text{ agree on }T\bigr),
+\]
+the partition function of $\alpha$ independent copies of the chain constrained to
+agree at the subset positions and evolving freely across the gaps --- computed by a
+\emph{forward} algorithm over the $\alpha$-fold product state ($|\Sigma|^{w\alpha}$),
+poly in $(r,N)$ for fixed $\alpha,w$ (gaps by $O(\log)$ matrix powers), with
+\emph{no} $\log$-of-a-sum and \emph{no} $|\Sigma|^{|T|}$ marginal. Hence \emph{$H_\alpha$
+is poly-time exact for every integer $\alpha\ge2$ --- unconditionally, with no mixing
+hypothesis}. At the other end $H_\infty=-\log_2\max_y P(y)$ is the most-likely subset
+tuple, i.e.\ the HMM most-likely-\emph{output-string} / consensus problem (not the
+poly Viterbi most-likely \emph{path}), \emph{NP-hard} (Lyng\o{}--Pedersen, \emph{J.\
+Comput.\ Syst.\ Sci.}\ 65(3):545--569, 2002). The hardness is for our specific
+subclass, not merely by membership in HMMs: any HMM is encodable as an order-$2$
+chain alternating hidden-state and emitted-symbol positions with $T$ the emitted
+positions, so $\max_y P(X_T{=}y)$ over noncontiguous subsets of bounded-order chains
+already captures general HMM consensus. The Shannon point $H_1$ is \emph{not reached}
+by this route: by R\'enyi monotonicity $H_2\le H_1\le H_0$ the exact poly $H_2$ is a
+\emph{free, hypothesis-free poly lower bound} on the open oracle (and
+$H_0=\log_2|\mathrm{supp}|$ bounds it above), but the moments do not \emph{recover}
+$H_1$ --- analytic continuation to $\alpha=1$ would need more than finitely many
+orders, which the per-order cost $|\Sigma|^{w\alpha}$ (constant for fixed $\alpha$
+but growing with $\alpha$) precludes, and the non-integer orders $\alpha\in(1,\infty)$
+themselves lack the finite-copy structure. So the spectrum exhibits a
+\emph{representational discontinuity} rather than a clean isolation: the \emph{integer}
+orders are finite-dimensional product-chain partition functions (poly), the
+min-entropy is NP-hard, and the operative Shannon entropy --- the $\alpha\to1$
+derivative, with no finite-moment representation --- remains open, now flanked by the
+exact poly lower bound $H_2$ and the (FS) approximation of Remark 7.15c. This
+complements Remark 7.15c with an \emph{exact, unconditional} poly handle ($H_2$, also
+a lower bound) and a precise complexity-landscape map of the remaining open problem.
+Verified in
+\texttt{scripts/verify/remark\_7\_15d\_renyi\_spectrum.py} (R1--R4: the
+product-forward DP equals $\sum_y P(y)^\alpha$ for $\alpha=2,3$ to machine precision,
+no $|\Sigma|^{|T|}$ table; spectrum ordering; min-entropy maximiser).
+
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
 when local statistics vary).}
@@ -16104,8 +16148,16 @@ approximates the block entropy with error $O(r\rho^d)$ and the oracle is
 ($d=O(\log(r/\varepsilon))$); robust submodular greedy then selects within
 $(1-\tfrac1e)-O(\varepsilon)$. So the \#P-hardness is an artifact of
 \emph{exact} computation --- it is suspected to persist even under mixing, but
-the operative approximate oracle is tractable on filter-stable sources. The
-exact complexity remains the open problem.
+the operative approximate oracle is tractable on filter-stable sources. Remark
+7.15d then maps the complexity \emph{landscape} via the R\'enyi spectrum: every
+\emph{integer}-order R\'enyi entropy $H_\alpha$ ($\alpha\ge2$) is \emph{exactly}
+poly --- unconditionally --- because $\sum_y P(y)^\alpha$ is the agreement
+probability of $\alpha$ independent copies, a product-chain forward computation;
+the min-entropy ($\alpha=\infty$) is NP-hard (HMM consensus, Lyng\o{}--Pedersen
+2002); and the operative Shannon point ($\alpha=1$) is not reached by either,
+though $H_2$ furnishes a free exact poly \emph{lower bound}. The exact Shannon
+complexity remains the open problem (now bracketed: poly $H_2$ below, FS
+approximation, NP-hard min-entropy above).
 
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
