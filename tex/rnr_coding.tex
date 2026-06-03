@@ -107,11 +107,16 @@ equalling $H(X \mid Y)$ exactly when the conditional law is uniform on the
 decoder-available candidate set (so Theorem 5.3 is entropy-optimal there)
 and otherwise exceeding it by the recoverable within-candidate-set
 uniform deficit, a KL divergence that is the price of uniform indexing
-rather than of the partition representation. Type-III-A has a matching
-\emph{relative} converse --- the $2\varepsilon$ approximate-oracle gap
-is tight (Theorem 6.2) --- but a standalone \emph{absolute-rate}
-converse for Type-III-A, and a converse for Type-III-C, remain open.
-Complexity results include
+rather than of the partition representation. Type-III-C is
+\emph{asymptotically rate-optimal} under a universal dictionary builder:
+the achievability bound (Theorem 6.6b) is matched by the entropy-rate
+converse (Theorem 6.6c), so $\tfrac{1}{N}\mathbb{E}[L_{\mathrm{IIIC}}]
+\to h(X)$ whenever the dictionary is built universally (the
+greedy-MDL-builder universality being the one residual sub-question,
+Remark 6.6b). Type-III-A has a matching \emph{relative} converse ---
+the $2\varepsilon$ approximate-oracle gap is tight (Theorem 6.2) ---
+but a standalone \emph{absolute-rate} converse for Type-III-A remains
+open. Complexity results include
 NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3), a
 polynomial-time vs.\ NP-hard dichotomy in semi-non-factorized
@@ -5426,6 +5431,63 @@ a gap. Practically, this means a Type-III-C implementation that wants a
 provable achievability guarantee should build its dictionary with an
 LZ78/irreducible-grammar pass (or verify irreducibility of its learned
 dictionary) rather than rely on unconstrained greedy MDL.
+
+\textbf{Theorem 6.6c (Type-III-C converse and asymptotic optimality).}
+\emph{Let $X$ be a stationary source on $\mathcal{A}$ with entropy rate
+$h(X) = \lim_{n} \tfrac{1}{n} H(X^n)$. For \emph{any} uniquely-decodable
+lossless Type-III-C code (Definition~3.5) --- comprising the dictionary
+$D$, the token-reference stream, and the repair stream, such that the
+decoder reconstructs $X^N$ from the transmitted bits together with
+decoder-reproducible state --- the expected code length obeys}
+\[
+\mathbb{E}\!\left[L_{\mathrm{IIIC}}(X^N)\right] \;\ge\; H(X^N) \;\ge\;
+N\cdot h(X).
+\tag{6.6c.1}
+\]
+\emph{Consequently, combining with the achievability bound (6.6) of
+Theorem 6.6b, whenever the dictionary is produced by a universal
+builder,}
+\[
+N\cdot h(X) \;\le\; \mathbb{E}\!\left[L_{\mathrm{IIIC}}(X^N)\right]
+\;\le\; N\cdot h(X) + o(N),
+\qquad
+\tfrac{1}{N}\mathbb{E}\!\left[L_{\mathrm{IIIC}}(X^N)\right]
+\xrightarrow[N\to\infty]{} h(X),
+\]
+\emph{so Type-III-C is \textbf{asymptotically rate-optimal} on every
+stationary source under a universal dictionary builder.}
+
+\emph{\textbf{Proof.}} The Type-III-C codeword is a binary string from
+which the decoder, using only that string and decoder-reproducible
+state (Definition~3.5), recovers $X^N$ exactly; hence $X^N \mapsto
+\text{codeword}$ is injective and the code is uniquely decodable for
+$X^N$. By McMillan's theorem (Cover \& Thomas 2006, Theorem 5.5.1) its
+lengths satisfy the Kraft inequality, whence the Shannon source-coding
+bound (Theorem 5.3.1) gives $\mathbb{E}[L_{\mathrm{IIIC}}(X^N)] \ge
+H(X^N)$. For a stationary source the normalized block entropy
+$\tfrac{1}{N}H(X^N)$ is non-increasing in $N$ and converges to $h(X)$
+(Cover \& Thomas 2006, Theorem 4.2.1 and its monotonicity); a
+non-increasing sequence stays above its limit, so $H(X^N) \ge N\,h(X)$
+for every $N$, giving (6.6c.1). The shipped dictionary $D$ does not
+evade the bound: $D$ is part of the transmitted (or
+decoder-reproducible-from-codeword) description and its bits are
+already counted in $L_{\mathrm{IIIC}}$; a deterministic,
+decoder-reproducible model carries no information absent from the
+codeword, so Shannon's bound applies to the total. Combining (6.6c.1)
+with (6.6) yields the two-sided sandwich and the limit. \hfill$\blacksquare$
+
+\emph{Remark 6.6c (scope --- the converse is unconditional, the
+optimality is conditional).} The lower bound (6.6c.1) holds for
+\emph{every} Type-III-C code, with no assumption on how $D$ is built ---
+it is the standard entropy-rate floor (the value-add, as for the
+Type-III-B converse Theorem 6.3b, is not new machinery but the
+\emph{tightness} it certifies). The matching \emph{achievability}
+(6.6) is conditional on a universal builder (Theorem 6.6b), so the
+asymptotic optimality holds precisely under that condition; whether the
+greedy marginal-MDL builder of Theorem 6.5 is itself universal remains
+the open sub-question of Remark 6.6b. With Theorems 6.6b and 6.6c the
+Type-III-C achievability/converse cell is complete: \emph{tight under a
+universal dictionary builder}.
 
 \textbf{Theorem 6.7 (Restricted Type-III-C dictionary learning is
 NP-hard).} \emph{Consider the restricted Type-III-C problem in which
