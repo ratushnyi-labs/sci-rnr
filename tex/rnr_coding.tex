@@ -1204,8 +1204,15 @@ while $H(X \mid Y) = 1$, so no decoder can recover $X$ from $(Y, E)$.}
 
 \emph{\textbf{Proof.}} The converse is obtained by applying Shannon's
 source-coding bound to each conditional distribution
-$P(X \mid Y = y)$ and averaging over $Y$ (Cover and Thomas 2006,
-Theorem 5.4.1; see also Chapter 15 for coding with side information).
+$P(X \mid Y = y)$ and averaging over $Y$. Concretely, for a
+\emph{uniquely decodable} code McMillan's theorem (Cover and Thomas
+2006, Theorem 5.5.1) gives the Kraft inequality, whence the
+expected-length lower bound $\mathbb{E}[L \mid Y = y] \geq
+H(X \mid Y = y)$ (Cover and Thomas 2006, Theorem 5.3.1); averaging
+over $Y$ yields $\mathbb{E}[L] \geq H(X \mid Y)$. (Theorem 5.4.1,
+the $H \leq L^\ast < H + 1$ bound, is the achievability--gap
+statement, not the converse used here; see also Chapter 15 for
+coding with side information.)
 For achievability, fix an injective Code12 map and define
 $E = E_{12}(X) \oplus Y$. Given $Y$, the map $X \leftrightarrow E$ is
 bijective, so $H(E \mid Y) = H(X \mid Y)$. Encoding first the class
