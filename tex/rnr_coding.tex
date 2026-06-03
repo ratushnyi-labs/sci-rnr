@@ -8533,6 +8533,69 @@ chain-rule identity; forward-only codelength $=-\log_2 P(x)$ with sample mean
 $\to H$; non-contiguous residual requires a genuine gap marginal with
 exponential op-count; order-independence at the full-attention regime).
 
+\emph{Remark 7.15c (The open-middle oracle is poly-time $\varepsilon$-approximable
+under filter stability: the \#P-hardness is an exact-computation artifact, dissolved
+only in the approximate oracle).} Remark 7.15a
+left the noncontiguous bounded-order oracle's \emph{exact} complexity open (it is
+the exact finite-block entropy of the induced process $Y_k:=X_{t_k}$, a subsample
+of $X$). Its \emph{operative} status is settled under a filter-stability hypothesis.
+\emph{Hypothesis (FS).} The induced subsample process --- the order-$w$ hidden
+context observed at $\{t_k\}$ through the deterministic readout $Y_k=X_{t_k}$, with
+the chain evolving \emph{unobserved} across the gaps --- is \emph{uniformly
+filter-stable}: its prediction filter (the belief over the hidden context given the
+observed subsample) forgets its initialisation geometrically in total variation,
+uniformly in the realisation. Equivalently, (FS) is exactly the displayed subsample
+conditional-MI bound below. This is the standard exponential-filter-stability
+conclusion, driven here by contraction of the unobserved gap-transitions; it holds
+when the order-$w$ hidden chain is geometrically ergodic, under the usual
+filter-stability conditions adapted to a function-of-Markov-chain observation
+(Atar--Zeitouni 1997; Le Gland--M\'evel, \emph{Math.\ Control Signals Systems}
+13:63--93, 2000; cf.\ Lemma 5.6e). Note (FS) is \emph{stronger} than the bare
+conditional-MI mixing (5.8) of Theorem 7.2: $\sigma(Y)\subseteq\sigma(X)$ transfers
+$\beta$-mixing but \emph{not} the conditional-MI bound below (conditional MI is not
+monotone under dropping the skipped mediators), so (FS) is the right primitive.
+Under (FS) the conditional mutual information
+$I(Y_k;Y_{<k-d}\mid Y_{k-d:k-1})\le C\rho^d$ decays geometrically (the filter
+contracts uniformly in total variation, and longer physical gaps $t_{k}-t_{k-1}$
+only contract it faster). Hence the order-$d$ truncation
+\[
+A_d \;:=\; \sum_k H\!\left(Y_k\mid Y_{k-d:k-1}\right)\;\ge\; H(Y_1,\dots,Y_r),
+\qquad
+0\le A_d - H \;=\; \sum_k I\!\left(Y_k;Y_{<k-d}\mid Y_{k-d:k-1}\right)\;\le\; r\,C\,\rho^d,
+\]
+over-estimates the exact block entropy with \emph{geometric} error (conditioning
+on less only raises entropy; the gap is the windowed-out tail dependence). $A_d$
+uses only $(d{+}1)$-block marginals of $Y$, each computed by the forward algorithm
+over the $|\Sigma|^w$ hidden state, so for
+$d=O\!\big(\log(r/\varepsilon)/\log(1/\rho)\big)$ --- \emph{logarithmic} in
+$1/\varepsilon$ --- the oracle is evaluated to additive error $\varepsilon$ in
+$\mathrm{poly}(r,1/\varepsilon)$ time (table size
+$|\Sigma|^{d+1}=(r/\varepsilon)^{O(\log|\Sigma|/\log(1/\rho))}$, not the
+$|\Sigma|^{|T|}$ of exact brute marginalisation). The exponent
+$O(\log|\Sigma|/\log(1/\rho))$ makes this polynomial in $(r,1/\varepsilon)$ \emph{for
+any fixed alphabet and mixing rate}, but of \emph{degree} that itself grows as the
+source mixes more slowly ($\rho\to1$) --- a slice-wise (``XP'') guarantee, not a
+fixed-degree one. And greedy support selection
+driven by the $\varepsilon$-accurate oracle attains $M(\text{greedy})\ge
+(1-\tfrac1e)M(\text{opt})-O(s\varepsilon)$ (additive oracle error propagates
+additively through the monotone-submodular greedy); taking $\varepsilon=
+\varepsilon'/s$ --- adding $O(\log s)$ to the depth --- gives
+$(1-\tfrac1e)M(\text{opt})-\varepsilon'$ at $\mathrm{poly}(r,1/\varepsilon')$ cost.
+\emph{So the Remark 7.15a hardness is an artifact of \emph{exact} computation, not
+of the mixing regime}: mixing does \emph{not} make the exact oracle polynomial ---
+it is suspected to remain hard even on mixing sources --- but under (FS), and given
+the bounded-order/finite-HMM representation, the operative
+$\varepsilon$-\emph{approximate} oracle, and hence the whole greedy support
+selection, is poly-time computable (in the slice-wise sense above). This complements
+Remark 7.15b (causal coding and random access are already \emph{exactly} poly): the
+optional non-contiguous \emph{selection} lever is operationally tractable too on a
+filter-stable source; only the exact worst-case oracle carries the unresolved
+exact-computation barrier (the suspected hardness) that Remark 7.15a leaves open.
+Verified in
+\texttt{scripts/verify/remark\_7\_15c\_mixing\_oracle\_approx.py} (M1--M5: monotone
+geometric over-estimate $\to H$; decay rate tracking the mixing; logarithmic depth
+budget; robust $(1-\tfrac1e)-O(\varepsilon)$ greedy).
+
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
 when local statistics vary).}
@@ -16031,7 +16094,18 @@ finite-block Shannon entropy, which is moreover tractable for unambiguous PFA).
 Remark 7.15b then shows this hardness is \emph{orthogonal} to the deployed
 encoder: causal coding and byte-granular random access condition only on the
 realised prefix (one forward pass), and the \#P-hard marginal arises solely in
-the optional non-contiguous selection lever.
+the optional non-contiguous selection lever. Remark 7.15c makes \emph{partial
+progress} on the open exact problem: under a filter-stability hypothesis (FS:
+geometric ergodicity of the order-$w$ hidden chain with positive Doeblin
+emissions, the discrete analogue of Lemma 5.6e's GE\,+\,EP), the induced HMM's
+prediction filter forgets geometrically, so the order-$d$ truncation
+approximates the block entropy with error $O(r\rho^d)$ and the oracle is
+\emph{$\varepsilon$-approximable} in slice-wise-polynomial time
+($d=O(\log(r/\varepsilon))$); robust submodular greedy then selects within
+$(1-\tfrac1e)-O(\varepsilon)$. So the \#P-hardness is an artifact of
+\emph{exact} computation --- it is suspected to persist even under mixing, but
+the operative approximate oracle is tractable on filter-stable sources. The
+exact complexity remains the open problem.
 
 \textbf{13.4.5 Tight TC scaling for natural-data classes (refined
 after Lemma 5.6i).}
