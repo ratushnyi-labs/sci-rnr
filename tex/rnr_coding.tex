@@ -85,8 +85,11 @@ constructions and achievability bounds; for Type-III-C we give a
 greedy marginal-MDL admission criterion (Theorem 6.5) and a
 bits-back rate analysis (Theorem 6.6) but no standalone
 achievability bound for the learned hierarchical
-dictionary/token-cover construction. A matching converse is given
-only for Type-I (Theorem 4.2). Complexity results include NP-hardness of the
+dictionary/token-cover construction. Matching converses are given
+for Type-I (Theorem 4.2) and Type-III-B (Theorem 6.3b, the byte
+coder cannot beat the joint conditional entropy $H(H,L\mid C)$, so
+the $I(H;L\mid C)$ advantage of Theorem 6.3 is exactly tight).
+Complexity results include NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3), a
 polynomial-time vs.\ NP-hard dichotomy in semi-non-factorized
 Type-II support selection (Lemma 5.7a polynomial-time for
@@ -418,9 +421,12 @@ This article makes the following contributions.
   assumptions on the prediction error structure.
 \item
   A mutual-information characterization of the Type-III-B byte-tensor
-  advantage (Theorem 6.3) and an invariance result (Theorem 6.4)
-  showing all rooted binary tree decompositions of the 256-byte
-  alphabet achieve the same information-theoretic rate.
+  advantage (Theorem 6.3) with a matching Shannon converse
+  (Theorem 6.3b) proving the $I(H;L\mid C)$ saving is exactly the
+  maximum achievable by any uniquely decodable byte coder, and an
+  invariance result (Theorem 6.4) showing all rooted binary tree
+  decompositions of the 256-byte alphabet achieve the same
+  information-theoretic rate.
 \item
   Five results on Type-III-C: the greedy MDL admission criterion
   (Theorem 6.5), the bits-back integration with an exact
@@ -4327,6 +4333,137 @@ restrict low nibbles depending on the high nibble; pixel data has
 locally correlated joint byte distributions. On such data, Type-III-B
 can recover several tenths of a bit per byte over Type-II at the
 nibble alphabet.
+
+\textbf{Theorem 6.3b (Type-III-B converse: the $I(H;L \mid C)$
+saving is exactly tight).} \emph{Fix a position and let $H$, $L$, $C$
+be the high nibble, low nibble, and decoder-reproducible public
+context at that position, with $B = 16H + L \in \{0, \ldots, 255\}$
+the corresponding byte; the map $(H, L) \leftrightarrow B$ is a
+bijection. Then:}
+\begin{itemize}
+\item[\textbf{(C)}] (\emph{Converse}) \emph{Any uniquely decodable
+lossless byte code whose decoder uses only the codeword and the
+reproduced context $C$ has expected per-byte length at least}
+\[
+\mathbb{E}[L_{\mathrm{III\text{-}B}}(B)] \;\geq\; H(B \mid C) \;=\; H(H, L \mid C)
+\;=\; H(H \mid C) + H(L \mid C) - I(H ; L \mid C).
+\tag{6.2b}
+\]
+\item[\textbf{(A)}] (\emph{Achievability}) \emph{The Type-III-B
+construction of §6.3 --- any of the three strategies of
+Definition 3.4 --- driven by the true conditional law
+$P(H, L \mid C)$ achieves expected per-byte length
+$H(H, L \mid C) + \varepsilon$, where $\varepsilon$ is the
+entropy-coder redundancy of §2.3 (at most $2$ bits per stream for
+canonical arithmetic/ANS coders, amortized to $o(1)$ per byte over a
+long block; Witten--Neal--Cleary 1987, Duda 2009).}
+\end{itemize}
+\emph{Consequently the gap between the independent-nibble baseline
+rate $H(H \mid C) + H(L \mid C)$ (the optimal Type-II rate at the
+nibble alphabet, Theorem 5.5 part (F) applied to the two nibble
+coordinates) and the optimal byte-coder rate $H(H, L \mid C)$ is
+exactly $I(H ; L \mid C)$, with no slack: the saving $\Delta_B$ of
+Theorem 6.3 is the \emph{maximum} achievable by any uniquely
+decodable byte coder, not merely a lower bound on some attainable
+saving. Type-III-B is therefore order-optimal, matching the converse
+up to the entropy-coder redundancy $\varepsilon$.}
+
+\emph{\textbf{Proof.}} (C) Because $(H, L) \leftrightarrow B$ is a
+bijection, a uniquely decodable byte code is exactly a uniquely
+decodable code for the pair $(H, L)$, and recovering $B$ recovers
+$(H, L)$ and conversely. Apply Shannon's converse for uniquely
+decodable codes to the conditional distribution $P(B \mid C = c)$ for
+each fixed context value $c$: any uniquely decodable code satisfies
+Kraft's inequality (McMillan's theorem, Cover and Thomas 2006,
+Theorem 5.5.1), and any code whose lengths satisfy Kraft has expected
+codeword length under $P(\cdot \mid c)$ at least the conditional
+entropy $H(B \mid C = c)$ (Cover and Thomas 2006, Theorem 5.3.1; the
+gap is the relative entropy $D(P(\cdot \mid c) \,\|\, q)$ between the
+source and the Kraft-induced coding distribution
+$q_b = 2^{-\ell_b} / \sum_{b'} 2^{-\ell_{b'}}$, which is nonnegative
+by Gibbs' inequality). Averaging the per-context bound
+over $C \sim P_C$ gives
+$\mathbb{E}[L_{\mathrm{III\text{-}B}}(B)] = \mathbb{E}_C
+\,\mathbb{E}[L \mid C] \geq \mathbb{E}_C\, H(B \mid C = c) = H(B \mid C)$,
+exactly as in the conditional-converse step of Theorem 4.2 part (C).
+Since $B = 16H + L$ with $(H, L)$ in bijection with $B$, we have
+$H(B \mid C) = H(H, L \mid C)$, and by the chain rule
+$H(H, L \mid C) = H(H \mid C) + H(L \mid H, C)
+= H(H \mid C) + H(L \mid C) - I(H ; L \mid C)$, establishing (6.2b).
+
+(A) This is the achievability half of Theorem 6.3 made explicit. By
+Theorem 6.4 (hierarchical-decomposition invariance), any of the three
+Definition 3.4 strategies --- direct $256$-class coding, hierarchical
+high-then-low partition coding, or per-byte sequential high-then-low
+arithmetic coding --- when each binary or categorical decision is
+coded under its \emph{exact} induced conditional probability derived
+from $P(H, L \mid C)$, attains expected ideal length
+$H(B \mid C) = H(H, L \mid C)$ per byte, independent of the
+decomposition tree. A concrete arithmetic or ANS coder driven by
+these conditionals attains this rate up to the §2.3 redundancy
+$\varepsilon$ (under-$2$-bit total overhead per stream for the
+Witten--Neal--Cleary integer arithmetic coder, amortized to $o(1)$
+per byte over a long block, by the §2.3 entropy-coding assumption;
+Witten--Neal--Cleary 1987, Duda 2009). The \emph{ideal} independent-nibble
+baseline, coding $H$ under $P(H \mid C)$ and $L$ under the
+\emph{marginal} $P(L \mid C)$, pays exactly $H(H \mid C) + H(L \mid C)$;
+this is the optimal factorized rate over the two nibble coordinates by
+Theorem 5.5 part (F) (Shannon's converse for product-distribution
+coders applied to $(H, L)$). The tightness statement is most cleanly
+read off the two \emph{ideal} rates: the optimal byte-coder rate is
+$H(H, L \mid C)$ (floor (6.2b), achieved by part (A) up to
+$\varepsilon$) and the optimal independent-nibble rate is
+$H(H \mid C) + H(L \mid C)$, so the gap is exactly $I(H ; L \mid C)$
+with no slack. Equivalently, no byte coder's expected length drops
+below $H(H, L \mid C)$, so the saving against the ideal baseline is
+\emph{at most} $I(H ; L \mid C)$, and the §6.3 construction attains it
+up to $\varepsilon$ --- the saving cannot exceed $I(H ; L \mid C)$ by
+more than the entropy-coder redundancy.
+
+A finite-length caveat on the \emph{sign} of the concrete gap: when
+both sides are realized by concrete (integer Huffman or finite-block
+arithmetic) coders, the two-stream baseline carries roughly twice the
+per-stream redundancy of the single-stream joint coder, so the
+\emph{measured} saving baseline-minus-joint can \emph{exceed}
+$I(H ; L \mid C)$ by up to the extra baseline redundancy ($O(\varepsilon)$,
+empirically up to about one bit in the worst degenerate case). This is
+not a violation of the converse: the converse (6.2b) is the hard floor
+on the \emph{joint} coder alone ($\mathbb{E}[L] \geq H(H,L\mid C)$),
+which no concrete coder breaches; the inflated measured saving merely
+reflects a weaker baseline coder, not a byte coder beating the joint
+entropy. The clean tightness statement is therefore the ideal-rate one
+above; the concrete saving equals $I(H ; L \mid C) \pm O(\varepsilon)$.
+\hfill$\blacksquare$
+
+\emph{Remark 6.3c (honest scope of the converse).} The converse
+(C) is the standard Shannon conditional source-coding bound applied
+to the nibble pair $(H, L)$ --- it introduces no new coding-theoretic
+machinery beyond Theorem 4.2's conditional converse. Its content is
+\emph{consequential, not technical}: it certifies that the
+$I(H ; L \mid C)$ saving identified by Theorem 6.3 is the exact
+maximum extractable by any uniquely decodable byte coder, upgrading
+Theorem 6.3 from ``a saving of $I(H;L\mid C)$ exists'' to ``$I(H;L
+\mid C)$ is the optimal saving, achieved up to $\varepsilon$.'' This
+completes Type-III-B to a matched achievability/converse pair (as
+Theorem 4.2 does for Type-I and Theorem 6.2 for the Type-III-A
+mode-selection bound). Two caveats delimit the claim. First, the
+$\varepsilon$ gap is genuine: the converse floor (6.2b) is on the
+joint coder alone, and the construction meets it only up to the
+entropy-coder redundancy $\varepsilon$, so Type-III-B is order-optimal
+rather than exactly optimal at finite block length, with $\varepsilon$
+vanishing only in the amortized long-block limit. The exact-tightness
+claim is the \emph{ideal}-rate one (optimal joint rate $H(H,L\mid C)$
+versus optimal independent-nibble rate $H(H\mid C)+H(L\mid C)$, gap
+exactly $I(H;L\mid C)$); the concrete saving equals
+$I(H;L\mid C)\pm O(\varepsilon)$ and may slightly \emph{exceed}
+$I(H;L\mid C)$ because the two-stream baseline pays more redundancy
+than the one-stream joint coder --- which is a statement about the
+baseline, not a breach of the joint converse.
+Second, the converse bounds the per-byte \emph{repair-stream} rate
+$L(R \mid Y)$ of the decomposition (3.1); it does not bound the
+constant model and metadata headers $L(M) + L(V) + L(\Theta)$, which
+are $O(1)$ in $N$ and govern the block-level advantage condition of
+Theorem 6.3 (the per-block crossover) rather than the per-byte rate.
 
 \textbf{Theorem 6.4 (Hierarchical decomposition is
 information-theoretically invariant).} \emph{Let $T$ be any rooted
