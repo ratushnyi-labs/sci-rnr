@@ -148,7 +148,15 @@ and Ohsaka; \textsc{Partial}, the gap surviving the manifold
 covariance restriction at high SNR), whereas with the predictor free
 and amortised the same objective is in $\mathrm{P}$ via a
 sample-covariance maximum-likelihood plug-in (Remark 6.9a), the
-crossover budget being characterised in Remark 6.9c. Worked numerical examples are
+crossover budget being characterised in Remark 6.9c. Its discrete, deployed
+counterpart (a transformer's autoregressive field; Remarks 7.15a--7.15e)
+inherits a \#P-hard value oracle with no Gaussian analogue, yet keeps causal
+coding and random access exactly polynomial (the hardness confined to the
+optional non-contiguous lever); the residual bounded-order exact problem ---
+exact finite-block hidden-Markov entropy --- is bracketed in
+$[\,\text{poly},\mathrm{FP}^{\#P}\,]$ (poly-$\varepsilon$-approximable under
+filter stability, integer-R\'enyi-exact, min-entropy NP-hard) with both natural
+attacks obstructed. Worked numerical examples are
 given for Type-I, Type-II, and Type-III-B; III-A and III-C are
 illustrated through their composition and dictionary-construction
 sections respectively. Two structural results identify the
@@ -537,6 +545,30 @@ This article makes the following contributions.
   guarantee is shown necessary in Remark 6.9d. Corollary 6.9b records
   the operational consequence: an additive-regret Gaussian-on-manifold
   RNR encoder synthesised from Lemma 5.6j and Lemma 6.9.
+\item
+  The \emph{discrete}, deployed counterpart of the above for the neural-LM
+  field of Theorem 7.15 --- a five-part arc (Remarks 7.15a--7.15e). The
+  §6.9 Gaussian maximum-entropy-sampling support selection transfers to a
+  transformer's discrete autoregressive field with \emph{unconditional}
+  submodularity (the noise-floor calibration disappears; Remark 7.15a), but
+  with a \#P-hard value-oracle obstacle that has no Gaussian analogue. That
+  hardness is \emph{orthogonal} to the deployed encoder: causal coding and
+  byte-granular random access are exactly polynomial (one forward pass per
+  symbol; Remark 7.15b), the \#P-hardness living only in the \emph{optional}
+  non-contiguous support-selection lever. The bounded-order exact-oracle
+  restriction is a clean new open problem (exact finite-block hidden-Markov
+  Shannon entropy), here \emph{bracketed} on all sides:
+  poly-time-$\varepsilon$-approximable under a filter-stability hypothesis
+  (Remark 7.15c); every integer-order R\'enyi entropy exactly polynomial via
+  a product-chain agreement identity, with the min-entropy NP-hard (HMM
+  consensus) and the collision entropy $H_2$ a free poly lower bound (Remark
+  7.15d); and the exact oracle pinned in $[\,\text{poly},\mathrm{FP}^{\#P}\,]$
+  with \emph{both} natural attacks --- predicate-encoding hardness and
+  history-filtering algorithm --- provably obstructed (Remark 7.15e: the
+  read-once / $\#\mathrm L\subseteq\mathrm{FP}$ barrier and the non-collapsing
+  Blackwell measure). Thus the support-selection complexity is \emph{resolved
+  for the operative high-order predictor} and \emph{mapped} for the
+  theoretical bounded-order residual.
 \item
   Additive rule-cost results for the discrete Type-III-C
   smallest-grammar problem (§13.4.1): the additive rule-size SGP
