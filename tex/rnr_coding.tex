@@ -8357,18 +8357,22 @@ $Q_i(\cdot\mid x_{<i})$ in place of the Gaussian $\mathcal N(0,\Sigma)$ of
 APX-hardness; Remark 6.9a free-field easiness; Corollary 6.9b greedy
 additive-regret encoder) ports to this field. As in §6.9 the
 \emph{fixed-field} lever is the operative one for Theorem 7.15, where $M'$
-is a pre-trained \emph{shared} predictor: choose a coded set $S$ of
-sub-block positions, code $X_S$ and reconstruct $X_{\bar S}$ from $M'$;
-with the ideal predictor the per-block residual is, by the chain rule,
+is a pre-trained \emph{shared} predictor: choose a coded set $S$, $|S|=s$,
+of sub-block positions to store, the decoder reconstructing the complement
+$X_{\bar S}$ from $M'$; the \emph{selection objective} is the model's exact
+reconstruction residual for the complement, by the chain rule,
 \[
-C_{\mathrm{sel}}(S) \;=\; H(X_S\mid X_{\bar S})
-\;=\; H(X) - M(\bar S), \qquad M(T):=H(X_T),
+C_{\mathrm{sel}}(S) \;=\; H(X_{\bar S}\mid X_S)
+\;=\; H(X) - M(S), \qquad M(T):=H(X_T),
 \]
-the exact discrete mirror of Lemma 6.9's $h(X_S\mid X_{\bar S})=\tfrac12
-\log_2\det(2\pi e\,\Sigma_{S\mid\bar S})$ with Shannon entropy replacing
-differential entropy / log-det, so minimising $C_{\mathrm{sel}}$ over
-size-$|\bar S|$ reconstruction sets is again a maximum-entropy-sampling
-(MESP) selection. Four facts (each verified numerically in
+so minimising it is the maximum-entropy-sampling (MESP) selection
+$\max_{|S|=s} M(S)$ --- the Shannon-entropy mirror of Lemma 6.9's log-det
+MESP (Lemma 6.9 writes the complementary form $H(X_S\mid X_{\bar S})=H(X)-
+M(\bar S)$; under $S\leftrightarrow\bar S$ the two are the \emph{same} MESP
+problem, and every claim below is identical for either direction --- the
+total archive rate is $H(X)$ regardless of $S$, so $C_{\mathrm{sel}}$ is the
+selection \emph{objective}, not the whole stored cost). Four facts (each
+verified numerically in
 \texttt{scripts/verify/remark\_7\_15a\_transformer\_support\_selection.py};
 V1--V5):
 \begin{enumerate}
@@ -8389,7 +8393,7 @@ Programming} 14:265--294, 1978), and the residual transfers \emph{additively}
 exactly as in Corollary 6.9b: $C_{\mathrm{sel}}(\text{greedy}) -
 C_{\mathrm{sel}}(\text{opt}) = M(T_{\mathrm{opt}}) - M(T_{\mathrm{greedy}})
 \le (1/e)\,M(T_{\mathrm{opt}})$ --- not a multiplicative ratio, since the cost
-is a difference $H(X)-M(\bar S)$ (V2).
+is a difference $H(X)-M(S)$ (V2).
 \item \emph{(The selection is NP-hard --- hardness is \emph{not} softened by
 discreteness.)} Free choice of a size-$s$ coded set to optimise $M$ is
 NP-hard already in the discrete setting: it contains \textsc{Max-Coverage}
@@ -8417,14 +8421,23 @@ every subset, with no $|\Sigma|^{|T|}$ table built;
 \item[(b)] \emph{bounded-order-$w$ Markov, \emph{contiguous} block
 $T=\{a,\dots,b\}$:} POLY-TIME via the forward algorithm,
 $O((b-a)\,|\Sigma|^{w+1})$ (poly for constant $w,|\Sigma|$). Contiguity is a
-\emph{sufficient} condition here, not shown necessary: for an \emph{arbitrary}
-subset of an order-$w\ge 2$ chain the order-$1$ reduction of (a) provably
-fails (the induced process is hidden-state, witnessed by
-$I(X_{t_k};X_{t_{k-2}}\mid X_{t_{k-1}})>0$ in V3b$'$), but whether its exact
-block entropy nonetheless admits a poly-time algorithm we leave \emph{open} ---
-this noncontiguous bounded-order case sits between the poly endpoints (a)/(b)
-and the \#P-hard general case (c), and our construction settles neither side
-for it;
+\emph{sufficient} condition here, not shown necessary: an \emph{arbitrary}
+subset of an order-$w\ge 2$ chain induces a hidden-state process (a function of
+a Markov chain), and computing $H(X_T)$ becomes the \emph{exact finite-block
+Shannon entropy of an HMM} --- each $P(x_T)$ is poly-time (forward algorithm)
+but the entropy sums $-P\log P$ over $|\Sigma|^{|T|}$ strings. This case is
+\emph{genuinely open}: the order-$1$ method provably fails (the induced process
+is not order-$1$; $I(X_{t_k};X_{t_{k-2}}\mid X_{t_{k-1}})>0$, V3b$'$, and a
+numerical probe finds its forward belief set does not collapse), \emph{no}
+poly-time exact algorithm is known, and \emph{no} \#P-/NP-hardness theorem is
+known either --- the adjacent published results concern the entropy \emph{rate}
+(Blackwell, \emph{Ann.\ Math.\ Statist.}\ 1957; no closed form), the most-likely
+string (Lyng\o{}--Pedersen, \emph{J.\ Comput.\ Syst.\ Sci.}\ 65(3):545--569,
+2002, NP-hard), or relative entropy between automata (Cortes--Mohri--Rastogi--
+Riley, \emph{Int.\ J.\ Found.\ Comput.\ Sci.}\ 19(1):219--242, 2008,
+PSPACE-complete), and the \emph{unambiguous}-PFA entropy is in fact tractable
+--- none settles exact finite-block Shannon entropy. It sits, unresolved,
+between the poly endpoints (a)/(b) and the \#P-hard general case (c);
 \item[(c)] \emph{general AR / high-order arbitrary $T$:} the \emph{exact}
 entropy value oracle is \#P-hard. Exact probabilistic inference is already NP-hard (Cooper,
 \emph{Artif.\ Intell.}\ 42(2--3):393--405, 1990) and its counting / marginal
@@ -8458,6 +8471,67 @@ therefore (i) unconditional/cleaner submodularity for the discrete field, and
 vs.\ a \#P-hard general case, with the noncontiguous bounded-order regime left
 open) that locates the true practical bottleneck of the Theorem 7.15 encoder
 when it performs support selection.
+
+\emph{Remark 7.15b (Why Remark 7.15a's \#P-hardness does not reach the
+Theorem 7.15 encoder: causality replaces marginalisation).} Remark 7.15a's
+value oracle --- exact subset-entropy / marginal computation for a general
+high-order AR field --- is \#P-hard, and a non-contiguous support selection
+\emph{forces} it: reconstructing a non-prefix subset requires marginalising
+the field over the gap positions (equivalently, the exact marginal of a
+computed coordinate, as in the Remark 7.15a/V5 reduction). The Theorem 7.15
+streaming coder never forms such a marginal. It codes each
+sub-block left-to-right, coding $X_i$ under the predictor's conditional
+$Q_i(\cdot\mid x_{<i})$ on the \emph{realised, decoder-reproducible} prefix;
+the realised codelength of an input $x$ is
+\[
+L(x)\;=\;\sum_{i}\,-\log_2 Q_i(x_i\mid x_{<i})
+\;=\;-\log_2\!\prod_i Q_i(x_i\mid x_{<i}),
+\]
+a sum of $K$ single-softmax evaluations --- \emph{one forward pass}, with no
+marginalisation of any position. Two consequences:
+\begin{itemize}
+\item \emph{The causal cost oracle is polynomial for every AR field, of any
+effective order.} Evaluating and paying the streaming-coder cost is
+$O(K\,|\Sigma|\,\mathrm{cost}(M'))$ per sub-block: conditioning on a realised
+prefix is a forward pass, never a marginalisation. This holds verbatim for a
+full-attention transformer (effective order $=$ the whole prefix). The
+\emph{identity} $\mathbb{E}[L]=\sum_i H(X_i\mid X_{<i})=H(X^N)$ holds (entropy
+chain rule; the cross-entropy $N\,H_{M'}$ of Theorems 7.4/7.15 under a
+mismatched $Q$), but the encoder never \emph{computes} this expectation ---
+which may itself be \#P-hard from a compact high-order description; it
+\emph{pays} the realised $L(x)$ (one forward pass) and \emph{estimates} the
+rate as an empirical mean over a calibration corpus. So the predictor
+cross-entropy term $N\,H_{M'}$ is poly-time \emph{achievable} and
+\emph{estimable} with no exact entropy or marginal (the full archive length
+adds the Theorem 7.15 sync and AC terms on top of this term).
+\item \emph{The \#P-hardness is confined to optional, non-streaming
+operations.} An exact marginal appears only in operations the deployed coder
+does not perform --- chiefly the non-contiguous support selection of Remark
+7.15a (coding a non-contiguous set and reconstructing its complement from a
+non-prefix context), and exact expected-rate analysis. The streaming coder and
+decoder, and the Theorem 7.15 synthesis, never invoke one; the \#P barrier is
+therefore orthogonal to the deployed encoder's operation. \emph{In particular
+this includes random access:} byte-granular RA (Theorems 7.2/7.5) restores the
+predictor state from the nearest sync point and decodes the containing
+sub-block \emph{causally} forward to the queried position --- conditioning only
+on the realised in-block prefix, never reconstructing a non-prefix subset ---
+so RA is itself a forward pass, $O(K\cdot\mathrm{cost}(M'))$, and inherits none
+of the \#P-hardness. The non-contiguous reconstruction (which would require the
+acausal conditional $P(x_i\mid x_S,\dots)$ with $S$ containing positions to the
+right of $i$, hence a runtime marginal) is the \emph{separate, optional}
+Type-III-C selection lever, not the random-access mechanism.
+\end{itemize}
+The structural moral is the autoregressive one: a model that only ever
+conditions on realised data sidesteps the marginal-inference barrier its own
+joint law carries --- exact high-order marginal inference being \#P-hard in
+general (Remark 7.15a), though poly in the order-1 and contiguous cases --- and
+the barrier re-materialises exactly when a coding decision forces a general
+exact \emph{marginal} (non-contiguous reconstruction) rather than a
+\emph{conditional} (causal coding). Verified in
+\texttt{scripts/verify/remark\_7\_15b\_causal\_cost\_oracle.py} (C1--C4:
+chain-rule identity; forward-only codelength $=-\log_2 P(x)$ with sample mean
+$\to H$; non-contiguous residual requires a genuine gap marginal with
+exponential op-count; order-independence at the full-attention regime).
 
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5

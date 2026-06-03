@@ -31,15 +31,15 @@ THE ANSWER THIS SCRIPT VERIFIES (Remark 7.15a).
 
 Formalisation. Ground set V = {1,...,N} of sub-block positions (T7.5:
 inside one sub-block of size K = Theta(sqrt N)). Encoder picks a CODED set
-S; codes X_S directly and RECONSTRUCTS X_Sbar from M'. The lossless
-residual is
-    C(S) = H(X_S) + Hrecon(Sbar | S, M'),
-and with the IDEAL predictor M' = the true conditional law, the
-information-theoretic reconstruction cost is Hrecon = H(X_Sbar | X_S), so
-    C(S) = H(X_S) + H(X_Sbar | X_S) = H(X)         (chain rule, EXACT)
-        = H(X) - M(Sbar) + M(Sbar)  ... i.e. the SELECTION lever is
-    C_sel(S) := H(X_S | X_Sbar) = H(X) - M(Sbar),  M(T) := H(X_T).
-This is the discrete mirror of Cor 6.9b's identity, with DIFFERENTIAL
+S to store; the decoder RECONSTRUCTS the complement X_Sbar from M'. With the
+IDEAL predictor the reconstruction residual for the complement is
+Hrecon = H(X_Sbar | X_S), so the SELECTION OBJECTIVE (the part that varies
+with S; the total is H(X) for every S by the chain rule) is
+    C_sel(S) := H(X_Sbar | X_S) = H(X) - M(S),  M(T) := H(X_T).
+Minimising it is the MESP selection max_{|S|=s} M(S) = max H(X_S).
+(Lemma 6.9 / Cor 6.9b write the complementary form H(X_S|X_Sbar)=H(X)-M(Sbar);
+under S<->Sbar it is the SAME MESP problem and all facts below are identical
+for either direction.) Discrete mirror of Cor 6.9b with DIFFERENTIAL
 entropy / log-det replaced by SHANNON entropy.
 
 Three structural facts, each checked numerically:
@@ -263,7 +263,7 @@ def check_V1():
 # ======================================================================
 
 def greedy_max_entropy(P, t):
-    """Greedy: build reconstruction set T (|T|=t) maximising M(T)=H(X_T)."""
+    """Greedy: build CODED set T=S (|T|=t) maximising M(T)=H(X_T) (MESP)."""
     N = P.ndim
     T = set()
     for _ in range(t):
@@ -304,12 +304,14 @@ def check_V2():
     ):
         P = random_markov_field(N, A, order=order, temp=temp)
         Hfull = total_entropy(P)
-        t = N // 2  # reconstruct half, code half
+        t = N // 2  # code half (the coded set S), reconstruct the rest
         Tg = greedy_max_entropy(P, t)
         Mg = joint_entropy_subset(P, Tg)
         Topt, Mopt = brute_max_entropy(P, t)
 
-        # C_sel(S) = H(X) - M(Sbar);  here Sbar = T (the reconstruction set)
+        # C_sel(S) = H(X) - M(S);  here S = T is the CODED set we maximise
+        # H over (size t); the residual to reconstruct the complement is
+        # H(X_Sbar|X_S) = H(X) - M(S).  (Direction-symmetric MESP; see header.)
         Cg = Hfull - Mg
         Copt = Hfull - Mopt
         add_identity = abs((Cg - Copt) - (Mopt - Mg)) < 1e-7
