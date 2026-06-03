@@ -113,10 +113,14 @@ the achievability bound (Theorem 6.6b) is matched by the entropy-rate
 converse (Theorem 6.6c), so $\tfrac{1}{N}\mathbb{E}[L_{\mathrm{IIIC}}]
 \to h(X)$ whenever the dictionary is built universally (the
 greedy-MDL-builder universality being the one residual sub-question,
-Remark 6.6b). Type-III-A has a matching \emph{relative} converse ---
-the $2\varepsilon$ approximate-oracle gap is tight (Theorem 6.2) ---
-but a standalone \emph{absolute-rate} converse for Type-III-A remains
-open. Complexity results include
+Remark 6.6b). Type-III-A has both a \emph{relative} converse --- the
+$2\varepsilon$ approximate-oracle gap is tight (Theorem 6.2) --- and an
+\emph{absolute-rate} converse (Theorem 6.2b): $\mathbb{E}[L_{\mathrm{IIIA}}]
+\ge H(X\mid Y)$, attained within $2\sum_t\varepsilon_t$ iff the modes are
+per-tile-expressive \emph{and} the tiles are conditionally independent
+given $Y$, the deficit otherwise being exactly the inter-tile total
+correlation $\mathrm{TC}(X_1,\ldots,X_T\mid Y)$ --- the genuine price of
+the modular per-tile architecture. Complexity results include
 NP-hardness of the
 varying-parameter learned-code labeling problem (Theorem 4.3), a
 polynomial-time vs.\ NP-hard dichotomy in semi-non-factorized
@@ -153,7 +157,10 @@ the identity that for an arbitrary source $D_N$ the gap equals
 multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5, where the gap may
 vanish on sources without joint structure). Type-III-A admits a tight
 $2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
-lower bound Theorem 6.2). A 27-theorem byte-granular random-access
+lower bound Theorem 6.2) and an absolute-rate converse
+$\mathbb{E}[L_{\mathrm{IIIA}}]\ge H(X\mid Y)$ whose slack is exactly the
+inter-tile total correlation $\mathrm{TC}(X_1,\ldots,X_T\mid Y)$
+(Theorem 6.2b). A 27-theorem byte-granular random-access
 framework (§7) establishes Shannon-rate achievability with
 $K = \Theta(\sqrt{N})$ optimal sub-block sizing (Theorems 7.2--7.5),
 matched by a tight space-time product converse $C(K) \cdot S(K) =
@@ -4679,6 +4686,83 @@ error structure (for example, one-sided errors, calibrated quantile
 bounds, or bounded total variation between $U$ and $L$). Standard
 concentration arguments give better constants in the typical case but
 the worst-case factor is exactly 2.
+
+\textbf{Theorem 6.2b (Type-III-A absolute-rate converse and optimality
+conditions).} \emph{Let the block $X$ be partitioned into tiles
+$X_1,\ldots,X_T$ and let $Y$ be decoder-reproducible side information.
+For any uniquely-decodable lossless Type-III-A code reproducing $Y$,}
+\[
+\mathbb{E}[L_{\mathrm{IIIA}}] \;\ge\; H(X \mid Y).
+\tag{6.2b.1}
+\]
+\emph{Moreover the per-tile-oracle target of Theorem 6.1, with each tile
+coded by an entropy-coding mode, satisfies the chain}
+\[
+\sum_{t=1}^{T} \min_{m} \mathbb{E}[L_m(t)]
+\;\ge\; \sum_{t=1}^{T} H(X_t \mid Y)
+\;\ge\; H(X \mid Y),
+\tag{6.2b.2}
+\]
+\emph{where (a) the first inequality is equality iff the mode set is
+\emph{per-tile-expressive} --- for each tile $t$ some mode attains
+$\mathbb{E}[L_m(t)] = H(X_t \mid Y)$ up to the coder redundancy
+$\varepsilon$ --- and (b) the second is equality iff the tiles are
+\emph{conditionally independent given $Y$}, the deficit being exactly
+the inter-tile total correlation}
+\[
+\sum_{t} H(X_t \mid Y) - H(X \mid Y)
+\;=\; \mathrm{TC}(X_1,\ldots,X_T \mid Y) \;\ge\; 0.
+\tag{6.2b.3}
+\]
+\emph{Consequently Type-III-A attains the absolute floor $H(X\mid Y)$
+(within the $2\sum_t \varepsilon_t$ of Theorem 6.1) \textbf{iff the
+modes are per-tile-expressive AND the tiles are conditionally
+independent given $Y$}; otherwise it overpays by the sum of the
+mode-inexpressiveness gap and the inter-tile total correlation
+$\mathrm{TC}(X_1,\ldots,X_T \mid Y)$.}
+
+\emph{\textbf{Proof.}} (6.2b.1): the Type-III-A codeword, with the
+decoder-reproducible $Y$ and per-tile mode flags, recovers $X$
+losslessly; so it is a uniquely-decodable code for $X$ given $Y$, and
+McMillan's theorem (Cover \& Thomas 2006, Theorem 5.5.1) plus the
+conditional Shannon bound (Theorem 5.3.1, applied to $P(X \mid Y = y)$
+and averaged over $Y$) give $\mathbb{E}[L_{\mathrm{IIIA}}] \ge
+H(X \mid Y)$. For (6.2b.2), each tile is encoded by a single mode; an
+entropy-coding mode has $\mathbb{E}[L_m(t)] \ge H(X_t \mid Y)$ (no code
+for $X_t$ beats its conditional entropy), so $\min_m \mathbb{E}[L_m(t)]
+\ge H(X_t \mid Y)$, with equality iff some mode matches the tile's
+conditional law --- per-tile expressiveness. Summing over tiles and
+applying the chain rule $H(X \mid Y) = \sum_t H(X_t \mid X_{<t}, Y)$
+together with ``conditioning reduces entropy'' $H(X_t \mid X_{<t}, Y)
+\le H(X_t \mid Y)$ gives the second inequality, with equality iff
+$X_t \perp X_{<t} \mid Y$ for every $t$, i.e.\ conditional
+independence; the deficit is the total correlation (6.2b.3) by
+definition (Watanabe 1960). The optimality characterization follows by
+comparing the Theorem 6.1 achievability (per-tile oracle $+ 2\sum_t
+\varepsilon_t$) with the floor $H(X\mid Y)$. \hfill$\blacksquare$
+
+\emph{Remark 6.2b (Type-III-A is a per-tile scheme: the inter-tile
+gap is genuine, not removable by better prediction).} Unlike the
+Type-III-C asymptotic optimality (Theorem 6.6c), Type-III-A is
+\emph{not} generally tight to $H(X \mid Y)$. The $2\varepsilon$
+machinery of Theorems 6.1--6.2 controls only the \emph{mode-selection}
+loss; even a perfect predictor ($\varepsilon = 0$) and a fully
+expressive mode set leave the inter-tile total correlation
+$\mathrm{TC}(X_1,\ldots,X_T \mid Y)$ on the table, because a per-tile
+coder encodes each tile in isolation and cannot exploit cross-tile
+dependence. Type-III-A is therefore absolutely rate-optimal precisely
+on sources whose tiles are conditionally independent given $Y$
+(e.g.\ memoryless or tile-block-i.i.d.\ sources); on
+dependent-tile sources it is the right tool only when the tiling is
+chosen coarse enough that the residual cross-tile correlation is
+negligible, or when composed with a cross-tile model (Type-III-C's
+dictionary, or a larger predictor context). This honest gap ---
+$\Theta(\mathrm{TC})$, the same $\Theta(N)$ quantity studied in §5.6
+for correlated sources --- is the price of the modular per-tile
+architecture, and it completes the Type-III-A converse cell: a
+\emph{relative} converse on mode selection (Theorem 6.2, tight at
+$2\varepsilon$) and an \emph{absolute} converse on rate (Theorem 6.2b,
+tight iff expressive-and-conditionally-independent).
 
 \textbf{6.3 Type-III-B: byte tensor coding}
 
