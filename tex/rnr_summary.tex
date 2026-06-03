@@ -495,6 +495,17 @@ affine identity) in the continuous Type-III-C objective, while honestly
 bounding it to the fixed-field/single-block regime --- the continuous
 mirror of OP2(b). Cite when asked whether any RNR support-selection
 problem is genuinely APX-hard for a real cost.
+
+\emph{Discrete transfer (Remark 7.15a).} The same framework ports to the
+discrete autoregressive neural-LM field of Theorem 7.15: discrete entropy
+$H(X_T)$ is submodular with \emph{no} calibration (Fujishige 1978;
+Remark 6.9d's $\Sigma\succeq I$ floor vanishes), greedy keeps the
+$(1-1/e)$ additive-regret guarantee, and a value-oracle complexity split
+appears with \emph{no} Gaussian analogue --- order-1-arbitrary and
+bounded-order-contiguous poly, but the \emph{exact} oracle is \#P-hard for
+general fields (Roth 1996). So the deployed discrete setting carries two
+obstacles (NP-hard selection \emph{and} \#P-hard value oracle) where the
+Gaussian theory carries one.
 \end{quote}
 
 \textbf{Sections 7--10 --- Composition, hardness, verification,
