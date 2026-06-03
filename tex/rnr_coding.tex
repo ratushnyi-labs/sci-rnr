@@ -6498,6 +6498,103 @@ $2 \sum_t \varepsilon_t$ remains below that gap, which is itself an
 empirical property of the prediction calibration and is not
 guaranteed in general.
 
+The per-type results of §§4--6 bound each coder in isolation. The next
+two theorems lift the analysis to the \emph{composed} hierarchy and
+delimit its fundamental rate: the composition is asymptotically optimal
+exactly when its mode set reaches unbounded effective context, and the
+price of any bounded-context restriction is a concrete information
+quantity. Throughout we take $Y$ empty (pure source coding); the
+conditional versions follow by conditioning every entropy on $Y$.
+
+\textbf{Theorem 7.1b (Hierarchical universality of the RNR composition).}
+\emph{Let $X$ be a stationary ergodic source over a finite alphabet with
+entropy rate $h(X)$. Suppose the mode set $M$ contains the Type-III-C
+universal dictionary coder (Theorem 6.6b), and the predictor is
+\emph{calibrated}: $\tfrac1N \sum_t \varepsilon_t \to 0$ and the
+override-flag overhead vanishes in rate, $\tfrac1N \, (\#\{t : \hat m(t)
+\ne m^\star(t)\}) \log|M| \to 0$. Then the composition is asymptotically
+rate-optimal,}
+\[
+\frac1N \, \mathbb{E}\bigl[L_{\mathrm{RNR}}(X^N)\bigr]
+\;\longrightarrow\; h(X),
+\]
+\emph{and the convergence holds almost surely if the Type-III-C builder
+is almost-surely universal (Kieffer--Yang 2000).}
+
+\emph{\textbf{Proof.}} \emph{Achievability.} By the approximate-oracle
+bound above, the realized cost obeys $\sum_t L_{\hat m(t)}(t) \le
+\sum_t L_{m^\star(t)}(t) + 2\sum_t \varepsilon_t \le
+L_{\mathrm{IIIC}}(X^N) + 2\sum_t \varepsilon_t$, the last step because
+the per-tile oracle dominates the fixed single coder that selects
+Type-III-C on every tile (whose summed per-tile lengths are exactly the
+Type-III-C total). Adding the override-flag overhead and taking
+expectations, $\mathbb{E}[L_{\mathrm{RNR}}] \le \mathbb{E}[L_{\mathrm{IIIC}}]
++ 2\,\mathbb{E}[\sum_t \varepsilon_t] + (\text{flag overhead})$. By
+Theorem 6.6b, $\tfrac1N \mathbb{E}[L_{\mathrm{IIIC}}] \to h(X)$; by
+calibration the two remaining terms are $o(N)$. \emph{Converse.} The RNR
+codeword is uniquely decodable for $X$, so McMillan and the entropy
+bound give $\mathbb{E}[L_{\mathrm{RNR}}] \ge H(X^N)$, and the
+entropy-rate floor (Theorem 6.6c) gives $H(X^N) \ge N h(X)$. Hence
+$h(X) \le \tfrac1N \mathbb{E}[L_{\mathrm{RNR}}] \le \tfrac1N
+\mathbb{E}[L_{\mathrm{IIIC}}] + o(1) \to h(X)$. The almost-sure statement
+replaces Theorem 6.6b's expectation convergence with the a.s.\
+universality of the builder. \hfill$\blacksquare$
+
+\textbf{Theorem 7.1c (Necessity of the unbounded-context mode: a
+bounded-context separation).} \emph{Let $X$ be stationary over a finite
+alphabet, and restrict the composition to a mode set $M_K$ in which every
+symbol $X_t$ is assigned a uniquely-decodable codeword conditional on a
+decoder-reproducible context that is a function of at most the $K$
+immediately preceding symbols $X_{t-K},\ldots,X_{t-1}$ (bounded effective
+context order $K$; for order-$k$ modes on tiles of size $s$ this gives
+$K = k + s - 1$, since a symbol late in a tile may also condition on the
+tile's earlier symbols). The conditional-codeword structure --- equivalently
+an order-$\le\!K$ coding model, the same per-tile-UD hypothesis as in
+Theorem 6.2b, and automatic for the bounded-context modes
+Type-I/II/III-B --- is what makes the per-context lengths add. Then}
+\[
+\liminf_{N\to\infty} \frac1N \, \mathbb{E}\bigl[L_{\mathrm{RNR}\mid M_K}(X^N)\bigr]
+\;\ge\; h_K := H(X_0 \mid X_{-1},\ldots,X_{-K}) \;=\; h(X) + e_K,
+\]
+\emph{where $e_K := h_K - h(X) \ge 0$ is the order-$K$ excess entropy. For
+any source with $e_K > 0$ for every finite $K$ --- equivalently, a source
+that is not $K$-th-order Markov for any $K$ (e.g.\ a hidden Markov source
+with a full-support, non-degenerate kernel) --- the bounded-context
+composition is bounded away from the entropy rate, no finite $K$ closes
+the gap, and the unbounded-context Type-III-C mode (whose effective order
+grows without bound in the block length) is necessary to attain $h(X)$
+and recover Theorem 7.1b.}
+
+\emph{\textbf{Proof.}} By the conditional-codeword hypothesis the total
+length is the sum of per-symbol (equivalently per-tile, via the
+chain rule) codeword lengths $L = \sum_t \ell_t(X_t \mid C_t)$, each
+codeword uniquely decodable given its context $C_t$, a function of
+$X_{t-K},\ldots,X_{t-1}$. By Kraft and the conditional-entropy bound,
+$\mathbb{E}[\ell_t \mid C_t] \ge H(X_t \mid C_t) \ge H(X_t \mid X_{t-K},
+\ldots,X_{t-1})$, the last step because conditioning on the finer
+$X_{t-K..t-1}$ cannot increase entropy. Summing and using stationarity,
+$\tfrac1N \mathbb{E}[L] = \tfrac1N \sum_t \mathbb{E}[\ell_t] \ge
+\tfrac1N \sum_t H(X_t \mid X_{t-K..t-1}) \to
+H(X_0 \mid X_{-K..-1}) = h_K$ (the boundary terms $t \le K$ number $O(K)$
+and contribute $O(K \log|A| / N) \to 0$). The identity $h_K = h(X) + e_K$
+with $e_K \ge 0$ and the monotone limit $h_K \downarrow h(X)$ is the
+standard behaviour of conditional entropies for a stationary source
+(Cover \& Thomas 2006, Theorem 4.2.1), with $e_K = 0$ iff $X$ is
+$K$-th-order Markov. \hfill$\blacksquare$
+
+\emph{Remark 7.1d (what each mode buys).} Theorems 7.1b--7.1c together
+delimit the hierarchy: the composition is universal iff its mode set
+reaches unbounded effective context, and the price of any bounded-context
+restriction is exactly the source's order-$K$ excess entropy $e_K$. This
+isolates the role of the Type-III-C dictionary --- it is not one
+optimization among several but the single mode responsible for asymptotic
+optimality on infinite-memory sources; the bounded-context modes
+(Type-I/II/III-B) contribute constant-factor and finite-order gains that
+saturate at $h_K$ and cannot, by themselves, reach $h(X)$ when
+$e_K > 0$ for all $K$. The dichotomy mirrors the classical gap between
+fixed-order Markov coders and universal dictionary methods (Lempel--Ziv),
+here made internal to the RNR mode taxonomy.
+
 \textbf{7.2 Runtime parameter selection}
 
 Several parameters in the framework are input-dependent: the codeword
