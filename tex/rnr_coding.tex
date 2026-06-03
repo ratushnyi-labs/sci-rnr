@@ -11238,6 +11238,47 @@ $(1-\varepsilon)$-quantile matches $Nh+\sqrt{NV}\,Q^{-1}(\varepsilon)$ to
 $o(\sqrt N)$; V3: the $\Theta(\sqrt N)$ overhead/dispersion ratio is
 $N$-independent).
 
+\emph{Remark 7.29a (The $(N/K)\delta_\infty$ overhead is tight for the
+strictly-charged sub-block model: a matching second-order converse).} Theorem 7.29
+stated the $(N/K)\delta_\infty$ penalty only as achievability. It is also necessary
+in the \emph{strictly-charged} sub-block model: each block $i$ is decoded from its
+own \emph{disjoint} pair $(\mathrm{payload}_i,\mathrm{sync}_i)$ alone; all shared
+metadata (the predictor / model) is \emph{source-independent}; and the file size is
+$\sum_i(|\mathrm{payload}_i|+|\mathrm{sync}_i|)$ (the Lemma 5.1e charging convention).
+A \emph{source-dependent} global header is excluded --- it can collapse the bound, as
+the $X_n\equiv Y$ counterexample (\S2, the source-dependent-metadata caveat) shows
+($Y$ stored once, empty payloads). Then, since $X_{\mathrm{block}_i}$ is determined
+by $(\mathrm{payload}_i,\mathrm{sync}_i)$, a source-coding (Shannon) lower bound gives
+\[
+\mathbb E\bigl[|\mathrm{payload}_i|+|\mathrm{sync}_i|\bigr]\;\ge\;
+H(X_{\mathrm{block}_i})\;=\;Kh+\delta_K, \qquad
+\delta_K:=H(X^K)-Kh\;\xrightarrow[K\to\infty]{}\;\delta_\infty,
+\]
+the block-$K$ excess, converging under exp-mixing to the excess entropy
+$\delta_\infty$. \emph{Summing the disjoint per-block bounds} (no independence
+assumption is needed --- the charging is disjoint) over $m=N/K$ blocks,
+\[
+\mathbb E[L_{\mathrm{RNR}}]\;\ge\; Nh + \tfrac{N}{K}\,\delta_K
+\;=\; Nh+\tfrac{N}{K}\delta_\infty - o(\sqrt N) \qquad(K=\Theta(\sqrt N)),
+\]
+\emph{matching} the Theorem 7.29 achievability. The intuition is exact: every
+independently-decodable block re-pays the block excess $\delta_K\to\delta_\infty$
+--- the past--future information a \emph{global} code carries once --- so random
+access pays it $m$ times. (Grouping $r$ blocks under one sync is \emph{not} a
+loophole: it is the spacing $K\to rK$, moving along the same
+$(N/K)\delta_\infty$-overhead vs.\ $O(K)$-access curve.) \emph{Scope:} the
+strictly-charged sub-block model (disjoint per-block objects, source-independent
+shared metadata, $K=\omega(1)$); it does \emph{not} cover source-dependent global
+structures, non-sub-block codes (e.g.\ the Ferragina--Venturini $O(1)$-access
+structure refuting the general-scheme space-time bound, Theorem 7.27$'$), or
+non-mixing / global-latent sources --- and whether \emph{any} random-access code
+reaches the dispersion floor without an $\omega(1)$-per-block penalty (the
+redundancy-scale analogue of the Theorem 7.27 space-time product) remains open.
+Verified in \texttt{scripts/verify/remark\_7\_29a\_subblock\_ra\_converse.py} (C1:
+$\delta_\infty=H(X)-h=I(X_0;X_1)$ for order-$1$; C2: a cold block costs $Kh+\delta_K$;
+C3/C4 illustrate the per-block bound and the $(N/K)\delta_\infty=\Theta(\sqrt N)$
+scaling).
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
