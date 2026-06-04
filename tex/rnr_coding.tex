@@ -181,14 +181,19 @@ decoders (Theorem 7.27),
 extends to universal (with a tight $d/2$ minimax-regret constant,
 Theorem 7.6$'$), Slepian--Wolf, lossy, successive-refinement,
 and functional RNR variants (Theorems 7.6--7.12), proves
-concentration bounds for archive-size deviation via a trilogy of
-sharpening estimates --- Azuma's martingale inequality
+concentration bounds for archive-size deviation via a sequence of
+sharpening estimates spanning the central-limit and large-deviation
+scales --- Azuma's martingale inequality
 (Theorem 7.14), a variance-aware Bernstein refinement (Theorem 7.25,
 replacing the worst-case Lipschitz $B$ by the per-position-cost std
 $\sigma_\ell$ for an approximate $500\times$ tightening on enwik9),
-and a non-asymptotic Berry--Esseen CLT giving two-sided confidence
-intervals at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$ (Theorem 7.28)
---- and
+a non-asymptotic Berry--Esseen CLT giving two-sided confidence
+intervals at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$ (Theorem 7.28),
+a second-order (dispersion) coding rate
+$Nh+(N/K)\delta_\infty+\sqrt{NV}\,Q^{-1}(\varepsilon)$ (Theorem 7.29),
+and a large-deviations reliability function giving the exact
+archive-overflow exponent with a matching lower bound --- the Legendre
+dual of the source R\'enyi spectrum (Theorem 7.31) --- and
 synthesises an end-to-end prediction for Chinchilla-class neural
 LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb; Theorem 7.15, with
 an explicit model-overhead caveat noting that the compression
@@ -806,10 +811,13 @@ the T7.5 achievability, with Theorem 7.27$'$ \emph{refuting} the
 general-scheme converse for finite-order-Markov sources (Ferragina
 --Venturini $O(1)$-access escape) and Corollary 7.27c recovering the
 $\mathrm{cost}(M)$ product on the predictor-faithful class, which
-covers state-snapshot schemes; and §7.28 a non-asymptotic
-Berry--Esseen CLT for the repair length, completing the
-Azuma/Bernstein/Berry--Esseen concentration trilogy of §§7.14,
-7.25, 7.28). Section 8 states the
+covers state-snapshot schemes; §7.28 a non-asymptotic
+Berry--Esseen CLT for the repair length; §7.29 a second-order
+(dispersion) coding rate; and §7.31 a large-deviations reliability
+function (the exact archive-overflow exponent with a matching lower
+bound, the R\'enyi-spectrum dual), extending the deviation hierarchy
+§§7.14/7.25/7.28/7.29/7.31 from the sub-Gaussian body through the
+central-limit scale to the exponential-rate tail). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -11353,6 +11361,216 @@ $o(N)$ at polylog access is open, and is \emph{not} claimed here. The point woul
 empirical tables --- not the achievable rate: Corollary 7.27e shows the
 Ferragina--Venturini escape \emph{itself} stays Shannon-near on such mixing sources via
 growing empirical order, so on rate alone there is nothing left to win.
+
+\textbf{Theorem 7.31 (Large-deviations reliability function of the RNR archive; the
+large-deviation scale of the deviation hierarchy and the two-scale random-access
+picture).}
+\emph{Adopt the per-position notation of Theorems 7.25/7.28/7.29:
+$\ell_i:=-\log_2 Q_i(X_i\mid\mathrm{ctx}_i)$ is the realised coded length of position
+$i$ and $L^{\mathrm{rep}}=\sum_{i=1}^N\ell_i$. Let $X$ be either i.i.d.\ or a
+finite-state irreducible aperiodic Markov chain over a finite alphabet $\Sigma$,
+coded under a (possibly mismatched) $W$-bounded model $M$ with
+$\mathrm{supp}(P)\subseteq\mathrm{supp}(M)$, so each step cost
+$g=-\log_2 M(\cdot\mid\mathrm{window})$ is a bounded functional of a finite
+irreducible aperiodic chain. Write $h_{\mathrm{cross}}:=\mathbb E_P[-\log_2
+M(X\mid\mathrm{ctx})]=h+D_{\mathrm{KL}}(P\Vert M)$ for the (cross-)entropy rate
+(Theorem 7.4) and define the base-$2$ scaled cumulant generating function}
+\[
+  \Lambda(t)\;:=\;\lim_{N\to\infty}\tfrac1N\log_2\mathbb E\bigl[2^{\,t\,L^{\mathrm{rep}}}\bigr]
+  \;=\;
+  \begin{cases}
+    \log_2\sum_{x}P(x)\,M(x)^{-t}, & \text{(memoryless source \& model)}\\[2pt]
+    \log_2\rho\bigl(A_t\bigr),\quad A_t(x,x'):=P(x'\mid x)\,M(x'\mid x)^{-t}, & \text{(Markov),}
+  \end{cases}
+\]
+\emph{$\rho(\cdot)$ the Perron--Frobenius eigenvalue of the tilted transfer matrix
+(the memoryless display needs a context-free model $M(x)$; for a window-$W$ model, a
+higher-order source, \emph{or an i.i.d.\ source under a contextual ($W\ge1$) model}
+--- whose per-step costs are then dependent --- $x$ denotes the finite context state
+and $A_t$ the corresponding augmented tilted matrix on $\mathcal Y\times\Sigma^W$,
+cf.\ scope (i)).
+$\Lambda$ is finite, convex, and real-analytic on all of $\mathbb R$. Then:}
+\begin{enumerate}
+\item \emph{\textbf{(Reliability function.)} Write $r_+:=\lim_{t\to+\infty}\Lambda'(t)$
+for the maximal \emph{sustainable} long-run average cost: the maximum mean over
+directed cycles of the support graph (Karp's maximum cycle mean), equal to the
+single-step maximum $\ell_{\max}:=\max\{-\log_2 M(x'\mid x):P(x'\mid x)>0\}$ in the
+memoryless case but in general strictly below it --- a high-cost edge lying off every
+high-mean cycle cannot be sustained. For every overflow rate $R$ in the interior
+effective domain $h_{\mathrm{cross}}<R<r_+$,}
+\[
+  \lim_{N\to\infty}-\tfrac1N\log_2\Pr\!\bigl[L^{\mathrm{rep}}\ge NR\bigr]
+  \;=\; E(R)\;:=\;\sup_{t\ge0}\,\bigl[\,tR-\Lambda(t)\,\bigr]\in(0,\infty),
+\]
+\emph{a continuous, strictly increasing, convex rate with $E(h_{\mathrm{cross}})=0$
+(assuming the non-degeneracy $v^2>0$); i.e.\
+$\Pr[L^{\mathrm{rep}}\ge NR]=2^{-N(E(R)+o(1))}$. Crucially this includes the
+matching \emph{lower} bound $\Pr[L^{\mathrm{rep}}\ge NR]\ge 2^{-N(E(R)+o(1))}$ ---
+the overflow is no rarer than $E(R)$ states --- which the one-sided tail bounds
+of Theorems 7.14 (Azuma), 7.25 (Bernstein) and 7.26 (Lezaud) do \emph{not}
+supply. (At the right endpoint $R=r_+$ the supremum is the $t\to\infty$ limit and
+$E$ stays finite --- realisations concentrating on the maximum-mean cycle; for
+$R>r_+$ no realisation sustains that average, the event is impossible, and
+$E\equiv+\infty$. The lower tail $r_-<R<h_{\mathrm{cross}}$, with
+$r_-:=\lim_{t\to-\infty}\Lambda'(t)$ the minimum cycle mean, has the symmetric
+exponent $\sup_{t\le0}[tR-\Lambda(t)]$.)}
+\item \emph{\textbf{(One density, three regimes.)} The same $\ell$-density governs
+every deviation scale with consistent constants:}
+\[
+  \Lambda'(0)=h_{\mathrm{cross}},\qquad
+  \Lambda''(0)=\ln2\cdot v^2,\qquad
+  E(h_{\mathrm{cross}}+a)=\frac{a^2}{2\ln2\cdot v^2}+O(a^3),
+\]
+\emph{where $v^2$ is the long-run variance of Theorems 7.25/7.28 (and $v^2=V$, the
+varentropy, in the matched case of Theorem 7.29). The quadratic curvature of $E$
+at its zero \emph{reproduces} the dispersion floor $\sqrt{NV}\,Q^{-1}(\varepsilon)$
+(Theorem 7.29) and the Berry--Esseen Gaussian (Theorem 7.28). This is the unifying
+point: one per-position density $\ell$ and its long-run variance $v^2$ govern the
+concentration bounds (Theorems 7.14, 7.25), the central-limit/dispersion regime
+(Theorems 7.28, 7.29), and the large-deviation exponent here, the three regimes
+meeting at the mean where $E$'s leading curvature $a^2/(2\ln2\,v^2)$ reproduces the
+dispersion. The exponents of the manuscript's tail bounds (Theorems 7.14, 7.25) are
+each lower bounds on the exact rate $E$, which dominates them; among themselves they
+do \emph{not} order uniformly in $a$ --- the variance-aware Bernstein bound is sharp
+near the mean (matching the leading $a^2$ constant) while the worst-case Azuma range
+bound can be the tighter of the two in the tail --- so only the exact exponent $E$ is
+the envelope.}
+\item \emph{\textbf{(Matched form is the R\'enyi dual.)} If $M=P$ then (memoryless)
+$\Lambda(t)=\log_2\sum_x P(x)^{1-t}=t\,H_{1-t}(X)$, the order-$(1{-}t)$ R\'enyi
+entropy, so}
+\[
+  E(R)\;=\;\sup_{t\ge0}\,t\,\bigl(R-H_{1-t}(X)\bigr):
+\]
+\emph{the archive-overflow reliability function is the Legendre dual of the source
+R\'enyi-entropy spectrum (Remark 7.15d). For the Markov case $\Lambda(t)$ is the
+corresponding tilted-matrix R\'enyi rate.}
+\item \emph{\textbf{(Two-scale random access.)} The byte-granular random-access
+overhead --- the cold-context penalty $(N/K)\delta_\infty=\Theta(\sqrt N)$
+(Theorem 7.29) plus the seek-index storage $S(K)=\Theta\!\bigl((N/K)\log K\bigr)=
+\Theta(\sqrt N\,\log N)$ (Lemma 7.27b) at the order-optimal $K=\Theta(\sqrt N)$ ---
+is $o(N)$, hence sub-exponential. It shifts $R$ by $o(1)$ and leaves $E(R)$
+\emph{unchanged}: byte-granular random access is asymptotically \emph{free at the
+large-deviations (exponential-rate, $-\tfrac1N\log_2\Pr$) scale}. By contrast at the
+central-limit scale it is \emph{not} free --- the cold-context term is
+$\Theta(\sqrt N)$, exactly the order of the source dispersion
+$\sqrt{NV}\,Q^{-1}(\varepsilon)$ (Theorem 7.29), and the seek index is
+$\Theta(\sqrt N\log N)$, a logarithmic factor \emph{above} the dispersion. The
+random-access price is thus \emph{confined to the $\sqrt N$ (and $\sqrt N\log N$)
+scale}: present in the second-order rate, invisible in the large-deviation
+exponent.}
+\end{enumerate}
+
+\emph{\textbf{Proof.}} \emph{Existence and form of $\Lambda$.} For i.i.d.\ $X$,
+independence gives $\mathbb E[2^{tL^{\mathrm{rep}}}]=\prod_i\mathbb E[2^{t\ell_i}]
+=\bigl(\sum_x P(x)M(x)^{-t}\bigr)^N$, so $\frac1N\log_2(\cdot)$ equals
+$\log_2\sum_x P(x)M(x)^{-t}$ identically. For the Markov case, with state $x$ and
+step cost $g(x,x')=-\log_2 M(x'\mid x)$, the tilted transfer matrix
+$A_t(x,x')=P(x'\mid x)2^{tg(x,x')}=P(x'\mid x)M(x'\mid x)^{-t}$ satisfies
+$\mathbb E[2^{tS_N}]=\pi^{\!\top}A_t^{\,N}\mathbf 1$ (sum over paths, $\pi$ the
+stationary law); since $P$ is irreducible aperiodic and $M(x'\mid x)>0$ on the
+support, $A_t$ is a nonnegative primitive matrix, so by Perron--Frobenius it has a
+simple dominant eigenvalue $\rho(A_t)>0$ analytic in $t$, and
+$\frac1N\log_2(\pi^{\!\top}A_t^{\,N}\mathbf 1)\to\log_2\rho(A_t)=\Lambda(t)$.
+\emph{LDP.} On a finite alphabet $\Lambda$ is finite and differentiable on all of
+$\mathbb R$ (a fortiori essentially smooth and steep), so the G\"artner--Ellis
+theorem (Dembo--Zeitouni, \emph{Large Deviations Techniques and Applications},
+2nd ed.\ 1998, Theorem 2.3.6; Cram\'er's theorem, Theorem 2.2.3, is the i.i.d.\
+special case) yields the full large-deviation principle for $\frac1N
+L^{\mathrm{rep}}$ with good convex rate $E=\Lambda^\ast$. Convex duality gives
+continuity, monotonicity and $E(h_{\mathrm{cross}})=0$ (as $\Lambda'(0)=
+h_{\mathrm{cross}}$). Since the costs are bounded and
+the chain irreducible, $\Lambda'$ is increasing and maps $\mathbb R$ onto the open
+interval $(r_-,r_+)$ of achievable long-run averages (its endpoints the min/max
+cycle means); for $R$ in this interior the supremum is attained at the finite
+$t^\ast$ solving $\Lambda'(t^\ast)=R$ (with $t^\ast>0$ for $R>h_{\mathrm{cross}}$), so
+$\sup_{t\ge0}=\sup_{t\in\mathbb R}$ there. At the endpoint $R=r_+$ the maximiser
+recedes to $t^\ast\to\infty$ and $E(r_+)$ is the (finite) rate of concentrating on the
+maximum-mean cycle; for $R>r_+$ no realisation sustains that average, $\Pr=0$,
+$E\equiv+\infty$ (in the memoryless case $r_+=\ell_{\max}$, the all-max-cost realisation). \emph{Consistency (item 2).} $\Lambda'(0)=\mathbb E[\ell]=h_{\mathrm{cross}}$;
+in the memoryless case, writing $\psi(s)=\mathbb E[e^{s\ell}]$ and
+$\Lambda(t)=(\ln2)^{-1}\ln\psi(t\ln2)$, gives $\Lambda''(0)=(\ln\psi)''(0)\cdot\ln2
+=\ln2\cdot\mathrm{Var}(\ell)$; in the Markov case the curvature of the
+Perron-eigenvalue log at the origin is exactly the asymptotic (long-run) variance of
+the additive functional, $\Lambda''(0)=\ln2\cdot v^2$ with $v^2=\lim_N
+\mathrm{Var}(L^{\mathrm{rep}})/N$ the Davydov-summable long-run variance of
+Theorem 7.28 (standard for additive functionals of finite irreducible chains).
+A second-order Taylor expansion of the Legendre dual at its zero gives
+$E(h_{\mathrm{cross}}+a)=a^2/(2\Lambda''(0))+O(a^3)=a^2/(2\ln2\,v^2)$; the Gaussian
+tail of $\mathcal N(h_{\mathrm{cross}},v^2/N)$ has base-$2$ exponent
+$a^2/(2v^2\ln2)$, identical, so the LDP curvature matches the dispersion. The
+Bernstein bound $\Pr[\cdot\ge N(h_{\mathrm{cross}}+a)]\le\exp(-Na^2/(2(v^2+Ba/3)))$
+is an \emph{upper} bound on the probability, hence its base-$2$ exponent
+$a^2/(2(v^2+Ba/3))/\ln2$ is a \emph{lower} bound on $E$, with the same $a\to0$
+leading term and a strictly smaller value for $a>0$. \emph{Item 3.} The R\'enyi
+identity $H_\alpha=(1-\alpha)^{-1}\log_2\sum_x P(x)^\alpha$ gives $\sum_x P(x)^{1-t}
+=2^{tH_{1-t}}$, whence $\Lambda(t)=tH_{1-t}$. \emph{Item 4.} Let $\Delta_{\mathrm{RA}}
+=(N/K)\delta_\infty+S(K)=O(\sqrt N\log N)=o(N)$. Then $\Pr[L^{\mathrm{rep}}+
+\Delta_{\mathrm{RA}}\ge NR]=\Pr[L^{\mathrm{rep}}\ge N(R-\Delta_{\mathrm{RA}}/N)]$
+and $\Delta_{\mathrm{RA}}/N\to0$, so by continuity of $E$ on the interior the exponent
+converges to $E(R)$; at the central-limit scale the cold-context part is $\Theta(\sqrt
+N)$ and the seek index $\Theta(\sqrt N\log N)$, both non-vanishing relative to the
+dispersion $\Theta(\sqrt N)$, hence visible there (Theorem 7.29). \hfill$\blacksquare$
+
+\emph{Corollary 7.31a (Incompressibility exponent; probabilistic refinement of
+Theorem 8.1).} \emph{The probability that the archive fails to compress ---
+$L^{\mathrm{rep}}\ge N\log_2|\Sigma|$, the uniform/incompressible rate --- decays as
+$2^{-N\,E(\log_2|\Sigma|)}$ with $E(\log_2|\Sigma|)\in(0,\infty)$ finite and positive
+\emph{whenever} $\log_2|\Sigma|$ lies in the interior effective domain --- both
+$h_{\mathrm{cross}}<\log_2|\Sigma|$ (the model compresses in the mean) \emph{and}
+$\log_2|\Sigma|<r_+$ (the incompressible rate is a \emph{sustainable} average, below the
+maximum cycle mean; in the memoryless case $r_+=-\log_2 P_{\min}$, so this reads
+$h<\log_2|\Sigma|<-\log_2 P_{\min}$). The strict interior is \emph{sufficient}; the
+boundary $\log_2|\Sigma|=r_+$ may also give a finite positive exponent but is
+periodicity/path-length delicate. Neither sub-condition is dispensable:
+$h_{\mathrm{cross}}<\log_2|\Sigma|$ alone fails for a uniform $M$
+($\ell\equiv\log_2|\Sigma|$ deterministically, $\Pr=1$, $E=0$), while
+$\log_2|\Sigma|<r_+$ can fail \emph{even for non-uniform $M$} on a sparse-support chain
+(e.g.\ $P=\bigl(\begin{smallmatrix}.9&.1\\1&0\end{smallmatrix}\bigr)$,
+$M=\bigl(\begin{smallmatrix}.6&.4\\.95&.05\end{smallmatrix}\bigr)$ give
+$r_+=0.737<1=\log_2|\Sigma|$) --- there the over-raw-rate event has probability zero
+for all large $N$ ($E\equiv+\infty$ at $R=\log_2|\Sigma|$), a strong \emph{asymptotic}
+no-expansion guarantee (finite-$N$ transients may still exceed it) rather than a defect. When both hold, near-incompressible realisations are exponentially
+rare but do occur with a computable rate --- the operational, probabilistic form of the
+no-universal-dominance Theorem 8.1: not only does no code shorten \emph{every}
+input, the over-budget event has an explicit positive exponent.}
+
+\emph{Scope and limitations.} (i) The finite tilted-matrix $\Lambda=\log_2\rho(A_t)$
+extends beyond observable sources: because $M$ is $W$-bounded, the per-step cost is a
+finite-window functional, so for \emph{any} source whose (hidden-state, $W$-window)
+augmentation is a finite Markov chain --- including hidden-Markov / function-of-Markov
+sources --- $\Lambda(t)$ remains a Perron root of the tilted \emph{augmented} transfer
+matrix (a larger but still finite state space $\mathcal Y\times\Sigma^W$). The §7.15
+``open middle'' obstruction is a \emph{different} object: it concerns the exact entropy
+\emph{rate} $h=\Lambda'(0)$ under the \emph{ideal filter} predictor, whose sufficient
+statistic is the continuous Blackwell measure rather than a finite window and which has
+no finite closed form (Remarks 7.15c--7.15e) --- the finite-window CGF here does not
+touch it. A genuinely non-finite-state source (continuous hidden state, non-summable
+memory) instead needs the general G\"artner--Ellis existence hypotheses (CGF exists and
+is essentially smooth) in place of the Perron form. (ii) Mismatch requires
+$\mathrm{supp}(P)\subseteq\mathrm{supp}(M)$ (else a codeword has infinite length);
+on a finite alphabet $\Lambda$ is then finite for all $t$. (iii) The exponent is
+for the idealised realised length $\sum_i\ell_i$; the $o(N)$ sync/seek/arithmetic-
+flush terms do not change it (item 4), whereas a $\Theta(N)$ model drift
+($N\varepsilon_{\mathrm{KL}}$, Theorem 7.4) is absorbed into $h_{\mathrm{cross}}$ and
+$\Lambda$ via $M$. (iv) This is the reliability function for a \emph{known}
+source/model; the universal (unknown-source) overflow exponent --- combining with
+the $d/2$ minimax regret of Theorem 7.6$'$ --- is not treated here. \emph{Verified
+in} \texttt{scripts/verify/thm\_7\_31\_archive\_ldp\_reliability.py} (V1 i.i.d.\
+exact multinomial tail $\to$ Cram\'er $E(R)$ with Bahadur--Rao prefactor; V2 Markov
+exact transfer-matrix CGF $\to\log_2\rho(A_t)$ plus tail-trend and long-run-variance
+cross-check; V3 mean/dispersion/Bernstein consistency; V4 mismatch; V5 two-scale
+random access; V6 incompressibility exponent).
+
+\emph{Significance.} Theorem 7.31 extends the §7 deviation hierarchy --- Azuma
+(7.14) $\to$ Bernstein (7.25) $\to$ Berry--Esseen / dispersion (7.28--7.29) $\to$
+large deviations (7.31) --- to the exponential-rate scale for known finite-state
+sources, supplying the exact archive-overflow \emph{rate} and, for the first time in
+the chain, the matching \emph{lower} bound on the overflow probability (a storage
+engine cannot be luckier than $E(R)$ promises). It
+identifies that rate as the Legendre dual of the source's R\'enyi spectrum
+(Remark 7.15d), unifying two otherwise separate parts of the paper, and it pins the
+cost of byte-granular random access to the dispersion scale: present at order
+$\sqrt N$ (Theorem 7.29) but asymptotically free at the reliability-function scale.
 
 \textbf{8. No universal dominance}
 
