@@ -12119,7 +12119,18 @@ The phenomenon needs $V>0$: a uniform-i.i.d.\ source has $V=0$, every block has 
 length, the maximum equals the mean, and there is no provisioning headroom --- the EVT
 spread is a strict-varentropy effect. The nontrivial analytic ingredient is the uniform
 moderate-deviation tail at $x\asymp\sqrt{2\ln m}$ (step 2), which also fixes the exact
-applicability boundary $\ln m=o(K^{1/3})$. Verified in
+applicability boundary $\ln m=o(K^{1/3})$. \emph{A third resource axis.} The read buffer is
+distinct from the two resources in the space--time product of Theorem 7.27 --- per-query
+\emph{compute} $C(K)=\Theta(K\,\mathrm{cost}(M))$ and seek-index \emph{storage} $S(K)$ ---
+measuring the \emph{bits read} per query, $\Theta(Kh)$, rather than predictor evaluations or
+index bits. The four quantities pull against each other in $K$: the index storage $S(K)$ and
+the sync overhead $(N/K)\delta_\infty$ (Theorem 7.29) fall with $K$, while the per-query
+compute (Theorem 7.27) and the read buffer (this theorem) rise. At the balanced
+$K=\Theta(\sqrt N)$ the sync overhead, the per-query compute, and the per-query read buffer
+are \emph{simultaneously} $\Theta(\sqrt N)$ --- one block size balancing three distinct
+resources. Like the compute floor, the $\Theta(Kh)$ read buffer is a \emph{sub-block-class}
+property: the Ferragina--Venturini escape (Theorem 7.27$'$) reads only $O(\mathrm{polylog}\,N)$
+bits per query, sidestepping the read-buffer axis just as it does the compute floor. Verified in
 \texttt{scripts/verify/thm\_7\_35\_worst\_case\_query\_evt.py} (V1 the constants $Kh,KV$;
 V2 the refined Gumbel centring $b_m+\gamma/a_m$ in the sharp regime $K\gg(\ln m)^3$, to
 $<\!1\%$; V3 the leading-order ratio $\to1$ from below; V4 a finite-state Markov source with
