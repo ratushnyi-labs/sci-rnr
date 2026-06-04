@@ -11279,6 +11279,81 @@ $\delta_\infty=H(X)-h=I(X_0;X_1)$ for order-$1$; C2: a cold block costs $Kh+\del
 C3/C4 illustrate the per-block bound and the $(N/K)\delta_\infty=\Theta(\sqrt N)$
 scaling).
 
+\emph{Remark 7.30 (Fill-in-the-middle / bisection coding: a neural realisation of the
+Theorem 7.27$'$ escape, and its limits).} A causal predictor supplies $P(X_i\mid X_{<i})$;
+a \emph{direction-flagged} / fill-in-the-middle (FIM) predictor --- as deployed code models
+already are (Bavarian et al., \emph{Efficient Training of Language Models to Fill in the
+Middle}, arXiv:2207.14255, 2022; Fried et al., \emph{InCoder}, arXiv:2204.05999, 2022) ---
+additionally supplies the two-sided \emph{bridge} $P(X_i\mid X_L,X_R)$. This enables
+\textbf{bisection-order} coding: store the endpoints, then code each interval's midpoint
+conditioned on its two endpoints, recursing. Three facts, stated honestly --- this is a
+\emph{Remark} (a neural \emph{framing} of an escape already established combinatorially in
+Theorem 7.27$'$), not a new bound.
+
+\emph{(1) Ideal rate $=H(X)$ for observable finite-order sources.} Bisection order is a
+coordinate permutation, so $\sum_{\text{nodes}}-\log_2 P(X_{\text{node}}\mid
+\text{coded-so-far})=-\log_2 P(X^N)$ exactly (chain rule). For an \emph{observable}
+order-$m$ Markov source with $m$-wide anchors the two anchors $d$-separate the midpoint, so
+the bridge equals the chain-rule conditional and the ideal rate is $H(X^N)=Nh+O(1)$; a
+model $M'$ adds the \emph{bisection-query} divergence $\sum_{\text{nodes}}\mathbb E\,
+D_{\mathrm{KL}}\!\big(P(\cdot\mid\text{coded})\,\Vert\,M'(\cdot\mid\text{anchors})\big)$
+(\emph{not} the causal $N\,D_{\mathrm{KL}}(P\Vert M')$). Verified to machine precision
+(V1--V2).
+
+\emph{(2) It is the \emph{neural} realisation of the Theorem 7.27$'$ escape --- removing
+the sub-block $\delta_\infty$ by \emph{sharing} anchors, not a new bound.} Adjacent blocks
+\emph{share} their boundary anchors: each boundary anchor (the $m$-wide boundary context
+for an order-$m$ source --- a single symbol only at $m=1$) is coded \emph{once} (as data),
+not redundantly re-stored in two disjoint sync states, so the scheme is
+\emph{non-sub-block} and the disjoint-charging converse of Remark 7.29a does not bind. This
+is the \emph{same} conclusion already reached by Theorem 7.27$'$ --- the
+Ferragina--Venturini structure attains $Nh+o(N)$ with fast access for finite-order-Markov
+sources, refuting the sub-block penalty --- so the FIM/bisection construction is not a new
+asymptote but the realisation of that escape with a \emph{learned bidirectional predictor}
+in place of a model-free succinct index, a candidate for the Remark 7.27d(ii) question of
+whether a \emph{genuine neural} predictor can take it. Compressed random access at entropy
+is itself classical (Grossi--Gupta--Vitter wavelet trees, SODA 2003; Ferragina--Venturini,
+\emph{Theoret.\ Comput.\ Sci.}\ 372:115--121, 2007); the contribution here is the
+neural/FIM framing and the reading of $\delta_\infty$ as disjoint-sync \emph{redundancy}
+that anchor-sharing removes.
+
+\emph{(3) The limits are real --- two adversarial counterexamples.} (i) \emph{Observable
+order only, \textbf{not} finite-state.} For a \emph{hidden}-state source (an HMM: hidden
+$Y_t$ with $P(Y_t{=}Y_{t-1}){=}0.9$, noisy emission $P(X_t{=}Y_t){=}0.8$) the sufficient
+statistic is the \emph{filter} state, not any fixed window of symbols, so $m$-wide anchors
+do \emph{not} screen: $P(X_1{=}1\mid X_0{=}1,X_2{=}1)=0.734\neq0.757=P(X_1{=}1\mid
+X_0{=}1,X_2{=}1,X_4{=}1)$, and bisection pays a strictly positive excess ($0.028$ bits at
+$N{=}5$). Exact bounded-memory screening of a function-of-a-Markov-chain is precisely the
+§7.15 ``open middle'' wall; the rate-$H$ claim is therefore scoped to \emph{observable}
+finite-order sources, and longer-memory / neural laws pay a bisection excess
+$\sum_{\text{nodes}}I(X_{\text{mid}};X_{\text{far}}\mid\text{anchors})$ that widening the
+anchors only suppresses. (ii) \emph{$O(\log N)$ is logical depth, not bitstream access.} A
+single arithmetic-coded stream is sequential: in pre-order a far-right query's second
+ancestor sits at rank $\Theta(N)$, so naive access is $\Theta(N)$, not $O(\log N)$
+(arithmetic-coded streams need reset / entry points for random access). Physical random
+access uses independently-decodable units at block granularity --- $O(K)$ access with
+$o(N)$ reset and seek-index overhead, the \emph{same} access/index regime as the sub-block
+scheme but \emph{without} its $(N/K)\delta_\infty$ rate penalty. Verified in
+\texttt{scripts/verify/thm\_7\_30\_bidirectional\_bisection\_ra.py} (V1: bridge exact \&
+normalised; V2: bisection rate $=-\log_2 P(X^N)$ to machine precision for an observable
+order-$1$ source; V3: tree depth $\lceil\log_2(N-1)\rceil$ \emph{and} the $\Theta(N)$
+pre-order rank of a far ancestor --- depth is not access; V4: anchor width must match the
+memory order; V5: the HMM screening failure above; V6: a pruned bisection with
+\emph{two-sided} interior blocks $=H(X^N)$ while the \emph{same} leaves coded one-sided
+pay a positive penalty --- so anchor-sharing genuinely removes the $(N/K)\delta_\infty$,
+the leaves do \emph{not} ``become causal sub-blocks'').
+
+\emph{Open direction (toward Remark 7.27d).} For an exponentially $\beta$-mixing source one
+expects the per-node excess $I(X_{\text{mid}};X_{\text{far}}\mid\text{anchors of width }w)$
+to decay in $w$ --- but this is a \emph{filter-stability} question (cf.\ Remark 7.15c;
+Atar--Zeitouni), not settled by $\beta$-mixing alone, since conditioning on anchor strings
+can amplify dependence. Whether $w=\Theta(\log N)$ anchors then drive the total excess to
+$o(N)$ at polylog access is open, and is \emph{not} claimed here. The point would be the
+\emph{mechanism} --- a \emph{learned bidirectional predictor} rather than growing-order
+empirical tables --- not the achievable rate: Corollary 7.27e shows the
+Ferragina--Venturini escape \emph{itself} stays Shannon-near on such mixing sources via
+growing empirical order, so on rate alone there is nothing left to win.
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
