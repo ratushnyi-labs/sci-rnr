@@ -11826,6 +11826,52 @@ $\to\tfrac1{2\ln2}$ along $a_N\sim N^{1/4}$; V2 the RA penalty as the constant s
 $\beta$; V3 the fade --- exponent ratio $\to1$ while the probability factor $\to\infty$;
 V4 the LDP rate's quadratic-at-mean equals the MDP rate).
 
+\emph{Remark 7.34 (Lossy RNR at second order: the i.i.d.\ dispersion transfers, but the
+\emph{cold-context} random-access interplay of Theorem 7.29 does not --- an honest
+obstruction).} For a
+\emph{memoryless} source coded at Hamming distortion $D$, the per-symbol lossy codelength
+is the $d$-tilted information $\jmath_X(x;D)=-\lambda^\ast D-\log_2\mathbb E_{Y^\ast}[2^{-
+\lambda^\ast d_H(x,Y^\ast)}]$ (all in bits: $\lambda^\ast=-R'(D)>0$ with $R$ in bits,
+$Y^\ast$ the optimal reproduction marginal; Kostina--Verd\'u 2012, \emph{IEEE Trans.\
+Inf.\ Theory}\ 58(6):3309--3338), with $R(D)=\mathbb E[\jmath_X(X;D)]$ and rate-distortion
+dispersion $V(D)=\mathrm{Var}(\jmath_X(X;D))$. The lossy repair stream then concentrates,
+with probability $1-\varepsilon$, as
+\[
+  L^{\mathrm{rep}}_{\mathrm{RNR},D\text{-lossy}}
+  =\sum_n\jmath_X(X_n;D)+O\!\bigl(\tfrac NK\bigr)
+  =N R(D)+\sqrt{N V(D)}\,Q^{-1}(\varepsilon)+O\!\bigl(\tfrac NK\bigr)+o(\sqrt N),
+\]
+the i.i.d.\ CLT for $\jmath_X$ being the lossy analogue of Theorem 7.29's
+information-density CLT, and the $O(N/K)$ the $m=N/K$ sub-block flush/sync overhead. At
+$K=\Theta(\sqrt N)$ this flush overhead and the dispersion are both $\Theta(\sqrt N)$ ---
+a genuine (if milder) random-access/dispersion interplay even in the memoryless case ---
+but it is the \emph{flush} term, not a cold-context $\delta_\infty^D$, that supplies it
+(see below). For the binary memoryless source the
+$d$-tilted information difference $\jmath_X(0;D)-\jmath_X(1;D)=\log_2\tfrac{p}{1-p}$ is
+$D$-\emph{independent}, so $V(D)=p(1-p)\log_2^2\tfrac{1-p}{p}$ is constant in $D$ and equals
+the lossless varentropy $V$ of Theorem 7.29 --- a clean degeneracy (lossy dispersion $=$
+source varentropy), continuous with the lossless case as $D\to0$; general sources have
+$V(D)$ genuinely $D$-dependent (a ternary source by Blahut--Arimoto; verification script).
+
+\emph{The interplay does not transfer (honest).} Theorem 7.29's signature --- the
+cold-context random-access penalty $\tfrac NK\delta_\infty^D$ at the \emph{same} $\sqrt N$
+scale as the dispersion --- requires a source \emph{with memory}: for a memoryless source
+the Crutchfield--Feldman excess $\delta_\infty^D=I(\text{past};\text{future})=0$, so there
+is no cold-context penalty at all --- only the milder flush overhead $O(N/K)$ above, which
+sits at the same $\sqrt N$ scale as the dispersion $\sqrt{N V(D)}\,Q^{-1}(\varepsilon)$.
+But once the source has memory, $V(D)$ is no
+longer the single-letter $\mathrm{Var}(\jmath_X)$: it becomes the variance of the
+\emph{process} $d$-tilted information --- the rate-distortion dispersion of a source with
+memory --- which (unlike the lossless long-run varentropy that Theorem 7.28 supplies
+cleanly via the exp-mixing CLT) is delicate and not settled here. So the clean lossy
+analogue of the Theorem 7.29 interplay is \emph{open}; we record the obstruction rather
+than force a single-letter $V(D)$ into a memory setting where it fails. The missing
+ingredient is precisely a \emph{mixing-source rate-distortion dispersion}, the lossy
+counterpart of the Theorem 7.28 varentropy. Verified (the i.i.d.\ part) in
+\texttt{scripts/verify/thm\_7\_34\_lossy\_rnr\_dispersion.py} (V1 $R(D)=\mathbb E[\jmath]
+=h(p)-h(D)$; V2 BMS $V(D)$ constant $=$ varentropy; V3 ternary $V(D)$ $D$-dependent; V4
+$\delta_\infty^D=0$ for i.i.d.\ so the dispersion is the leading second-order term; V5
+$D\to0$ recovers Theorem 7.29).
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
