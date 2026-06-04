@@ -11572,6 +11572,148 @@ identifies that rate as the Legendre dual of the source's R\'enyi spectrum
 cost of byte-granular random access to the dispersion scale: present at order
 $\sqrt N$ (Theorem 7.29) but asymptotically free at the reliability-function scale.
 
+\textbf{Theorem 7.32 (Optimal archive-overflow exponent, and the universality
+dividend: a fixed model is tail-suboptimal).} \emph{Let $X^N$ be i.i.d.\ from
+$P_0$ over a finite alphabet $\Sigma$ ($|\Sigma|=A$), with $P_0$ of \emph{full
+support and non-uniform} (the interior of the simplex, so $D(Q\Vert P_0)<\infty$ for
+every $Q$ and $h:=H(P_0)<\log_2 A$ --- a degenerate boundary $P_0$ makes both
+exponents below $+\infty$ only on a measure-zero set and is excluded), and the
+parametric class the $d=(A{-}1)$-dimensional simplex (extension: order-$k$ Markov,
+$d=A^k(A{-}1)$).
+Compare three RNR repair-stream codes: the \emph{fixed/ideal} code under the true
+model (Theorem 7.31 with $M=P_0$; length $L_{\mathrm{fix}}=-\log_2 P_0(X^N)$), the
+\emph{universal} Bayes-mixture code ($P_{\mathrm{mix}}=\int P_\theta(X^N)\,w(\theta)\,
+d\theta$ with a smooth full-support prior --- e.g.\ Krichevsky--Trofimov,
+$w=\mathrm{Dir}(\tfrac12)$; length $L_{\mathrm{mix}}=-\log_2 P_{\mathrm{mix}}(X^N)$),
+and the \emph{overflow-optimal} (length-ranked) code. For an overflow rate
+$R\in(h,\log_2 A)$ define the entropy- and cross-entropy-constrained Sanov rates}
+\[
+  E^\ast(R):=\!\!\inf_{Q:\,H(Q)\ge R}\!\! D(Q\Vert P_0),
+  \qquad
+  E_{\mathrm{arith}}(R):=\!\!\inf_{Q:\,H(Q)+D(Q\Vert P_0)\ge R}\!\! D(Q\Vert P_0).
+\]
+\emph{Then:}
+\begin{enumerate}
+\item \emph{\textbf{(Optimal exponent; converse.)} For every uniquely-decodable code
+and every $R\in(h,\log_2 A)$,}
+\[
+  \Pr\bigl[L\ge NR\bigr]\;\ge\;2^{-N(E^\ast(R)+o(1))},
+\]
+\emph{and the length-ranked code attains it, so $E^\ast(R)$ is the \emph{optimal}
+archive-overflow exponent for $P_0$. The minimiser is the entropy-flattened tilt
+$Q_R\propto P_0^{\,s}$ ($s\in(0,1)$ chosen so $H(Q_R)=R$), the same R\'enyi-tilt
+family as Theorem 7.31.}
+\item \emph{\textbf{(A fixed model --- even the true one --- is tail-suboptimal.)}
+The ideal arithmetic code of Theorem 7.31 ($M=P_0$) achieves only}
+\[
+  \lim_N -\tfrac1N\log_2\Pr[L_{\mathrm{fix}}\ge NR]\;=\;E_{\mathrm{arith}}(R)\;\le\;E^\ast(R),
+\]
+\emph{with \emph{strict} inequality for $R>h$. Reason: $\{H(Q)\ge R\}\subseteq
+\{H(Q)+D(Q\Vert P_0)\ge R\}$, and the $E_{\mathrm{arith}}$-minimiser raises the
+cross-entropy through $D$ (an empirical law concentrated on $P_0$-\emph{rare}
+symbols, with $H<R$) rather than through entropy --- so the fixed code overflows on
+low-entropy-but-atypical realisations that an adaptive code compresses to
+$\approx N\widehat H<NR$.}
+\item \emph{\textbf{(Universality dividend.)} For empiricals in the interior --- in
+particular near the entropy-constrained minimiser $Q_R$ (full support), which
+\emph{dominates the Sanov exponent} of $\{\widehat H\ge R\}$ --- the mixture code has}
+\[
+  L_{\mathrm{mix}}(X^N)\;=\;N\,\widehat H(X^N)\;+\;\tfrac d2\log_2 N\;+\;O(1)
+\]
+\emph{($\widehat H$ the empirical entropy; Laplace / Clarke--Barron 1990 --- the
+leading $\tfrac d2\log_2 N$ is common to all smooth full-support priors for interior
+empiricals, the $O(1)$ prior-dependent and minimised by the Jeffreys/KT prior).
+Boundary empiricals (some symbol absent) \emph{can} also enter $\{\widehat H\ge R\}$
+when $A\ge3$, carrying a prior-dependent boundary $\log_2 N$ coefficient --- a type
+with $k$ positive symbols gets $[(A-k)\alpha+\tfrac{k-1}2]\log_2 N$ under a
+$\mathrm{Dir}(\alpha)$ mixture, which equals the interior $\tfrac d2\log_2 N$ for
+KT/Jeffreys ($\alpha=\tfrac12$) and is larger for $\alpha>\tfrac12$. Either way their
+type has $D(Q\Vert P_0)>E^\ast$ strictly, so they are exponentially negligible and
+leave the exponent unchanged. The mixture code therefore attains the \emph{optimal} exponent
+$E^\ast(R)$ for \emph{every} interior $P_0$ in the class simultaneously (the mixture
+length is source-independent; Csisz\'ar's method of types). Its only
+price over the fixed code is the universal regret: for the KT/Jeffreys mixture (and
+NML) this is the \emph{minimax} $\tfrac d2\log_2 N+O(1)$ (Theorem 7.6$'$), while for
+an arbitrary smooth full-support prior the \emph{interior/source-typical} redundancy
+is $\tfrac d2\log_2 N+O(1)$ (its boundary worst case may be larger, but
+exponent-negligibly so). In every case it is a third-order term, $o(\sqrt N)$ ---
+invisible at the dispersion scale (Theorem 7.29) --- and $o(N)$ --- invisible at the
+large-deviation scale (Theorem 7.31). So universality, ordinarily counted a \emph{cost}, is asymptotically
+a pure overflow-tail \emph{improvement} $E_{\mathrm{arith}}\to E^\ast$: a third-order
+mean cost, invisible at the dispersion and large-deviation scales, in exchange for a
+strict gain exactly where reliability is measured --- the exponent, for nonuniform
+full-support $P_0$ and fixed $R\in(h,\log_2 A)$.}
+\end{enumerate}
+
+\emph{\textbf{Proof.}} \emph{(1) Converse by the method of types.} By the
+Kraft--McMillan inequality any uniquely-decodable code has fewer than $2^{NR}$
+codewords of length $<NR$, so at most $2^{NR}$ sequences are short-coded. But a type
+$Q$ with $H(Q)>R$ contains $2^{N H(Q)+o(N)}>2^{NR}$ sequences, so at most the
+vanishing fraction $2^{-N(H(Q)-R)}$ of them can be short-coded --- essentially every
+sequence of every $H(Q)>R$ type overflows. Each such sequence has $P_0$-mass
+$2^{-N(H(Q)+D(Q\Vert P_0))}$, so the overflow mass is at least
+$\sum_{Q:H(Q)>R}2^{N H(Q)}2^{-N(H(Q)+D(Q\Vert P_0))}(1-o(1))=\sum_{Q:H(Q)>R}
+2^{-N D(Q\Vert P_0)}\doteq 2^{-N\inf\{D(Q\Vert P_0):H(Q)\ge R\}}$ (the number of
+types is polynomial; Csisz\'ar--K\"orner / Sanov). Hence $\Pr[L\ge NR]\ge
+2^{-N(E^\ast+o(1))}$ for \emph{every} uniquely-decodable code. The length-ranked
+code (shortest codewords to the $2^{NR}$ most-probable sequences) leaves, up to the
+exponent, the union of all $H(Q)>R$ types, of mass $2^{-N(E^\ast+o(1))}$, attaining
+it (ranking by probability rather than by entropy can differ on low-entropy rare
+types but not at exponent scale).
+The program $\min\{D(Q\Vert P_0):H(Q)\ge R\}$ is convex ($D$ convex, $\{H\ge R\}$
+convex); its stationarity $\nabla_Q[D(Q\Vert P_0)-\lambda H(Q)]=\mathrm{const}$
+gives $\log(Q/P_0)\propto -\lambda\log Q$, i.e.\ $Q_R\propto P_0^{1/(1+\lambda)}$,
+$\lambda\ge0$ fixed by $H(Q_R)=R$. \emph{(2)} $E_{\mathrm{arith}}$ is the matched
+Theorem 7.31 exponent: $\sup_{t}[tR-\Lambda_{P_0}(t)]=\inf\{D(Q\Vert P_0):\mathbb
+E_Q[-\log_2 P_0]\ge R\}$ (Cram\'er $=$ Sanov-contraction), and $\mathbb E_Q[-\log_2
+P_0]=H(Q)+D(Q\Vert P_0)$. The inclusion of feasible sets gives $E^\ast\ge
+E_{\mathrm{arith}}$; strictness for $R>h$ because the $E_{\mathrm{arith}}$-minimiser
+$Q$ has $H(Q)<R$ (it is the cross-entropy shell, reached at lower entropy by tilting
+toward rare symbols), so it is infeasible for $E^\ast$, which must pay strictly more
+$D$. \emph{(3)} $L_{\mathrm{mix}}=-\log_2\int P_\theta(X^N)w(\theta)d\theta$; Laplace
+about the interior MLE $\hat\theta$ (the empirical law, positive prior density)
+gives $-\log_2 P_{\hat\theta}(X^N)+\tfrac d2\log_2\tfrac{N}{2\pi}+\tfrac12\log_2\det
+\hat I-\log_2 w(\hat\theta)+o(1)$, and $-\log_2 P_{\hat\theta}(X^N)=N\widehat
+H(X^N)$, giving the display on interior types (Clarke--Barron 1990, \emph{IEEE
+Trans.\ Inf.\ Theory} 36(3):453--471). The mixture length depends only on the data,
+\emph{not} on $P_0$. By Sanov under $P_0$, $\Pr[L_{\mathrm{mix}}\ge NR]$ is dominated
+by the type minimising $D(Q\Vert P_0)$ over $\{Q:L_{\mathrm{mix}}/N\to H(Q)\ \&\
+H(Q)\ge R\}$; the minimiser is the interior $Q_R$, where $L_{\mathrm{mix}}=N\widehat
+H+\tfrac d2\log_2 N+O(1)$ and the threshold $R-\tfrac d2(\log_2 N)/N\to R$, giving
+$-\tfrac1N\log_2\Pr[L_{\mathrm{mix}}\ge NR]\to\inf\{D(Q\Vert P_0):H(Q)\ge R\}=
+E^\ast(R)$. Boundary types in $\{\widehat H\ge R\}$ (possible for $A\ge3$) have
+$D(Q\Vert P_0)>E^\ast$ and are exponentially negligible whatever their $\log_2 N$
+coefficient, so they do not change the exponent. Being source-independent, the single
+universal code attains $E^\ast$ for every interior $P_0$ (the streaming/type form of
+Csisz\'ar's method of types, \emph{IEEE Trans.\ Inf.\ Theory} 44(6):2505--2523,
+1998). Finally $\tfrac d2\log_2 N=o(\sqrt N)=o(N)$. \hfill$\blacksquare$
+
+\emph{Scope and significance.} The result is for nonuniform full-support
+i.i.d./finite-order Markov sources with a smooth full-support prior (a
+\emph{sufficient} regularity condition --- KT/Jeffreys is the canonical minimax
+choice --- not a necessary one); the converse is the standard Kraft/type bound, the
+$\tfrac d2\log_2 N$ regret is the Clarke--Barron / Theorem 7.6$'$ minimax-leading
+constant (up to an $O(1)$), and the per-source optimality of the universal code is
+method-of-types (Csisz\'ar--K\"orner). For hidden-state / continuous sources the
+empirical-entropy functional and the regret constant change --- the §7.15 ``open
+middle'' returns for the \emph{exact} constant --- and the qualitative dividend is
+\emph{expected} to persist under the analogous regularity (an adaptive sufficient
+statistic carrying $o(\sqrt N)$ regret \emph{and} obeying a large-deviation
+principle), but $o(\sqrt N)$ regret alone does not suffice and we do not establish it
+there. The significance is a reversal of the usual
+accounting: the $\tfrac d2\log_2 N$ price of \emph{not knowing the source} buys a
+\emph{strictly better} archive-reliability exponent, and the fixed-true-model RNR
+code of Theorem 7.31 is itself overflow-suboptimal --- it charges the full
+cross-entropy on atypical data that an adaptive coder re-fits. Theorem 7.32 thus
+completes the universal half of the §7 reliability picture (Theorem 7.31 being the
+known-source half). Verified in
+\texttt{scripts/verify/thm\_7\_32\_universality\_overflow\_dividend.py} (V1
+$L_{\mathrm{mix}}=N\widehat H+\tfrac d2\log_2 N+O(1)$; V2 $E^\ast>E_{\mathrm{arith}}$
+strict for $R>h$; V3 the length-ranked converse $\to E^\ast$; V4 Monte-Carlo, the
+universal-vs-fixed overflow ratio compounding as $2^{N(E^\ast-E_{\mathrm{arith}})}$;
+V5 the redundancy sign-flip on the gap event; V6 the $o(\sqrt N)$/$o(N)$ invisibility
+with $E^\ast>E_{\mathrm{arith}}$).
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
