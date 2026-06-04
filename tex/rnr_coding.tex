@@ -8733,6 +8733,65 @@ read-once model-counting $=$ brute, poly; W2: the predicate-encoding reveals exa
 that poly count; W3 illustrates the weighted-sum form --- the
 $\mathrm{FP}^{\#P}$ membership is the analytic argument above, not a numerical check).
 
+\emph{Remark 7.15f (An exact-tractable island of the open middle: finite finite-prefix
+predictive belief --- strictly beyond finite-order Markov --- and a belief-geometry
+reading of the §7.15 map.)} The open middle (exact finite-block entropy of a
+function-of-a-Markov-chain; Remarks 7.15a--7.15e), bracketed in $[\,\text{poly }H_2,\
+\mathrm{FP}^{\#P}\,]$, has a clean \emph{exact}-tractable island. Let the
+\emph{finite-prefix predictive belief} $b_t$ be the law of the hidden/causal state given
+the finite observed past $X_1^{t-1}$, started from the stationary prior. \emph{When the
+reachable set $\mathcal B$ of such finite-prefix beliefs is finite}, $b_t$ is a
+finite-state Markov chain and, by causal sufficiency $\Pr(X_t\mid X_1^{t-1})=\Pr(X_t\mid
+b_t)$,
+\[
+  H(X^N)\;=\;\sum_{t=1}^N\mathbb E_{\nu_t}\!\bigl[\,H\bigl(\Pr(X_t\mid b_t)\bigr)\,\bigr],
+  \qquad \nu_t=\text{law of }b_t,\quad
+  \nu_{t+1}(b')=\!\!\sum_b\nu_t(b)\!\!\sum_{x:\,b\xrightarrow{x}b'}\!\!\Pr(x\mid b),
+\]
+is computable in $O(N\cdot|\mathcal B|\cdot|\Sigma|)$ once $\mathcal B$ is known ---
+\emph{polynomial}, with no $2^N$ enumeration. (The algorithm is the standard finite
+$\varepsilon$-machine / computational-mechanics belief recursion; the point here is which
+sources it covers and how they sit in the §7.15 map.) Three points:
+\begin{enumerate}
+\item \emph{\textbf{Strictly beyond finite-order Markov (7.15a).}} An order-$k$ Markov
+source has $\le|\Sigma|^k$ point-mass beliefs, so 7.15a's order-$k$/contiguous cases are
+a sub-class; the converse fails. The \emph{even process} (binary; $1$s occur only in
+even-length runs --- the canonical \emph{sofic} source) has just \emph{four} reachable
+finite-prefix beliefs, yet is not any finite-order Markov chain: for \emph{every} $k$,
+two pasts ending in a $1$-run longer than $k$ of opposite parity share their last $k$
+symbols but have different next-symbol laws ($\Pr(\text{next}=0)=\tfrac12$ after an even
+run, $0$ after an odd one). So the island captures genuinely-hidden sofic sources no
+fixed Markov order reaches.
+\item \emph{\textbf{The condition is finite-prefix belief, \emph{not} finite Blackwell
+support.}} Finiteness of $\mathcal B$ implies the Blackwell measure (the recurrent,
+infinite-past belief law; Remark 7.15e) has finite support, but \emph{not conversely}:
+a synchronising HMM (states $A,B$; symbols $a,b$ reveal the state, $1$ does not, with
+self-loop probabilities $p\neq q$) has Blackwell support $\{\delta_A,\delta_B\}$, yet the
+prefixes $1^n$ give pairwise-distinct beliefs $\propto(\pi_A p^n,\pi_B q^n)$ ---
+\emph{infinitely many} finite-prefix beliefs. There they \emph{concentrate}
+geometrically ($1^n\!\to\delta_A$), so that source is exactly the filter-stable /
+Remark 7.15c \emph{approximable} case, not the exact island. The finite-block entropy is
+driven by the finite-prefix (transient-inclusive) set, which is what must be finite.
+\item \emph{\textbf{A belief-geometry reading of the §7.15 map.}} Organising sources by
+the finite-prefix belief set: \emph{finite} $\Rightarrow$ exact poly (this island,
+strictly containing finite-order Markov); \emph{infinite but geometrically concentrating}
+(filter stability) $\Rightarrow$ poly-$\varepsilon$ (Remark 7.15c); \emph{proliferating
+/ non-concentrating} (a generic noisy-emission HMM, whose belief set fills a continuum)
+$\Rightarrow$ the obvious exact belief-DP is blocked, the generic $[\text{poly }H_2,
+\mathrm{FP}^{\#P}]$ open case (Remarks 7.15d/e). The last is not asserted to be exactly
+where $\#P$-hardness lives (7.15e leaves that open); only that the finite/concentrating
+structure that makes the first two tractable is absent.
+\end{enumerate}
+Verified in \texttt{scripts/verify/remark\_7\_15f\_epsilon\_machine\_island.py} (V1 the
+even process: finite belief set $|\mathcal B|{=}4$ and the poly belief-MC entropy matches
+brute force to machine precision; V2 it is not order-$k$ Markov; V3 the finite-order
+containment; V4 a noisy HMM with a continuum-filling belief set; V5 the belief-MC block
+entropy at any $N$; V6 the synchronising HMM --- finite Blackwell support but infinitely
+many concentrating finite-prefix beliefs, the FS case). The exact Shannon complexity of
+the proliferating case stays open; this remark identifies a standard exact-tractable
+island (strictly beyond finite-order Markov) and organises the surrounding §7.15 cases by
+the finite-prefix belief geometry.
+
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
 when local statistics vary).}
