@@ -193,7 +193,9 @@ a second-order (dispersion) coding rate
 $Nh+(N/K)\delta_\infty+\sqrt{NV}\,Q^{-1}(\varepsilon)$ (Theorem 7.29),
 and a large-deviations reliability function giving the exact
 archive-overflow exponent with a matching lower bound --- the Legendre
-dual of the source R\'enyi spectrum (Theorem 7.31) --- and
+dual of the source R\'enyi spectrum (Theorem 7.31) --- and an
+extreme-value law pinning the worst-case per-query read buffer to
+$Kh+\sqrt{2KV\ln(N/K)}$ (Theorem 7.35); it then
 synthesises an end-to-end prediction for Chinchilla-class neural
 LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb; Theorem 7.15, with
 an explicit model-overhead caveat noting that the compression
@@ -816,8 +818,9 @@ Berry--Esseen CLT for the repair length; §7.29 a second-order
 (dispersion) coding rate; and §7.31 a large-deviations reliability
 function (the exact archive-overflow exponent with a matching lower
 bound, the R\'enyi-spectrum dual), extending the deviation hierarchy
-§§7.14/7.25/7.28/7.29/7.31 from the sub-Gaussian body through the
-central-limit scale to the exponential-rate tail). Section 8 states the
+§§7.14/7.25/7.28/7.29/7.33/7.31 from the sub-Gaussian body through the
+central-limit and moderate-deviation scales to the exponential-rate tail, with
+§7.35 the extreme-value (worst-case per-query read-buffer) axis). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -12010,6 +12013,122 @@ counterpart of the Theorem 7.28 varentropy. Verified (the i.i.d.\ part) in
 =h(p)-h(D)$; V2 BMS $V(D)$ constant $=$ varentropy; V3 ternary $V(D)$ $D$-dependent; V4
 $\delta_\infty^D=0$ for i.i.d.\ so the dispersion is the leading second-order term; V5
 $D\to0$ recovers Theorem 7.29).
+
+\textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
+read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
+and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
+$X^N$ into $m=N/K$ contiguous blocks and let $L_i=-\log_2 P(X_{(i)}\mid\mathrm{ctx}_i)+O(1)$
+be the codelength of block $i$ under the matched RNR sub-block coder --- the repair-stream
+bits a random-access query landing in block $i$ must read. Let $M_m:=\max_{i\le m}L_i$ be
+the worst-case query cost (the read buffer that serves any single byte-granular query), and
+let $K\to\infty$, $m=N/K\to\infty$.}
+
+\emph{\textbf{(a) (Leading-order provisioning law.)} If $X$ is i.i.d.\ or a finite-state
+irreducible aperiodic Markov source and $\ln m=o(K)$, then}
+\[
+  M_m\;=\;Kh\;+\;\sqrt{2KV\ln m}\,\bigl(1+o_P(1)\bigr).
+\]
+\emph{(The leading-order law extends to stationary exp-mixing $\alpha$ sources --- the
+Theorem 7.28/7.29 class --- on the restricted range $\ln m=o\bigl(K/(\log K\,\log\log
+K)^2\bigr)$, where the published $\alpha$-mixing moderate-deviation principle reaches the
+extremal level $x\asymp\sqrt{2\ln m}$, the same MDP-speed caveat as Theorem 7.33; i.i.d.\ and
+finite-state Markov admit the full $\ln m=o(K)$.)}
+\emph{\textbf{(b) (Refined Gumbel law.)} If moreover $X$ is i.i.d.\ or a finite-state
+irreducible aperiodic Markov source (the sharp Cram\'er--Petrov regime of Theorem 7.33) and
+$\ln m=o(K^{1/3})$ --- equivalently $K\gg(\ln m)^3$, i.e.\ $(\ln m)^{3/2}=o(\sqrt K)$ ---
+then, with $a_m=\sqrt{2\ln m}$ and $b_m=a_m-\dfrac{\ln\ln m+\ln4\pi}{2a_m}$,}
+\[
+  a_m\!\left(\frac{M_m-Kh}{\sqrt{KV}}-b_m\right)\;\Longrightarrow\;\Lambda,\quad
+  \Pr(\Lambda\le y)=e^{-e^{-y}}\ (\text{Gumbel}),
+\]
+\emph{and $\ \mathbb E\,M_m=Kh+\sqrt{KV}\bigl(b_m+\tfrac{\gamma}{a_m}\bigr)
++o\!\bigl(\tfrac{\sqrt{KV}}{a_m}\bigr)$, $\gamma$ the Euler--Mascheroni constant. A
+mismatched coder $Q$ with $Q>0$ on the source support (so the per-symbol log-loss
+$-\log_2 Q$ is finite, i.e.\ $P\ll Q$) replaces $(h,V)$ by the cross-entropy rate and
+cross-information varentropy $(h_\times,v^2)$ of Theorem 7.29 (provided $v^2>0$ and the same
+tail/dependence hypotheses hold for the cross-information process).}
+
+\emph{\textbf{Proof.}} \emph{(1) Reduction.} $M_m$ is the maximum of the $m$ block
+codelengths $L_1,\dots,L_m$, each a sum of $K$ per-symbol information densities; the
+per-block CLT (Theorem 7.28) gives $(L_i-Kh)/\sqrt{KV}\Rightarrow\mathcal N(0,1)$.
+\emph{(2) Tail control --- the two scale conditions.} For i.i.d.\ / finite-state Markov
+$L_i$ (bounded densities, so Cram\'er's condition holds) the sharp Cram\'er--Petrov
+expansion (Petrov, \emph{Sums of Independent Random Variables}, 1975, Ch.~VIII) gives
+\[
+  \Pr\!\bigl(L_i-Kh>x\sqrt{KV}\bigr)=Q(x)\,\exp\!\Bigl(\tfrac{x^3}{\sqrt K}\,
+  \lambda\bigl(\tfrac{x}{\sqrt K}\bigr)\Bigr)\,(1+o(1))\quad\text{uniformly for }x=o(\sqrt K),
+\]
+$Q$ the standard-normal tail, $\lambda$ the Cram\'er series, $\lambda(0)=\mu_3/(6\sigma^3)$
+($\mu_3,\sigma^2$ the per-symbol surprisal's third central moment and variance; for a Markov
+functional the long-run analogues). At the extremal level $x\asymp\sqrt{2\ln m}$: for the
+\emph{leading order} (a) the exponent is $-x^2/2+(x^3/\sqrt K)\lambda+o(1)$ with the
+correction $o(x^2)\iff x=o(\sqrt K)\iff\ln m=o(K)$, so the level solving $m\Pr(\cdot)\asymp1$
+is $x=\sqrt{2\ln m}(1+o(1))$ and $M_m=Kh+\sqrt{2KV\ln m}(1+o_P(1))$. For the \emph{refined
+centering} (b) the multiplicative correction must satisfy $\exp((x^3/\sqrt K)\lambda)\to1$ at
+$x\asymp\sqrt{2\ln m}$, i.e.\ $x^3/\sqrt K\to0\iff(\ln m)^{3/2}=o(\sqrt K)\iff\ln m=o(K^{1/3})$.
+This is necessary, not merely sufficient: for $\ln m=o(K)$ but $\gg K^{1/3}$ the centre
+$b_m$ acquires a non-vanishing skewness shift and the displayed Gumbel form fails (e.g.\
+i.i.d.\ $p=(.85,.08,.05,.02)$ with $m=\lfloor e^{\sqrt K}\rfloor$: then $\ln m=o(K)$ yet
+$x^3/\sqrt K\asymp K^{1/4}\to\infty$, so $m\Pr(\cdot)\to\infty$, not $e^{-y}$). If $\mu_3=0$
+the next Cram\'er term is fourth-order ($x^4/K$), a sufficient relaxation to $\ln m=o(\sqrt K)$.
+\emph{(3) I.i.d.\ Gumbel.} For i.i.d.\ $X$ the disjoint blocks are independent; with
+$u_m(y)=Kh+\sqrt{KV}(b_m+y/a_m)$, step (2) and Mills' ratio $Q(x)\sim\phi(x)/x$ give
+$m\Pr(L_1>u_m(y))\to e^{-y}$ ($b_m$ chosen so $mQ(b_m)\to1$), and independence yields
+$\Pr(M_m\le u_m(y))=(1-\Pr(L_1>u_m(y)))^m\to\exp(-e^{-y})$, i.e.\ $a_m(Z_m-b_m)\Rightarrow
+\Lambda$ with $Z_m=(M_m-Kh)/\sqrt{KV}$. \emph{(4) Finite-state Markov dependence.} The block
+sequence $\{L_i\}$ is a block-level functional of the chain; finite-state irreducibility and
+aperiodicity give \emph{geometric} $\alpha$-mixing, under which the array satisfies
+Leadbetter's long-range condition $D(u_m)$ (from the geometric mixing) and the
+anti-clustering condition $D'(u_m)$. For this \emph{triangular} block array ($K=K(m)$),
+$D'(u_m)$ requires $m\sum_{j=2}^{\lfloor m/k\rfloor}\Pr(L_1>u_m,L_j>u_m)\to0$: non-adjacent
+blocks ($j\ge3$) factorise up to the geometric $\alpha(\cdot)$ correction, and \emph{adjacent}
+blocks, sharing only their $O(1)$-mixing boundary out of $K$ symbols, obey the bivariate
+moderate-tail bound $\Pr(L_1>u_m,L_2>u_m)\le\Pr(L_1>u_m)\Pr(L_2>u_m)(1+o(1))$, so
+$m\,\Pr(L_1>u_m,L_2>u_m)=O(1/m)\to0$; hence the extremal index is
+$\theta=1$ and the Gumbel limit of (3) holds (Leadbetter--Lindgren--Rootz\'en,
+\emph{Extremes and Related Properties}, 1983, Thm.~3.4.1/3.5.2). \emph{(Berman's covariance
+condition is for stationary \emph{Gaussian} sequences; the $L_i$ are only asymptotically
+Gaussian, so $D/D'$, not Berman, is the correct device.)} \emph{(5) Lower bound.} Use a
+big-block/small-block split: a $q_K$-spaced sub-family of alternate blocks with
+$q_K\to\infty$, $q_K=o(m)$, and $\ln q_K=o(\ln m)$ (e.g.\ $q_K=e^{\sqrt{\ln m}}$); geometric
+mixing bounds its total-variation distance from independence by
+$m\,\alpha(q_KK)=O(m\rho^{q_KK})\to0$ (since $\ln m=o(K)$). The sub-family's $m/q_K$
+near-independent blocks have maximum $\sqrt{2KV\ln(m/q_K)}=\sqrt{2KV\ln m}(1-o(1))$ (using
+$\ln q_K=o(\ln m)$), so $M_m$ is no smaller; with (3)--(4),
+$M_m=Kh+\sqrt{2KV\ln m}(1+o_P(1))$. \hfill$\blacksquare$
+
+\emph{Significance --- the extreme-value entry of the deviation hierarchy, and the
+read-buffer law.} The §7 hierarchy until now described only the \emph{total} repair length
+$\sum_iL_i$: concentration (7.14/7.25), CLT/dispersion (7.28/7.29), moderate deviations
+(7.33), large deviations (7.31/7.32). Theorem 7.35 governs the per-block \emph{maximum}
+$\max_iL_i$ --- the quantity that decides random access: the read buffer that must be
+provisioned so that \emph{any} single byte-granular query can be served. A buffer of the
+mean block size $Kh$ overflows on the worst of $m=N/K$ blocks with probability $\to1$; the
+tight provisioning is $Kh+\sqrt{2KV\ln(N/K)}$ (part (a), for i.i.d./finite-state Markov, and
+exp-mixing $\alpha$ on the restricted range above), a $\sqrt{\ln(N/K)}$ extreme-value
+inflation over the mean driven by the \emph{same}
+varentropy $V$ that sets the archive dispersion (Theorem 7.29); part (b) pins the residual
+$O(1/a_m)$ fluctuation to a Gumbel law in the sharp-tail regime $K\gg(\ln m)^3$. Thus one
+source functional $V$ controls both the central fluctuation of the total length and the
+worst-case query latency. At the balanced $K=\Theta(\sqrt N)$ (where 7.29's random-access
+overhead and dispersion are both $\Theta(\sqrt N)$) the mean block is $Kh=\Theta(\sqrt N)$
+and the margin $\sqrt{2KV\ln(N/K)}=\Theta(N^{1/4}\sqrt{\log N})$ is of lower order --- so
+the worst block is $(1+o(1))Kh$, the margin being the precise second-order headroom (and
+$K=\Theta(\sqrt N)$ comfortably meets $K\gg(\ln m)^3$, so the Gumbel refinement applies).
+The phenomenon needs $V>0$: a uniform-i.i.d.\ source has $V=0$, every block has identical
+length, the maximum equals the mean, and there is no provisioning headroom --- the EVT
+spread is a strict-varentropy effect. The nontrivial analytic ingredient is the uniform
+moderate-deviation tail at $x\asymp\sqrt{2\ln m}$ (step 2), which also fixes the exact
+applicability boundary $\ln m=o(K^{1/3})$. Verified in
+\texttt{scripts/verify/thm\_7\_35\_worst\_case\_query\_evt.py} (V1 the constants $Kh,KV$;
+V2 the refined Gumbel centring $b_m+\gamma/a_m$ in the sharp regime $K\gg(\ln m)^3$, to
+$<\!1\%$; V3 the leading-order ratio $\to1$ from below; V4 a finite-state Markov source with
+the fundamental-matrix varentropy cross-checked against the empirical block variance; V5 the
+\emph{sharp} scale boundary --- the refined-Gumbel error tracks $x^3/\sqrt K$ and is small
+iff $K\gg(\ln m)^3$, growing from $\sim\!2\%$ at $K=3.6(\ln m)^3$ to $\sim\!23\%$ at
+$K=0.03(\ln m)^3$, confirming the $o(K^{1/3})$ condition and the i.i.d.\ counterexample of
+step 2; V6 the matching lower bound from a separated sub-family).
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
