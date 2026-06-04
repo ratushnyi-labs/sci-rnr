@@ -11362,6 +11362,85 @@ empirical tables --- not the achievable rate: Corollary 7.27e shows the
 Ferragina--Venturini escape \emph{itself} stays Shannon-near on such mixing sources via
 growing empirical order, so on rate alone there is nothing left to win.
 
+\emph{Remark 7.30a (Genuinely-neural FV escape under two-sided filter stability:
+closing the Remark 7.30 open direction for hidden-state sources).} The open direction
+of Remark 7.30 --- whether a learned bidirectional / fill-in-the-middle predictor
+attains the Theorem 7.27$'$ escape (rate $Nh+o(N)$ at polylog anchor context, $O(K)$
+physical access) on a \emph{hidden}-state, non-observable-finite-order mixing source
+--- was left open because $\beta$-mixing alone does not control the per-node bisection
+excess $\Delta(w):=I(X_{\mathrm{mid}};X_{\mathrm{far}}\mid X_{\mathrm{anchor}}(w))$
+(conditioning on the anchor strings can \emph{amplify} dependence, so the marginal
+mixing rate is the wrong quantity; cf.\ Remark 7.15c). We close it under a
+\emph{two-sided filter-stability} hypothesis, exactly as Remark 7.15c closed the
+open-middle oracle under one-sided filter stability.
+
+\emph{(TS-FS).} Assume the hidden chain is geometrically ergodic \textnormal{(GE)}
+with positive emissions \textnormal{(EP)} --- the Lemma 5.6e / Remark 7.15c hypotheses,
+under which the forward (and, by stationarity, the time-reversed) filter is
+exponentially stable (Atar--Zeitouni 1997, \emph{Ann.\ IHP}\ 33(6):697--725; van~Handel
+2008, \emph{PTRF}\ 145:35--74). A \emph{one-sided} screening argument then suffices, with
+no separate smoother result: the $w$-wide left endpoint screens $X_{\mathrm{mid}}$ (and
+indeed everything to its right) from the far-left up to $O(\rho^w)$ in total variation ---
+the forward filter at the left boundary, run from the $w$ endpoint symbols, differs from
+the filter run from the entire far-left past by $O(\rho^w)$ (filter stability) --- and
+symmetrically the $w$-wide right endpoint screens the far-right via the reversed filter;
+summing the two one-sided contributions,
+\[
+  \Delta(w)\;=\;I\bigl(X_{\mathrm{mid}};X_{\mathrm{far}}\mid X_{\mathrm{anchor}}(w)\bigr)
+  \;\le\;C\,\rho^{\,w},\qquad \rho\in(0,1)\text{ the filter-forgetting rate,}
+\]
+where $X_{\mathrm{anchor}}(w)$ is the $w$-symbol interval \emph{endpoint} bracketing the
+midpoint on each side (the bisection anchors of Remark 7.30, widened from $w=1$ to $w$),
+$X_{\mathrm{far}}$ \emph{all} the coded points beyond them (the nearest exterior
+dominating, the farther coded points screened geometrically more, so they add only a
+$\sum_j\rho^{w+j}=O(\rho^w)$ tail), and the bound is governed by the endpoint
+\emph{width} $w$ (the boundary filter is pinned to $O(\rho^w)$ by its $w$ observations)
+\emph{independently of the endpoint distance / interior gap} --- the far is screened at
+the boundary, not along the interior, so the rate $\rho$ is the same whatever the
+interval size (verified gap-robust, V6; far-window saturation, V3). Then:
+\begin{enumerate}
+\item \emph{\textbf{(The escape closes.)} Choosing $w=\lceil\log_{1/\rho}N\rceil=
+\Theta(\log N)$ gives $\rho^w\le1/N$, hence $\Delta(w)\le C/N$, so the total bisection
+excess over the $m=O(N)$ interior nodes is $\sum_{\mathrm{nodes}}\Delta(w)\le m\cdot C/N
+=O(1)$ --- a bounded total, a fortiori $o(N)$. Hence the FIM/bisection RNR coder attains
+$Nh+O(1)$ with $w=\Theta(\log N)$ anchor context and $O(K)$ block-granular physical
+access (Remark 7.30(ii)) --- the genuinely-neural
+Ferragina--Venturini escape (Remark 7.27d(ii)) now for \emph{hidden}-state
+filter-stable sources, not only the observable finite-order sources of Remark 7.30(1).}
+\item \emph{\textbf{(The rate is the forgetting rate.)} The required anchor width
+scales as $\log N/\log(1/\rho)$: a near-deterministic hidden chain (slow forgetting,
+$\rho\to1$) needs proportionally wider anchors. This is precisely why $\beta$-mixing
+alone was insufficient (Remark 7.30): the governing quantity is the filter/smoother
+forgetting rate $\rho$ (controlled by TS-FS), not the marginal mixing rate.}
+\end{enumerate}
+
+\emph{Scope (honest).} TS-FS ($=$ GE${}+{}$EP $\Rightarrow$ smoother stability) is the
+two-sided analogue of the Remark 7.15c / Lemma 5.6e filter-stability hypothesis;
+it is \emph{sufficient, not necessary}, and --- as in Remark 7.15c --- it makes the CMI
+bound $\Delta(w)\le C\rho^w$ the operative primitive, sidestepping the non-monotonicity
+of conditional MI under anchor-conditioning that defeats a $\beta$-mixing-only argument.
+It establishes only that the excess is \emph{geometrically small} (all the rate needs);
+it does not give the exact optimal $w$, nor does it touch the §7.15 ``open middle'' ---
+\emph{computing} $\Delta(w)$ exactly is still the exact-finite-block hidden-Markov
+problem (Remarks 7.15a--7.15e), here only \emph{bounded}, not evaluated. The non-FS /
+non-geometric case (e.g.\ heavy-tailed forgetting) remains open. Verified in
+\texttt{scripts/verify/remark\_7\_30a\_filter\_stable\_bisection.py} (V1 the Remark 7.30
+HMM excess $\Delta(w)$ decays in $w$, single-symbol anchors failing as in 7.30 V5; V2
+the decay is geometric, $\rho\approx0.36$; V3 robust to the far-window; V4 $w=\Theta(\log
+N)\Rightarrow$ total excess $o(N)$ at polylog access; V5 the rate is the forgetting rate
+--- a near-deterministic chain decays slower, so the escape needs FS, not mixing alone;
+V6 the \emph{actual} bisection excess with $w$-wide interval endpoints at a gap $g$ decays
+geometrically in the width $w$ at the same rate $\rho$, gap-robust, confirming the
+screening is at the boundary).
+
+\emph{Significance.} Remark 7.30a completes the genuinely-neural FV-escape arc ---
+Theorem 7.27$'$ (model-free succinct escape) $\to$ Remark 7.30 (neural FIM realisation,
+observable finite-order) $\to$ Remark 7.30a (hidden-state, the open direction closed
+under TS-FS) --- showing that a learned bidirectional predictor attains the Shannon-near
+random-access escape on exactly the filter-stable hidden-Markov sources that model real
+neural-LM data, the case Remark 7.30 explicitly left open. The residual is the §7.15
+open-middle (exact excess) and the genuinely non-forgetting case.
+
 \textbf{Theorem 7.31 (Large-deviations reliability function of the RNR archive; the
 large-deviation scale of the deviation hierarchy and the two-scale random-access
 picture).}
