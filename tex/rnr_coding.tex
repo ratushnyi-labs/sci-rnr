@@ -11714,6 +11714,118 @@ universal-vs-fixed overflow ratio compounding as $2^{N(E^\ast-E_{\mathrm{arith}}
 V5 the redundancy sign-flip on the gap event; V6 the $o(\sqrt N)$/$o(N)$ invisibility
 with $E^\ast>E_{\mathrm{arith}}$).
 
+\textbf{Theorem 7.33 (Moderate-deviation rate of the RNR archive; the random-access
+penalty fades from the exponent but not from the probability).} \emph{Adopt the
+hypotheses of Theorem 7.29 with $X$ \emph{i.i.d.\ or a finite-state irreducible
+aperiodic Markov} source (the clean Cram\'er--Petrov regime; the general exp-mixing
+case holds on a restricted moderate range, see Scope): ideal predictor, bounded
+per-position cost $\ell_i$, entropy rate $h$, varentropy $V>0$, and
+$L^{\mathrm{rep}}=\sum_i\ell_i$ the \emph{repair stream} (payload $+$ sync, as in
+Theorem 7.29; the seek index is treated separately below). With the
+\emph{moderate-deviation} scaling --- a budget $Nh+a_N\sqrt{NV}$ with $a_N\to\infty$,
+$a_N=o(\sqrt N)$ --- then:}
+\begin{enumerate}
+\item \emph{\textbf{(Moderate-deviation rate.)}}
+\[
+  \Pr\!\bigl[L^{\mathrm{rep}}\ge Nh+a_N\sqrt{NV}\bigr]
+  \;=\;\exp\!\Bigl(-(1+o(1))\,\tfrac{a_N^2}{2}\Bigr),
+  \quad\text{i.e.}\quad
+  -\tfrac1{a_N^2}\log_2\Pr[\cdot]\to\tfrac1{2\ln2}.
+\]
+\item \emph{\textbf{(The random-access penalty is a constant standardized shift.)} With
+the sub-block overhead $(N/K)\delta_\infty$ at the order-optimal $K=c\sqrt N$, the RNR
+archive obeys}
+\[
+  \Pr\!\bigl[L^{\mathrm{rep}}_{\mathrm{RNR}}\ge Nh+a_N\sqrt{NV}\bigr]
+  \;=\;\exp\!\Bigl(-(1+o(1))\,\tfrac{(a_N-\beta)^2}{2}\Bigr),
+  \qquad \beta:=\frac{\delta_\infty}{c\sqrt V},
+\]
+\emph{the cold-context payload penalty entering only as the $N$-independent shift
+$\beta$ of the standardised deviation. (The seek index of Theorem 7.31, being
+$\Theta(\sqrt N\log N)$, would add a \emph{further} standardized shift of order
+$\log N/\sqrt V$ --- diverging, not constant --- inflating the overflow probability
+even more; the constant-$\beta$ form is for the payload$+$sync stream, excluding the
+index, consistent with the $L^{\mathrm{rep}}$ of Theorems 7.29/7.31.)}
+\item \emph{\textbf{(The fade --- unifying Theorems 7.29 and 7.31.)} As $a_N$ ranges
+over the moderate scale,}
+\[
+  \underbrace{\frac{(a_N-\beta)^2}{a_N^2}=\Bigl(1-\tfrac{\beta}{a_N}\Bigr)^2\to1}
+  _{\text{exponent: RA \emph{invisible} (}\to\text{Thm 7.31)}}
+  \qquad\text{while}\qquad
+  \underbrace{\frac1{a_N}\log\frac{\Pr[L^{\mathrm{rep}}_{\mathrm{RNR}}\ge\cdot]}
+  {\Pr[L^{\mathrm{rep}}\ge\cdot]}\;\to\;\beta>0}_{\text{probability: RA \emph{visible}}},
+\]
+\emph{i.e.\ the random-access overflow probability is inflated by the diverging factor
+$e^{(1+o(1))\beta a_N}\to\infty$. At the central-limit end ($a_N=\Theta(1)$) the shift
+$\beta$ is comparable to $a_N$ and the penalty is fully visible, the exact ratio being
+the Gaussian tail ratio $Q(a_N-\beta)/Q(a_N)$ (Theorem 7.29; its large-$a_N$ Mills form
+is $e^{\beta a_N-\beta^2/2}$); as $a_N\to\infty$ it vanishes from the exponent
+(Theorem 7.31) yet keeps multiplying the probability by $e^{(1+o(1))\beta a_N}$. So
+across the moderate-deviation bridge the random-access penalty \emph{fades from the
+exponent but not from the probability}.}
+\end{enumerate}
+
+\emph{\textbf{Proof.}} \emph{(1)} For i.i.d./finite-state-Markov $(\ell_i)$ (bounded,
+so Cram\'er's condition holds) the normalised partial sum
+$S^\ast_N:=(L^{\mathrm{rep}}-Nh)/\sqrt{NV}$ obeys the sharp Cram\'er--Petrov expansion
+$\log\Pr[S^\ast_N\ge x]=\log Q(x)+\tfrac{x^3}{\sqrt N}\lambda\!\bigl(\tfrac{x}{\sqrt
+N}\bigr)+o(1)$ uniformly for $x=o(\sqrt N)$, where $Q=1-\Phi$ and $\lambda$ is the
+Cram\'er series (Petrov, \emph{Sums of Independent Random Variables}, 1975,
+Ch.~VIII). At $x=a_N\to\infty$ this gives $\Pr[S^\ast_N\ge a_N]=\exp(-(1+o(1))a_N^2/2)$
+(the rate $a_N^2/2$, the moderate-deviation principle); the $m=N/K=O(\sqrt N)$ context
+resets add $o(N)$ to the variance (Theorem 7.29 scope), absorbed in the $o(1)$.
+\emph{(2)} By Theorem 7.29,
+$L^{\mathrm{rep}}_{\mathrm{RNR}}=L^{\mathrm{rep}}+(N/K)\delta_\infty+o(\sqrt N)$
+deterministically up to an $o(\sqrt N)$ fluctuation negligible at this scale, so the
+event becomes $\{L^{\mathrm{rep}}\ge Nh+a_N\sqrt{NV}-(N/K)\delta_\infty\}=
+\{(L^{\mathrm{rep}}-Nh)/\sqrt{NV}\ge a_N-\beta\}$ with $\beta=(N/K)\delta_\infty/
+\sqrt{NV}=\sqrt N\,\delta_\infty/(c\sqrt{NV})=\delta_\infty/(c\sqrt V)$; apply (1) at
+$a_N-\beta$. \emph{(3)} The exponent ratio $(a_N-\beta)^2/a_N^2=(1-\beta/a_N)^2\to1$
+($\beta/a_N\to0$), so $-\tfrac1{a_N^2}\log\Pr$ is unchanged. For the probability ratio
+the bare moderate-deviation principle is \emph{insufficient} (its $o(a_N^2)$ error,
+divided by $a_N$, would swamp the $O(a_N)$ effect); we use the Cram\'er--Petrov
+expansion of (1). With $Q=1-\Phi$ and $\lambda_0=\lambda(0)$,
+\[
+  \log\frac{\Pr[S^\ast_N\ge a_N-\beta]}{\Pr[S^\ast_N\ge a_N]}
+  =\underbrace{\log\tfrac{Q(a_N-\beta)}{Q(a_N)}}_{=\,\beta a_N-\beta^2/2+O(\beta/a_N)\ (\text{Mills})}
+  +\underbrace{\tfrac{1}{\sqrt N}\bigl[(a_N-\beta)^3\lambda(\cdot)-a_N^3\lambda(\cdot)\bigr]}
+  _{=\,-3\beta\lambda_0 a_N^2/\sqrt N\,(1+o(1))}+o(1).
+\]
+Dividing by $a_N$, both corrections --- $\beta/a_N$ and $\lambda_0 a_N/\sqrt N$ ---
+vanish for $a_N=o(\sqrt N)$, giving $\tfrac1{a_N}\log(\text{ratio})\to\beta$. At
+$a_N=\Theta(1)$ the exact ratio is $Q(a_N-\beta)/Q(a_N)$ (the Theorem 7.29 /
+Berry--Esseen regime, Mills form $e^{\beta a_N-\beta^2/2}$); at $a_N=\Theta(\sqrt N)$,
+$\beta/a_N=\Theta(1/\sqrt N)\to0$ (the Theorem 7.31 regime, the $O(\sqrt N\log N)$
+index overhead being $o(N)$).
+\hfill$\blacksquare$
+
+\emph{Scope and significance.} The clean statement is for i.i.d.\ / finite-state
+irreducible aperiodic Markov sources (bounded $\ell_i$, $V>0$, ideal predictor), where
+the Cram\'er--Petrov expansion holds uniformly over the full moderate range
+$a_N=o(\sqrt N)$ and controls the probability ratio. A mismatched $M$ replaces $h$ by
+$h_{\mathrm{cross}}$ and $V$ by the cross-entropy long-run variance (Theorem 7.31). For
+general exp-mixing sources only the cruder moderate-deviation \emph{rate} is available,
+and published $\alpha$-mixing moderate-deviation principles restrict the speed (roughly
+$a_N=o(\sqrt N/(\log N\,\log\log N))$ for $\alpha$-mixing; the full $o(\sqrt N)$ range
+needs stronger $\phi$-mixing / projective conditions, Merlev\`ede--Peligrad--Rio,
+Dedecker--Merlev\`ede--Peligrad--Utev); the ratio refinement there is correspondingly
+weaker. The seek index of Theorem 7.31, if counted, adds a diverging $\Theta(\log N)$
+standardized shift (item 2), so the constant-$\beta$ statement is for the payload$+$sync
+stream. Theorem 7.33 closes the last scale of
+the §7 deviation hierarchy --- concentration (7.14/7.25), central limit / dispersion
+(7.28/7.29), \emph{moderate deviations} (7.33), large deviations (7.31/7.32) --- and
+unifies its two random-access verdicts: the single constant shift $\beta=\delta_\infty/
+(c\sqrt V)$ is \emph{both} the Theorem 7.29 dispersion-scale penalty (visible when the
+deviation is $\Theta(\sqrt N)$) \emph{and} the Theorem 7.31 large-deviation
+non-penalty (invisible when the deviation is $\Theta(N)$); the moderate regime
+interpolates exactly, showing the penalty fades from the exponent at the rate
+$1-(1-\beta/a_N)^2=2\beta/a_N+O(a_N^{-2})$ while its multiplicative imprint on the
+overflow probability, $e^{\beta a_N}$, grows without bound. Verified in
+\texttt{scripts/verify/thm\_7\_33\_moderate\_deviation\_ra\_fade.py} (V1 the MDP rate
+$\to\tfrac1{2\ln2}$ along $a_N\sim N^{1/4}$; V2 the RA penalty as the constant shift
+$\beta$; V3 the fade --- exponent ratio $\to1$ while the probability factor $\to\infty$;
+V4 the LDP rate's quadratic-at-mean equals the MDP rate).
+
 \textbf{8. No universal dominance}
 
 \textbf{Theorem 8.1 (No lossless universal compression).} \emph{No
