@@ -195,7 +195,9 @@ and a large-deviations reliability function giving the exact
 archive-overflow exponent with a matching lower bound --- the Legendre
 dual of the source R\'enyi spectrum (Theorem 7.31) --- and an
 extreme-value law pinning the worst-case per-query read buffer to
-$Kh+\sqrt{2KV\ln(N/K)}$ (Theorem 7.35); it then
+$Kh+\sqrt{2KV\ln(N/K)}$ (Theorem 7.35), and a functional CLT fixing the
+streaming-encoder write-buffer high-water-mark at the varentropy scale
+$\sqrt{NV}$ (Theorem 7.36); it then
 synthesises an end-to-end prediction for Chinchilla-class neural
 LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb; Theorem 7.15, with
 an explicit model-overhead caveat noting that the compression
@@ -820,7 +822,9 @@ function (the exact archive-overflow exponent with a matching lower
 bound, the R\'enyi-spectrum dual), extending the deviation hierarchy
 §§7.14/7.25/7.28/7.29/7.33/7.31 from the sub-Gaussian body through the
 central-limit and moderate-deviation scales to the exponential-rate tail, with
-§7.35 the extreme-value (worst-case per-query read-buffer) axis). Section 8 states the
+§7.35 the extreme-value (worst-case per-query read-buffer) axis and §7.36 a
+functional CLT for the repair process (the streaming-encoder write-buffer
+high-water-mark)). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -12139,6 +12143,117 @@ the fundamental-matrix varentropy cross-checked against the empirical block vari
 iff $K\gg(\ln m)^3$, growing from $\sim\!2\%$ at $K=3.6(\ln m)^3$ to $\sim\!23\%$ at
 $K=0.03(\ln m)^3$, confirming the $o(K^{1/3})$ condition and the i.i.d.\ counterexample of
 step 2; V6 the matching lower bound from a separated sub-family).
+
+\textbf{Theorem 7.36 (Functional CLT for the RNR repair process; the streaming-buffer
+high-water-mark).} \emph{Let $X$ be a finite-state irreducible aperiodic Markov source (so
+the realised conditional surprisals $\ell_i=-\log_2 P(X_i\mid X_{i-1})$ are bounded,
+$|\ell_i|\le-\log_2 p_{\min}$, and form a geometrically $\alpha$-mixing finite-window
+functional), with entropy rate $h$ and varentropy rate
+$V=\lim_N\frac1N\mathrm{Var}(\sum_{i\le N}\ell_i)\in(0,\infty)$ (the Theorem 7.28/7.29
+constant). Let $D_t=\sum_{i\le t}(\ell_i-h)$ be the centred repair process.}
+
+\emph{\textbf{(a) (Functional CLT, ideal stream.)} For the ideal repair process (full,
+order-$1$ context; no sub-block sync resets) the rescaled path
+$W_N(t):=D_{\lfloor Nt\rfloor}/\sqrt{NV}$ converges in distribution on the Skorokhod space
+$(D[0,1],J_1)$ to standard Brownian motion, $W_N(\cdot)\Rightarrow W(\cdot)$.}
+
+\emph{\textbf{(b) (Buffer high-water-marks.)} By the continuous mapping theorem and uniform
+integrability, the \emph{net cumulative surplus} (the buffer of an encoder pre-credited
+against its rate reservation, allowed to run a temporary deficit) obeys}
+\[
+  \frac{\max_{t\le N}D_t}{\sqrt{NV}}\;\Longrightarrow\;\sup_{0\le s\le1}W(s)\;\overset{d}{=}\;|Z|,
+  \ Z\sim\mathcal N(0,1)\ (\text{half-normal}),\qquad
+  \mathbb E\Bigl[\tfrac{\max_t D_t}{\sqrt{NV}}\Bigr]\to\sqrt{\tfrac2\pi},
+\]
+\emph{$\Pr(\max_{t\le N}D_t>a\sqrt{NV})\to2(1-\Phi(a))$. The \emph{physical} empty-start
+queue (Lindley occupancy $Q_t=\max(0,Q_{t-1}+\ell_t-h)$, no negative occupancy) has
+high-water-mark equal to the maximal draw-up $\max_{j\le t\le N}(D_t-D_j)$, which by L\'evy's
+theorem satisfies}
+\[
+  \frac{\max_{t\le N}Q_t}{\sqrt{NV}}\;\Longrightarrow\;\sup_{0\le s\le1}|W(s)|\quad
+  (\text{L\'evy theta-function law, mean }\sqrt{\pi/2}\approx1.2533),
+\]
+\emph{not half-normal. At $t=1$, $W_N(1)\Rightarrow\mathcal N(0,1)$ recovers the Theorem 7.28
+marginal CLT.}
+
+\emph{\textbf{(c) (Sub-block implementation: a drifted buffer.)} The Theorem 7.5 sub-block
+coder, draining at the matched ideal rate $h$, resets context at the $m=N/K$ sync points,
+adding the deterministic cold-context overhead $(N/K)\delta_\infty$ (Theorem 7.29): a
+per-symbol fill drift $\delta_K/K\to\delta_\infty/K$. At $K=c\sqrt N$ the rescaled net
+surplus converges to Brownian motion \emph{with drift},}
+\[
+  \frac{D^{\mathrm{sb}}_{\lfloor Nt\rfloor}}{\sqrt{NV}}\;\Longrightarrow\;W(t)+\beta t,
+  \qquad \beta=\frac{\delta_\infty}{c\sqrt V}\ \ (\text{the Theorem 7.33 shift}),
+\]
+\emph{so the high-water-mark is $\sqrt{NV}\,\sup_{[0,1]}(W+\beta s)$ (net surplus) or
+$\sqrt{NV}\,\sup_{0\le s\le t\le1}\bigl[(W_t+\beta t)-(W_s+\beta s)\bigr]$ (physical queue
+draw-up), reducing to (b) at $\beta\to0$ (large $K$). The drain rate $h$ is critical for the ideal stream; the sub-block
+mean rate is $h+\delta_K/K$, so critical draining is at $h+\delta_K/K$ ($\delta_K\to
+\delta_\infty$). A mismatched coder replaces $(h,V)$ by $(h_\times,v^2)$ of Theorem 7.29 and
+$\delta_\infty$ by the corresponding cross cold-start excess (under the usual
+support/nondegeneracy conditions).}
+
+\emph{\textbf{Proof.}} \emph{(a)} For a finite-state irreducible aperiodic chain, $\xi_i:=
+\ell_i-h=-\log_2 P(X_i\mid X_{i-1})-h$ is a bounded ($|\xi_i|\le-\log_2 p_{\min}+h$) function
+of the consecutive pair $(X_{i-1},X_i)$, hence a stationary, mean-zero, geometrically
+$\alpha$-mixing sequence with long-run variance $\sigma^2=\lim_N\mathrm{Var}(\sum_{i\le N}
+\xi_i)/N=V>0$ (the fundamental-matrix variance of Theorem 7.28). The functional CLT for
+additive functionals of finite irreducible aperiodic Markov chains (the associated
+martingale/regeneration FCLT; equivalently Billingsley 1968, \S20, for the geometrically
+mixing case) gives $D_{\lfloor N\cdot\rfloor}/\sqrt{N\sigma^2}\Rightarrow W$ on $(D[0,1],J_1)$;
+with $\sigma^2=V$ this is (a). \emph{(b)} $\sup$ is continuous on $(D[0,1],J_1)$ and $W$ has
+continuous paths a.s., so the continuous mapping theorem gives $\max_{t\le N}D_t/\sqrt{NV}
+\Rightarrow\sup_sW(s)$ (with $D_0=0$); the reflection principle gives $\Pr(\sup_{[0,1]}W\ge a)
+=2(1-\Phi(a))$, i.e.\ $\sup W\overset{d}{=}|Z|$, mean $\sqrt{2/\pi}$. Convergence of the mean
+uses uniform integrability: the bounded-increment geometric-mixing maximal moment inequality
+(M\'oricz 1976; Serfling 1970) gives $\sup_N\mathbb E[(\max_{t\le N}D_t/\sqrt{NV})^2]<\infty$.
+For the physical queue, the Lindley recursion unrolls to $\max_{t\le N}Q_t=\max_{0\le j\le
+t\le N}(D_t-D_j)$, the maximal draw-up; the draw-up process $D_t-\min_{j\le t}D_j$ converges
+(continuous mapping) to $W_t-\min_{s\le t}W_s\overset{d}{=}|W_t|$ (L\'evy's theorem), whose
+running maximum is $\sup_{[0,1]}|W|$ (theta-function law, mean $\sqrt{\pi/2}$). \emph{(c)}
+Writing $D^{\mathrm{sb}}_t=D_t+\sum_{b\le t/K}\delta_K+o(\cdot)$ (the per-sync cold-start
+excess $\delta_K\to\delta_\infty$, concentrated in the first post-reset symbol for order-$1$;
+Lemma 5.1d), the deterministic part rescales to $\beta t$ at $K=c\sqrt N$, and its $O_P(\sqrt
+m)=O_P(N^{1/4})$ fluctuation is negligible after $\sqrt N$ scaling; adding to (a) and applying
+continuous mapping gives the drifted limit and its supremum. \hfill$\blacksquare$
+
+\emph{Scope.} The clean statement is for finite-state irreducible aperiodic Markov sources,
+where $\ell_i$ is a bounded finite-window functional with geometric $\alpha$-mixing (every
+FCLT hypothesis met). For a general stationary exp-$\alpha$-mixing source the
+\emph{infinite-past} surprisal $-\log_2 P(X_i\mid X_{<i})$ neither is bounded nor inherits
+mixing automatically; one works instead with the windowed predictor $\ell_i^{(W_N)}=-\log_2
+P(X_i\mid X_{i-W_N:i-1})$ of Theorem 7.29 --- a finite $W_N=\Theta(\log N)$-window functional
+(so $\alpha$-mixing is inherited at the shifted lag) bounded by the $\eta$-floor of
+Theorem 7.5 ($|\ell_i^{(W_N)}|\le\log_2(1/\eta)$) --- and passes to the limit via the
+near-epoch-dependence/continuity of $\ell_i$ on the past (the exp-mixing windowed convergence
+of Theorem 7.28); the FCLT then holds under the Merlev\`ede--Peligrad (2000, \emph{Ann.\
+Probab.}\ 28:1336--1352) / Doukhan--Massart--Rio (1994, \emph{Ann.\ IHP}\ 30:63--82)
+strong-mixing invariance principle. We state the Markov case to keep the hypotheses verified.
+
+\emph{Significance --- one varentropy, three buffers (all carrying the $\beta$ penalty).}
+Theorem 7.36 is the \emph{process-level} strengthening of the marginal CLT (Theorem 7.28),
+which it recovers at $t=1$, and the encoder-side companion of the decoder-side Theorem 7.35.
+The three operational buffer/latency quantities of RNR are governed by the \emph{single}
+source functional $V$ (the varentropy): the archive dispersion $\sqrt{NV}\,Q^{-1}(\varepsilon)$
+(Theorem 7.29, total size), the worst-case random-access \emph{read} buffer
+$Kh+\sqrt{2KV\ln(N/K)}$ (Theorem 7.35, decoder side), and the streaming-encoder \emph{write}
+buffer high-water-mark (this theorem, $\sqrt{NV}\,|Z|$ net-surplus or $\sqrt{NV}\,\sup|W|$
+physical queue) --- the last carrying, like the archive dispersion (7.29) and the
+moderate-deviation overflow (7.33), the \emph{same} cold-context shift $\beta=\delta_\infty/
+(c\sqrt V)$ at the balanced $K=c\sqrt N$. Operationally, a streaming RNR encoder (Theorem 7.19)
+draining at $h$ over a horizon-$N$ block needs a physical buffer $b\sqrt{NV}$ to bound the
+overflow probability, with $b$ set by the $\sup|W|$ (theta-function) quantile (net-surplus
+$\sup W$ if pre-credited); the sub-block implementation adds the $\beta$ drift, critical drain
+$h+\delta_K/K$. The content is a genuine process limit (Donsker), not a marginal one: all path
+functionals (running maximum, draw-up, range, first-passage, occupation) inherit Brownian
+limits. Verified in \texttt{scripts/verify/thm\_7\_36\_functional\_clt\_streaming\_buffer.py}
+(V1 the finite-dim Brownian distributions $\mathrm{Var}\,W_N(t)\to t$, $\mathrm{Cov}\to
+\min(s,t)$; V2 the net-surplus high-water-mark $\to$ half-normal, mean $\sqrt{2/\pi}$, tail
+$2(1-\Phi(a))$; V3 the two-sided $\to\sup|W|$; V4 a finite-state Markov source with the
+long-run varentropy; V5 distributional convergence by quantile match; V6 the same-$V$
+unification; V7 the sub-block drift $\to\sqrt{NV}\sup(W+\beta s)$, $\beta=\delta_\infty/
+(c\sqrt V)$, not half-normal; V8 the physical Lindley queue high-water-mark $\to\sup|W|$,
+mean $\sqrt{\pi/2}$, distinct from the net-surplus half-normal).
 
 \textbf{8. No universal dominance}
 
