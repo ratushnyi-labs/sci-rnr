@@ -12383,23 +12383,33 @@ $\sqrt n$-typical shell. In the Gray region $Y^*$ has \emph{Hankel rank exactly 
 observable-operator model; verified by the in-Gray Walsh deconvolution) yet is genuinely
 infinite-order with \emph{no finite positive (HMM) realization} (its observable operators carry
 irremovable negative entries), so its natural Markov state is the continuous \emph{forward filter},
-geometrically ergodic under filter stability (the §7.15c/7.30a tool). Steps (i)--(iii) are
+geometrically ergodic under filter stability (the §7.15c/7.30a tool). Steps (i)--(iii), (iv-a), and (iv-c) are
 constructed: the filter realization with a spectral gap (the gap \emph{substituting} for ellipticity,
-the atomic filter kernel lacking a density floor), the tilted operator $L_\alpha^{(c)}$ with
-analytic spectral gap (Keller--Liverani/Herv\'e--P\`ene), and the single-schedule lattice
-Bahadur--Rao (Kontoyiannis--Meyn 2005). The \emph{sole} residual is step (iv): the schedule makes the
-moment generating function a deterministic \emph{product} $L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$ of
-the two spectral-gap operators, and what is needed is a sharp-LD prefactor for such a product,
-uniform over the shell --- a Dolgopyat--Sarig-type inhomogeneous local-limit theorem with
-\emph{Hilbert-cone contraction in place of uniform ellipticity} (which the atomic filter provably
-lacks). This merges Kontoyiannis--Meyn 2005 (homogeneous, fixed-fraction) with Dolgopyat--Sarig 2023
-(inhomogeneous, uniform); the homogeneous spectral-gap theories and the inhomogeneous elliptic theory
-have empty intersection, so it is a genuinely new but \emph{constructible} lemma (no fundamental
-barrier). We therefore do \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is
-\emph{converse-confirmed} on $(0,D_c(p)]$, with this one constructible (not-yet-built) theorem the sole
-residual --- the same tool the $D>D_c$ regime needs. (Were it supplied, the discrete-Markov case would
-obey the memoryless/Gauss--Markov ``lossy dispersion $=$ lossless varentropy in the SLB-tight region''
-pattern, with the plateau bounded by $D_c(p)$.)
+the atomic filter kernel lacking a density floor); the tilted operator $L_\alpha^{(c)}$ with analytic
+spectral gap (Keller--Liverani/Herv\'e--P\`ene); the single-schedule lattice Bahadur--Rao
+(Kontoyiannis--Meyn 2005); the schedule-driven slope/top-Lyapunov exponent via Birkhoff--Hopf cone
+contraction (Hennion 1997, stationary driving), giving the Legendre rate $nI=\jmath_n$; and the
+$\sqrt n$-shell uniformity via analytic perturbation of the leading eigenvalue. The \emph{sole}
+residual is step (iv-b): the $\tfrac12\log n+O(1)$ \emph{prefactor} of the lattice sharp-large-deviation
+local-limit theorem for the schedule-driven product $L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$, uniform
+over the shell. The natural route --- transferring the Dolgopyat--Sarig 2023 inhomogeneous
+local-limit theorem with Hilbert-cone contraction in place of ellipticity --- is \emph{ruled out}:
+their decorrelation (Prop.~2.13) is indeed contraction-coefficient-driven and transfers, but their
+change-of-measure, bridge, and hexagon constructions use ellipticity \emph{essentially}, through
+\emph{pointwise} density lower bounds $p_n(x\to z)\ge\varepsilon_0$ that a contraction coefficient does
+not supply (e.g.\ $P=\big(\begin{smallmatrix}1&0\\ \tfrac12&\tfrac12\end{smallmatrix}\big)$ has
+$\delta(P^2)<1$ yet $P^2(1,2)=0$), and the atomic filter kernel has no density floor, which a bounded
+tilt cannot create. The cone-contraction quasi-compactness route (Hennion--Herv\'e; Benoist--Quint)
+supplies a \emph{central} limit theorem for such products but not the lattice fixed-fraction
+large-deviation prefactor. So (iv-b) --- a lattice sharp-LD local-limit prefactor for a
+\emph{non-elliptic}, cone-contracting, schedule-inhomogeneous operator product, uniform over the shell
+--- is a genuine open problem (not a transfer of existing machinery), and is the precise residual;
+whether it is ultimately constructible or carries a real obstruction is itself open. We therefore do
+\emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is \emph{converse-confirmed}
+on $(0,D_c(p)]$, with this single non-elliptic LD-local-limit prefactor the sole residual (the same
+tool the $D>D_c$ regime needs). (Were it supplied, the discrete-Markov case would obey the
+memoryless/Gauss--Markov ``lossy dispersion $=$ lossless varentropy in the SLB-tight region'' pattern,
+with the plateau bounded by $D_c(p)$.)
 
 \emph{Beyond the Gray region ($D>D_c(p)$): a separate open question.} Outside the Gray region the
 SLB is no longer tight, $\jmath_n$ ceases to be additive, and the converse dispersion drops
