@@ -12389,10 +12389,13 @@ the atomic filter kernel lacking a density floor); the tilted operator $L_\alpha
 spectral gap (Keller--Liverani/Herv\'e--P\`ene); the single-schedule lattice Bahadur--Rao via the
 \emph{dynamical} complex Ruelle--Perron--Frobenius route (Lalley 1989; Pollicott--Sharp;
 Kesseb\"ohmer--Kombrink), density-floor-free on a H\"older space --- \emph{not} Kontoyiannis--Meyn
-2005, whose exact lattice expansion requires their density assumption (DV3+)(ii), which they prove
-cannot be removed and which the atomic filter kernel lacks (the same density-floor obstruction that
-rules out the elliptic routes), with the lattice step a checkable cohomological non-arithmeticity
-condition on the filter; the schedule-driven slope/top-Lyapunov exponent via Birkhoff--Hopf cone
+2005, whose exact lattice expansion requires their domination condition (DV3+)(ii), which they prove
+cannot be removed and which the \emph{continuum} filter kernel cannot satisfy --- its moving Dirac
+atoms admit no finite dominating measure (the same obstruction that rules out the elliptic routes;
+a finite-state atomic chain would satisfy it via counting measure, but the filter lives on a
+continuum). The contracting IFS is coded to a one-sided symbolic system (the belief a H\"older
+function of the past) so the RPF hypotheses hold directly, with the lattice step a checkable
+cohomological non-arithmeticity condition on the filter; the schedule-driven slope/top-Lyapunov exponent via Birkhoff--Hopf cone
 contraction (Hennion 1997, stationary driving), giving the Legendre rate $nI=\jmath_n$; and the
 $\sqrt n$-shell uniformity via analytic perturbation of the leading eigenvalue. The \emph{sole}
 residual is step (iv-b): the $\tfrac12\log n+O(1)$ \emph{prefactor} of the lattice sharp-large-deviation
@@ -12404,18 +12407,22 @@ change-of-measure, bridge, and hexagon constructions use ellipticity \emph{essen
 \emph{pointwise} density lower bounds $p_n(x\to z)\ge\varepsilon_0$ that a contraction coefficient does
 not supply (e.g.\ $P=\big(\begin{smallmatrix}1&0\\ \tfrac12&\tfrac12\end{smallmatrix}\big)$ has
 $\delta(P^2)<1$ yet $P^2(1,2)=0$), and the atomic filter kernel has no density floor, which a bounded
-tilt cannot create. The non-elliptic routes split cleanly: the homogeneous sharp prefactor exists
-(the dynamical complex-RPF route above) but only for a \emph{single} operator, while the
-inhomogeneous/sequential transfer-operator theory (Hafouta--Kifer; Dragi\v cevi\'c--Froyland--Gonz\'alez-Tokman--Vaienti;
-expanding-on-average cocycles) supplies only the \emph{central-limit-scale} local CLT and a
-\emph{rough} (rate-only) LDP --- no sharp prefactor --- and on \emph{expanding} maps, opposite to the
-contracting filter. So (iv-b) --- a lattice sharp-LD local-limit prefactor for a \emph{non-elliptic},
-cone-contracting, schedule-inhomogeneous operator product, uniform over the shell --- is a genuine
-open problem: the two needed features, a sharp $\tfrac12\log n$ prefactor and an inhomogeneous
-schedule, co-occur in no theorem, and the precise missing tool is an \emph{Edgeworth expansion for
-tilted operator cocycles, density-floor-free} (second-order control of the inhomogeneous tilted
-product at the large-deviation measure, uniform over the shell). Whether it is ultimately
-constructible or carries a real obstruction is itself open. We therefore do
+tilt cannot create. The \emph{nearest} existing tool is Dragi\v cevi\'c--Hafouta 2020 (Thm.~4.18),
+which already proves a quenched \emph{sharp} large-deviation prefactor of order $1/\sqrt n$ for tilted
+transfer-operator \emph{cocycles} (an Edgeworth/sharp-LD expansion) --- so the sharp inhomogeneous
+prefactor is \emph{not} unprecedented. It does not cover our exact object, and (iv-b) is precisely its
+adaptation across five axes: (1) a \emph{deterministic} source schedule (vs.\ their quenched-a.e.\
+random driving); (2) a \emph{contracting atomic} IFS operator (vs.\ expanding/Anosov --- bridged by
+coding the contracting filter to a one-sided symbolic system, the belief being a H\"older function of
+the past, so the RPF hypotheses hold directly); (3) a \emph{lattice} (integer) tail, needing the
+arithmetic/peripheral-spectrum (non-arithmeticity) condition rather than their non-lattice one;
+(4) a \emph{fixed-fraction} deviation $D<D_c<\tfrac12$ in the interior of the Legendre domain (vs.\
+their near-mean/small-LD regime); and (5) \emph{uniformity} over the $\sqrt n$-typical shell of
+schedules. So (iv-b) --- a lattice sharp-LD local-limit prefactor for a non-elliptic, cone-contracting,
+schedule-inhomogeneous operator product, uniform over the shell --- is a genuine open problem, but a
+\emph{precisely-located} one: an Edgeworth-for-tilted-cocycles in the spirit of Dragi\v cevi\'c--Hafouta
+2020, adapted along these five axes. Whether it is ultimately constructible or carries a real
+obstruction is itself open. We therefore do
 \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is \emph{converse-confirmed}
 on $(0,D_c(p)]$, with this single non-elliptic LD-local-limit prefactor the sole residual (the same
 tool the $D>D_c$ regime needs). (Were it supplied, the discrete-Markov case would obey the
