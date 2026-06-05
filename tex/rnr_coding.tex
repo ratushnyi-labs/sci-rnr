@@ -12313,21 +12313,23 @@ $D_c<D<D_{\max}$; V4 the block $d$-tilted-information variance $V_n\to$ the spec
 $\Theta(\sqrt N)$ interplay with $N$-independent ratio; V6 $\delta_\infty^D=-\tfrac12\log(1-\rho^2)>0$,
 increasing in $|\rho|$, $\to0$ as $\rho\to0$).
 
-\textbf{Theorem 7.34b (Resolution of the BSMS Gray-region RD dispersion: conjecture B confirmed,
-both bounds).} \emph{For the binary symmetric Markov source (BSMS, switch probability
-$0<p<\tfrac12$) under Hamming distortion, the rate-distortion dispersion throughout Gray's
-low-distortion region $0<D\le D_c(p)$ is exactly the lossless varentropy,
+\textbf{Remark 7.34b (The BSMS Gray-region RD dispersion: a matching converse lower bound at the
+lossless varentropy, with the candidate's achievability reduced to a quenched ball-measure
+estimate).} For the binary symmetric Markov source (BSMS, switch probability $0<p<\tfrac12$) under
+Hamming distortion, we prove the \emph{converse} bound
 \[
-  V(D)=p(1-p)\log_2^2\tfrac{1-p}p\qquad(D\text{-independent}),
+  V_{\mathrm{op}}(D)\ge V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p
+  \qquad\text{throughout Gray's region }0<D\le D_c(p),
 \]
 with Gray's critical distortion $D_c(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (Gray 1970;
-Zhu--Alajaji), and both the converse and the achievability hold, so $V_{\mathrm{op}}(D)=V_{\mathrm{lossless}}$.}
-This \emph{confirms} the candidate of Remark 7.34a on its stated domain and resolves the
-discrete-Markov (BSMS, Hamming) rate-distortion dispersion in the Gray region --- previously open
-(Krishnamachari 2026; Tasci--Kostina 2026 list Gauss--Markov as the only solved memory case). The
-candidate is \emph{correct}, not refuted: the apparent ``departure'' below $V_{\mathrm{lossless}}$
-occurs only for $D>D_c(p)$, i.e.\ \emph{outside} the Gray region, where it is a separate open
-question.
+Zhu--Alajaji), \emph{matching} the candidate value of Remark 7.34a. The candidate's equality
+$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ holds iff the matching achievability does; we reduce that to a
+single open lemma --- a quenched Hamming-ball local-CLT for the (memory-carrying) optimal output
+process --- the \emph{same} tool the $D>D_c$ regime needs. So on the Gray region the candidate is
+\emph{converse-confirmed} (a rigorous lower bound matching its value), with its achievability the sole
+residual. This is the first rigorous bound on the discrete-Markov (BSMS, Hamming) dispersion, a
+problem otherwise open (Krishnamachari 2026; Tasci--Kostina 2026 list Gauss--Markov as the only
+solved memory case).
 
 \emph{The key identity and the converse.} Solving the $n$-letter rate--distortion problem exactly
 (Blahut--Arimoto over the $2^n$-word alphabet) and evaluating the operational $n$-letter d-tilted
@@ -12361,16 +12363,21 @@ above. (For $D>D_c(p)$ the inverse transform acquires negative entries for large
 $p=0.1,\,D=0.05$ valid only at $n=2$, failing for every $n\ge3$ --- so the identity fails and
 $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$; but that is outside the Gray region.)
 
-\emph{Achievability.} On the Gray region $X=Y^*\oplus Z$ with $Z$ i.i.d.\ $\mathrm{Bern}(D)$
-independent of the (valid, all-$n$) optimal output process $Y^*$ --- the exact-SLB test-channel
-structure. Because $\jmath_n$ is i.i.d.-additive (the switch-count) and the test channel is i.i.d.,
-the Kostina--Verd\'u/Kostina (2017) SLB-tight achievability carries over (the covering reduces to
-i.i.d.\ switch-count concentration, and the optimal-output ball measure is non-degenerate here, unlike
-the $D>D_c$ regime), giving $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$. Hence
-$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ throughout $(0,D_c(p)]$, confirming the candidate of
-Remark 7.34a. The discrete-Markov case therefore \emph{does} obey the memoryless/Gauss--Markov
-``lossy dispersion $=$ lossless varentropy in the SLB-tight region'' pattern --- the plateau is
-genuine, bounded by the (memory-determined) Gray critical distortion $D_c(p)$.
+\emph{The achievability residual (the sole gap).} The matching upper bound
+$V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ would complete the candidate. On the Gray region
+$X=Y^*\oplus Z$ with $Z$ i.i.d.\ $\mathrm{Bern}(D)$ independent of the (valid, all-$n$) optimal output
+process $Y^*$ --- the exact-SLB test-channel structure --- and $\jmath_n$ is i.i.d.-additive.
+\emph{However}, the random-covering achievability is governed not by $\jmath_n$ (a tilted exponential
+moment) but by the Hamming-ball measure $-\log P_{Y^{*n}}(B_{nD}(x^n))$, and these agree only up to a
+local-limit correction, $-\log P_{Y^{*n}}(B_{nD}(x^n))=\jmath_n(x^n,D)+O(\log n)$. For the \emph{i.i.d.}
+output of a memoryless source this is the binomial/type-counting local CLT; but here $Y^*$ \emph{has
+memory} (only the backward noise $Z$ is memoryless), so the estimate requires a \emph{quenched}
+Hamming-ball local-CLT for the deconvolved Markov output --- exactly the tool that is missing (and the
+same one the $D>D_c$ regime needs). We therefore do \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$:
+the candidate $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ is \emph{converse-confirmed} on $(0,D_c(p)]$,
+with this single quenched ball-measure estimate the only residual. (Were it supplied, the
+discrete-Markov case would obey the memoryless/Gauss--Markov ``lossy dispersion $=$ lossless
+varentropy in the SLB-tight region'' pattern, with the plateau bounded by $D_c(p)$.)
 
 \emph{Beyond the Gray region ($D>D_c(p)$): a separate open question.} Outside the Gray region the
 SLB is no longer tight, $\jmath_n$ ceases to be additive, and the converse dispersion drops
