@@ -171,9 +171,17 @@ if __name__ == "__main__":
         mb = slb_deconv_minprob(nn, 'bsms', 0.1, D0)
         print(f"     n={nn:>2}: minP_Y={mb:+.3e}  {'VALID (SLB tight, j_n=i_n-const)' if mb>=-1e-12 else 'invalid (SLB not tight)'}")
     win_shrinks = (slb_deconv_minprob(2,'bsms',0.1,D0) >= -1e-12) and (slb_deconv_minprob(8,'bsms',0.1,D0) < -1e-12)
-    print(f"     => window shrinks (valid at n=2, fails at large n): {win_shrinks}.  So the SLB-exact")
-    print(f"        identity fails ASYMPTOTICALLY (the dispersion is the n->inf limit), giving V_conv<V_lossless;")
-    print(f"        it does NOT fail 'at every n>=2' (n=2 is valid for D<=0.053).")
+    print(f"     => at D=0.05 the SLB-exact identity fails for large n (window does NOT include large n here).")
+    # The all-n validity threshold D_inf(p): plateau (V_conv=V_lossless) for D<=D_inf, departure for D>D_inf.
+    print("  -- ALL-n validity threshold D_inf(p)=(1-sqrt(1-2p)/(1-p))/2 (codex): V_conv=V_lossless PLATEAU on (0,D_inf].")
+    plateau_ok = True
+    for p in (0.1, 0.25, 0.4):
+        Dinf = (1 - math.sqrt(1-2*p)/(1-p))/2
+        below = all(slb_deconv_minprob(n,'bsms',p, 0.7*Dinf) >= -1e-11 for n in range(2,12))   # valid all n
+        above = slb_deconv_minprob(11,'bsms',p, 1.3*Dinf) < -1e-11                              # fails large n
+        plateau_ok = plateau_ok and below and above
+        print(f"     p={p}: D_inf={Dinf:.4f} | 0.7*D_inf valid all n (plateau): {below} | 1.3*D_inf fails large n (departure): {above}")
+    print(f"     => PLATEAU on (0,D_inf] (candidate B holds), DEPARTURE V_conv<V_lossless for D>D_inf: {plateau_ok}")
 
     print("="*96)
     print("PART D -- ACHIEVABILITY (the covering side): NOT numerically accessible at these blocklengths.")

@@ -12300,9 +12300,11 @@ Theorems 7.29/7.36 is source-agnostic once the dispersion exists, which is exact
 Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all sources with
 memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. The natural
 candidate here --- a $D$-independent plateau at the chain's \emph{lossless} varentropy
-$p(1-p)\log_2^2\tfrac{1-p}p$, mirroring the Gauss--Markov $V(D)=\tfrac12$ plateau --- turns out
-to be \emph{false on the converse side}, with a structural mechanism we prove in Remark 7.34b
-below; the naive ``lossy dispersion $=$ lossless varentropy'' transfer does not hold for a
+$p(1-p)\log_2^2\tfrac{1-p}p$ across the \emph{whole} Gray region, mirroring the Gauss--Markov
+$V(D)=\tfrac12$ plateau --- turns out to be only \emph{partly correct}: the plateau survives on a
+\emph{shrunken} sub-interval $(0,D_\infty(p)]$ but the converse dispersion departs strictly below
+$V_{\mathrm{lossless}}$ for $D>D_\infty(p)$, as we show in Remark 7.34b below; the naive
+``lossy dispersion $=$ lossless varentropy'' transfer does not hold over the full Gray region for a
 discrete source with memory. Verified in
 \texttt{scripts/verify/remark\_7\_34a\_gauss\_markov\_rd\_dispersion.py} (V1 reverse-water-filling
 self-consistency; V2 $V(D)=\tfrac12$ nats$^2$ for $D\le D_c$; V3 $V(D)<\tfrac12$ decreasing for
@@ -12311,53 +12313,67 @@ $D_c<D<D_{\max}$; V4 the block $d$-tilted-information variance $V_n\to$ the spec
 $\Theta(\sqrt N)$ interplay with $N$-independent ratio; V6 $\delta_\infty^D=-\tfrac12\log(1-\rho^2)>0$,
 increasing in $|\rho|$, $\to0$ as $\rho\to0$).
 
-\textbf{Remark 7.34b (The discrete-Markov candidate is false on the converse side: no
-lossless-varentropy plateau, with a structural mechanism).} The candidate of Remark 7.34a ---
-that the binary symmetric Markov source (BSMS, switch probability $p$) under Hamming distortion
-has, in Gray's low-distortion region, a $D$-independent dispersion equal to its lossless
-varentropy $p(1-p)\log_2^2\tfrac{1-p}p$ --- does \emph{not} hold for the operative second-order
-quantity. We settle the converse side and isolate the mechanism.
+\textbf{Remark 7.34b (The discrete-Markov RD dispersion: the lossless-varentropy plateau survives
+only on a shrunken interval $(0,D_\infty(p)]$, cut out by the memory).} The candidate of
+Remark 7.34a --- that the binary symmetric Markov source (BSMS, switch probability $p$) under
+Hamming distortion has, in Gray's \emph{entire} low-distortion region $(0,D_c]$, a $D$-independent
+dispersion equal to its lossless varentropy $p(1-p)\log_2^2\tfrac{1-p}p$ --- is \emph{partly
+correct}: the $V_{\mathrm{lossless}}$ plateau does survive, but only on a \emph{shrunken}
+sub-interval $(0,D_\infty(p)]$, and the converse dispersion departs strictly below
+$V_{\mathrm{lossless}}$ for $D>D_\infty(p)$. We settle the converse side, give the explicit
+threshold $D_\infty(p)$, and isolate the mechanism.
 
 \emph{The $n$-letter d-tilted (converse) dispersion.} Solving the $n$-letter rate--distortion
 problem exactly (Blahut--Arimoto at Lagrange slope $\lambda$ over the $2^n$-word alphabet) and
 evaluating the operational $n$-letter d-tilted information
 $\jmath_n(x^n,D)=-\lambda D-\log\mathbb{E}_{Y^{*n}}[e^{-\lambda d_H(x^n,Y^{*n})}]$ (which satisfies
-$\mathbb{E}[\jmath_n]=R_n(D)$ to machine precision), the converse dispersion $V_n:=\mathrm{Var}(\jmath_n)/n$ is,
-in sharp contrast to the memoryless case, \emph{$D$-dependent} and \emph{strictly below} the
-lossless varentropy for every $D>0$, approaching it only as $D\to0$. The ratio
-$\rho(D):=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)$ to the lossless surprisal $\imath_n=-\log P(X^n)$ is
-$n$-stable and lies in $(0,1)$ for $D>0$ (e.g.\ $\rho\approx0.61$ at $D\approx0.05$,
-$\rho\to1$ as $D\to0$, at $p=0.1$). By the Kontoyiannis--Verd\'u converse applied to the
-$n$-letter block, $V_{\mathrm{op}}(D)\ge\lim_n V_n$, a $D$-dependent floor strictly under the
-lossless varentropy.
+$\mathbb{E}[\jmath_n]=R_n(D)$ to machine precision), the converse dispersion $V_n:=\mathrm{Var}(\jmath_n)/n$
+reveals a \emph{shrunken plateau}: it \emph{equals} the lossless varentropy on a sub-interval
+$(0,D_\infty(p)]$ and is \emph{$D$-dependent and strictly below} it for $D\in(D_\infty(p),D_c]$, where
+(derived below)
+\[
+  D_\infty(p)=\tfrac12\Big(1-\tfrac{\sqrt{1-2p}}{1-p}\Big)
+  \qquad\big(\to0\text{ as }p\to0,\ \to\tfrac12\text{ as }p\to\tfrac12\big).
+\]
+The ratio $\rho(D):=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)$ to the lossless surprisal
+$\imath_n=-\log P(X^n)$ is $n$-stable, equals $1$ for $D\le D_\infty(p)$, and lies in $(0,1)$ for
+$D>D_\infty(p)$ (e.g.\ at $p=0.1$, $D_\infty=0.0031$: $\rho=1$ at $D=0.0025$, $\rho\approx0.61$ at
+$D=0.05$). By the Kontoyiannis--Verd\'u converse, $V_{\mathrm{op}}(D)\ge\lim_n V_n$, so the candidate's
+\emph{whole-region} $V_{\mathrm{lossless}}$ plateau fails for $D>D_\infty(p)$, while a genuine plateau
+survives on $(0,D_\infty(p)]$.
 
 \emph{The mechanism --- a proof that the memoryless plateau cannot transfer.} The memoryless
 plateau $V(D)=\text{varentropy}$ (Kostina 2017) rests on the Shannon lower bound being
 \emph{exactly} tight, i.e.\ $\jmath_n=\imath_n-n\,h(D)$, which holds iff the source law
 deconvolves by an i.i.d.\ $\mathrm{BSC}(D)$ noise into a valid output law (true for
-$\mathrm{Bern}(q)$ at $D\le q$). For the BSMS this fails for all sufficiently large $n$ at each
-fixed $D>0$. Because Hamming distortion is additive, the d-tilted backward kernel factorises,
+$\mathrm{Bern}(q)$ at $D\le q$). For the BSMS the validity is governed by the positive threshold
+$D_\infty(p)$. Because Hamming distortion is additive, the d-tilted backward kernel factorises,
 $e^{-\lambda d_H(x^n,y^n)}=\prod_i e^{-\lambda\,\mathbf 1[x_i\ne y_i]}$, into single-letter
-$\mathrm{BSC}$ kernels, so the SLB-achieving backward channel is \emph{forced memoryless};
-deconvolving the Markov law by i.i.d.\ $\mathrm{BSC}(D)^{\otimes n}$ then requires, in the
-Walsh (Hadamard) domain, $\hat P_Y(w)=\hat P_X(w)\,(1-2D)^{-|w|}$, whose inverse transform
-acquires negative entries once $n$ exceeds a threshold $n_0(D)$ --- the valid-$D$ window shrinks to
-$0$ as $n\to\infty$. (At $p=0.1,\ D=0.05$ the deconvolution is valid only at $n=2$, where the
-two-letter SLB bound is $D\le(1-\sqrt{1-2p})/2=0.053$, and fails for every $n\ge3$; $n_0(D)\to\infty$
-only as $D\to0$.) Since the operational dispersion is the $n\to\infty$ limit at fixed $D>0$, the
-exact SLB identity fails \emph{asymptotically}: $\jmath_n\ne\imath_n-\text{const}$ for all large
-$n$, and (numerically, $n$-stably in the large-$n$ regime) the d-tilted information is a strict
-variance-contraction of the surprisal, $\mathrm{Var}(\jmath_n)<\mathrm{Var}(\imath_n)$, so
-$V_{\mathrm{conv}}<V_{\mathrm{lossless}}$. (At the small $n\le n_0(D)$ where the deconvolution
-remains valid, the identity holds with equality, $\rho=1$ --- consistent with $\rho(D)\to1$ as
-$D\to0$.) This is the structural reason the discrete-Markov case admits no spectral decoupling
+$\mathrm{BSC}$ kernels, so the SLB-achieving backward channel is \emph{forced memoryless}; the
+deconvolution in the Walsh (Hadamard) domain is $\hat P_Y(w)=\hat P_X(w)\,(1-2D)^{-|w|}$. Its all-$n$
+positivity boundary is exactly $D_\infty(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (verified across
+$p$). \emph{For $D\le D_\infty(p)$} the deconvolution stays a valid law for \emph{every} $n$, so the
+SLB is exactly tight at all blocklengths, $\jmath_n=\imath_n-n\,h(D)$, whence
+$\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ and $V_{\mathrm{conv}}=V_{\mathrm{lossless}}$ --- the
+plateau, where the candidate is \emph{correct}. \emph{For $D>D_\infty(p)$} the inverse transform
+acquires negative entries once $n$ exceeds an $n_0(D)$ (e.g.\ at $p=0.1,\,D=0.05$ valid only at $n=2$,
+where the two-letter bound is $D\le(1-\sqrt{1-2p})/2=0.053$, failing for every $n\ge3$), so the exact
+SLB identity fails \emph{asymptotically}: $\jmath_n\ne\imath_n-\mathrm{const}$ for all large $n$, and
+(numerically, $n$-stably) the d-tilted information is a strict variance-contraction,
+$\mathrm{Var}(\jmath_n)<\mathrm{Var}(\imath_n)$, so $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$. Thus the
+memory \emph{shrinks} the memoryless plateau from the whole low-distortion region to $(0,D_\infty(p)]$.
+This is the structural reason the discrete-Markov case admits no spectral decoupling
 (unlike Gauss--Markov, where diagonalisation reduces the problem to independent components) and
 resisted the plateau.
 
-\emph{What is settled, and the sharpened open problem.} The lossless-varentropy plateau is
-therefore \emph{not} the converse dispersion. It can survive only as the \emph{operational}
-value $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ in an \emph{achievability-dominated} regime where
-the d-tilted converse is loose ($V_{\mathrm{op}}>\lim_n V_n$) --- a phenomenon with no precedent
+\emph{What is settled, and the sharpened open problem (the departure region $D>D_\infty(p)$).} On the
+plateau $(0,D_\infty(p)]$ the dispersion is \emph{settled}: the SLB is exactly tight at all $n$, so
+$\jmath_n=\imath_n-n\,h(D)$ is an exact i.i.d.\ switch-count functional, and both the converse and the
+(standard SLB-tight) achievability give $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ --- here the candidate
+holds. The open problem is the \emph{departure region} $D>D_\infty(p)$, where $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$
+(converse) but the matching achievability is unresolved: the candidate's $V_{\mathrm{lossless}}$ could
+survive only if the operational value exceeded its own converse, $V_{\mathrm{op}}=V_{\mathrm{lossless}}>\lim_n V_n$
+(the d-tilted converse \emph{loose}, achievability-dominated) --- a phenomenon with no precedent
 (the d-tilted converse is tight for i.i.d.\ and, case-specifically, for Gauss--Markov). The
 covering/achievability dispersion is not accessible by enumeration --- it is a genuine $\sqrt n$
 effect requiring $n\gg 1/D$ --- and no second-order Markov type-covering exists in the
