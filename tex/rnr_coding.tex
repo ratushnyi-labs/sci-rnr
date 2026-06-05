@@ -8795,9 +8795,92 @@ brute force to machine precision; V2 it is not order-$k$ Markov; V3 the finite-o
 containment; V4 a noisy HMM with a continuum-filling belief set; V5 the belief-MC block
 entropy at any $N$; V6 the synchronising HMM --- finite Blackwell support but infinitely
 many concentrating finite-prefix beliefs, the FS case). The exact Shannon complexity of
-the proliferating case stays open; this remark identifies a standard exact-tractable
+the proliferating case is pinned in Remark 7.15g ($\#P$-hard); this remark identifies a standard exact-tractable
 island (strictly beyond finite-order Markov) and organises the surrounding §7.15 cases by
 the finite-prefix belief geometry.
+
+\emph{Remark 7.15g (The §7.15 open middle is \#P-hard: a \#SAT reduction to the exact
+coefficient-query HMM entropy).} Remarks 7.15d/e bracketed the exact finite-block entropy of a
+function of a finite Markov chain in $[\,\text{poly }H_2,\ \mathrm{FP}^{\#P}\,]$ and left its
+true complexity open, noting that the obvious predicate-encoding route self-defeats (a
+bounded-order HMM is a read-once branching program, and counting its paths to a fixed output is
+in $\mathrm{FP}$). We close the hardness side, in the natural exact-symbolic representation.
+Since a finite-block entropy of a rational-parameter HMM is a rational combination
+$H(X^N)=\sum_q\kappa_q\log q$ over primes $q$ (the $\kappa_q\in\mathbb Q$ unique, as prime
+logarithms are $\mathbb Q$-linearly independent by unique factorisation), the natural exact query
+is the \emph{coefficient problem}
+\[
+  \textsc{Coeff-HMM-Entropy}(M,N,q)\ :=\ \kappa_q,\ \text{the coefficient of }\log q\text{ in }H_M(X^N).
+\]
+\emph{This problem is \#P-hard, and in $\mathrm{FP}^{\#P}$, hence $\mathrm{FP}^{\#P}$-complete}
+(Turing reductions). (We do \emph{not} claim hardness of returning the entire expansion, which
+can be exponentially large, nor of a bounded-precision numerical value; see Scope.)
+
+\emph{\#P-hardness (\#SAT $\le$ \textsc{Coeff-HMM-Entropy}).} Given a proper 3-CNF $\varphi$ with
+$n$ variables and $m$ clauses (each clause on three distinct variables, so it has exactly
+$2^{n-3}$ falsifying assignments; \#SAT for such formulas is \#P-complete; WLOG $\varphi$ is nonempty with
+$m\ge1$, $n\ge3$, the $m{=}0$/$n{<}3$ cases being trivial), fix a prime
+$P>\max(m,2)$ (so $P$ is odd and $1\le m<P$) and build a finite-state HMM emitting a length-$n$
+block: the hidden chain first picks a mode --- \emph{dummy} with probability $8P/(m{+}8P)$, then
+emitting a uniform assignment; or \emph{clause $i$} with probability $1/(m{+}8P)$ each, then
+emitting a uniform assignment that \emph{falsifies} clause $i$ (its three variables fixed to the
+falsifying bits, the other $n{-}3$ fair). The hidden state set is
+$\{\text{dummy},\text{clause }1,\dots,m\}\times\{\text{position}\}$, size $O(mn)$ (the random
+emissions absorb into a function-of-a-Markov-chain with constant-factor blow-up). With $u(x)$ the
+number of clauses $x$ falsifies, the block marginal is $p(x)=(P+u(x))/Z$, $Z=2^{n-3}(8P+m)$
+(indeed $\sum_x u(x)=m2^{n-3}$ gives $\sum_x p(x)=1$). Grouping by $u(x)=j$ with
+$c_j=\#\{x:u(x)=j\}$ --- so $c_0=\#\mathrm{SAT}(\varphi)$ ---
+\[
+  H(X^n)=\log Z-\frac1Z\sum_{j=0}^{m}c_j\,(P+j)\log(P+j).
+\]
+Because $P$ is an \emph{odd} prime with $P\nmid Z=2^{n-3}(8P+m)$ (as $P\neq2$ and
+$8P{+}m\equiv m\not\equiv0\bmod P$) and $P\nmid(P{+}j)$ for $1\le j\le m$ (as $0<j<P$), the prime
+$P$ occurs only in the $j{=}0$ term, so
+\[
+  \kappa_P=-\frac{c_0\,P}{Z}=-\frac{\#\mathrm{SAT}(\varphi)\cdot P}{Z},
+\]
+and one query $\textsc{Coeff-HMM-Entropy}(M,n,P)$ returns $\#\mathrm{SAT}(\varphi)=-\kappa_P Z/P$.
+
+\emph{$\mathrm{FP}^{\#P}$ upper bound.} Clearing denominators, $p(x)=w(x)/W$ with $w(x)$ a
+poly-evaluable nonnegative integer (a weighted path count) and the common denominator
+$W=\sum_x w(x)$. Then $\kappa_q=v_q(W)-\frac1W\sum_x w(x)\,v_q(w(x))$, where $v_q$ is the
+$q$-adic valuation (convention $w(x)v_q(w(x))=0$ when $w(x)=0$); both $W$ and
+$\sum_x w(x)v_q(w(x))$ are exponential sums of poly-evaluable nonnegative integers, hence
+computable with a $\#P$ oracle. So
+$\textsc{Coeff-HMM-Entropy}\in\mathrm{FP}^{\#P}$, giving $\mathrm{FP}^{\#P}$-completeness.
+
+\emph{Why this evades the Remark 7.15e obstruction.} The read-once/forward-DP objection of 7.15e
+is about counting hidden paths to a \emph{fixed} word, which is in $\mathrm{FP}$. The entropy
+instead \emph{groups} paths by their observed word and weights the grouped masses by $\log$; the
+reduction exploits exactly that group-and-$\log$ structure (the collision multiplicities $c_j$
+enter through $(P+j)\log(P+j)$, and the prime $P$ isolates $c_0$). It does not encode CNF
+evaluation into one bounded-state predicate, so it is the resolution 7.15e flagged as missing,
+not a contradiction of it.
+
+\emph{Scope (honest).} (i) The hardness is of the \emph{coefficient query} (equivalently the
+exact symbolic value), via the $\mathbb Q$-independence of prime logs; it does \emph{not} claim
+hardness of a bounded-precision \emph{numerical} approximation, whose value folds all $c_j$ into
+one real and need not expose $c_0$. This is complementary to Remark 7.15c, where the
+\emph{approximate} open-middle oracle is poly-$\varepsilon$ under filter stability --- so the
+open middle is \emph{exact-\#P-hard yet $\varepsilon$-approximable} (under FS), a clean
+exact/approximate dichotomy. (ii) The HMM grows with $\varphi$ (the model-plus-$N$ input
+convention of the 7.15d/e bracket); it is hardness in the model size, not for a fixed HMM as
+$N\to\infty$. (iii) Adjacent known results are about different quantities: entropy
+\emph{approximation} for circuit samplers is NISZK-complete (Goldreich--Sahai--Vadhan 1999) and
+entropy \emph{difference} SZK-complete (Goldreich--Vadhan 1999), with a logspace/branching-program
+analogue (Dvir--Goldwasser--Rothblum--Vadhan 2011); HMM \emph{min}-entropy / consensus-string is
+NP-hard (Lyngs\o--Pedersen 2002); integer R\'enyi entropy is poly (Breitner--Skorski 2020); and
+relative entropy of probabilistic automata is studied separately (Cortes--Mohri--Rastogi--Riley).
+The exact \emph{Shannon block}-entropy \#P-hardness above is the direct statement for the §7.15
+open middle and we did not find it published. Together with the finite-belief poly island
+(Remark 7.15f, exact) and the FS poly-$\varepsilon$ oracle (Remark 7.15c, approximate), this pins
+the open middle: the exact coefficient query is $\mathrm{FP}^{\#P}$-complete, the tractable
+carve-outs being finite finite-prefix belief (exact) and filter stability (approximate).
+Verified in \texttt{scripts/verify/remark\_7\_15g\_hmm\_entropy\_sharp\_p\_hard.py} (V1
+$p(x)=(P{+}u(x))/Z$, $\sum_x p=1$; V2 the mode$\times$position HMM reproduces the marginal; V3
+$c_0=\#\mathrm{SAT}$; V4 the entropy identity; V5 the reduction --- the exact $\log P$ coefficient
+$=-c_0P/Z$ recovers $\#\mathrm{SAT}$ across SAT/mixed/UNSAT formulas, $P$ dividing no other term;
+V6 the exact-vs-approximate separation).
 
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
