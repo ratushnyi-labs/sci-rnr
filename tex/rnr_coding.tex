@@ -12301,10 +12301,11 @@ Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all 
 memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. The natural
 candidate here --- a $D$-independent plateau at the chain's \emph{lossless} varentropy
 $p(1-p)\log_2^2\tfrac{1-p}p$ across the Gray region, mirroring the Gauss--Markov $V(D)=\tfrac12$
-plateau --- is in fact \emph{correct, and we prove it} in Theorem 7.34b below:
-$V(D)=V_{\mathrm{lossless}}$ throughout Gray's region $0<D\le D_c(p)$ (both converse and
-achievability), resolving the discrete-Markov dispersion there. Only \emph{outside} the Gray region
-($D>D_c(p)$) does the dispersion fall below $V_{\mathrm{lossless}}$, a separate open question.
+plateau --- is \emph{converse-confirmed} in Remark 7.34b below: we prove the matching lower bound
+$V_{\mathrm{op}}(D)\ge V_{\mathrm{lossless}}$ throughout Gray's region $0<D\le D_c(p)$, with the
+matching achievability the sole open residual (the operational discrete-Markov/Hamming dispersion
+being open in general; Krishnamachari 2026). Only \emph{outside} the Gray region
+($D>D_c(p)$) does even the converse value fall below $V_{\mathrm{lossless}}$, a separate open question.
 Verified in
 \texttt{scripts/verify/remark\_7\_34a\_gauss\_markov\_rd\_dispersion.py} (V1 reverse-water-filling
 self-consistency; V2 $V(D)=\tfrac12$ nats$^2$ for $D\le D_c$; V3 $V(D)<\tfrac12$ decreasing for
