@@ -12386,8 +12386,13 @@ irremovable negative entries), so its natural Markov state is the continuous \em
 geometrically ergodic under filter stability (the §7.15c/7.30a tool). Steps (i)--(iii), (iv-a), and (iv-c) are
 constructed: the filter realization with a spectral gap (the gap \emph{substituting} for ellipticity,
 the atomic filter kernel lacking a density floor); the tilted operator $L_\alpha^{(c)}$ with analytic
-spectral gap (Keller--Liverani/Herv\'e--P\`ene); the single-schedule lattice Bahadur--Rao
-(Kontoyiannis--Meyn 2005); the schedule-driven slope/top-Lyapunov exponent via Birkhoff--Hopf cone
+spectral gap (Keller--Liverani/Herv\'e--P\`ene); the single-schedule lattice Bahadur--Rao via the
+\emph{dynamical} complex Ruelle--Perron--Frobenius route (Lalley 1989; Pollicott--Sharp;
+Kesseb\"ohmer--Kombrink), density-floor-free on a H\"older space --- \emph{not} Kontoyiannis--Meyn
+2005, whose exact lattice expansion requires their density assumption (DV3+)(ii), which they prove
+cannot be removed and which the atomic filter kernel lacks (the same density-floor obstruction that
+rules out the elliptic routes), with the lattice step a checkable cohomological non-arithmeticity
+condition on the filter; the schedule-driven slope/top-Lyapunov exponent via Birkhoff--Hopf cone
 contraction (Hennion 1997, stationary driving), giving the Legendre rate $nI=\jmath_n$; and the
 $\sqrt n$-shell uniformity via analytic perturbation of the leading eigenvalue. The \emph{sole}
 residual is step (iv-b): the $\tfrac12\log n+O(1)$ \emph{prefactor} of the lattice sharp-large-deviation
@@ -12399,12 +12404,18 @@ change-of-measure, bridge, and hexagon constructions use ellipticity \emph{essen
 \emph{pointwise} density lower bounds $p_n(x\to z)\ge\varepsilon_0$ that a contraction coefficient does
 not supply (e.g.\ $P=\big(\begin{smallmatrix}1&0\\ \tfrac12&\tfrac12\end{smallmatrix}\big)$ has
 $\delta(P^2)<1$ yet $P^2(1,2)=0$), and the atomic filter kernel has no density floor, which a bounded
-tilt cannot create. The cone-contraction quasi-compactness route (Hennion--Herv\'e; Benoist--Quint)
-supplies a \emph{central} limit theorem for such products but not the lattice fixed-fraction
-large-deviation prefactor. So (iv-b) --- a lattice sharp-LD local-limit prefactor for a
-\emph{non-elliptic}, cone-contracting, schedule-inhomogeneous operator product, uniform over the shell
---- is a genuine open problem (not a transfer of existing machinery), and is the precise residual;
-whether it is ultimately constructible or carries a real obstruction is itself open. We therefore do
+tilt cannot create. The non-elliptic routes split cleanly: the homogeneous sharp prefactor exists
+(the dynamical complex-RPF route above) but only for a \emph{single} operator, while the
+inhomogeneous/sequential transfer-operator theory (Hafouta--Kifer; Dragi\v cevi\'c--Froyland--Gonz\'alez-Tokman--Vaienti;
+expanding-on-average cocycles) supplies only the \emph{central-limit-scale} local CLT and a
+\emph{rough} (rate-only) LDP --- no sharp prefactor --- and on \emph{expanding} maps, opposite to the
+contracting filter. So (iv-b) --- a lattice sharp-LD local-limit prefactor for a \emph{non-elliptic},
+cone-contracting, schedule-inhomogeneous operator product, uniform over the shell --- is a genuine
+open problem: the two needed features, a sharp $\tfrac12\log n$ prefactor and an inhomogeneous
+schedule, co-occur in no theorem, and the precise missing tool is an \emph{Edgeworth expansion for
+tilted operator cocycles, density-floor-free} (second-order control of the inhomogeneous tilted
+product at the large-deviation measure, uniform over the shell). Whether it is ultimately
+constructible or carries a real obstruction is itself open. We therefore do
 \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is \emph{converse-confirmed}
 on $(0,D_c(p)]$, with this single non-elliptic LD-local-limit prefactor the sole residual (the same
 tool the $D>D_c$ regime needs). (Were it supplied, the discrete-Markov case would obey the
