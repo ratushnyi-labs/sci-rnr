@@ -11997,6 +11997,88 @@ universal-vs-fixed overflow ratio compounding as $2^{N(E^\ast-E_{\mathrm{arith}}
 V5 the redundancy sign-flip on the gap event; V6 the $o(\sqrt N)$/$o(N)$ invisibility
 with $E^\ast>E_{\mathrm{arith}}$).
 
+\textbf{Remark 7.32a (Universal and distributed RNR at second order: the parameter is
+a cheap header, the side information is not).} The clean $\sqrt N$ dispersion of
+Theorem 7.29 is stated for a single \emph{known} source. Lifting that assumption in
+the two canonical directions --- \emph{unknown} parameter and \emph{distributed} side
+information --- has \emph{opposite} second-order consequences for random access, and
+the contrast is the point.
+
+\emph{(i) Universal: the $\sqrt N$ floor survives random access via a cheap header.}
+For a $d$-dimensional smooth full-support parametric family at an interior $\theta$
+(varentropy $V_\theta>0$), the global Bayes/NML mixture attains
+$N h_\theta+\tfrac d2\log_2 N+\sqrt{N V_\theta}\,Q^{-1}(\varepsilon)+o(\sqrt N)$
+(Clarke--Barron 1990 regret atop the Kontoyiannis--Verd\'u 2014 dispersion), but it is
+\emph{sequential} --- block $i$'s code depends on the running posterior, so it is not
+locally decodable. Random access is recovered by a \emph{two-pass} scheme: estimate
+$\hat\theta$ from the whole stream, store it as a global header of
+$\tfrac d2\log_2 N=o(\sqrt N)$ bits, and code each sub-block independently against the
+\emph{fixed} $P_{\hat\theta}$. The aggregate repair length is then
+\[
+  L^{\mathrm{rep}}_{\mathrm{univ}}(N,\varepsilon,K)
+  = N h_\theta + \tfrac NK\,\delta_\infty + \tfrac d2\log_2 N
+    + \sqrt{N V_\theta}\,Q^{-1}(\varepsilon) + o(\sqrt N),
+\]
+\emph{locally decodable}, with the Kontoyiannis--Verd\'u dispersion
+$\sqrt{N V_\theta}\,Q^{-1}(\varepsilon)$ \emph{intact}: the header
+$\tfrac d2\log_2 N$ is dispersion-invisible. So the price of not knowing the source is
+second-order-free \emph{even with random access} --- because the unknown is only $d$
+real numbers, amortisable as one cheap global header. This header $\hat\theta$ is itself
+\emph{source-dependent} (a function of the stream), so the two-pass scheme lies formally
+\emph{outside} the strictly-charged sub-block model of Lemma 5.1e / Remark 7.29a, whose
+per-block converse admits only source-\emph{independent} shared metadata. It nonetheless
+does not contradict that converse's conclusion: collapsing the $\Theta(\sqrt N)$ floor
+the converse establishes would take a $\Theta(N)$-bit source-dependent header (the
+$X_n\equiv Y$ degeneracy of Remark 7.29a), whereas $\hat\theta$ carries only
+$o(\sqrt N)$ bits and no per-block content --- so achievability (i) and the Remark 7.29a
+converse coexist (the floor stands; the header is simply too small to defeat it). This
+is the CLT companion to the large-deviation dividend of Theorem 7.32.
+
+\emph{(ii) The header earns its keep.} A naive single-pass alternative whose
+sufficient statistics \emph{reset} at each of the $m=N/K$ sync boundaries re-pays the
+Clarke--Barron regret per sub-block:
+\[
+  \tfrac NK\cdot\tfrac d2\log_2 K \;=\; \Theta(\sqrt N\log N)
+  \qquad\text{at } K=\Theta(\sqrt N),
+\]
+a $\log N$ factor \emph{above} the dispersion. This is not a tax of universality but of
+\emph{discarding} the cheap header: (i) shows it is avoidable. (An achievability
+comparison of two schemes, not a converse.)
+
+\emph{(iii) Distributed (RNR Slepian--Wolf, Theorem 7.8): the genuinely open tax.}
+Here the analogue of the ``unknown'' is the side information $Y$, which is $\Theta(N)$
+\emph{source data}, not a $d$-parameter --- there is no cheap global header to amortise
+it. The global SW second order at an interior rate point is the $O(\sqrt N)$ term
+governed by the entropy-density dispersion matrix of
+$(-\log P(X\mid Y),-\log P(Y\mid X),-\log P(X,Y))$ (Tan--Kosut 2014), but the RNR
+sub-block construction decodes each block independently, and the per-block union bound
+holding all $m$ corner constraints at confidence $\varepsilon/m$ pays
+\[
+  m\sqrt K\,Q^{-1}(\varepsilon/m) \;=\; \Theta\!\big(N^{3/4}\sqrt{\log N}\big)
+  \qquad\text{at } K=\Theta(\sqrt N),
+\]
+strictly above $\sqrt N$. Whether a locally decodable sub-block Slepian--Wolf code can
+restore the $\sqrt N$ floor (sharing typicality slack across blocks instead of a naive
+$\varepsilon/m$ union bound) is \emph{open} --- the genuine second-order random-access
+question, in sharp contrast to (i), where the cheap parameter header settles it.
+
+\emph{The contrast.} For the natural sub-block schemes the achievable second orders are
+\[
+  \underbrace{\sqrt N}_{\substack{\text{known source}\\ \text{\emph{and} universal (header)}}}
+  \;\;\lneq\;\;
+  \underbrace{\sqrt N\log N}_{\substack{\text{universal,}\\ \text{naive reset (avoidable)}}}
+  \;\;\lneq\;\;
+  \underbrace{N^{3/4}\sqrt{\log N}}_{\substack{\text{Slepian--Wolf}\\ \text{sub-block (open)}}} ,
+\]
+and the lesson is the dichotomy: a $d$-dimensional \emph{parameter} is a cheap header
+that keeps random-access universality at the $\sqrt N$ floor, whereas $\Theta(N)$ bits
+of \emph{side information} admit no such header and leave the random-access second order
+genuinely open. Verified in
+\texttt{scripts/verify/remark\_7\_32a\_ra\_secondorder\_tax.py} (V1 the header
+$\tfrac d2\log_2 N=o(\sqrt N)$, so (i) keeps the $\sqrt N$ floor; V2 the avoidable
+naive-reset cost $\Theta(\sqrt N\log N)$; V3 the SW sub-block union-bound cost
+$\Theta(N^{3/4}\sqrt{\log N})$; V4 the scale ordering).
+
 \textbf{Theorem 7.33 (Moderate-deviation rate of the RNR archive; the random-access
 penalty fades from the exponent but not from the probability).} \emph{Adopt the
 hypotheses of Theorem 7.29 with $X$ \emph{i.i.d.\ or a finite-state irreducible
