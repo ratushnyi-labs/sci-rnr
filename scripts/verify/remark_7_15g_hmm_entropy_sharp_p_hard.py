@@ -181,8 +181,35 @@ print("     not the numeric value (an additive-eps oracle does not expose it). H
 v6 = True   # conceptual check (documented), not a numeric assertion
 print(f"  V6 {'PASS' if v6 else 'FAIL'}")
 
+# ---------------------------------------------------------------- V7  TC / multi-information corollary
+print("="*70)
+print("V7: COROLLARY -- exact (coefficient-query) total correlation TC=sum_i H(X_i)-H(X^N) is #P-hard")
+# coeff_P(TC) = coeff_P(sum H(X_i)) - kappa_P; the single-symbol marginals are poly-computable, so
+# kappa_P = coeff_P(sum H(X_i)) - coeff_P(TC) -> #SAT = -kappa_P Z/P. (Marginals may or may not
+# involve P; either way poly-computable, so TC inherits the joint entropy's #P-hardness.)
+def coeffP_entropy(dist, P):
+    coef = Fraction(0)
+    for p in dist:
+        if p == 0: continue
+        coef += -p*Fraction(prime_factors(p.numerator).get(P,0)) + p*Fraction(prime_factors(p.denominator).get(P,0))
+    return coef
+ok7 = True
+for name,(n,cl) in [("F_sat",F_sat),("F_mix",F_mix),("F_unsat",F_unsat)]:
+    a=analyze(n,cl); P=a['P']; Z=a['Z']
+    joint={x:Fraction(P+u_of(cl,x),Z) for x in itertools.product([0,1],repeat=n)}
+    kappaP_joint = coeffP_entropy(list(joint.values()), P)
+    coefP_marg = sum((coeffP_entropy([1-sum(joint[x] for x in joint if x[i]==1),
+                                      sum(joint[x] for x in joint if x[i]==1)], P) for i in range(n)), Fraction(0))
+    coefP_TC = coefP_marg - kappaP_joint
+    kappaP_rec = coefP_marg - coefP_TC                 # = kappaP_joint (marginals poly-known)
+    sat_rec = -kappaP_rec*Z/P
+    print(f"  {name}: coeff_P(TC)={coefP_TC}, marginals-involve-P={coefP_marg!=0}, "
+          f"recovered #SAT={sat_rec} (true {a['sat']})")
+    ok7 = ok7 and sat_rec==a['sat']
+print(f"  V7 {'PASS' if ok7 else 'FAIL'}  (exact TC + poly marginals -> #SAT: TC is #P-hard)")
+
 # ---------------------------------------------------------------- summary
 print("="*70)
-allok = ok1 and ok2 and ok3 and ok4 and ok5 and v6
+allok = ok1 and ok2 and ok3 and ok4 and ok5 and v6 and ok7
 print(f"RESULT: {'ALL PASS' if allok else 'SOME FAILED'}  "
-      f"[V1 {ok1}, V2 {ok2}, V3 {ok3}, V4 {ok4}, V5 {ok5}, V6 {v6}]")
+      f"[V1 {ok1}, V2 {ok2}, V3 {ok3}, V4 {ok4}, V5 {ok5}, V6 {v6}, V7 {ok7}]")

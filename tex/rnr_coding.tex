@@ -8851,6 +8851,12 @@ $\sum_x w(x)v_q(w(x))$ are exponential sums of poly-evaluable nonnegative intege
 computable with a $\#P$ oracle. So
 $\textsc{Coeff-HMM-Entropy}\in\mathrm{FP}^{\#P}$, giving $\mathrm{FP}^{\#P}$-completeness.
 
+\emph{Corollary (multi-information).} The same reduction makes the exact (coefficient-query)
+total correlation $\mathrm{TC}=\sum_i H(X_i)-H(X^N)$ (Theorem 5.5) \#P-hard: the single-symbol
+marginals $H(X_i)$, hence their prime-log coefficients, are poly-computable, so
+$\kappa_P(H(X^N))=\kappa_P\!\bigl(\sum_i H(X_i)\bigr)-\kappa_P(\mathrm{TC})$ and an exact-$\mathrm{TC}$
+oracle again yields $\#\mathrm{SAT}$ (whether or not the marginals involve $P$; verified V7).
+
 \emph{Why this evades the Remark 7.15e obstruction.} The read-once/forward-DP objection of 7.15e
 is about counting hidden paths to a \emph{fixed} word, which is in $\mathrm{FP}$. The entropy
 instead \emph{groups} paths by their observed word and weights the grouped masses by $\log$; the
@@ -8882,7 +8888,8 @@ Verified in \texttt{scripts/verify/remark\_7\_15g\_hmm\_entropy\_sharp\_p\_hard.
 $p(x)=(P{+}u(x))/Z$, $\sum_x p=1$; V2 the mode$\times$position HMM reproduces the marginal; V3
 $c_0=\#\mathrm{SAT}$; V4 the entropy identity; V5 the reduction --- the exact $\log P$ coefficient
 $=-c_0P/Z$ recovers $\#\mathrm{SAT}$ across SAT/mixed/UNSAT formulas, $P$ dividing no other term;
-V6 the exact-vs-approximate separation).
+V6 the exact-vs-approximate separation; V7 the multi-information corollary --- exact $\mathrm{TC}$
+recovers $\#\mathrm{SAT}$ via poly-computable marginals).
 
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
