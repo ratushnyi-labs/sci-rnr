@@ -12363,14 +12363,30 @@ above. (For $D>D_c(p)$ the inverse transform acquires negative entries for large
 $p=0.1,\,D=0.05$ valid only at $n=2$, failing for every $n\ge3$ --- so the identity fails and
 $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$; but that is outside the Gray region.)
 
-\emph{The achievability residual (the sole gap), sharpened to a constructible theorem.} The matching
-upper bound $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ would complete the candidate. On the Gray region
-$X=Y^*\oplus Z$ with $Z$ i.i.d.\ $\mathrm{Bern}(D)$ independent of the (valid, all-$n$) optimal output
-process $Y^*$, and $\jmath_n$ is i.i.d.-additive. \emph{However}, the random-covering achievability is
-governed not by $\jmath_n$ (a tilted exponential moment) but by the Hamming-ball measure
-$-\log P_{Y^{*n}}(B_{nD}(x^n))$, the lower tail of the schedule-weighted functional
-$A_n=\sum_i\mathbf 1[Y^*_i\ne x_i]$; the two agree only up to a sharp-large-deviation prefactor,
-$-\log P_{Y^{*n}}(B_{nD}(x^n))=\jmath_n(x^n,D)+\tfrac12\log n+O(1)$. A spectral (Nagaev--Guivarc'h)
+\emph{The achievability residual, correctly located at the dispersion (Berry--Esseen) level.} The
+matching upper bound $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ remains open; recent work confirms the
+operational discrete-Markov/Hamming dispersion is open in general (Krishnamachari 2026 leaves it
+explicitly open; only the Gauss--Markov memory class is resolved --- Tian--Kostina 2019,
+Tasci--Kostina 2026 --- via $n$-letter informational quantities). Two facts locate the gap. \emph{(a)
+The dispersion is a Berry--Esseen, not a local-limit, object:} Kostina--Verd\'u obtain the
+$\sqrt{V/n}$ term from the integral (CDF) Berry--Esseen on the distortion sum through a constant-width
+window $\{nD-\tau<\sum_i d(X_i,\hat Z_i)\le nD\}$ --- lattice-agnostic and ellipticity-free --- so the
+dispersion residual is only a CDF Berry--Esseen for the distortion sum under the optimal coding,
+uniform over the $\sqrt n$-shell (the sharp $\tfrac12\log n$ prefactor below is \emph{third} order, not
+needed for the dispersion). \emph{(b) The optimal kernel is temporally correlated:} for a Markov source
+the $n$-letter block-optimal test channel is \emph{not} a single-letter tilt of the marginal
+(Krishnamachari 2026), so the single-letter $d$-tilted information does not carry the operational
+dispersion and the relevant object is the genuinely $n$-letter forward-filter cocycle --- non-elliptic
+(atomic filter, no density floor) and schedule-inhomogeneous. Its CDF Berry--Esseen, uniform over the
+shell, holds homogeneously (Hennion--Herv\'e, density-floor-free) but is uncovered in the
+inhomogeneous non-elliptic case (the sequential Edgeworth/Berry--Esseen of Hafouta 2025 still requires
+a density floor). \emph{This density-floor-free inhomogeneous Berry--Esseen for the
+temporally-correlated block-optimal cocycle is the dispersion residual.}
+
+\emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
+$\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
+prefactor $-\log P_{Y^{*n}}(B_{nD}(x^n))=\jmath_n(x^n,D)+\tfrac12\log n+O(1)$ --- a \emph{lattice}
+sharp-LD local-limit theorem for the same cocycle. A spectral (Nagaev--Guivarc'h)
 analysis reduces this to a Bahadur--Rao for a \emph{filter functional} and clears two of its three
 sub-obstructions: the exact form $e^{-nI}/(\lambda\sqrt{2\pi n\sigma^2})$ with $nI=\jmath_n$ holds
 (Kontoyiannis--Meyn 2005, lattice lower tail, via the multiplicative-Poisson eigenvalue), and the
@@ -12426,14 +12442,14 @@ the literature: every inhomogeneous lattice-or-large-deviation result (Dolgopyat
 Dolgopyat--Hafouta 2022) requires \emph{uniform ellipticity}, while every density-floor-free
 spectral-gap result (Hafouta 2025) is \emph{non-lattice and near-mean} only; the target
 $-\log P(A_n\le nD)=\jmath_n+\tfrac12\log n+O(1)$ for an integer-valued tail sits in their
-\emph{empty intersection}, and the atomic filter kernel has no ellipticity. So (iv-b) is not a routine
-adaptation: it requires a genuinely \emph{new} theorem --- a lattice sharp-LD local-limit expansion
-for inhomogeneous transfer-operator cocycles \emph{without} ellipticity --- absent from the literature
-as of this writing. Whether that theorem is constructible or carries a real obstruction is itself open.
-We therefore do
+\emph{empty intersection}, and the atomic filter kernel has no ellipticity. So the sharp third-order prefactor needs a
+genuinely \emph{new} theorem --- a lattice sharp-LD local-limit expansion for inhomogeneous
+non-elliptic transfer-operator cocycles --- absent from the literature; but it is \emph{not} required
+for the dispersion, whose residual is the (weaker) density-floor-free inhomogeneous Berry--Esseen of
+(a)--(b) above. We therefore do
 \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is \emph{converse-confirmed}
-on $(0,D_c(p)]$, with this single non-elliptic LD-local-limit prefactor the sole residual (the same
-tool the $D>D_c$ regime needs). (Were it supplied, the discrete-Markov case would obey the
+on $(0,D_c(p)]$, with the achievability open --- the operational discrete-Markov dispersion being open
+in general as of this writing (Krishnamachari 2026). (Were it supplied, the discrete-Markov case would obey the
 memoryless/Gauss--Markov ``lossy dispersion $=$ lossless varentropy in the SLB-tight region'' pattern,
 with the plateau bounded by $D_c(p)$.)
 
