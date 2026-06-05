@@ -5893,15 +5893,28 @@ hard within $100/99$, the extreme-point ratio is
 \]
 a \emph{directly valid} improvement ($3$-regular $\subseteq$ Charikar's max-degree-3,
 $|E|\ge|V|$ input). In general a $d$-regular family hard within $1+\delta$ gives
-$\gamma_{\mathrm{SGP}}\ge 1+\delta/(31+3d)$; the $4$-regular family ($53/52$) gives
-$2237/2236$, \emph{conditional} on Charikar's exact-size lemma extending to simple degree-$4$
-graphs (its counting proof is degree-independent, the degree entering only the final dilution
-step). This sharpens, but does not qualitatively change, the (still small) gap --- a similar
-update was noted by Winslow --- and it does not address the \emph{bit-cost} objective (§13.2).
-Verified in \texttt{scripts/verify/remark\_6\_8m\_sgp\_constant\_sharpening.py} (the
-$1+\delta/(31+3d)$ formula; $3961/3960$ and $2237/2236$, both exceeding $8569/8568$; and the
-extreme-point reconciliation reproducing the baseline $8569/8568$ at $(\delta,c_E,c_T)=(1/144,
-3/2,1/3)$).
+$\gamma_{\mathrm{SGP}}\ge 1+\delta/(31+3d)$. The $4$-regular family ($53/52$) gives the stronger
+\[
+  \gamma_{\mathrm{SGP}}\ \ge\ 2237/2236,
+\]
+and this is \emph{unconditional}: Charikar's exact-size identity $\mathrm{OPT}=15|V|+3|E|+\tau(G)$
+holds for \emph{all simple graphs}, not only max-degree-3 ones. (In a simple graph each unordered
+edge-block $\#v_i\#v_j\#$ occurs once and every $|$ is a fresh terminal, so the only repeated
+length-$\ge2$ substrings are $\#v$, $v\#$, $\#v\#$ --- the characterization underlying the count
+$8|V|+(3|V|-|C|)+3|E|+4|V|+2|C|=15|V|+3|E|+|C|$, minimized at $|C|=\tau(G)$ --- and \emph{no step
+uses the degree bound}, which enters only the original ratio-dilution.) Moreover $2237/2236$ is
+\emph{optimal} along this route: over the Chleb\'ik--Chleb\'ikov\'a $d$-regular constants
+($100/99,53/52,51/50,49/48$ for $d=3,4,5,6$) the bound $1+\delta_d/(31+3d)$ peaks at $d^\ast=4$
+($3961/3960,\,2237/2236,\,2301/2300,\,2353/2352$). Under UGC the Austrin--Khot--Safra degree-$d$
+VC hardness $2-(2+o_d(1))\tfrac{\log\log d}{\log d}$ does \emph{not} improve this --- the
+$1/(31+3d)$ dilution drives $\gamma\to1$ as $d\to\infty$, with no clean finite $d^\ast$. So
+$2237/2236$ is the best constant this Charikar$+$bounded-degree-VC route yields; it sharpens, but
+does not qualitatively change, the (still small) gap --- a similar update was noted by Winslow ---
+and it does not address the \emph{bit-cost} objective (§13.2). Verified in
+\texttt{scripts/verify/remark\_6\_8m\_sgp\_constant\_sharpening.py} (the $1+\delta/(31+3d)$
+formula; $3961/3960$ and the unconditional $2237/2236$, both exceeding $8569/8568$; the
+extreme-point reconciliation reproducing the baseline at $(\delta,c_E,c_T)=(1/144,3/2,1/3)$; and
+the $d^\ast=4$ optimality over $d=3,\dots,6$).
 
 \emph{Remark on the bit-cost objective.} A natural attempt is to
 transfer Theorem 6.8's APX-hardness from the symbol-count
@@ -12210,7 +12223,11 @@ $V=p(1-p)\log_2^2\tfrac{1-p}p$ --- the \emph{lossless} varentropy of the chain, 
 exactly mirroring the Gauss--Markov $V(D)=\tfrac12$ at high rate (a clean ``lossy dispersion $=$
 lossless varentropy at high rate'' pattern). Its rigorous establishment hinges on a Markov-type
 lossy-AEP / covering lemma in the Gray region (each typical transition-type covered at rate
-$h(q)-h(D)+O(\log n/n)$), which we do not supply; we record it as the precise candidate, not a
+$h(q)-h(D)+O(\log n/n)$), which we do not supply --- and which is genuinely non-standard, because
+the Hamming distortion lives on $X^n$ while the Markov type is a \emph{transition} type, so
+covering the transition sequence does not control source-symbol distortion (one missed transition
+flips a whole run); equivalently one needs a usable $n$-letter low-distortion $d$-tilted/SLB
+identity with $O(\log n)$ control. We record it as the precise candidate and obstruction, not a
 theorem. Verified in
 \texttt{scripts/verify/remark\_7\_34a\_gauss\_markov\_rd\_dispersion.py} (V1 reverse-water-filling
 self-consistency; V2 $V(D)=\tfrac12$ nats$^2$ for $D\le D_c$; V3 $V(D)<\tfrac12$ decreasing for

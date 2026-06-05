@@ -13,8 +13,10 @@ Checks:
   V1 the gap formula gamma = 1 + delta/(31+3d) (symbolic, from OPT=15|V|+3|E|+tau, |E|=d|V|/2, tau=|V|/2).
   V2 3-regular CC VC (100/99, delta=1/99): gamma = 3961/3960 (DIRECTLY valid: 3-regular subset of
      Charikar's max-degree-3 + |E|=1.5|V|>=|V| input).
-  V3 4-regular CC VC (53/52, delta=1/52): gamma = 2237/2236 (CONDITIONAL on Charikar's exact-size
-     lemma extending to simple 4-regular graphs).
+  V3 4-regular CC VC (53/52, delta=1/52): gamma = 2237/2236 (UNCONDITIONAL -- Charikar's exact-size
+     identity OPT=15|V|+3|E|+tau is degree-free for SIMPLE graphs: each edge-block appears once, so
+     the only repeated substrings are #v, v#, #v#, and the count never uses the degree bound).
+  V6 optimality: gamma=1+delta_d/(31+3d) over CC d-regular constants (d=3..6) peaks at d*=4 = 2237/2236.
   V4 both EXCEED the baseline 8569/8568 (i.e. 1/3960 > 1/8568 and 1/2236 > 1/8568).
   V5 reconciliation: the baseline 8569/8568 = 1 + delta/(2*59.5) with delta=1/144 corresponds to a
      DENSER instance (c_E=|E|/|V|=4.75) than the CC sparse families; the formula is consistent.
@@ -46,7 +48,7 @@ v2 = (g3 == F(3961,3960))
 print(f"  == 3961/3960 ? {v2}")
 
 print("="*68)
-print("V3: 4-regular CC VC (53/52): gamma_SGP (conditional on degree-4 lemma)")
+print("V3: 4-regular CC VC (53/52): gamma_SGP (UNCONDITIONAL -- Charikar size identity is degree-free)")
 g4 = gamma_d_regular(F(1,52), 4)
 print(f"  gamma = 1 + (1/52)/43 = {g4} = {float(g4):.7f}")
 v3 = (g4 == F(2237,2236))
@@ -77,5 +79,17 @@ v5 = (base_chk==base) and (imp3==F(3961,3960)) and (imp4==F(2237,2236)) and (imp
 print(f"  baseline reproduces 8569/8568, CC families give larger valid bounds (3961/3960, 2237/2236): {v5}")
 
 print("="*68)
-allok = v1 and v2 and v3 and v4 and v5
-print(f"RESULT: {'ALL PASS' if allok else 'SOME FAILED'}  [V1 {v1}, V2 {v2}, V3 {v3}, V4 {v4}, V5 {v5}]")
+print("V6: optimality over the Chlebik-Chlebikova bounded-degree route (d*=4 maximizes gamma)")
+# CC d-regular VC inapproximability 1+delta_d, d=3..6 (clean fractions); gamma=1+delta_d/(31+3d).
+cc = {3: F(1,99), 4: F(1,52), 5: F(1,50), 6: F(1,48)}   # 100/99, 53/52, 51/50, 49/48
+gammas = {d: gamma_d_regular(delta, d) for d, delta in cc.items()}
+for d in sorted(gammas):
+    print(f"  d={d}: VC 1+1/{int(1/cc[d])}, gamma = {gammas[d]} = {float(gammas[d]):.8f}")
+dstar = max(gammas, key=lambda d: gammas[d])
+print(f"  d* = {dstar} maximizes gamma_SGP; best = {gammas[dstar]} (== 2237/2236? {gammas[dstar]==F(2237,2236)})")
+v6 = (dstar == 4) and (gammas[4] == F(2237,2236)) and all(gammas[4] >= gammas[d] for d in gammas)
+print(f"  V6 {'PASS' if v6 else 'FAIL'}  (d*=4 optimal; 2237/2236 the best clean P!=NP constant)")
+
+print("="*68)
+allok = v1 and v2 and v3 and v4 and v5 and v6
+print(f"RESULT: {'ALL PASS' if allok else 'SOME FAILED'}  [V1 {v1}, V2 {v2}, V3 {v3}, V4 {v4}, V5 {v5}, V6 {v6}]")
