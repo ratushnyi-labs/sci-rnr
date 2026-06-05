@@ -8857,6 +8857,16 @@ marginals $H(X_i)$, hence their prime-log coefficients, are poly-computable, so
 $\kappa_P(H(X^N))=\kappa_P\!\bigl(\sum_i H(X_i)\bigr)-\kappa_P(\mathrm{TC})$ and an exact-$\mathrm{TC}$
 oracle again yields $\#\mathrm{SAT}$ (whether or not the marginals involve $P$; verified V7).
 
+\emph{Corollary (the exact ideal RNR rate is \#P-hard --- the operational reading).} The
+operationally central case is the ideal RNR repair length itself: by the chain rule the exact
+expected ideal finite-block repair length under true causal arithmetic coding is
+$L^\ast_{\mathrm{RNR}}(M,N)=\sum_{t=1}^N H_M(X_t\mid X_{<t})=H_M(X^N)$, so its coefficient-query
+problem \emph{is} $\textsc{Coeff-HMM-Entropy}$ --- $\mathrm{FP}^{\#P}$-complete. Thus computing the
+\emph{exact} ideal RNR archive size for a finite-state neural-surrogate source is \#P-hard, even
+though the deployed encoder runs in one forward pass per symbol (Remark 7.15b): the intractability
+is in pricing the optimum exactly, not in coding, which is precisely why RNR reports achievable
+rates and bounds rather than the exact ideal.
+
 \emph{Why this evades the Remark 7.15e obstruction.} The read-once/forward-DP objection of 7.15e
 is about counting hidden paths to a \emph{fixed} word, which is in $\mathrm{FP}$. The entropy
 instead \emph{groups} paths by their observed word and weights the grouped masses by $\log$; the
