@@ -12066,9 +12066,15 @@ Gauss--Markov source.
 \emph{What stays open (honest localisation).} This supplies Remark 7.34's missing ingredient
 only for the \emph{Gaussian} memory class (continuous source, MSE distortion); RNR's native
 lossy setting --- a \emph{discrete} finite-state source under \emph{Hamming} distortion ---
-still lacks an operational rate-distortion dispersion: even the first-order Markov--Hamming
-RDF is known only in special low-distortion regimes (Gray 1970s; Jalali--Weissman bounds), and
-no operational dispersion formula is established there. (Continuous Gauss--Markov data enters
+still lacks an operational rate-distortion dispersion. The obstruction is structural: the
+Markov RDF is not single-letter (it is an $n$-letter limit $R(D)=\lim_n R_n(D)$, known in
+closed form only in special low-distortion regimes; Gray 1970s, Jalali--Weissman bounds), so
+the operational $d$-tilted information does \emph{not} single-letterise as it does for
+memoryless (Kostina--Verd\'u) or Gaussian (Tian--Kostina) sources, and its dispersion is open.
+The single-letter marginal (Blahut--Arimoto) $d$-tilted proxy does have a computable Markov
+long-run variance (Krishnamachari 2026, $V_{\mathrm{sl}}=\tfrac{ab(2-a-b)}{(a+b)^3}\log_2^2
+\tfrac ab$ for the binary chain), but it is provably distinct from the $n$-letter operational
+quantity, whose dispersion remains unidentified. (Continuous Gauss--Markov data enters
 RNR's scope only through fine quantisation; the abstract second-order machinery of
 Theorems 7.29/7.36 is source-agnostic once the dispersion exists, which is exactly what
 Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all sources with
