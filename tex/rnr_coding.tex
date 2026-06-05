@@ -12314,20 +12314,21 @@ $\Theta(\sqrt N)$ interplay with $N$-independent ratio; V6 $\delta_\infty^D=-\tf
 increasing in $|\rho|$, $\to0$ as $\rho\to0$).
 
 \textbf{Remark 7.34b (The BSMS Gray-region RD dispersion: a matching converse lower bound at the
-lossless varentropy, with the candidate's achievability reduced to a quenched ball-measure
-estimate).} For the binary symmetric Markov source (BSMS, switch probability $0<p<\tfrac12$) under
-Hamming distortion, we prove the \emph{converse} bound
+lossless varentropy; the achievability open at the 2026 frontier).} For the binary symmetric Markov
+source (BSMS, switch probability $0<p<\tfrac12$) under Hamming distortion, we prove the \emph{converse}
+bound
 \[
   V_{\mathrm{op}}(D)\ge V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p
   \qquad\text{throughout Gray's region }0<D\le D_c(p),
 \]
 with Gray's critical distortion $D_c(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (Gray 1970;
 Zhu--Alajaji), \emph{matching} the candidate value of Remark 7.34a. The candidate's equality
-$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ holds iff the matching achievability does; we reduce that to a
-single open lemma --- a quenched Hamming-ball local-CLT for the (memory-carrying) optimal output
-process --- the \emph{same} tool the $D>D_c$ regime needs. So on the Gray region the candidate is
-\emph{converse-confirmed} (a rigorous lower bound matching its value), with its achievability the sole
-residual. This is the first rigorous bound on the discrete-Markov (BSMS, Hamming) dispersion, a
+$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ holds iff the matching achievability does; that achievability is
+\emph{open} --- the operational discrete-Markov/Hamming dispersion is open in general (Krishnamachari
+2026), and the precise residual (located below) is a density-floor-free, inhomogeneous CDF
+Berry--Esseen for the temporally-correlated block-optimal cocycle. So on the Gray region the candidate
+is \emph{converse-confirmed} (a rigorous lower bound matching its value), with its achievability the
+sole residual. This is the first rigorous bound on the discrete-Markov (BSMS, Hamming) dispersion, a
 problem otherwise open (Krishnamachari 2026; Tasci--Kostina 2026 list Gauss--Markov as the only
 solved memory case).
 
@@ -12389,8 +12390,8 @@ prefactor $-\log P_{Y^{*n}}(B_{nD}(x^n))=\jmath_n(x^n,D)+\tfrac12\log n+O(1)$ --
 sharp-LD local-limit theorem for the same cocycle. A spectral (Nagaev--Guivarc'h)
 analysis reduces this to a Bahadur--Rao for a \emph{filter functional} and clears two of its three
 sub-obstructions: the exact form $e^{-nI}/(\lambda\sqrt{2\pi n\sigma^2})$ with $nI=\jmath_n$ holds
-(Kontoyiannis--Meyn 2005, lattice lower tail, via the multiplicative-Poisson eigenvalue), and the
-\emph{full} large-deviation regime applies (the Dolgopyat--Sarig partial-regime degeneracy needs a
+(density-floor-free, via the dynamical complex-RPF route detailed below), and the \emph{full}
+large-deviation regime applies (the Dolgopyat--Sarig partial-regime degeneracy needs a
 vanishing-probability symbol, absent here as $Y^*$ has both symbols at probability $\tfrac12$). The
 residual is the combination no single theorem spans: a \emph{fixed-fraction} deviation ($D=\Theta(1)$,
 beyond Dolgopyat--Sarig's small-$\varepsilon$ window) with a \emph{time-inhomogeneous} test function
@@ -12413,10 +12414,10 @@ continuum). The contracting IFS is coded to a one-sided symbolic system (the bel
 function of the past) so the RPF hypotheses hold directly, with the lattice step a checkable
 cohomological non-arithmeticity condition on the filter; the schedule-driven slope/top-Lyapunov exponent via Birkhoff--Hopf cone
 contraction (Hennion 1997, stationary driving), giving the Legendre rate $nI=\jmath_n$; and the
-$\sqrt n$-shell uniformity via analytic perturbation of the leading eigenvalue. The \emph{sole}
-residual is step (iv-b): the $\tfrac12\log n+O(1)$ \emph{prefactor} of the lattice sharp-large-deviation
-local-limit theorem for the schedule-driven product $L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$, uniform
-over the shell. The natural route --- transferring the Dolgopyat--Sarig 2023 inhomogeneous
+$\sqrt n$-shell uniformity via analytic perturbation of the leading eigenvalue. Within this
+third-order refinement the remaining gap is the $\tfrac12\log n+O(1)$ \emph{prefactor} of the lattice
+sharp-large-deviation local-limit theorem for the schedule-driven product
+$L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$, uniform over the shell. The natural route --- transferring the Dolgopyat--Sarig 2023 inhomogeneous
 local-limit theorem with Hilbert-cone contraction in place of ellipticity --- is \emph{ruled out}:
 their decorrelation (Prop.~2.13) is indeed contraction-coefficient-driven and transfers, but their
 change-of-measure, bridge, and hexagon constructions use ellipticity \emph{essentially}, through
@@ -12426,8 +12427,8 @@ $\delta(P^2)<1$ yet $P^2(1,2)=0$), and the atomic filter kernel has no density f
 tilt cannot create. The \emph{nearest} existing tool is Dragi\v cevi\'c--Hafouta 2020 (Thm.~4.18),
 which already proves a quenched \emph{sharp} large-deviation prefactor of order $1/\sqrt n$ for tilted
 transfer-operator \emph{cocycles} (an Edgeworth/sharp-LD expansion) --- so the sharp inhomogeneous
-prefactor is \emph{not} unprecedented. It does not cover our exact object, and (iv-b) is precisely its
-adaptation across five axes: (1) a \emph{deterministic} source schedule (vs.\ their quenched-a.e.\
+prefactor is \emph{not} unprecedented. It does not cover our exact object, and this third-order lattice
+LLT is precisely its adaptation across five axes: (1) a \emph{deterministic} source schedule (vs.\ their quenched-a.e.\
 random driving); (2) a \emph{contracting atomic} IFS operator (vs.\ expanding/Anosov --- bridged by
 coding the contracting filter to a one-sided symbolic system, the belief being a H\"older function of
 the past, so the RPF hypotheses hold directly); (3) a \emph{lattice} (integer) tail, needing the
