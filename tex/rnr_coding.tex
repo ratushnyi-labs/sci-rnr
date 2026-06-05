@@ -556,7 +556,7 @@ This article makes the following contributions.
   RNR encoder synthesised from Lemma 5.6j and Lemma 6.9.
 \item
   The \emph{discrete}, deployed counterpart of the above for the neural-LM
-  field of Theorem 7.15 --- a five-part arc (Remarks 7.15a--7.15e). The
+  field of Theorem 7.15 --- a seven-part arc (Remarks 7.15a--7.15g). The
   §6.9 Gaussian maximum-entropy-sampling support selection transfers to a
   transformer's discrete autoregressive field with \emph{unconditional}
   submodularity (the noise-floor calibration disappears; Remark 7.15a), but
@@ -565,19 +565,21 @@ This article makes the following contributions.
   byte-granular random access are exactly polynomial (one forward pass per
   symbol; Remark 7.15b), the \#P-hardness living only in the \emph{optional}
   non-contiguous support-selection lever. The bounded-order exact-oracle
-  restriction is a clean new open problem (exact finite-block hidden-Markov
-  Shannon entropy), here \emph{bracketed} on all sides:
-  poly-time-$\varepsilon$-approximable under a filter-stability hypothesis
-  (Remark 7.15c); every integer-order R\'enyi entropy exactly polynomial via
-  a product-chain agreement identity, with the min-entropy NP-hard (HMM
-  consensus) and the collision entropy $H_2$ a free poly lower bound (Remark
-  7.15d); and the exact oracle pinned in $[\,\text{poly},\mathrm{FP}^{\#P}\,]$
-  with \emph{both} natural attacks --- predicate-encoding hardness and
-  history-filtering algorithm --- provably obstructed (Remark 7.15e: the
-  read-once / $\#\mathrm L\subseteq\mathrm{FP}$ barrier and the non-collapsing
-  Blackwell measure). Thus the support-selection complexity is \emph{resolved
-  for the operative high-order predictor} and \emph{mapped} for the
-  theoretical bounded-order residual.
+  restriction --- exact finite-block hidden-Markov Shannon entropy --- is now
+  \emph{resolved}: poly-time-$\varepsilon$-approximable under filter stability
+  (Remark 7.15c) and exactly polynomial for finite finite-prefix belief (Remark
+  7.15f, strictly beyond finite-order Markov); every integer-order R\'enyi
+  entropy exactly polynomial via a product-chain agreement identity, with the
+  min-entropy NP-hard (HMM consensus) and the collision entropy $H_2$ a free
+  poly lower bound (Remark 7.15d); yet the \emph{exact} value (the coefficient
+  query) is \#P-hard --- $\mathrm{FP}^{\#P}$-complete --- by a \#SAT reduction
+  (Remark 7.15g) that sidesteps the \emph{both} natural attacks 7.15e flagged
+  (the read-once / $\#\mathrm L\subseteq\mathrm{FP}$ barrier, evaded through the
+  entropy's group-by-output-and-$\log$ structure; the non-collapsing Blackwell
+  measure). Thus the open middle is pinned --- exact \#P-hard yet
+  $\varepsilon$-approximable under filter stability --- and the
+  support-selection complexity is \emph{resolved for the operative high-order
+  predictor} and now also for the bounded-order residual.
 \item
   Additive rule-cost results for the discrete Type-III-C
   smallest-grammar problem (§13.4.1): the additive rule-size SGP
