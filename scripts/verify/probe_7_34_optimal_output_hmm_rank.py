@@ -14,6 +14,14 @@ and take its numerical (SVD) rank.
 Baseline/validation: the SOURCE (order-1 Markov) must give Hankel rank 2.  We then compare the
 OPTIMAL OUTPUT q* (from the exact n-letter Blahut-Arimoto at distortion D) -- small stable rank =>
 finite-state HMM (=> V_op=V_conv likely); rank growing with n => not finite-state.
+
+CORRECTION (verified later): the BA solve here uses D ~ 0.05, which is OUTSIDE the Gray region
+(D_c(0.1) = 0.0031), so the rank-growing-with-n it reports is an OUT-OF-GRAY artifact. IN the Gray
+region (D < D_c), the EXACT Walsh deconvolution of Y* (P_hat_Y(w)=P_hat_X(w)(1-2D)^{-|w|}) has
+Hankel rank EXACTLY 2 (top-2 singular values ~0.2, rest ~1e-17, stable across n=10,12 and
+D=0.001/0.002/0.003): Y* is a RANK-2 OOM in the Gray region (no finite POSITIVE HMM realization --
+its observable operators carry irremovable negative entries; natural Markov state = the continuous
+forward filter). Use the in-Gray Walsh deconvolution, NOT BA at D=0.05, to see the rank-2 structure.
 """
 import math
 import numpy as np

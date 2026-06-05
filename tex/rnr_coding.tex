@@ -12379,11 +12379,23 @@ vanishing-probability symbol, absent here as $Y^*$ has both symbols at probabili
 residual is the combination no single theorem spans: a \emph{fixed-fraction} deviation ($D=\Theta(1)$,
 beyond Dolgopyat--Sarig's small-$\varepsilon$ window) with a \emph{time-inhomogeneous} test function
 (the schedule $x_i$, beyond Kontoyiannis--Meyn's single fixed $F$), \emph{uniform} over the
-$\sqrt n$-typical shell. Since $Y^*$ is an \emph{infinite-order} HMM (no finite-state lift; verified),
-the route is the source's \emph{forward-filter} operator, geometrically ergodic under filter stability
-(the §7.15c/7.30a tool): a spectral Bahadur--Rao for filter functionals, \emph{merging}
-Kontoyiannis--Meyn 2005 (homogeneous, fixed-fraction) with Dolgopyat--Sarig 2023 (inhomogeneous,
-uniform). We therefore do \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is
+$\sqrt n$-typical shell. In the Gray region $Y^*$ has \emph{Hankel rank exactly $2$} (a rank-$2$
+observable-operator model; verified by the in-Gray Walsh deconvolution) yet is genuinely
+infinite-order with \emph{no finite positive (HMM) realization} (its observable operators carry
+irremovable negative entries), so its natural Markov state is the continuous \emph{forward filter},
+geometrically ergodic under filter stability (the §7.15c/7.30a tool). Steps (i)--(iii) are
+constructed: the filter realization with a spectral gap (the gap \emph{substituting} for ellipticity,
+the atomic filter kernel lacking a density floor), the tilted operator $L_\alpha^{(c)}$ with
+analytic spectral gap (Keller--Liverani/Herv\'e--P\`ene), and the single-schedule lattice
+Bahadur--Rao (Kontoyiannis--Meyn 2005). The \emph{sole} residual is step (iv): the schedule makes the
+moment generating function a deterministic \emph{product} $L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$ of
+the two spectral-gap operators, and what is needed is a sharp-LD prefactor for such a product,
+uniform over the shell --- a Dolgopyat--Sarig-type inhomogeneous local-limit theorem with
+\emph{Hilbert-cone contraction in place of uniform ellipticity} (which the atomic filter provably
+lacks). This merges Kontoyiannis--Meyn 2005 (homogeneous, fixed-fraction) with Dolgopyat--Sarig 2023
+(inhomogeneous, uniform); the homogeneous spectral-gap theories and the inhomogeneous elliptic theory
+have empty intersection, so it is a genuinely new but \emph{constructible} lemma (no fundamental
+barrier). We therefore do \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is
 \emph{converse-confirmed} on $(0,D_c(p)]$, with this one constructible (not-yet-built) theorem the sole
 residual --- the same tool the $D>D_c$ regime needs. (Were it supplied, the discrete-Markov case would
 obey the memoryless/Gauss--Markov ``lossy dispersion $=$ lossless varentropy in the SLB-tight region''
