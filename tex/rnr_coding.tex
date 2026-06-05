@@ -12373,7 +12373,13 @@ product, and a Markov Berry--Esseen --- the Zhou--Tan--Motani 2014 conditional-R
 already yields $V_{\mathrm{op}}=$ the long-run variance for conditionally-Markov sources --- would
 give $V_{\mathrm{op}}=\lim_n V_n=V_{\mathrm{conv}}$, refuting the candidate. Whether the optimal
 output is a finite-state HMM (it is hidden-Markov but of unbounded order) is the precise residual.
-Thus whether $V_{\mathrm{op}}=\lim_n V_n<V_{\mathrm{lossless}}$ (candidate false) or
+Numerically the optimal output's predictive (Hankel) spectrum is a dominant \emph{two}-state core
+with an exponentially-decaying tail (singular values $\approx0.3,\,0.3,\,3{\times}10^{-3},
+\,3{\times}10^{-3},\,5{\times}10^{-4},\dots$ at $n{=}12$, against an exact rank $2$ for the source),
+evidence that the optimal output is exponentially \emph{forgetting} --- approximately, not exactly,
+finite-state --- the regularity under which $\lim_n V_n=V_{\mathrm{conv}}$ is the operative
+dispersion; we read this as suggestive that the candidate is false. Thus whether
+$V_{\mathrm{op}}=\lim_n V_n<V_{\mathrm{lossless}}$ (candidate false) or
 $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ (converse loose) is the sharpened open problem. Either
 way the naive memoryless/Gaussian transfer is refuted, and the discrete-Markov dispersion is
 shown to be genuinely $D$-dependent at the converse level. Validated in
