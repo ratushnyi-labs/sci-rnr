@@ -12018,6 +12018,68 @@ counterpart of the Theorem 7.28 varentropy. Verified (the i.i.d.\ part) in
 $\delta_\infty^D=0$ for i.i.d.\ so the dispersion is the leading second-order term; V5
 $D\to0$ recovers Theorem 7.29).
 
+\emph{Remark 7.34a (The missing ingredient exists for a memory source: the Gauss--Markov
+rate-distortion dispersion realises the lossy second-order interplay).} Remark 7.34 left the
+lossy analogue of the Theorem 7.29 interplay open because its missing ingredient --- a
+\emph{rate-distortion dispersion for a source with memory} --- was unsettled. That ingredient
+\emph{is} available for one canonical memory source: the stationary Gauss--Markov (AR$(1)$)
+source $X_t=\rho X_{t-1}+W_t$, $|\rho|<1$, $W_t\sim\mathcal N(0,\sigma_W^2)$, under
+mean-squared distortion, for which Tian and Kostina (\emph{The Dispersion of the Gauss--Markov
+Source}, IEEE Trans.\ Inf.\ Theory 65(10):6355--6384, 2019) established the operational
+second-order rate $R(n,D,\varepsilon)=R(D)+\sqrt{V(D)/n}\,Q^{-1}(\varepsilon)+o(n^{-1/2})$
+with $R(D),V(D)$ given by reverse-water-filling on the PSD
+$S(\omega)=\sigma_W^2/(1+\rho^2-2\rho\cos\omega)$:
+\[
+  R(D)=\frac1{2\pi}\!\int_{-\pi}^{\pi}\!\tfrac12\log^{+}\!\tfrac{S(\omega)}{\theta}\,d\omega,
+  \quad D=\frac1{2\pi}\!\int_{-\pi}^{\pi}\!\min\{\theta,S(\omega)\}\,d\omega,
+  \quad
+  V(D)=\frac1{4\pi}\!\int_{-\pi}^{\pi}\!\min\Bigl\{1,\bigl(\tfrac{S(\omega)}{\theta}\bigr)^2\Bigr\}d\omega
+\]
+(nats$^2$; multiply by $(\log_2 e)^2$ for bits), and crucially identified this with the
+\emph{informational} dispersion --- the limiting variance of the block $d$-tilted information
+$\jmath_n(X^n;D)$ --- so the operational and information-density second orders coincide exactly
+as in the lossless Theorem 7.28/7.29. For low distortion $D\le D_c:=\min_\omega S(\omega)=
+\sigma_W^2/(1+|\rho|)^2$ one has $\theta=D$ and $V(D)=\tfrac12$ (nats$^2$), the i.i.d.\
+innovation value; for $D_c<D<D_{\max}=\sigma_W^2/(1-\rho^2)$, $V(D)<\tfrac12$.
+
+\emph{The lossy interplay holds for this memory source.} The AR$(1)$ source is genuinely
+mixing with memory ($I(\text{past};\text{future})>0$), so a sub-block sync reset incurs a
+\emph{positive} cold-context lossy excess: at high rate the first reproduction after a reset
+must be coded from the marginal (variance $\sigma_W^2/(1-\rho^2)$) rather than the AR
+conditional (innovation variance $\sigma_W^2$), giving
+$\delta_\infty^D=-\tfrac12\log(1-\rho^2)\,(\log_2 e)>0$ bits, increasing in $|\rho|$ and
+$\to0$ as $\rho\to0$ (the i.i.d.\ limit, where Remark 7.34's transfer already applies). Hence
+the lossy RNR repair stream obeys, with probability $1-\varepsilon$,
+\[
+  L^{\mathrm{rep}}_{\mathrm{RNR},D}=N R(D)+\tfrac NK\,\delta_\infty^D
+  +\sqrt{N\,V(D)}\,Q^{-1}(\varepsilon)+o(\sqrt N),
+\]
+and at the balanced spacing $K=c\sqrt N$ the cold-context random-access overhead
+$\tfrac NK\delta_\infty^D=\Theta(\sqrt N)$ and the rate-distortion dispersion
+$\sqrt{NV(D)}\,Q^{-1}(\varepsilon)=\Theta(\sqrt N)$ are of the \emph{same order}, with
+$N$-independent ratio $\delta_\infty^D/(c\sqrt{V(D)}\,Q^{-1}(\varepsilon))$ --- the exact
+Theorem 7.29 random-access/dispersion interplay, now \emph{lossy} and for a source \emph{with
+memory}. So the interplay Remark 7.34 could only state for the (penalty-free) memoryless case
+is non-vacuous: it is realised, with both terms genuinely present and comparable, on the
+Gauss--Markov source.
+
+\emph{What stays open (honest localisation).} This supplies Remark 7.34's missing ingredient
+only for the \emph{Gaussian} memory class (continuous source, MSE distortion); RNR's native
+lossy setting --- a \emph{discrete} finite-state source under \emph{Hamming} distortion ---
+still lacks an operational rate-distortion dispersion: even the first-order Markov--Hamming
+RDF is known only in special low-distortion regimes (Gray 1970s; Jalali--Weissman bounds), and
+no operational dispersion formula is established there. (Continuous Gauss--Markov data enters
+RNR's scope only through fine quantisation; the abstract second-order machinery of
+Theorems 7.29/7.36 is source-agnostic once the dispersion exists, which is exactly what
+Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all sources with
+memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. Verified in
+\texttt{scripts/verify/remark\_7\_34a\_gauss\_markov\_rd\_dispersion.py} (V1 reverse-water-filling
+self-consistency; V2 $V(D)=\tfrac12$ nats$^2$ for $D\le D_c$; V3 $V(D)<\tfrac12$ decreasing for
+$D_c<D<D_{\max}$; V4 the block $d$-tilted-information variance $V_n\to$ the spectral $V(D)$
+(AR$(1)$ Toeplitz covariance eigenvalues, cross-checked by Monte-Carlo of $\jmath_n$); V5 the
+$\Theta(\sqrt N)$ interplay with $N$-independent ratio; V6 $\delta_\infty^D=-\tfrac12\log(1-\rho^2)>0$,
+increasing in $|\rho|$, $\to0$ as $\rho\to0$).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
