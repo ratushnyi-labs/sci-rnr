@@ -12363,21 +12363,31 @@ above. (For $D>D_c(p)$ the inverse transform acquires negative entries for large
 $p=0.1,\,D=0.05$ valid only at $n=2$, failing for every $n\ge3$ --- so the identity fails and
 $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$; but that is outside the Gray region.)
 
-\emph{The achievability residual (the sole gap).} The matching upper bound
-$V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ would complete the candidate. On the Gray region
+\emph{The achievability residual (the sole gap), sharpened to a constructible theorem.} The matching
+upper bound $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ would complete the candidate. On the Gray region
 $X=Y^*\oplus Z$ with $Z$ i.i.d.\ $\mathrm{Bern}(D)$ independent of the (valid, all-$n$) optimal output
-process $Y^*$ --- the exact-SLB test-channel structure --- and $\jmath_n$ is i.i.d.-additive.
-\emph{However}, the random-covering achievability is governed not by $\jmath_n$ (a tilted exponential
-moment) but by the Hamming-ball measure $-\log P_{Y^{*n}}(B_{nD}(x^n))$, and these agree only up to a
-local-limit correction, $-\log P_{Y^{*n}}(B_{nD}(x^n))=\jmath_n(x^n,D)+O(\log n)$. For the \emph{i.i.d.}
-output of a memoryless source this is the binomial/type-counting local CLT; but here $Y^*$ \emph{has
-memory} (only the backward noise $Z$ is memoryless), so the estimate requires a \emph{quenched}
-Hamming-ball local-CLT for the deconvolved Markov output --- exactly the tool that is missing (and the
-same one the $D>D_c$ regime needs). We therefore do \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$:
-the candidate $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ is \emph{converse-confirmed} on $(0,D_c(p)]$,
-with this single quenched ball-measure estimate the only residual. (Were it supplied, the
-discrete-Markov case would obey the memoryless/Gauss--Markov ``lossy dispersion $=$ lossless
-varentropy in the SLB-tight region'' pattern, with the plateau bounded by $D_c(p)$.)
+process $Y^*$, and $\jmath_n$ is i.i.d.-additive. \emph{However}, the random-covering achievability is
+governed not by $\jmath_n$ (a tilted exponential moment) but by the Hamming-ball measure
+$-\log P_{Y^{*n}}(B_{nD}(x^n))$, the lower tail of the schedule-weighted functional
+$A_n=\sum_i\mathbf 1[Y^*_i\ne x_i]$; the two agree only up to a sharp-large-deviation prefactor,
+$-\log P_{Y^{*n}}(B_{nD}(x^n))=\jmath_n(x^n,D)+\tfrac12\log n+O(1)$. A spectral (Nagaev--Guivarc'h)
+analysis reduces this to a Bahadur--Rao for a \emph{filter functional} and clears two of its three
+sub-obstructions: the exact form $e^{-nI}/(\lambda\sqrt{2\pi n\sigma^2})$ with $nI=\jmath_n$ holds
+(Kontoyiannis--Meyn 2005, lattice lower tail, via the multiplicative-Poisson eigenvalue), and the
+\emph{full} large-deviation regime applies (the Dolgopyat--Sarig partial-regime degeneracy needs a
+vanishing-probability symbol, absent here as $Y^*$ has both symbols at probability $\tfrac12$). The
+residual is the combination no single theorem spans: a \emph{fixed-fraction} deviation ($D=\Theta(1)$,
+beyond Dolgopyat--Sarig's small-$\varepsilon$ window) with a \emph{time-inhomogeneous} test function
+(the schedule $x_i$, beyond Kontoyiannis--Meyn's single fixed $F$), \emph{uniform} over the
+$\sqrt n$-typical shell. Since $Y^*$ is an \emph{infinite-order} HMM (no finite-state lift; verified),
+the route is the source's \emph{forward-filter} operator, geometrically ergodic under filter stability
+(the §7.15c/7.30a tool): a spectral Bahadur--Rao for filter functionals, \emph{merging}
+Kontoyiannis--Meyn 2005 (homogeneous, fixed-fraction) with Dolgopyat--Sarig 2023 (inhomogeneous,
+uniform). We therefore do \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is
+\emph{converse-confirmed} on $(0,D_c(p)]$, with this one constructible (not-yet-built) theorem the sole
+residual --- the same tool the $D>D_c$ regime needs. (Were it supplied, the discrete-Markov case would
+obey the memoryless/Gauss--Markov ``lossy dispersion $=$ lossless varentropy in the SLB-tight region''
+pattern, with the plateau bounded by $D_c(p)$.)
 
 \emph{Beyond the Gray region ($D>D_c(p)$): a separate open question.} Outside the Gray region the
 SLB is no longer tight, $\jmath_n$ ceases to be additive, and the converse dispersion drops
