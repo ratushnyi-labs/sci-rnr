@@ -12355,7 +12355,15 @@ the d-tilted converse is loose ($V_{\mathrm{op}}>\lim_n V_n$) --- a phenomenon w
 (the d-tilted converse is tight for i.i.d.\ and, case-specifically, for Gauss--Markov). The
 covering/achievability dispersion is not accessible by enumeration --- it is a genuine $\sqrt n$
 effect requiring $n\gg 1/D$ --- and no second-order Markov type-covering exists in the
-literature; whether $V_{\mathrm{op}}=\lim_n V_n<V_{\mathrm{lossless}}$ (candidate false) or
+literature. The obstruction is sharper still: the optimal $n$-letter output measure for a Markov
+source requires \emph{growing} Markov order (Eswaran--Gastpar 2022), so every \emph{fixed}-order
+random codebook is first-order rate-suboptimal and cannot certify the dispersion --- concretely,
+an order-$1$ Markov codebook attains $V_{\mathrm{ach}}\approx V_n\approx0.5$ but at rate
+$R_{\mathrm{ach}}\approx0.28$ exceeding the exact $n{=}12$ optimum $0.269$, so
+$V_{\mathrm{op}}\le V_{\mathrm{ach}}$ does \emph{not} follow --- while the single-letter d-tilted
+object degenerates (zero variance for the symmetric chain, Krishnamachari 2026). A second-order
+\emph{growing-order} Markov type-covering is the missing tool. Whether
+$V_{\mathrm{op}}=\lim_n V_n<V_{\mathrm{lossless}}$ (candidate false) or
 $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ (converse loose) is the sharpened open problem. Either
 way the naive memoryless/Gaussian transfer is refuted, and the discrete-Markov dispersion is
 shown to be genuinely $D$-dependent at the converse level. Validated in
@@ -12363,7 +12371,11 @@ shown to be genuinely $D$-dependent at the converse level. Validated in
 reproduces the proven memoryless Kostina--Verd\'u plateau exactly, $\rho\equiv1$, flat in $D$;
 PART B: BSMS $V_n$ $D$-dependent with $\rho(D)<1$ and no plateau, $n$-stable across $n=10,12$;
 PART C: SLB exact-tightness fails for the BSMS at all $D>0$ via the Walsh deconvolution test,
-while holding for the i.i.d.\ control).
+while holding for the i.i.d.\ control). The achievability obstruction is documented in
+\texttt{scripts/verify/remark\_7\_34c\_bsms\_achievability\_transfermatrix.py} (an order-$1$
+Markov codebook, computed by transfer matrix at $n$ up to $108$, attains
+$V_{\mathrm{ach}}\approx V_n\approx0.5\ll V_{\mathrm{lossless}}$ but at a first-order-suboptimal
+rate, so it corroborates without certifying $V_{\mathrm{op}}<V_{\mathrm{lossless}}$).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
