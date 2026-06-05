@@ -12180,7 +12180,15 @@ quantity, whose dispersion remains unidentified. (Continuous Gauss--Markov data 
 RNR's scope only through fine quantisation; the abstract second-order machinery of
 Theorems 7.29/7.36 is source-agnostic once the dispersion exists, which is exactly what
 Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all sources with
-memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. Verified in
+memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. \emph{A candidate
+(conjectural).} For the binary symmetric Markov chain (switch probability $p$) under Hamming
+distortion in Gray's low-distortion region $D\le D_c(p)$, the natural candidate dispersion is
+$V=p(1-p)\log_2^2\tfrac{1-p}p$ --- the \emph{lossless} varentropy of the chain, $D$-independent,
+exactly mirroring the Gauss--Markov $V(D)=\tfrac12$ at high rate (a clean ``lossy dispersion $=$
+lossless varentropy at high rate'' pattern). Its rigorous establishment hinges on a Markov-type
+lossy-AEP / covering lemma in the Gray region (each typical transition-type covered at rate
+$h(q)-h(D)+O(\log n/n)$), which we do not supply; we record it as the precise candidate, not a
+theorem. Verified in
 \texttt{scripts/verify/remark\_7\_34a\_gauss\_markov\_rd\_dispersion.py} (V1 reverse-water-filling
 self-consistency; V2 $V(D)=\tfrac12$ nats$^2$ for $D\le D_c$; V3 $V(D)<\tfrac12$ decreasing for
 $D_c<D<D_{\max}$; V4 the block $d$-tilted-information variance $V_n\to$ the spectral $V(D)$
