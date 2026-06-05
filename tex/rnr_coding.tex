@@ -12335,18 +12335,24 @@ lossless varentropy.
 plateau $V(D)=\text{varentropy}$ (Kostina 2017) rests on the Shannon lower bound being
 \emph{exactly} tight, i.e.\ $\jmath_n=\imath_n-n\,h(D)$, which holds iff the source law
 deconvolves by an i.i.d.\ $\mathrm{BSC}(D)$ noise into a valid output law (true for
-$\mathrm{Bern}(q)$ at $D\le q$). For the BSMS this \emph{provably fails} at every $D>0$,
-$n\ge2$. Because Hamming distortion is additive, the d-tilted backward kernel factorises,
+$\mathrm{Bern}(q)$ at $D\le q$). For the BSMS this fails for all sufficiently large $n$ at each
+fixed $D>0$. Because Hamming distortion is additive, the d-tilted backward kernel factorises,
 $e^{-\lambda d_H(x^n,y^n)}=\prod_i e^{-\lambda\,\mathbf 1[x_i\ne y_i]}$, into single-letter
 $\mathrm{BSC}$ kernels, so the SLB-achieving backward channel is \emph{forced memoryless};
 deconvolving the Markov law by i.i.d.\ $\mathrm{BSC}(D)^{\otimes n}$ then requires, in the
-Walsh (Hadamard) domain, $\hat P_Y(w)=\hat P_X(w)\,(1-2D)^{-|w|}$, whose inverse transform has
-negative entries for $n\ge2$, $D>0$ (an invalid output law; verified). Hence the exact SLB
-identity is impossible, $\jmath_n\ne\imath_n-\text{const}$, and (numerically, $n$-stably) the
-d-tilted information is a strict variance-contraction of the surprisal, $\mathrm{Var}(\jmath_n)<\mathrm{Var}(\imath_n)$.
-This is the structural reason the discrete-Markov case admits no spectral decoupling (unlike
-Gauss--Markov, where diagonalisation reduces the problem to independent components) and resisted
-the plateau.
+Walsh (Hadamard) domain, $\hat P_Y(w)=\hat P_X(w)\,(1-2D)^{-|w|}$, whose inverse transform
+acquires negative entries once $n$ exceeds a threshold $n_0(D)$ --- the valid-$D$ window shrinks to
+$0$ as $n\to\infty$. (At $p=0.1,\ D=0.05$ the deconvolution is valid only at $n=2$, where the
+two-letter SLB bound is $D\le(1-\sqrt{1-2p})/2=0.053$, and fails for every $n\ge3$; $n_0(D)\to\infty$
+only as $D\to0$.) Since the operational dispersion is the $n\to\infty$ limit at fixed $D>0$, the
+exact SLB identity fails \emph{asymptotically}: $\jmath_n\ne\imath_n-\text{const}$ for all large
+$n$, and (numerically, $n$-stably in the large-$n$ regime) the d-tilted information is a strict
+variance-contraction of the surprisal, $\mathrm{Var}(\jmath_n)<\mathrm{Var}(\imath_n)$, so
+$V_{\mathrm{conv}}<V_{\mathrm{lossless}}$. (At the small $n\le n_0(D)$ where the deconvolution
+remains valid, the identity holds with equality, $\rho=1$ --- consistent with $\rho(D)\to1$ as
+$D\to0$.) This is the structural reason the discrete-Markov case admits no spectral decoupling
+(unlike Gauss--Markov, where diagonalisation reduces the problem to independent components) and
+resisted the plateau.
 
 \emph{What is settled, and the sharpened open problem.} The lossless-varentropy plateau is
 therefore \emph{not} the converse dispersion. It can survive only as the \emph{operational}
@@ -12382,7 +12388,18 @@ dispersion; we read this as suggestive that the candidate is false. Thus whether
 $V_{\mathrm{op}}=\lim_n V_n<V_{\mathrm{lossless}}$ (candidate false) or
 $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ (converse loose) is the sharpened open problem. Either
 way the naive memoryless/Gaussian transfer is refuted, and the discrete-Markov dispersion is
-shown to be genuinely $D$-dependent at the converse level. Validated in
+shown to be genuinely $D$-dependent at the converse level. \emph{The defensible core and the
+definitive obstruction.} The first order is achievable (order-$k$ Markov codebooks, $k\to\infty$;
+Elshafiy--Rose 2022), and numerically $\jmath_n$ is $\approx91$--$99\%$ the i.i.d.\ \emph{switch-count}
+$N_{\mathrm{sw}}=\sum_i\mathbf 1[X_i\ne X_{i-1}]$ (and $0\%$ the occupation count), so
+$V_{\mathrm{conv}}$ is essentially a switch-count variance plus a small non-additive remainder ---
+and that remainder is the obstruction. Matching achievability needs a \emph{quenched,
+time-inhomogeneous} Bahadur--Rao / lossy-AEP lemma ($\sqrt n$-uniform saddlepoint asymptotics for
+the source-driven product of tilted positive transfer matrices), the discrete-Hamming analogue of
+exactly the shell-probability step that Tian--Kostina close for Gauss--Markov \emph{only} via
+Karhunen--Lo\`eve decorrelation into independent coordinates; no such decorrelating transform
+exists for a discrete source under Hamming, and the Kontoyiannis--Meyn Bahadur--Rao is
+time-homogeneous only. Validated in
 \texttt{scripts/verify/remark\_7\_34b\_bsms\_rd\_dispersion\_numeric.py} (PART A: the method
 reproduces the proven memoryless Kostina--Verd\'u plateau exactly, $\rho\equiv1$, flat in $D$;
 PART B: BSMS $V_n$ $D$-dependent with $\rho(D)<1$ and no plateau, $n$-stable across $n=10,12$;
