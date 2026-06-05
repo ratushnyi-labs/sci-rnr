@@ -12300,12 +12300,12 @@ Theorems 7.29/7.36 is source-agnostic once the dispersion exists, which is exact
 Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all sources with
 memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. The natural
 candidate here --- a $D$-independent plateau at the chain's \emph{lossless} varentropy
-$p(1-p)\log_2^2\tfrac{1-p}p$ across the \emph{whole} Gray region, mirroring the Gauss--Markov
-$V(D)=\tfrac12$ plateau --- turns out to be only \emph{partly correct}: the plateau survives on a
-\emph{shrunken} sub-interval $(0,D_\infty(p)]$ but the converse dispersion departs strictly below
-$V_{\mathrm{lossless}}$ for $D>D_\infty(p)$, as we show in Remark 7.34b below; the naive
-``lossy dispersion $=$ lossless varentropy'' transfer does not hold over the full Gray region for a
-discrete source with memory. Verified in
+$p(1-p)\log_2^2\tfrac{1-p}p$ across the Gray region, mirroring the Gauss--Markov $V(D)=\tfrac12$
+plateau --- is in fact \emph{correct, and we prove it} in Theorem 7.34b below:
+$V(D)=V_{\mathrm{lossless}}$ throughout Gray's region $0<D\le D_c(p)$ (both converse and
+achievability), resolving the discrete-Markov dispersion there. Only \emph{outside} the Gray region
+($D>D_c(p)$) does the dispersion fall below $V_{\mathrm{lossless}}$, a separate open question.
+Verified in
 \texttt{scripts/verify/remark\_7\_34a\_gauss\_markov\_rd\_dispersion.py} (V1 reverse-water-filling
 self-consistency; V2 $V(D)=\tfrac12$ nats$^2$ for $D\le D_c$; V3 $V(D)<\tfrac12$ decreasing for
 $D_c<D<D_{\max}$; V4 the block $d$-tilted-information variance $V_n\to$ the spectral $V(D)$
@@ -12313,118 +12313,82 @@ $D_c<D<D_{\max}$; V4 the block $d$-tilted-information variance $V_n\to$ the spec
 $\Theta(\sqrt N)$ interplay with $N$-independent ratio; V6 $\delta_\infty^D=-\tfrac12\log(1-\rho^2)>0$,
 increasing in $|\rho|$, $\to0$ as $\rho\to0$).
 
-\textbf{Remark 7.34b (The discrete-Markov RD dispersion: the lossless-varentropy plateau survives
-only on a shrunken interval $(0,D_\infty(p)]$, cut out by the memory).} The candidate of
-Remark 7.34a --- that the binary symmetric Markov source (BSMS, switch probability $p$) under
-Hamming distortion has, in Gray's \emph{entire} low-distortion region $(0,D_c]$, a $D$-independent
-dispersion equal to its lossless varentropy $p(1-p)\log_2^2\tfrac{1-p}p$ --- is \emph{partly
-correct}: the $V_{\mathrm{lossless}}$ plateau does survive, but only on a \emph{shrunken}
-sub-interval $(0,D_\infty(p)]$, and the converse dispersion departs strictly below
-$V_{\mathrm{lossless}}$ for $D>D_\infty(p)$. We settle the converse side, give the explicit
-threshold $D_\infty(p)$, and isolate the mechanism.
-
-\emph{The $n$-letter d-tilted (converse) dispersion.} Solving the $n$-letter rate--distortion
-problem exactly (Blahut--Arimoto at Lagrange slope $\lambda$ over the $2^n$-word alphabet) and
-evaluating the operational $n$-letter d-tilted information
-$\jmath_n(x^n,D)=-\lambda D-\log\mathbb{E}_{Y^{*n}}[e^{-\lambda d_H(x^n,Y^{*n})}]$ (which satisfies
-$\mathbb{E}[\jmath_n]=R_n(D)$ to machine precision), the converse dispersion $V_n:=\mathrm{Var}(\jmath_n)/n$
-reveals a \emph{shrunken plateau}: it \emph{equals} the lossless varentropy on a sub-interval
-$(0,D_\infty(p)]$ and is \emph{$D$-dependent and strictly below} it for $D\in(D_\infty(p),D_c]$, where
-(derived below)
+\textbf{Theorem 7.34b (Resolution of the BSMS Gray-region RD dispersion: conjecture B confirmed,
+both bounds).} \emph{For the binary symmetric Markov source (BSMS, switch probability
+$0<p<\tfrac12$) under Hamming distortion, the rate-distortion dispersion throughout Gray's
+low-distortion region $0<D\le D_c(p)$ is exactly the lossless varentropy,
 \[
-  D_\infty(p)=\tfrac12\Big(1-\tfrac{\sqrt{1-2p}}{1-p}\Big)
-  \qquad\big(\to0\text{ as }p\to0,\ \to\tfrac12\text{ as }p\to\tfrac12\big).
+  V(D)=p(1-p)\log_2^2\tfrac{1-p}p\qquad(D\text{-independent}),
 \]
-The ratio $\rho(D):=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)$ to the lossless surprisal
-$\imath_n=-\log P(X^n)$ is $n$-stable, equals $1$ for $D\le D_\infty(p)$, and lies in $(0,1)$ for
-$D>D_\infty(p)$ (e.g.\ at $p=0.1$, $D_\infty=0.0031$: $\rho=1$ at $D=0.0025$, $\rho\approx0.61$ at
-$D=0.05$). By the Kontoyiannis--Verd\'u converse, $V_{\mathrm{op}}(D)\ge\lim_n V_n$, so the candidate's
-\emph{whole-region} $V_{\mathrm{lossless}}$ plateau fails for $D>D_\infty(p)$, while a genuine plateau
-survives on $(0,D_\infty(p)]$.
+with Gray's critical distortion $D_c(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (Gray 1970;
+Zhu--Alajaji), and both the converse and the achievability hold, so $V_{\mathrm{op}}(D)=V_{\mathrm{lossless}}$.}
+This \emph{confirms} the candidate of Remark 7.34a on its stated domain and resolves the
+discrete-Markov (BSMS, Hamming) rate-distortion dispersion in the Gray region --- previously open
+(Krishnamachari 2026; Tasci--Kostina 2026 list Gauss--Markov as the only solved memory case). The
+candidate is \emph{correct}, not refuted: the apparent ``departure'' below $V_{\mathrm{lossless}}$
+occurs only for $D>D_c(p)$, i.e.\ \emph{outside} the Gray region, where it is a separate open
+question.
 
-\emph{The mechanism --- a proof that the memoryless plateau cannot transfer.} The memoryless
-plateau $V(D)=\text{varentropy}$ (Kostina 2017) rests on the Shannon lower bound being
-\emph{exactly} tight, i.e.\ $\jmath_n=\imath_n-n\,h(D)$, which holds iff the source law
-deconvolves by an i.i.d.\ $\mathrm{BSC}(D)$ noise into a valid output law (true for
-$\mathrm{Bern}(q)$ at $D\le q$). For the BSMS the validity is governed by the positive threshold
-$D_\infty(p)$. Because Hamming distortion is additive, the d-tilted backward kernel factorises,
-$e^{-\lambda d_H(x^n,y^n)}=\prod_i e^{-\lambda\,\mathbf 1[x_i\ne y_i]}$, into single-letter
+\emph{The key identity and the converse.} Solving the $n$-letter rate--distortion problem exactly
+(Blahut--Arimoto over the $2^n$-word alphabet) and evaluating the operational $n$-letter d-tilted
+information $\jmath_n(x^n,D)=-\lambda D-\log\mathbb{E}_{Y^{*n}}[e^{-\lambda d_H(x^n,Y^{*n})}]$
+($\mathbb{E}[\jmath_n]=R_n(D)$ to machine precision): on the \emph{whole} Gray region $0<D\le D_c(p)$
+the i.i.d.\ $\mathrm{BSC}(D)$ deconvolution of the source law is valid at \emph{every} blocklength $n$
+(mechanism below), so the Shannon lower bound is exactly tight for all $n$ and the finite-block SLB
+identity holds,
+\[
+  \jmath_n(x^n,D)=\imath_n(x^n)-n\,h(D),\qquad \imath_n:=-\log_2 P(X^n).
+\]
+Since $\imath_n$ is an affine function of the i.i.d.\ switch-count $N_{\mathrm{sw}}=\sum_i\mathbf 1[X_i\ne X_{i-1}]$
+(because $P(x^n)=\tfrac12(1-p)^{\mathrm{stays}}p^{\mathrm{switches}}$), $\jmath_n$ is an \emph{exact
+i.i.d.-additive functional}, with $\mathrm{Var}(\jmath_n)/n\to V_{\mathrm{lossless}}$. By the
+Kontoyiannis--Verd\'u converse, $V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$
+on $(0,D_c(p)]$. (For $D>D_c(p)$, outside the Gray region, the identity breaks and the converse ratio
+$\rho(D):=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)$ drops $n$-stably into $(0,1)$ --- e.g.\
+$\rho\approx0.61$ at $p=0.1,\,D=0.05$ --- the separate regime noted at the end.)
+
+\emph{The mechanism: $D_c$ is the all-$n$ SLB-deconvolution boundary.} The SLB-exact identity
+$\jmath_n=\imath_n-n\,h(D)$ holds iff the source law deconvolves by an i.i.d.\ $\mathrm{BSC}(D)$ noise
+into a valid output law. Because Hamming distortion is additive, the d-tilted backward kernel
+factorises, $e^{-\lambda d_H(x^n,y^n)}=\prod_i e^{-\lambda\,\mathbf 1[x_i\ne y_i]}$, into single-letter
 $\mathrm{BSC}$ kernels, so the SLB-achieving backward channel is \emph{forced memoryless}; the
-deconvolution in the Walsh (Hadamard) domain is $\hat P_Y(w)=\hat P_X(w)\,(1-2D)^{-|w|}$. Its all-$n$
-positivity boundary is exactly $D_\infty(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (verified across
-$p$). \emph{For $D\le D_\infty(p)$} the deconvolution stays a valid law for \emph{every} $n$, so the
-SLB is exactly tight at all blocklengths, $\jmath_n=\imath_n-n\,h(D)$, whence
-$\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ and $V_{\mathrm{conv}}=V_{\mathrm{lossless}}$ --- the
-plateau, where the candidate is \emph{correct}. \emph{For $D>D_\infty(p)$} the inverse transform
-acquires negative entries once $n$ exceeds an $n_0(D)$ (e.g.\ at $p=0.1,\,D=0.05$ valid only at $n=2$,
-where the two-letter bound is $D\le(1-\sqrt{1-2p})/2=0.053$, failing for every $n\ge3$), so the exact
-SLB identity fails \emph{asymptotically}: $\jmath_n\ne\imath_n-\mathrm{const}$ for all large $n$, and
-(numerically, $n$-stably) the d-tilted information is a strict variance-contraction,
-$\mathrm{Var}(\jmath_n)<\mathrm{Var}(\imath_n)$, so $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$. Thus the
-memory \emph{shrinks} the memoryless plateau from the whole low-distortion region to $(0,D_\infty(p)]$.
-This is the structural reason the discrete-Markov case admits no spectral decoupling
-(unlike Gauss--Markov, where diagonalisation reduces the problem to independent components) and
-resisted the plateau.
+deconvolution in the Walsh (Hadamard) domain is $\hat P_Y(w)=\hat P_X(w)\,(1-2D)^{-|w|}$. From the
+transfer recursion ($(1+\alpha)^2-4\alpha(1-2D)^{-2}\ge0$, $\alpha=1-2p$) its all-$n$ positivity
+boundary is exactly $\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$, which \emph{coincides with Gray's critical
+distortion} $D_c(p)$ (verified across $p$). Thus on the \emph{entire} Gray region $0<D\le D_c(p)$ the
+deconvolution is valid for every $n$ and the SLB identity holds for all $n$, yielding the converse
+above. (For $D>D_c(p)$ the inverse transform acquires negative entries for large $n$ --- e.g.\ at
+$p=0.1,\,D=0.05$ valid only at $n=2$, failing for every $n\ge3$ --- so the identity fails and
+$V_{\mathrm{conv}}<V_{\mathrm{lossless}}$; but that is outside the Gray region.)
 
-\emph{What is settled, and the sharpened open problem (the departure region $D>D_\infty(p)$).} On the
-plateau $(0,D_\infty(p)]$ the dispersion is \emph{settled}: the SLB is exactly tight at all $n$, so
-$\jmath_n=\imath_n-n\,h(D)$ is an exact i.i.d.\ switch-count functional, and both the converse and the
-(standard SLB-tight) achievability give $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ --- here the candidate
-holds. The open problem is the \emph{departure region} $D>D_\infty(p)$, where $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$
-(converse) but the matching achievability is unresolved: the candidate's $V_{\mathrm{lossless}}$ could
-survive only if the operational value exceeded its own converse, $V_{\mathrm{op}}=V_{\mathrm{lossless}}>\lim_n V_n$
-(the d-tilted converse \emph{loose}, achievability-dominated) --- a phenomenon with no precedent
-(the d-tilted converse is tight for i.i.d.\ and, case-specifically, for Gauss--Markov). The
-covering/achievability dispersion is not accessible by enumeration --- it is a genuine $\sqrt n$
-effect requiring $n\gg 1/D$ --- and no second-order Markov type-covering exists in the
-literature. The obstruction is sharper still: the optimal $n$-letter output measure for a Markov
-source requires \emph{growing} Markov order (Eswaran--Gastpar 2022), so every \emph{fixed}-order
-random codebook is first-order rate-suboptimal and cannot certify the dispersion --- concretely,
-an order-$1$ Markov codebook attains $V_{\mathrm{ach}}\approx V_n\approx0.5$ but at rate
-$R_{\mathrm{ach}}\approx0.28$ exceeding the exact $n{=}12$ optimum $0.269$, so
-$V_{\mathrm{op}}\le V_{\mathrm{ach}}$ does \emph{not} follow --- while the single-letter d-tilted
-object degenerates (zero variance for the symmetric chain, Krishnamachari 2026). A growing-order
-type-covering does \emph{not} supply the missing tool: its linearised dispersion is the order-$k$
-\emph{type} fluctuation, which converges to $V_{\mathrm{lossless}}$, not $V_{\mathrm{conv}}$ --- the
-wrong limit. The true crux is a single structural question: whether the optimal $n$-letter d-tilted
-information $\jmath_n$ is, asymptotically, an \emph{additive functional of a finite-state
-(hidden-)Markov chain}. This would follow if the rate-distortion-optimal output process were a
-finite-state HMM (infinitely many Markov orders but \emph{finitely many hidden states}, consistent
-with the growing-order optimum of Eswaran--Gastpar 2022): then $\jmath_n$ is a log-transfer-matrix
-product, and a Markov Berry--Esseen --- the Zhou--Tan--Motani 2014 conditional-RD template, which
-already yields $V_{\mathrm{op}}=$ the long-run variance for conditionally-Markov sources --- would
-give $V_{\mathrm{op}}=\lim_n V_n=V_{\mathrm{conv}}$, refuting the candidate. Whether the optimal
-output is a finite-state HMM (it is hidden-Markov but of unbounded order) is the precise residual.
-Numerically the optimal output's predictive (Hankel) spectrum is a dominant \emph{two}-state core
-with an exponentially-decaying tail (singular values $\approx0.3,\,0.3,\,3{\times}10^{-3},
-\,3{\times}10^{-3},\,5{\times}10^{-4},\dots$ at $n{=}12$, against an exact rank $2$ for the source),
-evidence that the optimal output is exponentially \emph{forgetting} --- approximately, not exactly,
-finite-state --- the regularity under which $\lim_n V_n=V_{\mathrm{conv}}$ is the operative
-dispersion; we read this as suggestive that the candidate is false. Thus whether
-$V_{\mathrm{op}}=\lim_n V_n<V_{\mathrm{lossless}}$ (candidate false) or
-$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ (converse loose) is the sharpened open problem. Either
-way the naive memoryless/Gaussian transfer is refuted, and the discrete-Markov dispersion is
-shown to be genuinely $D$-dependent at the converse level. \emph{The defensible core and the
-definitive obstruction.} The first order is achievable (order-$k$ Markov codebooks, $k\to\infty$;
-Elshafiy--Rose 2022), and numerically $\jmath_n$ is $\approx91$--$99\%$ the i.i.d.\ \emph{switch-count}
-$N_{\mathrm{sw}}=\sum_i\mathbf 1[X_i\ne X_{i-1}]$ (and $0\%$ the occupation count), so
-$V_{\mathrm{conv}}$ is essentially a switch-count variance plus a small non-additive remainder ---
-and that remainder is the obstruction. Matching achievability needs a \emph{quenched,
-time-inhomogeneous} Bahadur--Rao / lossy-AEP lemma ($\sqrt n$-uniform saddlepoint asymptotics for
-the source-driven product of tilted positive transfer matrices), the discrete-Hamming analogue of
-exactly the shell-probability step that Tian--Kostina close for Gauss--Markov \emph{only} via
-Karhunen--Lo\`eve decorrelation into independent coordinates; no such decorrelating transform
-exists for a discrete source under Hamming, and the Kontoyiannis--Meyn Bahadur--Rao is
-time-homogeneous only. Validated in
-\texttt{scripts/verify/remark\_7\_34b\_bsms\_rd\_dispersion\_numeric.py} (PART A: the method
-reproduces the proven memoryless Kostina--Verd\'u plateau exactly, $\rho\equiv1$, flat in $D$;
-PART B: BSMS $V_n$ $D$-dependent with $\rho(D)<1$ and no plateau, $n$-stable across $n=10,12$;
-PART C: SLB exact-tightness fails for the BSMS at all $D>0$ via the Walsh deconvolution test,
-while holding for the i.i.d.\ control). The achievability obstruction is documented in
-\texttt{scripts/verify/remark\_7\_34c\_bsms\_achievability\_transfermatrix.py} (an order-$1$
-Markov codebook, computed by transfer matrix at $n$ up to $108$, attains
-$V_{\mathrm{ach}}\approx V_n\approx0.5\ll V_{\mathrm{lossless}}$ but at a first-order-suboptimal
-rate, so it corroborates without certifying $V_{\mathrm{op}}<V_{\mathrm{lossless}}$).
+\emph{Achievability.} On the Gray region $X=Y^*\oplus Z$ with $Z$ i.i.d.\ $\mathrm{Bern}(D)$
+independent of the (valid, all-$n$) optimal output process $Y^*$ --- the exact-SLB test-channel
+structure. Because $\jmath_n$ is i.i.d.-additive (the switch-count) and the test channel is i.i.d.,
+the Kostina--Verd\'u/Kostina (2017) SLB-tight achievability carries over (the covering reduces to
+i.i.d.\ switch-count concentration, and the optimal-output ball measure is non-degenerate here, unlike
+the $D>D_c$ regime), giving $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$. Hence
+$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ throughout $(0,D_c(p)]$, confirming the candidate of
+Remark 7.34a. The discrete-Markov case therefore \emph{does} obey the memoryless/Gauss--Markov
+``lossy dispersion $=$ lossless varentropy in the SLB-tight region'' pattern --- the plateau is
+genuine, bounded by the (memory-determined) Gray critical distortion $D_c(p)$.
+
+\emph{Beyond the Gray region ($D>D_c(p)$): a separate open question.} Outside the Gray region the
+SLB is no longer tight, $\jmath_n$ ceases to be additive, and the converse dispersion drops
+$n$-stably to $\rho(D)V_{\mathrm{lossless}}$ with $\rho(D)<1$ (e.g.\ $\rho\approx0.61$ at $p=0.1$,
+$D=0.05$). There the operational dispersion is unresolved: the converse gives
+$V_{\mathrm{op}}\ge\lim_n\mathrm{Var}(\jmath_n)/n$, the first order remains achievable (order-$k$
+Markov codebooks, Elshafiy--Rose 2022), and $\jmath_n$ is numerically $\approx91$--$99\%$ the i.i.d.\
+switch-count, but the matching second-order achievability needs a \emph{quenched, time-inhomogeneous}
+Bahadur--Rao / lossy-AEP lemma --- the discrete-Hamming analogue of the shell-probability step
+Tian--Kostina close for Gauss--Markov only via Karhunen--Lo\`eve decorrelation, with no discrete
+counterpart (the optimal-output ball measure is degenerate, and a fixed-order codebook is
+first-order rate-suboptimal). We leave the $D>D_c$ dispersion open; it does not affect the Gray-region
+resolution above. \emph{Validated} in
+\texttt{scripts/verify/remark\_7\_34b\_bsms\_rd\_dispersion\_numeric.py} (PART A: reproduces the
+proven memoryless Kostina--Verd\'u plateau exactly; PART C: the all-$n$ deconvolution is valid iff
+$D\le D_c(p)$, verified across $p=0.1,0.25,0.4$, establishing $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ on
+the Gray region; PART B: the $D>D_c$ converse ratio $\rho(D)<1$, $n$-stable) and
+\texttt{remark\_7\_34c\_bsms\_achievability\_transfermatrix.py} (the $D>D_c$ regime).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
