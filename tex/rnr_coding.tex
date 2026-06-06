@@ -12366,17 +12366,22 @@ above. (For $D>D_c(p)$ the inverse transform acquires negative entries for large
 $p=0.1,\,D=0.05$ valid only at $n=2$, failing for every $n\ge3$ --- so the identity fails and
 $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$; but that is outside the Gray region.)
 
-\emph{The achievability residual, correctly located at the dispersion (Berry--Esseen) level.} The
+\emph{The achievability residual, correctly located at the dispersion level.} The
 matching upper bound $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ remains open; recent work confirms the
 operational discrete-Markov/Hamming dispersion is open in general (Krishnamachari 2026 leaves it
 explicitly open; only the Gauss--Markov memory class is resolved --- Tian--Kostina 2019,
 Tasci--Kostina 2026 --- via $n$-letter informational quantities). Two facts locate the gap. \emph{(a)
-The dispersion is a Berry--Esseen, not a local-limit, object:} Kostina--Verd\'u obtain the
-$\sqrt{V/n}$ term from the integral (CDF) Berry--Esseen on the distortion sum through a constant-width
-window $\{nD-\tau<\sum_i d(X_i,\hat Z_i)\le nD\}$ --- lattice-agnostic and ellipticity-free --- so the
-dispersion residual is only a CDF Berry--Esseen for the distortion sum under the optimal coding,
-uniform over the $\sqrt n$-shell (the sharp $\tfrac12\log n$ prefactor below is \emph{third} order, not
-needed for the dispersion). \emph{(b) The optimal kernel is temporally correlated:} for a Markov source
+The leading dispersion is a CDF Berry--Esseen object; the achievability residual is a (near-mean)
+local-limit object.} The $\sqrt{V/n}$ coefficient is carried by the additive d-tilted information
+$\jmath_n$ through a CDF Berry--Esseen (lattice-agnostic, ellipticity-free --- this is what the converse
+uses). The Kostina--Verd\'u constant-width window $\{nD-\tau<\sum_i d(X_i,\hat Z_i)\le nD\}$, however, is
+a \emph{windowed local mass} $F(nD)-F(nD-\tau)\sim\tau\,f(nD)=O(n^{-1/2})$ --- a difference of CDF values
+over an $O(1)$ window, i.e.\ an Edgeworth/local-limit quantity, not a plain CDF value --- so matching the
+\emph{memory} block-optimal ball to $\jmath_n$ (forcing $V_{\mathrm{op}}=V_{\mathrm{lossless}}$) needs
+that local mass: a near-mean lattice local-limit theorem for the optimal-coding distortion sum, uniform
+over the $\sqrt n$-shell. (Only the sharp $\tfrac12\log n$ \emph{coefficient} below is genuinely
+third-order and dispensable --- being deterministic, it drops from the variance --- not the local-limit
+\emph{machinery} that produces it, which the dispersion does need.) \emph{(b) The optimal kernel is temporally correlated:} for a Markov source
 the $n$-letter block-optimal test channel is \emph{not} a single-letter tilt of the marginal
 (Krishnamachari 2026), so the single-letter $d$-tilted information does not carry the operational
 dispersion and the relevant object is the genuinely $n$-letter forward-filter cocycle --- non-elliptic
@@ -12413,9 +12418,25 @@ grade (the sharper sequential Edgeworth of Hafouta 2025, arXiv:2511.06414, inher
 \emph{The dispersion residual is therefore the ball-probability$\,\to\,$additive-functional reduction:
 that $\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the $\sqrt n$-shell (equivalently, that $-\log_2
 S_n$ is $o_P(\sqrt n)$-dominated by an algebra-additive functional of the enlarged homogeneous chain
-$(X_t,b_t,\mathrm{phase})$) --- a density-floor-free \emph{inhomogeneous, non-additive} CDF
-Berry--Esseen, not an ellipticity question. (Were that variance instead to tend to a positive constant,
-the converse would be loose and $V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly.)}
+$(X_t,b_t,\mathrm{phase})$). Sharpening the \emph{grade} of that reduction: a CDF Berry--Esseen is
+\emph{provably insufficient} for it. By Abel summation $S_n=\sum_{k\le t}q_k\,e^{\theta_0(nD-k)}$ is a
+$\theta_0$-geometric average of the \emph{local} lattice masses $q_k=P_{Y^{*n}}(d_H(\cdot,x^n)=k)$, each
+of order $n^{-1/2}$; a CDF bound of error $O(n^{-1/2})$ cannot resolve a mass of its own order, so
+pinning $-\log_2 S_n$ to $o(1)$ needs the local masses --- a \emph{lattice local-limit theorem}, not a
+CDF Berry--Esseen. Precisely, the residual is a \emph{near-mean} (Edgeworth window, saddle tilt
+$s^*\to0$), density-floor-free, inhomogeneous \emph{lattice} LLT for the tilted forward-filter cocycle
+$L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$ at the integer Hamming lattice, uniform over the $\sqrt
+n$-shell --- the \emph{near-mean sibling} of the third-order $\tfrac12\log n$-prefactor lemma below (the
+same lattice/non-elliptic/density-floor-free empty intersection, with \emph{one} relaxation --- near-mean
+rather than fixed-fraction --- hence strictly easier), and not an ellipticity question. Unconditionally,
+the geometric-mixing bounded-difference inequality (Kontorovich--Ramanan 2008; Samson 2000) already
+gives $\mathrm{Var}(\log_2 S_n)=O(n)$, so $V_{\mathrm{op}}\le V_{\mathrm{lossless}}+O(1)$ is \emph{finite}
+(never $+\infty$); but no concentration/Efron--Stein bound reaches $o(n)$, because the ball is a
+\emph{global}, non-additive shell object with $\Theta(n)$ coordinate-influence energy and no
+per-coordinate forgetting --- the $o(n)$ is a radius-asymptotic ($t\to\infty$) lattice cancellation only
+the local-limit theorem sees. (Were $\mathrm{Var}(\log_2 S_n)/n$ instead to tend to a positive constant,
+the converse would be loose and $V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly; the numerics below
+place it at $0$.)}
 
 \emph{The sign is numerically settled in the achievability-closing direction.} An exact
 $O(n^2)$-per-sample evaluation of $G_n$ --- via the Walsh/Krawtchouk transfer-matrix identity
@@ -12493,9 +12514,12 @@ spectral-gap result (Hafouta 2025) is \emph{non-lattice and near-mean} only; the
 $-\log P(A_n\le nD)=\jmath_n+\tfrac12\log n+O(1)$ for an integer-valued tail sits in their
 \emph{empty intersection}, and the atomic filter kernel has no ellipticity. So the sharp third-order prefactor needs a
 genuinely \emph{new} theorem --- a lattice sharp-LD local-limit expansion for inhomogeneous
-non-elliptic transfer-operator cocycles --- absent from the literature; but it is \emph{not} required
-for the dispersion, whose residual is the (weaker) density-floor-free inhomogeneous Berry--Esseen of
-(a)--(b) above. We therefore do
+non-elliptic transfer-operator cocycles --- absent from the literature; the dispersion residual is its
+\emph{near-mean sibling} --- the \emph{same} density-floor-free non-elliptic \emph{lattice}
+local-limit object of (a)--(b) above, relaxed only from fixed-fraction to \emph{near-mean} ($s^*\to0$,
+the Edgeworth window), not down to CDF Berry--Esseen grade (a CDF bound's $O(n^{-1/2})$ error is exactly
+the order of the local mass $q_t\sim(2\pi v_q)^{-1/2}$ it must resolve; verified
+$r_t=q_t\sqrt{2\pi v_q}\approx0.94$, $\mathrm{Var}(\log_2 S_n)=O(1)$). We therefore do
 \emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is \emph{converse-confirmed}
 on $(0,D_c(p)]$, with the achievability open --- the operational discrete-Markov dispersion being open
 in general as of this writing (Krishnamachari 2026). (Were it supplied, the discrete-Markov case would obey the
@@ -12521,7 +12545,10 @@ the Gray region; PART B: the $D>D_c$ converse ratio $\rho(D)<1$, $n$-stable),
 \texttt{remark\_7\_34c\_bsms\_achievability\_transfermatrix.py} (the $D>D_c$ regime), and
 \texttt{probe\_7\_34\_sign\_var\_logS.py} (the exact $O(n^2)$ Walsh/Krawtchouk evaluation of $G_n$,
 brute-force-validated to $10^{-18}$ at $n\le16$, certifying $\mathrm{Var}(\log_2 S_n)/n\to0$ in-Gray ---
-the achievability-consistent sign).
+the achievability-consistent sign) and \texttt{probe\_7\_34\_saddlepoint\_logS\_llt.py} (the saddlepoint
+reduction $-\log_2 S_n=\tfrac12\log_2(2\pi n\sigma_x^2)+\Psi(\{nD\})+o(1)$: near-mean saddle $s^*\approx0$,
+boundary LLT ratio $r_t\approx0.94$, $\mathrm{Var}(\log_2 S_n)=O(1)$ --- locating the residual as a
+near-mean lattice LLT, not a CDF Berry--Esseen).
 
 \textbf{Remark 7.34d (The general converse: $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ on the all-$n$
 SLB-tight region of \emph{any} finite-alphabet source --- unifying the memoryless, symmetric-BSMS, and
