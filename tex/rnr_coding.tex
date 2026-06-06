@@ -12346,7 +12346,8 @@ identity holds,
 Since $\imath_n$ is an affine function of the i.i.d.\ switch-count $N_{\mathrm{sw}}=\sum_i\mathbf 1[X_i\ne X_{i-1}]$
 (because $P(x^n)=\tfrac12(1-p)^{\mathrm{stays}}p^{\mathrm{switches}}$), $\jmath_n$ is an \emph{exact
 i.i.d.-additive functional}, with $\mathrm{Var}(\jmath_n)/n\to V_{\mathrm{lossless}}$. By the
-Kontoyiannis--Verd\'u converse, $V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$
+one-shot d-tilted converse of Kostina--Verd\'u 2012 (Thm.~7, excess-distortion criterion; a plain CLT
+for $\jmath_n$ suffices for the fixed-$\varepsilon$ liminf), $V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$
 on $(0,D_c(p)]$. (For $D>D_c(p)$, outside the Gray region, the identity breaks and the converse ratio
 $\rho(D):=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)$ drops $n$-stably into $(0,1)$ --- e.g.\
 $\rho\approx0.61$ at $p=0.1,\,D=0.05$ --- the separate regime noted at the end.)
@@ -12491,30 +12492,45 @@ information density $\imath_n:=-\log_2 P(X^n)$ obeys a central limit theorem wit
 $\mathrm{Var}(\imath_n)/n\to V_{\mathrm{lossless}}\in(0,\infty)$ (the source entropy-rate varentropy);
 any irreducible aperiodic finite-state --- in particular finite-order Markov --- source qualifies, by
 the Markov varentropy CLT for additive functionals (Nagaev; Meyn--Tweedie). Call $D$ \emph{all-$n$
-SLB-tight} if the source law deconvolves by the maximizing i.i.d.\ noise (binary case: $\mathrm{BSC}(D)$;
-$\widehat P_Y(w)=\widehat P_X(w)(1-2D)^{-|w|}$ in the Walsh domain) into a valid output law at
-\emph{every} blocklength --- the region $0<D\le D_c$ of Remark 7.34b's mechanism. \emph{Claim:} on that
-region the operational rate--distortion dispersion obeys
+SLB-tight} if the source law deconvolves by the maximizing i.i.d.\ noise --- in the worked binary case
+the $\mathrm{BSC}(D)$ kernel, $\widehat P_Y(w)=\widehat P_X(w)(1-2D)^{-|w|}$ in the Walsh domain; for a
+$q$-ary alphabet the $q$-ary symmetric kernel with noise entropy $h(D)+D\log(q-1)$ in place of $h(D)$,
+the displayed Walsh formula being the $2$-element-character-group specialisation --- into a valid output
+law at \emph{every} blocklength, the region $0<D\le D_c$ of Remark 7.34b's mechanism. Let
+$V_{\mathrm{op}}(D)$ denote the \emph{fixed-$\varepsilon$ excess-distortion dispersion}, i.e.\ the
+second-order coefficient in $R(n,D,\varepsilon)=R(D)+\sqrt{V_{\mathrm{op}}(D)/n}\,Q^{-1}(\varepsilon)+o(1/\sqrt n)$
+at a fixed $\varepsilon\in(0,\tfrac12)$ under the excess-distortion criterion
+$\Pr[d_H(X^n,\hat X^n)>nD]\le\varepsilon$ (Kostina--Verd\'u 2012). \emph{Claim:} on the all-$n$
+SLB-tight region this dispersion obeys
 \[
   V_{\mathrm{op}}(D)\;\ge\;V_{\mathrm{lossless}}.
 \]
 
 \emph{Proof (converse only; identical machinery to Remark 7.34b).} On the all-$n$ SLB-tight region the
-Shannon lower bound is exactly tight at every $n$, so the additive Hamming kernel forces the SLB
-identity $\jmath_n(x^n,D)=\imath_n(x^n)-n\,h(D)$ at every blocklength (the constant $n\,h(D)$ is the
-noise entropy). Hence $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ \emph{exactly}, so
+Shannon lower bound is exactly tight at every $n$, so with $\lambda_n^*=n\log_2\frac{1-D}D$ the additive
+Hamming kernel forces the SLB identity $\jmath_n(x^n,D)=\imath_n(x^n)-n\,h(D)$ at every blocklength (a
+\emph{deterministic} affine shift of $\imath_n$; only $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$,
+i.e.\ $\jmath_n=\imath_n-\mathrm{const}$, is load-bearing below, so the exact value of the constant is
+immaterial). Hence $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ \emph{exactly}, so
 $\mathrm{Var}(\jmath_n)/n\to V_{\mathrm{lossless}}$ and $\jmath_n$ inherits the source's varentropy CLT.
-The general (one-shot) Kostina--Verd\'u/Kontoyiannis--Verd\'u d-tilted converse --- which assumes
-\emph{no} memorylessness, only a CLT for $\jmath_n$ --- then gives
-$V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$. \emph{The crucial point}
-is that nothing in this chain used the symmetry of the chain or even that it is binary: only (i) an
-all-$n$ deconvolution region, which makes $\jmath_n$ an affine image of $\imath_n$, and (ii) a
-varentropy CLT for $\imath_n$, which every finite-state source has. $\square$
+The one-shot d-tilted converse of Kostina--Verd\'u 2012 (Thm.~7,
+$\varepsilon\ge\sup_{\gamma\ge0}\{\Pr[\jmath_n\ge\log M+\gamma]-e^{-\gamma}\}$), valid for an
+\emph{arbitrary} source under the excess-distortion criterion, then yields the fixed-$\varepsilon$
+liminf bound: taking $\log M=\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,Q^{-1}(\varepsilon)-\gamma$
+with $\gamma=o(\sqrt n)$, the CLT for $\jmath_n$ gives $\Pr[\jmath_n\ge\log M+\gamma]\to\varepsilon$,
+whence $V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$ (a \emph{plain} CLT
+suffices for this fixed-$\varepsilon$ converse; the $\varepsilon\to0$ rate-dispersion limit of
+Kostina--Verd\'u Def.~7 would additionally need uniform/moderate-deviation tail control, not invoked
+here). \emph{The crucial point} is that nothing in this chain used the symmetry of the chain or even
+that it is binary: only (i) an all-$n$ deconvolution region (via the appropriate balanced kernel), which
+makes $\jmath_n$ an affine image of $\imath_n$, and (ii) a varentropy CLT for $\imath_n$, which every
+finite-state source has. $\square$
 
-\emph{The instances (a type lattice).} \emph{(0) Memoryless} ($X$ i.i.d.): the all-$n$ region is the
-entire SLB region, $V_{\mathrm{lossless}}$ is the single-letter varentropy, and here the matching
+\emph{The instances (a type lattice).} \emph{(0) Memoryless} ($X$ i.i.d., \emph{any} finite alphabet
+under Hamming, via the $q$-ary balanced kernel): the all-$n$ region is the entire single-letter
+SLB-tight range, $V_{\mathrm{lossless}}$ is the single-letter varentropy, and here the matching
 \emph{achievability} also holds (Kostina 2017), so $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ --- both
-bounds. \emph{(1) Symmetric BSMS}: Remark 7.34b, region $(0,D_c(p)]$,
+bounds (this is the instance that exercises the non-binary alphabet). \emph{(1) Symmetric BSMS}: Remark 7.34b, region $(0,D_c(p)]$,
 $V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p$. \emph{(2) Non-symmetric binary Markov} (new; switch
 probabilities $P(0\!\to\!1)=a\ne b=P(1\!\to\!0)$, stationary $\pi_0=b/(a+b)$): the same Walsh
 deconvolution has a \emph{positive} all-$n$ threshold $D_c(a,b)>0$ --- e.g.\ $D_c(0.1,0.3)\approx0.0129$
