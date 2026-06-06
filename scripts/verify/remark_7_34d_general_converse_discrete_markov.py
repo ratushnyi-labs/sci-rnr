@@ -16,7 +16,9 @@ This script verifies the NEW instance -- the non-symmetric binary Markov chain (
   C2 on the Gray region (D < D_c): j_n = i_n - n h(D) (ratio rho = Var(j_n)/Var(i_n) = 1), so
      V_conv = lim Var(j_n)/n = V_lossless => V_op >= V_lossless.
   C3 off the Gray region (D > D_c): rho < 1 (identity breaks), as for the symmetric chain.
-  C4 the source varentropy V_lossless (Var(i_n)/n) matches the Markov entropy-rate varentropy.
+  C4 in-Gray the shift c_n = j_n - (i_n - n h(D)) is DETERMINISTIC (std~0 across x^n): the identity is
+     j_n = i_n - n h(D) + c_n with c_n a constant (numerically c_n=0 vs the i_n baseline), so
+     Var(j_n)=Var(i_n) EXACTLY -- this is the only fact the converse needs (not exact pointwise equality).
 """
 import math
 import numpy as np
@@ -80,7 +82,12 @@ def jn_stats(n, a, b, s):
     j = (-s*Dtot - np.log(np.maximum(Z,1e-300)))/math.log(2)
     Vj = float(np.sum(P*(j-np.sum(P*j))**2))/n
     isurp = -logP2; Vi = float(np.sum(P*(isurp-np.sum(P*isurp))**2))/n
-    return Dtot/n, Vj, Vi
+    # residual c_n(x) = j_n(x) - (i_n(x) - n h(D)) ; D = Dtot/n, i_n = -log2 P = isurp.
+    Dlet = Dtot/n
+    cn = j - (isurp - n*h2(Dlet))         # per-word shift
+    # support-weighted mean & std of the shift (determinism test): std~0 => deterministic constant.
+    cmean = float(np.sum(P*cn)); cstd = float(math.sqrt(max(np.sum(P*(cn-cmean)**2), 0.0)))
+    return Dlet, Vj, Vi, cmean, cstd
 
 if __name__ == "__main__":
     print("="*84)
@@ -98,23 +105,29 @@ if __name__ == "__main__":
         # find slope s_in giving D ~ 0.6*D_c (in), s_out giving D ~ 3*D_c (out, capped)
         rows = []
         for s in (6.0, 4.5, 3.0, 2.0):
-            Dlet, Vj, Vi = jn_stats(n, a, b, s)
+            Dlet, Vj, Vi, cmean, cstd = jn_stats(n, a, b, s)
             rho = Vj/Vi if Vi>0 else float('nan')
-            rows.append((Dlet, rho, Vj, Vi))
+            rows.append((Dlet, rho, Vj, Vi, cmean, cstd))
         rows.sort()
-        print(f"  {'D/letter':>9} {'rho=Vj/Vi':>10} {'V_conv':>8} {'V_loss':>8}  region")
-        rho_in = rho_out = None
-        for Dlet, rho, Vj, Vi in rows:
+        print(f"  {'D/letter':>9} {'rho=Vj/Vi':>10} {'V_conv':>8} {'V_loss':>8} {'c_n(mean)':>9} {'c_n(std)':>9}  region")
+        rho_in = rho_out = None; cstd_in_max = 0.0
+        for Dlet, rho, Vj, Vi, cmean, cstd in rows:
             reg = "IN (Gray)" if Dlet < Dc else "OUT"
-            print(f"  {Dlet:>9.4f} {rho:>10.3f} {Vj:>8.4f} {Vi:>8.4f}  {reg}")
-            if Dlet < Dc: rho_in = rho
+            print(f"  {Dlet:>9.4f} {rho:>10.3f} {Vj:>8.4f} {Vi:>8.4f} {cmean:>9.4f} {cstd:>9.1e}  {reg}")
+            if Dlet < Dc:
+                rho_in = rho; cstd_in_max = max(cstd_in_max, cstd)
             else: rho_out = rho
         c2 = (rho_in is None) or (rho_in > 0.97)   # in Gray: rho ~ 1 (SLB identity, V_conv=V_lossless)
         c3 = (rho_out is None) or (rho_out < 0.97) # out: rho < 1
-        print(f"  C2 in-Gray rho~1 (j_n=i_n-n h(D) => V_conv=V_lossless => V_op>=V_lossless): "
+        # C4: the shift c_n = j_n-(i_n-n h(D)) is DETERMINISTIC in-Gray (std~0 across x^n), so
+        #     Var(j_n)=Var(i_n) exactly -- the identity is "i_n - n h(D) + c_n" with c_n a constant.
+        c4 = (rho_in is None) or (cstd_in_max < 1e-6)
+        print(f"  C2 in-Gray rho~1 (j_n=i_n-n h(D)+c_n => V_conv=V_lossless => V_op>=V_lossless): "
               f"{c2}  (rho_in={rho_in})")
         print(f"  C3 out-of-Gray rho<1: {c3}  (rho_out={rho_out})")
-        allok = allok and c1 and c2 and c3
+        print(f"  C4 in-Gray shift c_n is DETERMINISTIC (std~0 => Var(j_n)=Var(i_n)): "
+              f"{c4}  (max std={cstd_in_max:.1e})")
+        allok = allok and c1 and c2 and c3 and c4
     print("="*84)
     print(f"RESULT: {'ALL PASS' if allok else 'CHECK'} -- the general converse V_op>=V_lossless on the all-n-SLB-tight")
     print("        Gray region holds for the NON-SYMMETRIC binary Markov chain (new instance), by the same")

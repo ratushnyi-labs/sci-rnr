@@ -12508,23 +12508,37 @@ SLB-tight region this dispersion obeys
 
 \emph{Proof (converse only; identical machinery to Remark 7.34b).} On the all-$n$ SLB-tight region the
 Shannon lower bound is exactly tight at every $n$, so with $\lambda_n^*=n\log_2\frac{1-D}D$ the additive
-Hamming kernel forces the SLB identity $\jmath_n(x^n,D)=\imath_n(x^n)-n\,h(D)$ at every blocklength (a
-\emph{deterministic} affine shift of $\imath_n$; only $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$,
-i.e.\ $\jmath_n=\imath_n-\mathrm{const}$, is load-bearing below, so the exact value of the constant is
-immaterial). Hence $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ \emph{exactly}, so
+Hamming kernel forces the binary SLB identity
+\[
+  \jmath_n(x^n,D)=\imath_n(x^n)-n\,h(D)+c_n,
+\]
+where $c_n$ is a \emph{deterministic} ($x^n$-independent) finite-blocklength boundary constant with
+$c_n/n\to0$ (numerically $c_n=0$ to machine precision against the $\imath_n$ baseline --- standard
+deviation $\approx10^{-11}$ across words; a nonzero $O(1)$ value appears only if one instead normalises
+against the asymptotic rate $n(\bar h-h(D))$, $c_n$ then being the entropy boundary term $H(X_1)-\bar h$).
+For a $q$-ary alphabet the displayed constant becomes $n[h(D)+D\log(q-1)]$. The point is that \emph{only
+the determinism of the shift is load-bearing}, so its exact value and alphabet dependence are immaterial:
+$\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ \emph{exactly}, whence
 $\mathrm{Var}(\jmath_n)/n\to V_{\mathrm{lossless}}$ and $\jmath_n$ inherits the source's varentropy CLT.
-The one-shot d-tilted converse of Kostina--Verd\'u 2012 (Thm.~7,
+Now invoke the one-shot d-tilted converse of Kostina--Verd\'u 2012 (Thm.~7,
 $\varepsilon\ge\sup_{\gamma\ge0}\{\Pr[\jmath_n\ge\log M+\gamma]-e^{-\gamma}\}$), valid for an
-\emph{arbitrary} source under the excess-distortion criterion, then yields the fixed-$\varepsilon$
-liminf bound: taking $\log M=\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,Q^{-1}(\varepsilon)-\gamma$
-with $\gamma=o(\sqrt n)$, the CLT for $\jmath_n$ gives $\Pr[\jmath_n\ge\log M+\gamma]\to\varepsilon$,
-whence $V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$ (a \emph{plain} CLT
-suffices for this fixed-$\varepsilon$ converse; the $\varepsilon\to0$ rate-dispersion limit of
-Kostina--Verd\'u Def.~7 would additionally need uniform/moderate-deviation tail control, not invoked
-here). \emph{The crucial point} is that nothing in this chain used the symmetry of the chain or even
-that it is binary: only (i) an all-$n$ deconvolution region (via the appropriate balanced kernel), which
-makes $\jmath_n$ an affine image of $\imath_n$, and (ii) a varentropy CLT for $\imath_n$, which every
-finite-state source has. $\square$
+\emph{arbitrary} source under the excess-distortion criterion. Fix $\varepsilon\in(0,\tfrac12)$ and a
+slack $\delta>0$, and suppose some code sequence achieved rate
+$\log M_n\le\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)-\gamma_n$
+with $\gamma_n\to\infty$, $\gamma_n=o(\sqrt n)$. Then
+$\log M_n+\gamma_n=\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)$, and
+the CLT for $\jmath_n$ gives $\Pr[\jmath_n\ge\log M_n+\gamma_n]\to Q(Q^{-1}(\varepsilon)-\delta)>\varepsilon$
+while $e^{-\gamma_n}\to0$, so the converse forces $\varepsilon\ge Q(Q^{-1}(\varepsilon)-\delta)-o(1)>\varepsilon$
+for large $n$ --- a contradiction. Hence every $\varepsilon$-code obeys
+$\log M_n\ge\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)-o(\sqrt n)$,
+and letting $\delta\downarrow0$ yields
+$V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$ (a \emph{plain} CLT suffices
+for this fixed-$\varepsilon$ liminf converse via the $\gamma_n\!\to\!\infty$ plus $\delta$-slack
+argument; the $\varepsilon\to0$ rate-dispersion limit of Kostina--Verd\'u Def.~7 would additionally need
+uniform/moderate-deviation tail control, not invoked here). \emph{The crucial point} is that nothing used
+the symmetry of the chain or even that it is binary: only (i) an all-$n$ deconvolution region (via the
+appropriate balanced kernel), making $\jmath_n$ a deterministic affine image of $\imath_n$, and (ii) a
+varentropy CLT for $\imath_n$, which every finite-state source has. $\square$
 
 \emph{The instances (a type lattice).} \emph{(0) Memoryless} ($X$ i.i.d., \emph{any} finite alphabet
 under Hamming, via the $q$-ary balanced kernel): the all-$n$ region is the entire single-letter
@@ -12549,8 +12563,10 @@ collapses to Kostina 2017 in the memoryless case and extends the 7.34b converse 
 source possessing an all-$n$ SLB-tight region, with the non-symmetric chain a worked second memory
 instance. \emph{Validated} in
 \texttt{scripts/verify/remark\_7\_34d\_general\_converse\_discrete\_markov.py} (C1 the non-symmetric
-Gray threshold $D_c(a,b)>0$; C2 in-Gray $\rho=1\Rightarrow V_{\mathrm{conv}}=V_{\mathrm{lossless}}$;
-C3 out-of-Gray $\rho<1$; across $(a,b)\in\{(0.1,0.3),(0.2,0.4)\}$).
+Gray threshold $D_c(a,b)>0$; C2 in-Gray $\rho=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)=1\Rightarrow V_{\mathrm{conv}}=V_{\mathrm{lossless}}$;
+C3 out-of-Gray $\rho<1$; C4 the shift $c_n=\jmath_n-(\imath_n-n\,h(D))$ is deterministic in-Gray
+(std $\approx10^{-11}$ across words, so $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ exactly); across
+$(a,b)\in\{(0.1,0.3),(0.2,0.4)\}$).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
