@@ -12381,16 +12381,42 @@ the $n$-letter block-optimal test channel is \emph{not} a single-letter tilt of 
 (Krishnamachari 2026), so the single-letter $d$-tilted information does not carry the operational
 dispersion and the relevant object is the genuinely $n$-letter forward-filter cocycle --- non-elliptic
 (atomic filter, no density floor) and schedule-inhomogeneous. Its CDF Berry--Esseen, uniform over the
-shell, holds homogeneously (Hennion--Herv\'e, density-floor-free) but is uncovered in the
-inhomogeneous non-elliptic case, where the density floor binds already at the \emph{plain CDF
-Berry--Esseen} grade --- not merely at the Edgeworth/local-limit refinement. Concretely, the
-sequential CDF Berry--Esseen of Hafouta (\emph{Nonlinearity} 33, 2020; arXiv:1903.04018, Thm.~2.10)
-is proved on top of the sequential Ruelle--Perron--Frobenius triplet of its Thm.~2.6, whose covering
-hypothesis $T_j^{n_0}B_j(x,\xi)=\mathcal E_{j+n_0}$ \emph{forces} the eigenfunction floor
-$\min_x|h_j^{(z)}|\ge c>0$ (and an eigenmeasure of positive mass on open sets) --- exactly the
-dynamical density-floor surrogate the atomic filter lacks; the sharper sequential Edgeworth of
-Hafouta 2025 (arXiv:2511.06414) inherits it a fortiori. \emph{This density-floor-free inhomogeneous Berry--Esseen for the
-temporally-correlated block-optimal cocycle is the dispersion residual.}
+shell, holds \emph{homogeneously and density-floor-free even on singular laws}: Hennion--Herv\'e, and
+sharply Kloeckner (\emph{Ann.\ Appl.\ Probab.}\ 29(3), 2019; arXiv:1703.09623, Thm.~C), give an
+$O(1/\sqrt n)$ CDF Berry--Esseen for an additive functional under a spectral gap on a Banach
+\emph{algebra} of regular (BV/Lipschitz) functions ($\sigma^2>0$; the regular observable's moments are
+automatic) --- with \emph{no} density floor or ellipticity --- the flagship example being the \emph{singular} Bernoulli convolution,
+the exact atomic-IFS analogue of our forward filter. Filter stability moreover \emph{supplies} that gap:
+a contracting place-dependent IFS upgrades its Wasserstein-$1$ contraction to the full
+Lipschitz-algebra-norm spectral gap (Kloeckner--Lopes--Stadlbauer, arXiv:1412.0848, Cor.~1.2; so the
+measure-side ``$W_1$ gap $\Rightarrow$ CLT only'' barrier of Komorowski--Walczuk, arXiv:1102.1842, does
+\emph{not} bite), surviving the analytic tilt (Herv\'e--P\`ene). \emph{So the binding obstruction is not
+a density floor.} It sits one level up, in the \emph{object}: the achievability quantity is the
+lower-tail \emph{ball log-probability}
+\[
+  G_n(x^n):=-\log_2 P_{Y^{*n}}\!\big(B_{nD}(x^n)\big)=\jmath_n(x^n,D)-\log_2 S_n(x^n),
+\]
+whose leading part $\jmath_n=\imath_n-n\,h(D)$ is the clean homogeneous additive functional (annealed
+over the source, $\mathrm{Var}(\jmath_n)/n\to V_{\mathrm{lossless}}$, covered by Kloeckner's theorem
+verbatim), while the ball residual $-\log_2 S_n$ is \emph{(i) non-additive} --- not a Birkhoff sum of
+any fixed Banach-algebra observable, so the additive-functional Berry--Esseen theorems do not reach it
+(within a level set of $\jmath_n$, where $\jmath_n$ is constant, $S_n$ still varies with the
+\emph{arrangement} of $x^n$ --- a decoupling probe shows within-class spread $0.02$--$0.09$ bits) ---
+and \emph{(ii) schedule-inhomogeneous} (the per-step indicator $\mathbf 1[Y_i\ne x_i]$ is selected by
+the schedule symbol $x_i$, and for the correlated $Y^*$ the per-schedule flip-bits are not i.i.d.). The
+one inhomogeneous (sequential) CDF Berry--Esseen on the market --- Hafouta (\emph{Nonlinearity} 33,
+2020; arXiv:1903.04018, Thm.~2.10 on the Thm.~2.6 RPF triplet) --- needs the covering hypothesis
+$T_j^{n_0}B_j(x,\xi)=\mathcal E_{j+n_0}$ that \emph{forces} the eigenfunction floor
+$\min_x|h_j^{(z)}|\ge c>0$, a density-floor surrogate the atomic filter lacks; but, as Kloeckner's
+singular-case theorem shows, that is a limitation of \emph{that route}, not of the CDF Berry--Esseen
+grade (the sharper sequential Edgeworth of Hafouta 2025, arXiv:2511.06414, inherits it a fortiori).
+\emph{The dispersion residual is therefore the ball-probability$\,\to\,$additive-functional reduction:
+that $\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the $\sqrt n$-shell (equivalently, that $-\log_2
+S_n$ is $o_P(\sqrt n)$-dominated by an algebra-additive functional of the enlarged homogeneous chain
+$(X_t,b_t,\mathrm{phase})$) --- a density-floor-free \emph{inhomogeneous, non-additive} CDF
+Berry--Esseen, not an ellipticity question. Should that variance instead tend to a positive constant,
+the converse would be loose and $V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly; the sign is the
+content of the open problem.}
 
 \emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
 $\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
