@@ -12479,6 +12479,63 @@ $D\le D_c(p)$, verified across $p=0.1,0.25,0.4$, establishing $V_{\mathrm{op}}=V
 the Gray region; PART B: the $D>D_c$ converse ratio $\rho(D)<1$, $n$-stable) and
 \texttt{remark\_7\_34c\_bsms\_achievability\_transfermatrix.py} (the $D>D_c$ regime).
 
+\textbf{Remark 7.34d (The general converse: $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ on the all-$n$
+SLB-tight region of \emph{any} finite-alphabet source --- unifying the memoryless, symmetric-BSMS, and
+non-symmetric-Markov cases).} The converse of Remark 7.34b is not special to the \emph{symmetric}
+chain: its mechanism is \emph{source-agnostic}, and isolating that yields one principle covering a
+whole type lattice of sources --- with the symmetric BSMS and the i.i.d.\ plateau as two instances and
+the non-symmetric binary Markov chain as a new one.
+
+\emph{The principle.} Let $X$ be a stationary finite-alphabet source under Hamming distortion whose
+information density $\imath_n:=-\log_2 P(X^n)$ obeys a central limit theorem with
+$\mathrm{Var}(\imath_n)/n\to V_{\mathrm{lossless}}\in(0,\infty)$ (the source entropy-rate varentropy);
+any irreducible aperiodic finite-state --- in particular finite-order Markov --- source qualifies, by
+the Markov varentropy CLT for additive functionals (Nagaev; Meyn--Tweedie). Call $D$ \emph{all-$n$
+SLB-tight} if the source law deconvolves by the maximizing i.i.d.\ noise (binary case: $\mathrm{BSC}(D)$;
+$\widehat P_Y(w)=\widehat P_X(w)(1-2D)^{-|w|}$ in the Walsh domain) into a valid output law at
+\emph{every} blocklength --- the region $0<D\le D_c$ of Remark 7.34b's mechanism. \emph{Claim:} on that
+region the operational rate--distortion dispersion obeys
+\[
+  V_{\mathrm{op}}(D)\;\ge\;V_{\mathrm{lossless}}.
+\]
+
+\emph{Proof (converse only; identical machinery to Remark 7.34b).} On the all-$n$ SLB-tight region the
+Shannon lower bound is exactly tight at every $n$, so the additive Hamming kernel forces the SLB
+identity $\jmath_n(x^n,D)=\imath_n(x^n)-n\,h(D)$ at every blocklength (the constant $n\,h(D)$ is the
+noise entropy). Hence $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ \emph{exactly}, so
+$\mathrm{Var}(\jmath_n)/n\to V_{\mathrm{lossless}}$ and $\jmath_n$ inherits the source's varentropy CLT.
+The general (one-shot) Kostina--Verd\'u/Kontoyiannis--Verd\'u d-tilted converse --- which assumes
+\emph{no} memorylessness, only a CLT for $\jmath_n$ --- then gives
+$V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$. \emph{The crucial point}
+is that nothing in this chain used the symmetry of the chain or even that it is binary: only (i) an
+all-$n$ deconvolution region, which makes $\jmath_n$ an affine image of $\imath_n$, and (ii) a
+varentropy CLT for $\imath_n$, which every finite-state source has. $\square$
+
+\emph{The instances (a type lattice).} \emph{(0) Memoryless} ($X$ i.i.d.): the all-$n$ region is the
+entire SLB region, $V_{\mathrm{lossless}}$ is the single-letter varentropy, and here the matching
+\emph{achievability} also holds (Kostina 2017), so $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ --- both
+bounds. \emph{(1) Symmetric BSMS}: Remark 7.34b, region $(0,D_c(p)]$,
+$V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p$. \emph{(2) Non-symmetric binary Markov} (new; switch
+probabilities $P(0\!\to\!1)=a\ne b=P(1\!\to\!0)$, stationary $\pi_0=b/(a+b)$): the same Walsh
+deconvolution has a \emph{positive} all-$n$ threshold $D_c(a,b)>0$ --- e.g.\ $D_c(0.1,0.3)\approx0.0129$
+and $D_c(0.2,0.4)\approx0.0455$ --- on which $\jmath_n=\imath_n-n\,h(D)$ holds (the converse ratio
+$\rho(D)=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)=1$ to $12$ digits at $n=12$), so
+$V_{\mathrm{op}}\ge V_{\mathrm{lossless}}(a,b)$ there; outside it $\rho<1$ ($\approx0.73$--$0.88$),
+exactly as for the symmetric chain. Here $\imath_n$ is no longer affine in a single i.i.d.\ switch-count
+(two distinct transition logs), but it remains an additive Markov functional, so the varentropy CLT ---
+hence the converse --- still applies; this is precisely the generalisation the abstract principle buys.
+
+\emph{Scope (honest).} This is a \emph{converse} statement; the matching achievability
+$V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ is open for the memory instances (1)--(2) by the same
+density-floor-free inhomogeneous Berry--Esseen residual located in Remark 7.34b, and open in general
+(Krishnamachari 2026). What is new is the \emph{unification}: a single source-agnostic lower bound that
+collapses to Kostina 2017 in the memoryless case and extends the 7.34b converse to every finite-state
+source possessing an all-$n$ SLB-tight region, with the non-symmetric chain a worked second memory
+instance. \emph{Validated} in
+\texttt{scripts/verify/remark\_7\_34d\_general\_converse\_discrete\_markov.py} (C1 the non-symmetric
+Gray threshold $D_c(a,b)>0$; C2 in-Gray $\rho=1\Rightarrow V_{\mathrm{conv}}=V_{\mathrm{lossless}}$;
+C3 out-of-Gray $\rho<1$; across $(a,b)\in\{(0.1,0.3),(0.2,0.4)\}$).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
