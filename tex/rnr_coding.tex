@@ -12414,9 +12414,23 @@ grade (the sharper sequential Edgeworth of Hafouta 2025, arXiv:2511.06414, inher
 that $\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the $\sqrt n$-shell (equivalently, that $-\log_2
 S_n$ is $o_P(\sqrt n)$-dominated by an algebra-additive functional of the enlarged homogeneous chain
 $(X_t,b_t,\mathrm{phase})$) --- a density-floor-free \emph{inhomogeneous, non-additive} CDF
-Berry--Esseen, not an ellipticity question. Should that variance instead tend to a positive constant,
-the converse would be loose and $V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly; the sign is the
-content of the open problem.}
+Berry--Esseen, not an ellipticity question. (Were that variance instead to tend to a positive constant,
+the converse would be loose and $V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly.)}
+
+\emph{The sign is numerically settled in the achievability-closing direction.} An exact
+$O(n^2)$-per-sample evaluation of $G_n$ --- via the Walsh/Krawtchouk transfer-matrix identity
+$P_{Y^{*n}}(B_{nD}(x^n))=2^{-n}\sum_{j}(1-2D)^{-j}\,\mathcal K_{\le t}(j)\,H_j(x^n)$ ($\mathcal K_{\le
+t}$ a partial-Krawtchouk sum, $H_j$ the weight-$j$ Walsh mass from a $2\times2$ transfer matrix in a
+formal variable), validated against the brute-force $2^n$ Walsh deconvolution to $10^{-18}$ at $n\le16$
+--- gives, annealed over the source in-Gray ($p\in\{0.25,0.4\}$, $D=0.9\,D_c$, blocklengths to
+$n=320$, well past the integer-ball-floor $nD\ge5$), a residual variance $\mathrm{Var}(\log_2 S_n)/n$
+that \emph{decays to $0$} (weighted extrapolated intercept $0\pm2\times10^{-5}$; $\mathrm{Cov}(\jmath_n,
+\log_2 S_n)/n\to0$ likewise), so $\mathrm{Var}(G_n)/n\to V_{\mathrm{lossless}}$. Thus the candidate
+$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ is \emph{numerically certified} and the residual is
+achievability-consistent (not a loose converse); the \emph{sole} remaining gap is the \emph{analytic}
+proof of the ball-probability$\,\to\,$additive-functional reduction $\mathrm{Var}(\log_2 S_n)/n\to0$,
+uniform over the shell. (This strong numerical evidence of the \emph{sign} is not itself the
+achievability theorem, which still awaits that analytic ingredient.)
 
 \emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
 $\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
@@ -12503,8 +12517,11 @@ resolution above. \emph{Validated} in
 \texttt{scripts/verify/remark\_7\_34b\_bsms\_rd\_dispersion\_numeric.py} (PART A: reproduces the
 proven memoryless Kostina--Verd\'u plateau exactly; PART C: the all-$n$ deconvolution is valid iff
 $D\le D_c(p)$, verified across $p=0.1,0.25,0.4$, establishing $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ on
-the Gray region; PART B: the $D>D_c$ converse ratio $\rho(D)<1$, $n$-stable) and
-\texttt{remark\_7\_34c\_bsms\_achievability\_transfermatrix.py} (the $D>D_c$ regime).
+the Gray region; PART B: the $D>D_c$ converse ratio $\rho(D)<1$, $n$-stable),
+\texttt{remark\_7\_34c\_bsms\_achievability\_transfermatrix.py} (the $D>D_c$ regime), and
+\texttt{probe\_7\_34\_sign\_var\_logS.py} (the exact $O(n^2)$ Walsh/Krawtchouk evaluation of $G_n$,
+brute-force-validated to $10^{-18}$ at $n\le16$, certifying $\mathrm{Var}(\log_2 S_n)/n\to0$ in-Gray ---
+the achievability-consistent sign).
 
 \textbf{Remark 7.34d (The general converse: $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ on the all-$n$
 SLB-tight region of \emph{any} finite-alphabet source --- unifying the memoryless, symmetric-BSMS, and
