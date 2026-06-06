@@ -73,6 +73,20 @@ def blahut_arimoto(P, Dm, s, iters=500, tol=1e-13):
     Z = np.maximum(W @ q, 1e-300); Dtot = float(np.sum(P*np.sum((q[None,:]*W)/Z[:,None]*Dm, axis=1)))
     return q, Dtot, Z
 
+def entropy_rate(a, b):
+    """Markov entropy rate hbar = pi0 H(a) + pi1 H(b) for P(0->1)=a, P(1->0)=b."""
+    pi0 = b/(a+b); pi1 = a/(a+b)
+    return pi0*h2(a) + pi1*h2(b)
+
+def block_entropy(n, a, b):
+    """H(X^n) = E[-log2 P(X^n)] for the chain."""
+    logP2 = asym_logP2(n,a,b); P = np.exp(logP2*math.log(2)); P /= P.sum()
+    return float(-np.sum(P*logP2))
+
+def centering_kappa(n, a, b):
+    """Finite-blocklength redundancy kappa_n = H(X^n) - n*hbar = E[j_n]-nR(D) (in-Gray). Should be O(1), n-stable."""
+    return block_entropy(n,a,b) - n*entropy_rate(a,b)
+
 def jn_stats(n, a, b, s):
     N = 1 << n
     logP2 = asym_logP2(n,a,b); P = np.exp(logP2*math.log(2)); P /= P.sum()
@@ -127,7 +141,13 @@ if __name__ == "__main__":
         print(f"  C3 out-of-Gray rho<1: {c3}  (rho_out={rho_out})")
         print(f"  C4 in-Gray shift c_n is DETERMINISTIC (std~0 => Var(j_n)=Var(i_n)): "
               f"{c4}  (max std={cstd_in_max:.1e})")
-        allok = allok and c1 and c2 and c3 and c4
+        # C5: centering E[j_n]-nR(D)=kappa_n is O(1) and n-STABLE (=> o(sqrt n)), so the converse is a
+        #     second-order bound around nR(D), not merely around E[j_n].
+        kappas = [centering_kappa(nn, a, b) for nn in (10, 12, 14)]
+        c5 = (max(kappas)-min(kappas) < 1e-9) and (abs(kappas[-1]) < 10.0)
+        print(f"  C5 centering kappa_n=E[j_n]-nR(D)=H(X^n)-n*hbar is O(1) & n-stable (=> o(sqrt n)): "
+              f"{c5}  (kappa@n=10,12,14={[round(k,6) for k in kappas]})")
+        allok = allok and c1 and c2 and c3 and c4 and c5
     print("="*84)
     print(f"RESULT: {'ALL PASS' if allok else 'CHECK'} -- the general converse V_op>=V_lossless on the all-n-SLB-tight")
     print("        Gray region holds for the NON-SYMMETRIC binary Markov chain (new instance), by the same")

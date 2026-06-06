@@ -12487,11 +12487,16 @@ chain: its mechanism is \emph{source-agnostic}, and isolating that yields one pr
 whole type lattice of sources --- with the symmetric BSMS and the i.i.d.\ plateau as two instances and
 the non-symmetric binary Markov chain as a new one.
 
-\emph{The principle.} Let $X$ be a stationary finite-alphabet source under Hamming distortion whose
-information density $\imath_n:=-\log_2 P(X^n)$ obeys a central limit theorem with
-$\mathrm{Var}(\imath_n)/n\to V_{\mathrm{lossless}}\in(0,\infty)$ (the source entropy-rate varentropy);
-any irreducible aperiodic finite-state --- in particular finite-order Markov --- source qualifies, by
-the Markov varentropy CLT for additive functionals (Nagaev; Meyn--Tweedie). Call $D$ \emph{all-$n$
+\emph{The principle.} Let $X$ be a stationary finite-alphabet source under Hamming distortion such that
+(i) its information density $\imath_n:=-\log_2 P(X^n)$ obeys a central limit theorem with
+$\mathrm{Var}(\imath_n)/n\to V_{\mathrm{lossless}}$ (the source entropy-rate varentropy), and (ii) the
+finite-blocklength redundancy is negligible at the dispersion scale,
+$\mathbb E[\jmath_n]-nR(D)=o(\sqrt n)$; assume $V_{\mathrm{lossless}}\in(0,\infty)$ (otherwise the bound
+is vacuous). Every irreducible aperiodic finite-state --- in particular finite-order Markov --- source
+meets (i)--(ii): the CLT by the Markov varentropy theorem for additive functionals (Nagaev;
+Meyn--Tweedie), and (ii) because $\mathbb E[\jmath_n]=H(X^n)-n\,h(D)=nR(D)+O(1)$ via $H(X^n)=n\bar h+O(1)$
+($V_{\mathrm{lossless}}>0$ there unless the log-kernel is a coboundary --- the degenerate
+uniform-entropy chains, excluded by the standing hypothesis). Call $D$ \emph{all-$n$
 SLB-tight} if the source law deconvolves by the maximizing i.i.d.\ noise --- in the worked binary case
 the $\mathrm{BSC}(D)$ kernel, $\widehat P_Y(w)=\widehat P_X(w)(1-2D)^{-|w|}$ in the Walsh domain; for a
 $q$-ary alphabet the $q$-ary symmetric kernel with noise entropy $h(D)+D\log(q-1)$ in place of $h(D)$,
@@ -12513,9 +12518,11 @@ Hamming kernel forces the binary SLB identity
   \jmath_n(x^n,D)=\imath_n(x^n)-n\,h(D)+c_n,
 \]
 where $c_n$ is a \emph{deterministic} ($x^n$-independent) finite-blocklength boundary constant with
-$c_n/n\to0$ (numerically $c_n=0$ to machine precision against the $\imath_n$ baseline --- standard
-deviation $\approx10^{-11}$ across words; a nonzero $O(1)$ value appears only if one instead normalises
-against the asymptotic rate $n(\bar h-h(D))$, $c_n$ then being the entropy boundary term $H(X_1)-\bar h$).
+$c_n/n\to0$ (numerically $c_n=0$ to machine precision against the $\imath_n$ baseline --- per-word
+standard deviation $\lesssim10^{-8}$, falling to $\sim10^{-15}$ deep in-Gray, a
+Blahut--Arimoto/near-singular-deconvolution numeric, the analytic shift being exact; a nonzero $O(1)$
+value appears only if one instead normalises against the asymptotic rate $n(\bar h-h(D))$, $c_n$ then
+being the entropy boundary term $H(X_1)-\bar h$).
 For a $q$-ary alphabet the displayed constant becomes $n[h(D)+D\log(q-1)]$. The point is that \emph{only
 the determinism of the shift is load-bearing}, so its exact value and alphabet dependence are immaterial:
 $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ \emph{exactly}, whence
@@ -12526,11 +12533,14 @@ $\varepsilon\ge\sup_{\gamma\ge0}\{\Pr[\jmath_n\ge\log M+\gamma]-e^{-\gamma}\}$),
 slack $\delta>0$, and suppose some code sequence achieved rate
 $\log M_n\le\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)-\gamma_n$
 with $\gamma_n\to\infty$, $\gamma_n=o(\sqrt n)$. Then
-$\log M_n+\gamma_n=\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)$, and
-the CLT for $\jmath_n$ gives $\Pr[\jmath_n\ge\log M_n+\gamma_n]\to Q(Q^{-1}(\varepsilon)-\delta)>\varepsilon$
-while $e^{-\gamma_n}\to0$, so the converse forces $\varepsilon\ge Q(Q^{-1}(\varepsilon)-\delta)-o(1)>\varepsilon$
+$\log M_n+\gamma_n\le t_n:=\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)$,
+so $\Pr[\jmath_n\ge\log M_n+\gamma_n]\ge\Pr[\jmath_n\ge t_n]\to Q(Q^{-1}(\varepsilon)-\delta)>\varepsilon$
+(the CLT for $\jmath_n$ at the fixed interior point $Q^{-1}(\varepsilon)-\delta$) while $e^{-\gamma_n}\to0$,
+so the converse forces $\varepsilon\ge Q(Q^{-1}(\varepsilon)-\delta)-o(1)>\varepsilon$
 for large $n$ --- a contradiction. Hence every $\varepsilon$-code obeys
-$\log M_n\ge\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)-o(\sqrt n)$,
+$\log M_n\ge\mathbb E[\jmath_n]+\sqrt{nV_{\mathrm{lossless}}}\,(Q^{-1}(\varepsilon)-\delta)-o(\sqrt n)$;
+by hypothesis (ii) $\mathbb E[\jmath_n]=nR(D)+o(\sqrt n)$, so this is
+$R(n,D,\varepsilon)\ge R(D)+\sqrt{V_{\mathrm{lossless}}/n}\,(Q^{-1}(\varepsilon)-\delta)+o(1/\sqrt n)$,
 and letting $\delta\downarrow0$ yields
 $V_{\mathrm{op}}(D)\ge\lim_n\mathrm{Var}(\jmath_n)/n=V_{\mathrm{lossless}}$ (a \emph{plain} CLT suffices
 for this fixed-$\varepsilon$ liminf converse via the $\gamma_n\!\to\!\infty$ plus $\delta$-slack
@@ -12565,8 +12575,9 @@ instance. \emph{Validated} in
 \texttt{scripts/verify/remark\_7\_34d\_general\_converse\_discrete\_markov.py} (C1 the non-symmetric
 Gray threshold $D_c(a,b)>0$; C2 in-Gray $\rho=\mathrm{Var}(\jmath_n)/\mathrm{Var}(\imath_n)=1\Rightarrow V_{\mathrm{conv}}=V_{\mathrm{lossless}}$;
 C3 out-of-Gray $\rho<1$; C4 the shift $c_n=\jmath_n-(\imath_n-n\,h(D))$ is deterministic in-Gray
-(std $\approx10^{-11}$ across words, so $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ exactly); across
-$(a,b)\in\{(0.1,0.3),(0.2,0.4)\}$).
+(per-word std $\lesssim10^{-8}$, so $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ exactly); C5 the
+centering $\kappa_n=\mathbb E[\jmath_n]-nR(D)=H(X^n)-n\bar h$ is $O(1)$ and $n$-stable (hypothesis (ii):
+$\kappa=0.2392,0.1134$ at $n=10,12,14$, exactly constant); across $(a,b)\in\{(0.1,0.3),(0.2,0.4)\}$).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
