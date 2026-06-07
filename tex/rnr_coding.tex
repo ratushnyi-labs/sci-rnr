@@ -12466,6 +12466,30 @@ framing is an equivalent restatement, not a reduction in difficulty). (Were $\ma
 instead to tend to a positive constant, the converse would be loose and
 $V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly; the numerics below place it at $0$.)
 
+\emph{Why the residual is irreducible to filter stability: it is a cancellation, not a forgetting.} The
+exact algebraic identity $D_i\log_2 q_t=D_i\log_2\pi_t-D_i\log_2 M$ (writing $q_t\propto\pi_t e^{\theta_0
+t}$ with $\pi_t$ the untilted shell-enumerator mass and $M(x)=\mathbb E_{Y^{*}}[e^{\theta_0 K}]$ the
+tilted free energy, $D_i$ the single-flip difference) holds to machine precision, and \emph{both}
+single-flip energies $\mathbb E[\sum_i(D_i\log_2\pi_t)^2]$ and $\mathbb E[\sum_i(D_i\log_2 M)^2]$ are
+$\Theta(n)$ with correlation $\to1$, while their difference $\mathbb E[\sum_i(D_i\log_2 q_t)^2]=O(1)$
+(verified, energy decomposition exact to $10^{-17}$). So the $O(n^{-1/2})$ single-flip smallness is a
+\emph{leading-order cancellation} between two $\Theta(n)$-energy objects, of which only the additive
+free-energy part $\log_2 M$ carries the filter-stability-controlled (and \emph{$\Theta(1)$, non-small})
+influence; \emph{filter stability cannot supply the smallness}, which lives entirely in the cancellation
+$D_i\log_2\pi_t=D_i\log_2 M+O(n^{-1/2})$ --- a rank-1 restriction of the same quenched lattice-LLT-ratio
+regularity. Two standard routes provably fail to close it: triangle-inequality chaining over the shell
+gives only $O(\sqrt n)$ (two shell schedules differ in $\Theta(n)$ coordinates with non-localized,
+participation-ratio-$\tfrac12$ single-flip influence; verified $\mathrm{chain}/\sqrt n\to0.20$ constant,
+i.e.\ $\mathrm{Var}=O(n)$), and every applicable LLT is either homogeneous (Aaronson--Denker,
+Gou\"ezel) or expanding/elliptic (Dolgopyat--Sarig; Dragi\v cevi\'c--Froyland--Gonz\'alez-Tokman--Vaienti
+arXiv:1705.02130). The achievability thus reduces, with everything around it proven, to the
+\emph{single} new theorem isolated above --- not a conjunction of citable facts, but one quenched,
+non-elliptic, inhomogeneous, near-mean \emph{lattice} local-limit regularity, fully separated from the
+rest of the argument. \emph{Validated} in \texttt{scripts/verify/probe\_7\_34\_r2\_jumpset.py} (single-flip
+influence uniformly $O(n^{-1/2})$, no $\Theta(1)$ jumps, energy $O(1)$),
+\texttt{probe\_7\_34\_r2\_filter\_decomp.py} (the $\Theta(n)$-cancellation, $\mathrm{corr}\to0.99997$),
+and \texttt{probe\_7\_34\_R1\_chaining\_growth.py} (chaining gives $\Theta(\sqrt n)$, true gap $O(1)$).
+
 \emph{The sign is numerically settled in the achievability-closing direction.} An exact
 $O(n^2)$-per-sample evaluation of $G_n$ --- via the Walsh/Krawtchouk transfer-matrix identity
 $P_{Y^{*n}}(B_{nD}(x^n))=2^{-n}\sum_{j}(1-2D)^{-j}\,\mathcal K_{\le t}(j)\,H_j(x^n)$ ($\mathcal K_{\le
