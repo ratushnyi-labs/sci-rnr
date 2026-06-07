@@ -556,7 +556,7 @@ This article makes the following contributions.
   RNR encoder synthesised from Lemma 5.6j and Lemma 6.9.
 \item
   The \emph{discrete}, deployed counterpart of the above for the neural-LM
-  field of Theorem 7.15 --- a seven-part arc (Remarks 7.15a--7.15g). The
+  field of Theorem 7.15 --- an eight-part arc (Remarks 7.15a--7.15h). The
   §6.9 Gaussian maximum-entropy-sampling support selection transfers to a
   transformer's discrete autoregressive field with \emph{unconditional}
   submodularity (the noise-floor calibration disappears; Remark 7.15a), but
@@ -8936,6 +8936,32 @@ $c_0=\#\mathrm{SAT}$; V4 the entropy identity; V5 the reduction --- the exact $\
 $=-c_0P/Z$ recovers $\#\mathrm{SAT}$ across SAT/mixed/UNSAT formulas, $P$ dividing no other term;
 V6 the exact-vs-approximate separation; V7 the multi-information corollary --- exact $\mathrm{TC}$
 recovers $\#\mathrm{SAT}$ via poly-computable marginals).
+
+\emph{Remark 7.15h (The tractable boundary is poly belief-\emph{growth}, not finite belief: finite
+belief is sufficient but not necessary).} Remark 7.15f frames a \emph{finite} finite-prefix
+predictive-belief set as the exact-tractable island; that is \emph{sufficient but not necessary}. The
+sharp sufficient condition is poly belief-\emph{growth}: let $B(N)$ be the number of distinct beliefs
+reachable in $\le N$ steps from the stationary prior (the exact belief-DP costs
+$\Theta(N\,B(N)\,|\Sigma|)$), so $B(N)=\mathrm{poly}(N)\Rightarrow$ exact $H(X^N)$ is poly-time, which is
+strictly weaker than $|\mathcal B|<\infty$. \emph{The clean finite/infinite dichotomy is false:} the
+discrete-time \emph{renewal} process (binary, with infinite-support inter-event law; Marzen--Crutchfield,
+\emph{Inf.\ \& Causal Architecture of Discrete-Time Renewal Processes}) has a \emph{countably infinite}
+belief set --- one distinct point-mass belief (hazard) per phase $=$ time since the last event --- yet
+$B(N)=N{+}1$ and the exact finite-block entropy is computed in $O(N^2)$ by a phase DP
+$H(X^N)=\sum_t\mathbb E_{\nu_t}[h_2(\mathrm{hazard})]$ (a countable \emph{unifilar} HMM; the spectral
+$h_\mu(L)$ of Riechers--Crutchfield is poly exactly when the mixed-state operator is finite-rank). This
+refines the §7.15 map into a belief-\emph{growth} trichotomy: (I) poly growth $B(N)=\mathrm{poly}(N)$
+(finite belief 7.15f, and the infinite-belief renewal/countable-unifilar class) $\Rightarrow$
+\emph{exact-poly}; (II) geometrically-concentrating infinite belief (filter stability, Remark 7.15c)
+$\Rightarrow$ \emph{poly-$\varepsilon$} (exact complexity open); (III) exponential growth
+$B(N)=2^{\Theta(N)}$ (continuum/fractal Blackwell measure) $\Rightarrow$ \emph{$\#P$-hard} --- the
+regime of the 7.15g $\#\mathrm{SAT}$ construction, whose belief set we verify proliferates as $2^N$.
+\emph{Conjecture:} exact $H(X^N)$ is poly-time iff $B(N)=\mathrm{poly}(N)$ --- the forward direction is
+the above; the converse (exponential belief-growth $\Rightarrow$ not poly unless $\mathrm P=\#\mathrm P$,
+beyond the single 7.15g family) is \emph{open}, as is the exact complexity of the filter-stable middle
+(II). \emph{Validated} in \texttt{scripts/verify/remark\_7\_15h\_belief\_growth\_boundary.py} (the
+infinite-belief renewal phase-DP matches brute-force $2^N$ enumeration to $10^{-13}$ for $N\le13$ and
+reaches $N{=}1000$; the finite-support renewal recovers the finite-belief 7.15f island).
 
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
