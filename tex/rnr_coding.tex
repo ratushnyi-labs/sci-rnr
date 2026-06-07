@@ -12415,8 +12415,8 @@ $T_j^{n_0}B_j(x,\xi)=\mathcal E_{j+n_0}$ that \emph{forces} the eigenfunction fl
 $\min_x|h_j^{(z)}|\ge c>0$, a density-floor surrogate the atomic filter lacks; but, as Kloeckner's
 singular-case theorem shows, that is a limitation of \emph{that route}, not of the CDF Berry--Esseen
 grade (the sharper sequential Edgeworth of Hafouta 2025, arXiv:2511.06414, inherits it a fortiori).
-\emph{The dispersion residual is therefore the ball-probability$\,\to\,$additive-functional reduction:
-that $\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the $\sqrt n$-shell (equivalently, that $-\log_2
+\emph{The dispersion residual is therefore the ball-probability$\,\to\,$additive-functional reduction.}
+That $\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the $\sqrt n$-shell (equivalently, that $-\log_2
 S_n$ is $o_P(\sqrt n)$-dominated by an algebra-additive functional of the enlarged homogeneous chain
 $(X_t,b_t,\mathrm{phase})$). Sharpening the \emph{grade} of that reduction: a CDF Berry--Esseen is
 \emph{provably insufficient} for it. By Abel summation $S_n=\sum_{k\le t}q_k\,e^{\theta_0(nD-k)}$ is a
@@ -12427,16 +12427,44 @@ CDF Berry--Esseen. Precisely, the residual is a \emph{near-mean} (Edgeworth wind
 $s^*\to0$), density-floor-free, inhomogeneous \emph{lattice} LLT for the tilted forward-filter cocycle
 $L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$ at the integer Hamming lattice, uniform over the $\sqrt
 n$-shell --- the \emph{near-mean sibling} of the third-order $\tfrac12\log n$-prefactor lemma below (the
-same lattice/non-elliptic/density-floor-free empty intersection, with \emph{one} relaxation --- near-mean
-rather than fixed-fraction --- hence strictly easier), and not an ellipticity question. Unconditionally,
-the geometric-mixing bounded-difference inequality (Kontorovich--Ramanan 2008; Samson 2000) already
-gives $\mathrm{Var}(\log_2 S_n)=O(n)$, so $V_{\mathrm{op}}\le V_{\mathrm{lossless}}+O(1)$ is \emph{finite}
-(never $+\infty$); but no concentration/Efron--Stein bound reaches $o(n)$, because the ball is a
-\emph{global}, non-additive shell object with $\Theta(n)$ coordinate-influence energy and no
-per-coordinate forgetting --- the $o(n)$ is a radius-asymptotic ($t\to\infty$) lattice cancellation only
-the local-limit theorem sees. (Were $\mathrm{Var}(\log_2 S_n)/n$ instead to tend to a positive constant,
-the converse would be loose and $V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly; the numerics below
-place it at $0$.)}
+same non-elliptic, density-floor-free \emph{lattice} object, relaxed only from fixed-fraction to
+near-mean --- a narrowing of the regime, \emph{not} an easier object), not an ellipticity question.
+
+\emph{The annealed form reduces to a citable theorem; the residual is its quenched upgrade.} Coding the
+forward filter to a Gibbs--Markov subshift (the belief a H\"older function of the past), the integer
+Hamming cocycle $K_n=\sum_i\mathbf 1[Y^*_i\ne x_i]$ becomes a H\"older additive functional of the
+homogeneous joint chain that is \emph{aperiodic} (lattice span $1$, twisted spectral radius $<1$ on
+$(0,2\pi)$ --- verified numerically to $n=520$); the Aaronson--Denker 2001 / Gou\"ezel 2010
+finite-variance \emph{lattice} local-limit theorem then applies \emph{verbatim} --- Gibbs--Markov $+$
+aperiodicity, with \emph{no} ellipticity, density floor, or minorization. So, modulo the (standard)
+symbolic coding and the verified aperiodicity, the \emph{annealed} $\mathrm{Var}_{x\sim\mu}(\log_2
+S_n)/n\to0$ holds by citation (not merely by the numerics below), which shows the ellipticity ``wall''
+is a transfer-operator-route artifact, not intrinsic to the LLT grade. The \emph{sole} residual is the
+\emph{quenched}, shell-uniform upgrade.
+
+\emph{Sharpening the residual to a single bounded local phase.} An Abel factoring of the geometric
+lower-tail sum gives, with $\phi=e^{\theta_0}\in(0,1)$,
+$-\log_2 S_n=-\log_2 q_t-\{nD\}\log_2\phi-\log_2\!\sum_{j\ge0}(q_{t-j}/q_t)\,\phi^{\,j}$, and in the
+near-mean window the local ratios $q_{t-j}/q_t\to1$, so $\mathrm{Var}(\log_2 S_n)=\mathrm{Var}(\log_2
+q_t)+o(1)$ (verified: gap $\le0.0023$, ratio $0.97$, $n$ to $520$). Writing $q_t=r_t/\sqrt{2\pi v_q}$
+with $v_q=\mathrm{Var}_q(K)=\Theta(n)$, the smooth scale part $-\tfrac12\log_2(2\pi v_q)$ has
+averaged-Dirichlet energy $O(1/n)$ (single-coordinate sensitivity bounded via filter stability), so the
+dispersion residual sharpens to: \emph{the bounded lattice-phase residual $r_t=q_t\sqrt{2\pi v_q}$
+(numerically $\approx0.94$, shell-uniform) has $\mathrm{Var}(\log_2 r_t)=O(1)$} --- precisely the
+quenched near-mean lattice-LLT regularity (shell-uniform boundedness of the ratios $q_{t-j}/q_t$ and
+single-flip stability of $r_t$). On the concentration side the \emph{worst-case} geometric-mixing
+bounded-difference inequality (Kontorovich--Ramanan 2008) gives only $\mathrm{Var}(\log_2 S_n)=O(n)$ ---
+so $V_{\mathrm{op}}\le V_{\mathrm{lossless}}+O(1)$ is \emph{finite}, never $+\infty$ --- because the
+single-coordinate influence is $\Theta(1)$ at \emph{atypical} frozen-radius ($t$ small) configurations;
+but in the genuine near-mean regime ($t\asymp nD$ large) the \emph{averaged}
+(conditional-variance/Efron--Stein) coordinate-influence energy is numerically \emph{bounded}, $O(1)$ and
+$n$-stable, whence the heat-bath Glauber--Poincar\'e inequality on the $1$D-Gibbs source law
+(Diaconis--Saloff-Coste 1996; spectral gap $\Theta(1)$ by Dobrushin/Martinelli) \emph{would} give
+$\mathrm{Var}(\log_2 r_t)=O(1)$ outright --- the lone gap being the \emph{rigorous} bound on that
+averaged energy, which \emph{is} the quenched near-mean lattice-LLT regularity above (this concentration
+framing is an equivalent restatement, not a reduction in difficulty). (Were $\mathrm{Var}(\log_2 S_n)/n$
+instead to tend to a positive constant, the converse would be loose and
+$V_{\mathrm{op}}>V_{\mathrm{lossless}}$ strictly; the numerics below place it at $0$.)
 
 \emph{The sign is numerically settled in the achievability-closing direction.} An exact
 $O(n^2)$-per-sample evaluation of $G_n$ --- via the Walsh/Krawtchouk transfer-matrix identity

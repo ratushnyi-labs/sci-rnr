@@ -251,6 +251,66 @@ def analyze(p, D, n, R, seed, s_grid, dps=80):
                 mean_mod=mean_mod, max_mod=max_mod, annealed=annealed)
 
 
+def _maxmod_q(p, D, n, R, seed, sgrid, dps=60):
+    """Worst-case-over-shell |Phi_n(s;x)| = |E_Q[e^{isK}]| from the OPERATIVE posterior q
+    (= w0/sum w0, w0_k = pi_k e^{theta0 k}). Returns (max_mod array, kept, mean vq)."""
+    th0 = float(mp.log(mp.mpf(D) / (1 - mp.mpf(D))))
+    Km = kraw_full(n); rng = np.random.default_rng(seed); ks = np.arange(n + 1)
+    mx = np.zeros(len(sgrid)); kept = 0; vqs = []
+    for _ in range(R):
+        x = sample(n, p, rng)
+        with mp.workdps(dps):
+            pis = pi_k(x, p, D, Km)
+        w0 = np.array([float(pis[k]) * math.exp(th0 * k) for k in range(n + 1)])
+        M0 = w0.sum()
+        if M0 <= 0:
+            continue
+        q = w0 / M0; mq = (ks * q).sum(); vqs.append(((ks - mq) ** 2 * q).sum())
+        phi = np.array([np.sum(q * np.exp(1j * s * ks)) for s in sgrid])
+        mx = np.maximum(mx, np.abs(phi)); kept += 1
+    return mx, kept, (np.mean(vqs) if vqs else 0.0)
+
+
+def robustness_block(p, D):
+    """Two decisive robustness checks (the adversary's distinguishers):
+      (R-A) SUB-LATTICE peak vs t-sweep: a genuine span-d (d>1) cocycle keeps |Phi(2pi/d)|~1
+            as t=floor(nD)->infty; an ARTIFACT (frozen 2-point posterior at small t) collapses.
+            We sweep n so t grows and watch |Phi| at 2pi/d, d=2,3,4,5.
+      (R-B) SPECTRAL-RATE stabilization: rho(s)=|Phi_n(s)|^{1/n} must converge to a stable
+            function <1 on compact subsets of (0,2pi) (the operator statement
+            |lambda(theta0+is)|<|lambda(theta0)|), NOT drift up to 1."""
+    print("ROBUSTNESS (adversary distinguishers): does apparent decay survive t->infty & is it spectral?")
+    # (R-A) sub-lattice t-sweep
+    sgridA = np.array([2 * math.pi / d for d in (2, 3, 4, 5)] + [math.pi / 2])
+    ns = [n for n in (200, 300, 400, 520) if int(n * D) >= 5]
+    if len(ns) >= 2:
+        print("(R-A) SUB-LATTICE peak |Phi(2pi/d)| vs t=floor(nD) (collapse => artifact, persist => span d):")
+        print(f"      {'n':>4} {'t':>3} | {'2pi/2':>7} {'2pi/3':>7} {'2pi/4':>7} {'2pi/5':>7}")
+        seqs = {d: [] for d in (2, 3, 4, 5)}
+        for n in ns:
+            mx, kept, _ = _maxmod_q(p, D, n, 50 if n < 400 else 35, 7000 + n, sgridA)
+            for j, d in enumerate((2, 3, 4, 5)):
+                seqs[d].append(mx[j])
+            print(f"      {n:>4} {int(n*D):>3} | {mx[0]:>7.4f} {mx[1]:>7.4f} {mx[2]:>7.4f} {mx[3]:>7.4f}")
+        collapses = all(seqs[d][-1] < max(seqs[d][0], 1e-9) and seqs[d][-1] < 0.05 for d in (2, 3, 4, 5))
+        print(f"      ==> all sub-lattice |Phi(2pi/d)| collapse as t grows (span exactly 1, no sub-lattice): "
+              f"{'YES' if collapses else 'NO'}")
+    # (R-B) spectral-rate stabilization across n at fixed interior s
+    sgridB = np.array([0.7, 1.2, 2.0, math.pi, 4.2])
+    nsB = [n for n in (128, 192, 256, 320) if int(n * D) >= 4]
+    if len(nsB) >= 2:
+        print("(R-B) SPECTRAL RATE rho(s)=|Phi_n(s)|^{1/n} stabilizing <1 on (0,2pi) (operator statement):")
+        rates = {s: [] for s in sgridB}
+        for n in nsB:
+            mx, kept, vq = _maxmod_q(p, D, n, 50 if n < 256 else 40, 5000 + n, sgridB)
+            for j, s in enumerate(sgridB):
+                rates[s].append(mx[j] ** (1.0 / n) if mx[j] > 1e-300 else float('nan'))
+        for s in sgridB:
+            seq = np.array(rates[s])
+            print(f"      s={s:>5.2f}: rho n=[{nsB[0]}->{nsB[-1]}] {seq[0]:.4f}->{seq[-1]:.4f}  "
+                  f"(stable<1 = spectral gap of twisted operator)")
+
+
 def main():
     p = float(sys.argv[1]) if len(sys.argv) > 1 else 0.4
     D = 0.9 * D_c(p)
@@ -362,6 +422,8 @@ def main():
         pred = math.exp(-last['vq'] * s * s / 2)
         print(f"    s={s:.3f}: |Phi|={last['max_mod'][i]:.5f}  exp(-vq s^2/2)={pred:.5f}")
 
+    print("-" * 100)
+    robustness_block(p, D)
     print("-" * 100)
     verdict = interior_decays and span1 and no_interior_peak
     print("VERDICT (aperiodicity / cohomological non-arithmeticity of the integer Hamming cocycle):")

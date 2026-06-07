@@ -150,6 +150,7 @@ def analyze(p, D, n, R, seed, dps=60):
     nD = n * D
     frac = nD - t
     negS, G, jn, mqs, vqs, rts, resids = [], [], [], [], [], [], []
+    nlqt = []   # -log2 q_t : the boundary local mass (reduction-identity check b-ii)
     idmax = 0.0
     for _ in range(R):
         x = sample(n, p, rng)
@@ -173,13 +174,18 @@ def analyze(p, D, n, R, seed, dps=60):
         mqs.append(mq); vqs.append(vq)
         rts.append(q[t] * math.sqrt(2 * math.pi * vq))     # S3 LLT ratio
         resids.append(ns - 0.5 * math.log2(2 * math.pi * vq))  # S4 phase residual
+        if q[t] > 0:
+            nlqt.append(-math.log2(q[t]))                  # b-ii: -log2 q_t
         idmax = max(idmax, abs((j - g) - (-ns)))
     if len(negS) < 20:
         return None
     negS = np.array(negS); G = np.array(G); jn = np.array(jn)
+    nlqt = np.array(nlqt)
+    Vnlqt = nlqt.var(ddof=1) if len(nlqt) > 5 else float('nan')
     pred_phase = -th0 * frac / math.log(2) + math.log2(1 - math.exp(th0))
     return dict(n=n, t=t, nD=nD, frac=frac, kp=len(negS), id=idmax,
                 EnegS=negS.mean(), VnegS=negS.var(ddof=1), VnegS_n=negS.var(ddof=1) / n,
+                Vnlqt=Vnlqt, idgap=abs(negS.var(ddof=1) - Vnlqt),  # b-ii reduction-identity gap
                 mq=np.mean(mqs), vq=np.mean(vqs), rt=np.mean(rts), rt_sd=np.std(rts),
                 resid=np.mean(resids), resid_sd=np.std(resids), pred_phase=pred_phase,
                 Vj_n=jn.var(ddof=1) / n, VG_n=G.var(ddof=1) / n,
@@ -246,6 +252,26 @@ def main():
               f"=> {'PASS' if rt_bounded else 'FAIL'}")
         gate = conc and nodrift and rt_bounded
         print(f"  ==> GATE: {'GREEN -- lattice LLT holds uniformly; attack route viable' if gate else 'AMBER/RED -- uniformity questionable; revisit lemma statement'}")
+    print("-" * 100)
+    # ===== b-ii REDUCTION IDENTITY CHECK: Var(-log2 S_n) ?= Var(-log2 q_t) + o(1) =====
+    # (decides Route B: if the gap is bounded & non-growing, the dispersion = Var(log2 q_t),
+    #  closeable by an averaged-Dirichlet Markov-Poincare bound; if it GROWS, Route B fails.)
+    if len(rows) >= 4:
+        ns = np.array([r['n'] for r in rows])
+        Vs = np.array([r['VnegS'] for r in rows])      # Var(-log2 S_n)
+        Vq = np.array([r['Vnlqt'] for r in rows])      # Var(-log2 q_t)
+        gap = np.array([r['idgap'] for r in rows])     # |Vs - Vq|
+        print("b-ii  REDUCTION IDENTITY  Var(-log2 S_n) =?= Var(-log2 q_t) + o(1):")
+        print(f"      {'n':>5} {'Var(-lgS)':>10} {'Var(-lgq_t)':>12} {'|gap|':>8}")
+        for r in rows:
+            print(f"      {r['n']:>5} {r['VnegS']:>10.4f} {r['Vnlqt']:>12.4f} {r['idgap']:>8.4f}")
+        slope_gap = np.polyfit(ns, gap, 1)[0]
+        # also the RATIO Vq/Vs should -> 1 (both are the SAME O(1) variance up to o(1))
+        ratio = (Vq / Vs)
+        holds = (gap.max() < 0.20) and (slope_gap <= 1e-4) and (abs(ratio.mean() - 1) < 0.25)
+        print(f"      gap: max={gap.max():.4f}, slope/n={slope_gap:+.2e}; "
+              f"ratio Vq/Vs mean={ratio.mean():.3f}")
+        print(f"      ==> b-ii: {'HOLDS (gap bounded & non-growing) -- dispersion = Var(log2 q_t); Route B viable (closeable via averaged-Dirichlet Markov-Poincare)' if holds else 'FAILS (gap grows) -- Route B refuted; residual reverts to the open quenched lattice LLT (Route A)'}")
     print("-" * 100)
     if len(rows) >= 3:
         # S5: does Var(-log2 S_n)/n -> 0 ? fit V/n ~ a/n + b
