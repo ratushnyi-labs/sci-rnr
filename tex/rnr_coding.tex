@@ -8993,8 +8993,30 @@ stationary ergodic filter-stable fractal-Blackwell sources ($d_\mu>0$) is $\#P$-
 ingredient being a reduction that reads $\#\mathrm{SAT}$ from a prime-log coefficient of $H(X^N)$ carried
 by the fractal Blackwell mass structure (rather than a persistent latent mode); equivalently, regime II
 is exact-poly only if ergodic mixing provably ``forgets the count,'' for which there is no theorem.
-\emph{Validated} in \texttt{scripts/verify/remark\_7\_15i\_ergodic\_fs\_belief\_growth.py} (V1 ergodicity;
-V2 TV-contraction $\rho\approx0.24$; V3 exact $B(N)=2^{N+2}-1$; V4 unifilar control $B(N)\equiv3$).
+\emph{What is known is a one-sided obstruction: the 7.15g prime-log mechanism does not transfer through
+ergodic forgetting.} The most favourable adaptation is \emph{periodic injection} --- a period-$n$ hidden
+clock that draws a \emph{fresh} 7.15g mode each block (the strongest forgetting: the mode is re-randomised
+every period). With the block boundaries \emph{observable} the source synchronises, the belief set
+collapses to $\mathrm{poly}$, and the count survives additively --- but that is exactly regime I, not the
+fractal middle; with the boundaries \emph{hidden} (so the observer of the stationary stream must average
+over the uniform phase, as in the cyclostationary stationarisation $y_n:=x_{n+\theta}$, Gardner) the
+$\log P$ coefficient of $H(X^N)$ is no longer $-c_0P/Z$: the non-linear $-\sum_x p\,v_P(p)$ structure means
+the phase-average does not pass through to the coefficient, and the cross-boundary windows replace the
+single-aligned-assignment statistic $u(x)$ by a product over independent fresh assignments. We verify that
+the resulting hidden-phase coefficient is not even a function of the collision multiset $\{c_j\}$ --- three
+$3$-CNF formulas with \emph{identical} $\{c_j\}$ (hence identical $\#\mathrm{SAT}$) give three
+\emph{different} coefficients --- let alone an affine function of $\#\mathrm{SAT}$, so no single coefficient
+query recovers $\#\mathrm{SAT}$ by the 7.15g route. (This obstructs the \emph{mechanism}, not the
+conjecture: it does not show regime II is sub-$\#P$, and is consistent with ergodic mixing being the very
+tool that makes the \emph{approximate} count easy --- MCMC, and the 7.15c poly-$\varepsilon$ oracle under
+filter stability.) \emph{Validated} in
+\texttt{scripts/verify/remark\_7\_15i\_ergodic\_fs\_belief\_growth.py} (V1 ergodicity;
+V2 TV-contraction $\rho\approx0.24$; V3 exact $B(N)=2^{N+2}-1$; V4 unifilar control $B(N)\equiv3$) and the
+phase-blur obstruction in
+\texttt{scripts/verify/remark\_7\_15i\_phase\_blur\_obstruction.py} (V1 aligned single block
+$\kappa_P=-\#\mathrm{SAT}\,P/Z$; V2 additive over aligned blocks; V3 the hidden-phase coefficient $\neq$ the
+aligned one and does not recover $\#\mathrm{SAT}$; V4 identical-collision formulas give distinct hidden-phase
+coefficients).
 
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
