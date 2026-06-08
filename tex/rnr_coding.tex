@@ -556,7 +556,7 @@ This article makes the following contributions.
   RNR encoder synthesised from Lemma 5.6j and Lemma 6.9.
 \item
   The \emph{discrete}, deployed counterpart of the above for the neural-LM
-  field of Theorem 7.15 --- an eight-part arc (Remarks 7.15a--7.15h). The
+  field of Theorem 7.15 --- a nine-part arc (Remarks 7.15a--7.15i). The
   §6.9 Gaussian maximum-entropy-sampling support selection transfers to a
   transformer's discrete autoregressive field with \emph{unconditional}
   submodularity (the noise-floor calibration disappears; Remark 7.15a), but
@@ -8962,6 +8962,39 @@ beyond the single 7.15g family) is \emph{open}, as is the exact complexity of th
 (II). \emph{Validated} in \texttt{scripts/verify/remark\_7\_15h\_belief\_growth\_boundary.py} (the
 infinite-belief renewal phase-DP matches brute-force $2^N$ enumeration to $10^{-13}$ for $N\le13$ and
 reaches $N{=}1000$; the finite-support renewal recovers the finite-belief 7.15f island).
+
+\emph{Remark 7.15i (Regime II is non-trivial: ergodic filter stability does not collapse exact
+belief-growth, and the §7.15g hardness does not reach it).} Two facts pin the difficulty of the
+filter-stable middle (regime II) of the 7.15h trichotomy. \emph{First, regime II genuinely contains
+exponential exact belief-growth.} Generic stationary \emph{ergodic} non-unifilar finite-state HMMs have
+a \emph{contracting} mixed-state (Blackwell-filter) IFS --- hence are filter-stable (geometric
+forgetting; the 7.15c / Atar--Zeitouni hypothesis) --- \emph{and} an uncountable, positive-dimension
+(fractal) mixed-state attractor (J\"urgens--Crutchfield, \emph{Chaos} 31:083114, 2021,
+arXiv:2102.10487; companion arXiv:2008.12886). The two coexist because filter stability contracts the
+\emph{distance between} beliefs from differing \emph{initialisations} but does not \emph{merge} the
+\emph{distinct exact} beliefs reached along distinct \emph{words}: it bounds the $\varepsilon$-distinct
+beliefs to $\mathrm{poly}$ (the 7.15c truncation) while the \emph{exact}-distinct count $B(N)$
+proliferates as $2^N$ on the fractal attractor. We verify a minimal witness --- a generic ergodic
+$2$-state binary-output non-unifilar HMM with TV-filter-contraction $\rho\approx0.24$ yet exact
+$B(N)=2^{N+2}-1$, against a \emph{unifilar} control of the same forgetting rate with $B(N)\equiv3$
+(exact-poly, regime I) --- so filter stability is \emph{orthogonal} to exact belief-growth and ergodic
+forgetting does \emph{not} force exact-poly; the exact belief-DP (cost $\Theta(N\,B(N))$, 7.15h) is
+blocked in (II) exactly as in (III). \emph{Second, the 7.15g $\#P$-hardness does not transfer to (II).}
+That witness encodes $\#\mathrm{SAT}$ in a \emph{frozen-mode} mixture (a latent mode chosen once, never
+transitioning) --- the antithesis of forgetting; the only adjacent exact-hardness for an HMM functional,
+the $\#P$-hardness of HMM total-variation distance (Kiefer, ICALP 2018, arXiv:1804.06170), likewise
+relies on non-forgetting reachability-tracking, and the consensus-string $\mathrm{NP}$-hardness
+(Lyngs\o--Pedersen, \emph{JCSS} 65(3), 2002) and entropy-\emph{rate} Lyapunov/joint-spectral-radius
+intractability (Jacquet--Seroussi--Szpankowski, \emph{TCS} 2008) are a different (rate, not finite-block)
+object or non-forgetting. \emph{Verdict: regime II exact complexity is open.} The mixed-state operator is
+infinite-rank when $d_\mu>0$ (so no finite-rank poly algorithm, Riechers--Crutchfield), yet no
+forgetting-compatible $\#\mathrm{SAT}$ reduction is known. \emph{Conjecture:} exact $H(X^N)$ on
+stationary ergodic filter-stable fractal-Blackwell sources ($d_\mu>0$) is $\#P$-hard, the missing
+ingredient being a reduction that reads $\#\mathrm{SAT}$ from a prime-log coefficient of $H(X^N)$ carried
+by the fractal Blackwell mass structure (rather than a persistent latent mode); equivalently, regime II
+is exact-poly only if ergodic mixing provably ``forgets the count,'' for which there is no theorem.
+\emph{Validated} in \texttt{scripts/verify/remark\_7\_15i\_ergodic\_fs\_belief\_growth.py} (V1 ergodicity;
+V2 TV-contraction $\rho\approx0.24$; V3 exact $B(N)=2^{N+2}-1$; V4 unifilar control $B(N)\equiv3$).
 
 \textbf{Theorem 7.16 (Adaptive sub-block sizing $K_n$ for piecewise-
 stationary sources: strict improvement over fixed-$K$ Theorem 7.5
