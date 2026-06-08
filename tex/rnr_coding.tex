@@ -12669,7 +12669,17 @@ with the plateau bounded by $D_c(p)$.)
 \emph{Beyond the Gray region ($D>D_c(p)$): a separate open question.} Outside the Gray region the
 SLB is no longer tight, $\jmath_n$ ceases to be additive, and the converse dispersion drops
 $n$-stably to $\rho(D)V_{\mathrm{lossless}}$ with $\rho(D)<1$ (e.g.\ $\rho\approx0.61$ at $p=0.1$,
-$D=0.05$). There the operational dispersion is unresolved: the converse gives
+$D=0.05$). The ratio $\rho(D)$ has \emph{no elementary closed form} --- the best one-parameter fit
+$((1-2D)/(1-2D_c))^a$ has a $p$-dependent exponent ($a\approx5.5,3.4,2.0$ at $p=0.1,0.25,0.4$) and
+max-error $\approx0.04$--$0.12$, far above the $10^{-6}$ a closed form would need, and $\rho$ is not a
+separable function of $(D,p,D_c)$. Its clean characterization is the Green--Kubo variance rate
+$V_{\mathrm{conv}}(D)=\lim_n\mathrm{Var}(\jmath_n)/n=\chi''(0)$ (second cumulant-rate) of the
+$\lambda^*$-tilted joint (source, optimal-output) transfer operator: \emph{elementary in Gray}
+(order-$1$ output, $\rho\equiv1$, the $V_{\mathrm{lossless}}$ plateau) but, off Gray, the variance rate
+of an \emph{infinite-dimensional} operator, because the $n$-letter optimal output requires \emph{growing}
+Markov order (Eswaran--Gastpar 2022) --- \emph{the same growing-order obstruction that walls the in-Gray
+achievability}, now seen to govern the off-Gray converse-ratio's non-closed-form as well. There the
+operational dispersion is unresolved: the converse gives
 $V_{\mathrm{op}}\ge\lim_n\mathrm{Var}(\jmath_n)/n$, the first order remains achievable (order-$k$
 Markov codebooks, Elshafiy--Rose 2022), and $\jmath_n$ is numerically $\approx91$--$99\%$ the i.i.d.\
 switch-count, but the matching second-order achievability needs a \emph{quenched, time-inhomogeneous}
@@ -12688,7 +12698,9 @@ brute-force-validated to $10^{-18}$ at $n\le16$, certifying $\mathrm{Var}(\log_2
 the achievability-consistent sign) and \texttt{probe\_7\_34\_saddlepoint\_logS\_llt.py} (the saddlepoint
 reduction $-\log_2 S_n=\tfrac12\log_2(2\pi n\sigma_x^2)+\Psi(\{nD\})+o(1)$: near-mean saddle $s^*\approx0$,
 boundary LLT ratio $r_t\approx0.94$, $\mathrm{Var}(\log_2 S_n)=O(1)$ --- locating the residual as a
-near-mean lattice LLT, not a CDF Berry--Esseen).
+near-mean lattice LLT, not a CDF Berry--Esseen), and \texttt{probe\_7\_34\_offgray\_rho.py} (the off-Gray
+$\rho(D)$: $n$-stable, $\rho=1$ at $D_c$ and $\to0$ as $D\to\tfrac12$; no elementary closed form; the
+Green--Kubo $\chi''(0)$ characterization with the growing-Markov-order obstruction off Gray).
 
 \textbf{Remark 7.34d (The general converse: $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ on the all-$n$
 SLB-tight region of \emph{any} finite-alphabet source --- unifying the memoryless, symmetric-BSMS, and
