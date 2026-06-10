@@ -12527,9 +12527,15 @@ is a transfer-operator-route artifact, not intrinsic to the LLT grade. The \emph
 
 \emph{Sharpening the residual to a single bounded local phase.} An Abel factoring of the geometric
 lower-tail sum gives, with $\phi=e^{\theta_0}\in(0,1)$,
-$-\log_2 S_n=-\log_2 q_t-\{nD\}\log_2\phi-\log_2\!\sum_{j\ge0}(q_{t-j}/q_t)\,\phi^{\,j}$, and in the
-near-mean window the local ratios $q_{t-j}/q_t\to1$, so $\mathrm{Var}(\log_2 S_n)=\mathrm{Var}(\log_2
-q_t)+o(1)$ (verified: gap $\le0.0023$, ratio $0.97$, $n$ to $520$). Writing $q_t=r_t/\sqrt{2\pi v_q}$
+$-\log_2 S_n=-\log_2 q_t-\{nD\}\log_2\phi-\log_2\!\sum_{j\ge0}(q_{t-j}/q_t)\,\phi^{\,j}$; the local
+ratios are \emph{not} $\approx1$ at finite $n$ --- correctly, $q_{t-j}/q_t=\exp(\beta j/\sqrt{v_x}
+-j^2/(2v_x))(1+o(1))$ with $\beta=(t-\mu_x)/\sqrt{v_x}=O(1)$ on the shell, i.e.\ geometric in $j$ at the
+$O(n^{-1/2})$ rate $\beta/\sqrt{v_x}$ --- but the $\phi$-weighted sum converges to a shell-uniform
+$O(1)$ factor ($\to\frac1{1-\phi}$) with vanishing shell-variance (verified: ratio model to
+median rel.\ err.\ $<15\%$, $W$ within $1\%$ of $\frac1{1-\phi}$, $\mathrm{Var}_{\mathrm{shell}}(\log_2 W)$
+decreasing; \texttt{probe\_7\_34\_R2\_Le\_abel\_mechanism.py}), so
+$\mathrm{Var}(\log_2 S_n)=\mathrm{Var}(\log_2 q_t)+o(1)$ (verified: gap $\le0.0023$, ratio $0.97$, $n$
+to $520$). Writing $q_t=r_t/\sqrt{2\pi v_q}$
 with $v_q=\mathrm{Var}_q(K)=\Theta(n)$, the smooth scale part $-\tfrac12\log_2(2\pi v_q)$ has
 averaged-Dirichlet energy $O(1/n)$ (single-coordinate sensitivity bounded via filter stability), so the
 dispersion residual sharpens to: \emph{the bounded lattice-phase residual $r_t=q_t\sqrt{2\pi v_q}$
@@ -12746,15 +12752,37 @@ frozen-radius ($nD<1$) artifact plus the $n$-independent Gaussian shoulder
 (\texttt{probe\_7\_34\_quenched\_tail\_rate.py}). We still do \emph{not} claim closure of the
 achievability, but the quenched tail bound --- the form in which the residual sat after the dual/polymer
 analysis --- is now \emph{proven}, with explicit $p$-uniform constants
-($c=\tfrac14\ln(1/\bar g)$, $\bar g\le1-\tfrac{11}{16}D(1-D)(1-\cos\varepsilon)$). What remains is
-solely \emph{(R2)}, the ordered-constants write-up of the standard central-window chain
-($r_{\mathrm{KP}}>0$ analytically; $\bar v:=\lim\mathbb E[v_x]/n>0$, for which
-$nD(1-D)=\mathbb E[v_x]+\mathrm{Var}(\mu_x)$ gives the route; Azuma for the cumulants; steepest descent
-with errors $O(\log^3n/\sqrt n)$; the Abel step), scoped $D<D_c$ and $nD\ge5$ --- standard machinery
-with no remaining conceptual content. The residual thus \emph{transforms} twice over: from a quenched,
-inhomogeneous, near-mean lattice local-limit regularity --- the form in which it sat in the empty
-intersection of the LLT literature --- to an explicit $4\times4$ spectral-radius inequality (now a
-\emph{theorem}) plus a routine assembly that references the literature walls nowhere.
+($c=\tfrac14\ln(1/\bar g)$, $\bar g\le1-\tfrac{11}{16}D(1-D)(1-\cos\varepsilon)$). The
+ordered-constants central-window chain \emph{(R2)} is moreover now executed and adversarially verified
+step by step: the window is \emph{analytic}, $\delta_{\mathrm{KP}}\ge r_{\mathrm{KP}}(p)/A(D)>0$ with
+$A(D)=\frac{D(1-D)}{1-2D}$ the exact contour slope ($|\eta_s|\le A(D)|s|$, the denominator's closest
+approach to $0$ being exactly $1-2D$); the one genuinely at-risk constant is \emph{closed in closed
+form}: $\mathrm{Var}_x(\mu_x)=\Theta(n)$ (so the total-variance split $nD(1-D)=\mathbb
+E[v_x]+\mathrm{Var}(\mu_x)$ does \emph{not} give positivity for free), yet the per-site posterior
+variance is $\bar v=\lim\mathbb E[v_x]/n=D(1-D)(1-\Psi_0(D))$ with
+$\Psi_0(D)=\kappa^2D(1-D)/(1-2D)^2<\tfrac14$ on the \emph{closed} Gray region (the $t=0$ case of the
+proven $\Psi_t<\tfrac5{16}$ chain), whence $\bar v\ge\tfrac34D(1-D)>0$ \emph{including at} $D=D_c$
+(verified in closed form against measurement to $n=800$ across $p$, incl.\ corner $p=0.05$;
+\texttt{probe\_7\_34\_R2\_Lb\_variance\_split.py}); the cumulants $(\mu_x,v_x)$ concentrate by
+McDiarmid from the $O(1)$-influence cluster representation; the Abel step holds via the corrected
+weighted-sum mechanism above; and the tail/window handoff tiles all of $(0,\pi]$ with a \emph{fixed}
+$\varepsilon=\delta_{\mathrm{KP}}$ (no shrinking-$\varepsilon$ is ever needed, so $c>0$ is fixed).
+\emph{What remains is exactly one cited estimate} (GAP-1): the \emph{per-word, shell-uniform}
+steepest-descent remainder $R_n(x)=O(\log^3n/\sqrt n)$ in $q_t=(2\pi v_x)^{-1/2}e^{-\beta^2/2}(1+R_n)
++O(e^{-cn})$, invoked from the local-CLT/Edgeworth literature (Petrov; Bhattacharya--Rao) for the
+homogeneous-source cluster-cumulant sum --- the dual representation having dissolved the inhomogeneity
+and non-ellipticity, this is annealed-grade machinery, but its word-uniform constant over the shell is
+cited, not re-derived here (numerically certified: $\mathrm{RMS}(R_n)=0.063\to0.035\to0.028$ at
+$n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly is stated for
+$0<D<D_c$ and $nD\ge5$; at $D=D_c$ every constant above remains finite and positive ($\bar v(D_c)\ge
+\tfrac34D(1-D)$), the open-interior restriction being only that GAP-1's saddle-interiority threshold
+$n_0(p,D)$ is not controlled uniformly as the spectral margin $c\to0$; and the exceptional-set
+absorption $O(n^3e^{-cn})\to0$ holds for each fixed $(p,D)$ but its crossover is large near the Gray
+boundary (small $c$). The residual thus \emph{transforms} twice over: from a quenched, inhomogeneous,
+near-mean lattice local-limit regularity --- the form in which it sat in the empty intersection of the
+LLT literature --- to an explicit $4\times4$ spectral-radius inequality (now a \emph{theorem}) plus
+\emph{one} cited per-word-uniform Edgeworth remainder, with every constant in between closed and
+machine-checked.
 
 \emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
 $\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
