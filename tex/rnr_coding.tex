@@ -12623,8 +12623,11 @@ where $|\Phi(\pi;x)|\to0$ --- a span-$1$ signature --- so they break the \emph{m
 and $|C_s/C_0|>1$ on $(0,\pi]$, so the deterministic factor \emph{grows} and all decay of $|\Phi|$ must
 come from $S_x$ --- the same $\Theta(n)$-vs-$\Theta(n)$ cancellation, now as $C^n$-growth vs.\
 partition-function zeros. The residual is unchanged in content and sharper in form: a quenched,
-shell-uniform tail bound $\sup_{|s|\ge\delta_n}|\Phi(s;x)|\le e^{-c(p)n}$ for typical $x$, with the KP
-expansion supplying only the central window $|s|\le\delta_n$. \emph{Validated} in
+shell-uniform tail bound $\sup_{|s|\ge\delta_{\mathrm{KP}}}|\Phi(s;x)|\le e^{-c(p)n}$ for typical $x$,
+with the KP expansion supplying only the central window $|s|\le\delta_{\mathrm{KP}}$ --- a \emph{fixed}
+$\Theta(1)$ window (the first crossing of $|\eta_s|=r_{\mathrm{KP}}$; measured $0.35$--$1.01$ across the
+Gray region, stabilizing $\approx0.50$ as $p\to0$), since the committed KP criterion uses the worst-case
+bond weight and so holds uniformly over all words. \emph{Validated} in
 \texttt{scripts/verify/lemma\_7\_34b\_dual\_identity.py} (the identity, complex $\beta$, saddle facts),
 \texttt{lemma\_7\_34b\_polymer\_gas.py} (the gas representation, incl.\ pathological words), and
 \texttt{remark\_7\_34b\_kp\_radius\_and\_zeros.py} (the three refutation anchors: KP-vs-contour gap,
@@ -12644,6 +12647,67 @@ achievability-consistent (not a loose converse); the \emph{sole} remaining gap i
 proof of the ball-probability$\,\to\,$additive-functional reduction $\mathrm{Var}(\log_2 S_n)/n\to0$,
 uniform over the shell. (This strong numerical evidence of the \emph{sign} is not itself the
 achievability theorem, which still awaits that analytic ingredient.)
+
+\emph{The second-moment (replica) route: the analytic ingredient reduces to one explicit
+finite-dimensional spectral inequality plus a routine assembly.} Averaging over the schedule
+\emph{before} bounding --- a mechanism orthogonal to every word-by-word negative above --- gives the
+annealed two-replica identity
+\[
+  \mathbb E_x\big|\Phi(s;x)\big|^2=\mathbb E\big[e^{is(K-K')}\big]
+  =\Big|\tfrac{C_s}{C_0}\Big|^{2n}\,u^{T}W(s)^{\,n-1}v,
+\]
+with $K,K'$ two conditionally independent posterior draws given $x$: via the dual identity the triple
+$(x,x',x'')$ is a \emph{source}-side chain, and the global-flip reduction leaves an explicit $4\times4$
+transfer matrix $W(s)$ (verified against full $2^n$ enumeration to $9\times10^{-15}$;
+$\rho(W_8)=\rho(W_4)$ throughout). Set $g(s):=|C_s/C_0|^2\rho(W(s))$. Numerically $g(s)<1$
+\emph{uniformly on} $[\delta_{\mathrm{KP}},\pi]$ across the Gray region: margins
+$6\times10^{-4}$--$3\times10^{-2}$ on the primary $(p,D)$ grid, and strictly positive at every point of
+a hostile $77$-combo scan ($p\in[0.02,0.48]$, $D/D_c\in[0.1,1.0]$ \emph{including} $D=D_c$) with corner
+drills to $p=0.005$ (margin $1.1\times10^{-6}$, vanishing as $p\to0$ but never crossing); the measured
+prefactor $\mathbb E_x|\Phi|^2/g(s)^n$ is $\le1$ from $n\ge50$, uniformly in $s$ (formally,
+locally-uniform Gelfand on the compact interval gives $C_\varepsilon(\bar g+\varepsilon)^n$). Both
+committed walls are \emph{bypassed}, not contradicted: no logarithm of $S_x$ is ever taken, so the
+on-contour zeros are harmless ($g$ is in fact \emph{smallest} at $s=\pi$, $0.67$--$0.99$), and the
+$|C_s/C_0|^{2n}$ growth is absorbed into $g$. Conditional on the single hypothesis \textbf{(G)}:
+$g(s)<1$ on $[\varepsilon,\pi]$ --- finite-dimensional, per-$(p,D)$ interval-arithmetic certifiable,
+with the Jensen floor $g(s)\ge|1-D+De^{is}|^2$ (which the quenched value essentially attains at small
+$p$) as an analytic lead --- Markov plus an $e^{cn}$-net (the word-uniform bound
+$|\partial_s\Phi|\le\mathbb E_Q[K\mid x]\le n$) yields the quenched uniform tail lemma
+\[
+  \Pr_x\Big(\sup_{\varepsilon\le|s|\le\pi}\big|\Phi(s;x)\big|>2e^{-cn}\Big)\le \pi C_1\,n\,e^{-cn},
+  \qquad c=\tfrac14\ln(1/\bar g),\quad \bar g:=\max_{[\varepsilon,\pi]}g<1
+\]
+--- exactly the restated tail residual, for all but an exponentially small fraction of words (an
+exceptional set that is \emph{intrinsic}: atypical schedules such as the all-stay word genuinely
+violate the bound at large $n$, so no word-uniform version exists, and the $e^{-cn}$ bad-set Var
+contribution is absorbed by the pointwise $|\log_2 S_n|=O(n)$ floor). \emph{And the central window
+provably does not hide the $\Theta(n)$-cancellation:} $\Phi(0;x)=1$ \emph{identically} ($\eta_0=0$, the
+empty gas), so the tilted free energy $\log_2 M(x)$ of the cancellation identity above is divided out
+\emph{algebraically} in forming the posterior characteristic function --- the cancellation is
+structural, not asymptotic, and never has to be re-proven. On the fixed window
+$|s|\le\delta_{\mathrm{KP}}$ the $x$-dependence reduces to the cumulants $\mu_x,v_x$ --- sums of
+exponentially local, $O(1)$-influence cluster terms in the i.i.d.\ bonds (Azuma) --- and quenched
+steepest descent gives $q_t=(2\pi v_x)^{-1/2}e^{-\beta^2/2}\bigl(1+O(\log^3 n/\sqrt n)\bigr)
++O(e^{-cn})$ with $\beta=(t-\mu_x)/\sqrt{v_x}$ sub-Gaussian $O(1)$ over the shell
+($\mathbb E_x[\mu_x]=nD$ \emph{exactly}, $K\sim\mathrm{Bin}(n,D)$ annealed; $nD(1-D)=\mathbb E[v_x]
++\mathrm{Var}(\mu_x)$ splits the total variance): the fixed-$t$ centering costs only the budgeted factor
+$e^{-\beta^2/2}$ --- precisely the committed $\mathrm{Var}(\log_2 r_t)=O(1)$ allowance, now
+\emph{explaining} the $O(n^{-1/2})$ single-flip influence ($D_i\log_2 q_t\approx-\beta\,D_i\mu_x/
+\sqrt{v_x}$) --- whence $\mathrm{Var}(\log_2 S_n\mid\text{shell})=O(1)$ and the reduction assembles.
+There is no middle zone: the KP window is fixed while $g(s)\sim1-as^2$ ($a>0$) lets the replica bound
+reach $s\sim n^{-1/2+\kappa}$, so the handoff overlaps with $\Theta(1)$ slack. Machine-checked
+end-to-end at $n$ up to $1024$ ($150$ shell words per $n$): $\mathrm{Var}(\log_2 q_t)$ $n$-stable and
+matched by the Gaussian model, steepest-descent residual decaying as $n^{-1/2}$, tail suprema within the
+lemma bound (\texttt{scripts/verify/probe\_7\_34\_replica\_secondmoment\_tail.py},
+\texttt{probe\_7\_34\_replica\_assembly\_central.py}). We do \emph{not} claim closure. What remains is
+\emph{(R1)} an analytic (or per-$(p,D)$ interval-arithmetic) proof of \textbf{(G)} --- the certificate
+is grid-numeric, with margins vanishing as $p\to0$ --- and \emph{(R2)} the ordered-constants write-up of
+the standard central-window chain ($r_{\mathrm{KP}}>0$ analytically; $\bar v:=\lim\mathbb E[v_x]/n>0$;
+Azuma for the cumulants; steepest descent; the Abel step), scoped $D<D_c$ and $nD\ge5$. The residual
+thus \emph{transforms}: from a quenched, inhomogeneous, near-mean lattice local-limit regularity --- the
+form in which it sat in the empty intersection of the LLT literature --- to one explicit $4\times4$
+spectral-radius inequality plus a routine assembly, neither of which references the literature walls at
+all.
 
 \emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
 $\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
