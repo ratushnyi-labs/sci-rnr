@@ -12659,20 +12659,57 @@ annealed two-replica identity
 with $K,K'$ two conditionally independent posterior draws given $x$: via the dual identity the triple
 $(x,x',x'')$ is a \emph{source}-side chain, and the global-flip reduction leaves an explicit $4\times4$
 transfer matrix $W(s)$ (verified against full $2^n$ enumeration to $9\times10^{-15}$;
-$\rho(W_8)=\rho(W_4)$ throughout). Set $g(s):=|C_s/C_0|^2\rho(W(s))$. Numerically $g(s)<1$
-\emph{uniformly on} $[\delta_{\mathrm{KP}},\pi]$ across the Gray region: margins
-$6\times10^{-4}$--$3\times10^{-2}$ on the primary $(p,D)$ grid, and strictly positive at every point of
-a hostile $77$-combo scan ($p\in[0.02,0.48]$, $D/D_c\in[0.1,1.0]$ \emph{including} $D=D_c$) with corner
-drills to $p=0.005$ (margin $1.1\times10^{-6}$, vanishing as $p\to0$ but never crossing); the measured
-prefactor $\mathbb E_x|\Phi|^2/g(s)^n$ is $\le1$ from $n\ge50$, uniformly in $s$ (formally,
-locally-uniform Gelfand on the compact interval gives $C_\varepsilon(\bar g+\varepsilon)^n$). Both
+$\rho(W_8)=\rho(W_4)$ throughout). Set $g(s):=|C_s/C_0|^2\rho(W(s))$. Both
 committed walls are \emph{bypassed}, not contradicted: no logarithm of $S_x$ is ever taken, so the
-on-contour zeros are harmless ($g$ is in fact \emph{smallest} at $s=\pi$, $0.67$--$0.99$), and the
-$|C_s/C_0|^{2n}$ growth is absorbed into $g$. Conditional on the single hypothesis \textbf{(G)}:
-$g(s)<1$ on $[\varepsilon,\pi]$ --- finite-dimensional, per-$(p,D)$ interval-arithmetic certifiable,
-with the Jensen floor $g(s)\ge|1-D+De^{is}|^2$ (which the quenched value essentially attains at small
-$p$) as an analytic lead --- Markov plus an $e^{cn}$-net (the word-uniform bound
+on-contour zeros are harmless ($g$ is in fact \emph{smallest} at $s=\pi$), and the
+$|C_s/C_0|^{2n}$ growth is absorbed into $g$.
+
+\textbf{Theorem (the replica spectral inequality, proven).} \emph{For every $p\in(0,\tfrac12)$, every
+$0<D\le D_c(p)$, and every $s\in(0,\pi]$,}
+\[
+  g(s)\;\le\;1-\tfrac{11}{16}\,D(1-D)\,(1-\cos s)\;<\;1 .
+\]
+\emph{Proof.} (i) \emph{Structure.} Writing $W_4[(d_1,d_2),(e_1,e_2)]=B(d_1\!\oplus\!e_1,d_2\!\oplus\!
+e_2)\,\eta^{e_1}\bar\eta^{e_2}$ with $B(f_1,f_2)=\sum_a T_{a\oplus f_1}T_{a\oplus f_2}/T_a$, direct
+evaluation gives $B(0,0)=B(0,1)=B(1,0)=1$ and $B(1,1)=1+q$, $q=(1-2p)^2/(p(1-p))>0$; hence
+$W_4=\mathbf 1\,m^T+q\,\Pi M$ with $m=(1,\bar\eta,\eta,|\eta|^2)^T$, $M=\mathrm{diag}(m)$, $\Pi$ the
+$(d_1,d_2)\mapsto(1-d_1,1-d_2)$ reversal. (ii) \emph{Exact spectrum.} The matrix determinant lemma with
+the $\Pi$-pair antidiagonal structure (both pair products $=|\eta|^2$) factorises the characteristic
+polynomial \emph{exactly}:
+$\det(\lambda I-W_4)=(\lambda^2-q^2|\eta|^2)\,(\lambda^2-|1+\eta|^2\lambda-\kappa^2|\eta|^2)$, with
+$\kappa^2=q(q+4)=(1-2p)^2/(p^2(1-p)^2)$ (since $(1-2p)^2+4p(1-p)=1$); the Perron root is always the
+second factor's $\lambda_+=\tfrac12\bigl[T+\sqrt{T^2+4\kappa^2|\eta|^2}\bigr]$, $T=|1+\eta|^2$
+($\lambda_+\ge\kappa|\eta|>q|\eta|$ and $|\lambda_-|=\kappa^2|\eta|^2/\lambda_+\le\lambda_+$).
+(iii) \emph{Dual closed forms.} With $w=e^{is}$ the committed definitions simplify to
+$\eta_s=D(1-D)(w-1)/((1-D)^2-D^2w)$, $C_s/C_0=((1-D)^2-D^2w)/(1-2D)$, and --- the key identity ---
+$(C_s/C_0)(1+\eta_s)=1-D+Dw$ \emph{exactly}. Hence, with $t=1-\cos s\in(0,2]$,
+$F:=|C_s/C_0|^2|1+\eta_s|^2=|1-D+De^{is}|^2=1-2D(1-D)t$ \emph{is the Jensen floor identically} (so the
+bound is automatically tight to $O(s^2)$ as $s\to0$, as that floor forces), and
+$G:=4\kappa^2|\eta_s|^2|C_s/C_0|^4=8\kappa^2D^2(1-D)^2t\,[(1-2D)^2+2D^2(1-D)^2t]/(1-2D)^4\ge0$, giving
+$g(s)=\tfrac12\bigl[F+\sqrt{F^2+G}\bigr]$. (iv) \emph{Reduction and the Gray bound.} Since $0<F<1$,
+squaring is an equivalence: $g<1\iff G<4(1-F)=8D(1-D)t\iff\Psi_t(D):=\kappa^2D(1-D)[(1-2D)^2
++2D^2(1-D)^2t]/(1-2D)^4<1$; $\Psi_t$ is affine increasing in $t$, so the worst case is $t=2$. The map
+$D\mapsto\Psi_2(D)$ is strictly increasing on $(0,\tfrac12)$ (using $\tfrac{d}{dD}\tfrac{D(1-D)}
+{(1-2D)^2}=\tfrac1{(1-2D)^3}>0$), and at the Gray boundary, where $1-2D_c=\sqrt{1-2p}/(1-p)$ and
+$D_c(1-D_c)=p^2/(4(1-p)^2)$,
+\[
+  \Psi_2(D_c)=\frac{1-2p}{4(1-p)^2}+\frac{p^4}{16(1-p)^4}<\frac14+\frac1{16}=\frac5{16}
+\]
+(the first term $<\tfrac14$ since $1-2p<(1-p)^2$). Hence $\Psi_t(D)<\tfrac5{16}$ on the whole closed
+Gray region, and $1-g=\tfrac{4(1-F)-G}{2[(2-F)+\sqrt{F^2+G}]}\ge\tfrac{8D(1-D)t\,(1-5/16)}{16}
+=\tfrac{11}{16}D(1-D)t$. \hfill$\square$
+
+\emph{Corollary (curvature $=$ posterior variance).} $g(s)=1-a(p,D)s^2+O(s^4)$ with
+$a(p,D)=D(1-D)\bigl(1-\Psi_0(D)\bigr)>0$ in closed form, which reproduces the measured curvature range
+$[0.0014,0.0894]$ exactly and equals the per-site posterior variance $\bar v$ ($O(1/n)$ gaps, halving
+with $n$). The theorem was found numerically first (hostile scans: $77$ combos, corner drills to
+$p=0.005$, margins positive throughout including $D=D_c$; measured prefactor
+$\mathbb E_x|\Phi|^2/g(s)^n\le1$ from $n\ge50$) and then proven as above; two independent adversarial
+reviews re-derived every step from the raw definitions (symbolic identity checks, a $64{,}192$-point
+hostile sweep, exact-rational verification at adversarially chosen corners). With the inequality proven,
+Markov plus an $e^{cn}$-net (the word-uniform bound
 $|\partial_s\Phi|\le\mathbb E_Q[K\mid x]\le n$) yields the quenched uniform tail lemma
+\emph{unconditionally}:
 \[
   \Pr_x\Big(\sup_{\varepsilon\le|s|\le\pi}\big|\Phi(s;x)\big|>2e^{-cn}\Big)\le \pi C_1\,n\,e^{-cn},
   \qquad c=\tfrac14\ln(1/\bar g),\quad \bar g:=\max_{[\varepsilon,\pi]}g<1
@@ -12699,15 +12736,19 @@ reach $s\sim n^{-1/2+\kappa}$, so the handoff overlaps with $\Theta(1)$ slack. M
 end-to-end at $n$ up to $1024$ ($150$ shell words per $n$): $\mathrm{Var}(\log_2 q_t)$ $n$-stable and
 matched by the Gaussian model, steepest-descent residual decaying as $n^{-1/2}$, tail suprema within the
 lemma bound (\texttt{scripts/verify/probe\_7\_34\_replica\_secondmoment\_tail.py},
-\texttt{probe\_7\_34\_replica\_assembly\_central.py}). We do \emph{not} claim closure. What remains is
-\emph{(R1)} an analytic (or per-$(p,D)$ interval-arithmetic) proof of \textbf{(G)} --- the certificate
-is grid-numeric, with margins vanishing as $p\to0$ --- and \emph{(R2)} the ordered-constants write-up of
-the standard central-window chain ($r_{\mathrm{KP}}>0$ analytically; $\bar v:=\lim\mathbb E[v_x]/n>0$;
-Azuma for the cumulants; steepest descent; the Abel step), scoped $D<D_c$ and $nD\ge5$. The residual
-thus \emph{transforms}: from a quenched, inhomogeneous, near-mean lattice local-limit regularity --- the
-form in which it sat in the empty intersection of the LLT literature --- to one explicit $4\times4$
-spectral-radius inequality plus a routine assembly, neither of which references the literature walls at
-all.
+\texttt{probe\_7\_34\_replica\_assembly\_central.py}; the theorem's algebra and inequality chain in
+\texttt{probe\_7\_34\_G\_analytic\_bounds.py}, V0--V11b). We still do \emph{not} claim closure of the
+achievability, but the quenched tail bound --- the form in which the residual sat after the dual/polymer
+analysis --- is now \emph{proven}, with explicit $p$-uniform constants
+($c=\tfrac14\ln(1/\bar g)$, $\bar g\le1-\tfrac{11}{16}D(1-D)(1-\cos\varepsilon)$). What remains is
+solely \emph{(R2)}, the ordered-constants write-up of the standard central-window chain
+($r_{\mathrm{KP}}>0$ analytically; $\bar v:=\lim\mathbb E[v_x]/n>0$, for which
+$nD(1-D)=\mathbb E[v_x]+\mathrm{Var}(\mu_x)$ gives the route; Azuma for the cumulants; steepest descent
+with errors $O(\log^3n/\sqrt n)$; the Abel step), scoped $D<D_c$ and $nD\ge5$ --- standard machinery
+with no remaining conceptual content. The residual thus \emph{transforms} twice over: from a quenched,
+inhomogeneous, near-mean lattice local-limit regularity --- the form in which it sat in the empty
+intersection of the LLT literature --- to an explicit $4\times4$ spectral-radius inequality (now a
+\emph{theorem}) plus a routine assembly that references the literature walls nowhere.
 
 \emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
 $\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
