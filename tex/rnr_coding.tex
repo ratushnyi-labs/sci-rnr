@@ -12737,7 +12737,13 @@ end-to-end at $n$ up to $1024$ ($150$ shell words per $n$): $\mathrm{Var}(\log_2
 matched by the Gaussian model, steepest-descent residual decaying as $n^{-1/2}$, tail suprema within the
 lemma bound (\texttt{scripts/verify/probe\_7\_34\_replica\_secondmoment\_tail.py},
 \texttt{probe\_7\_34\_replica\_assembly\_central.py}; the theorem's algebra and inequality chain in
-\texttt{probe\_7\_34\_G\_analytic\_bounds.py}, V0--V11b). We still do \emph{not} claim closure of the
+\texttt{probe\_7\_34\_G\_analytic\_bounds.py}, V0--V11b); independently, the \emph{per-word quenched}
+rates $g_n(s;x)=-\tfrac1n\log|\Phi(s;x)|$ evaluated directly by an $O(n)$ two-term polymer recursion
+(validated against $2^n$ brute force; $|\Phi|\le1$ checked throughout) are $n$-stable positive and sit
+above the replica-implied floor $\tfrac{11}{32}D(1-D)(1-\cos s)$ at every $p$, on $nD$-matched
+schedules to $nD=10$ ($n=3589$ at $p=0.1$), with the small-$p$ flat-$|\Phi|$ appearance resolved as the
+frozen-radius ($nD<1$) artifact plus the $n$-independent Gaussian shoulder
+(\texttt{probe\_7\_34\_quenched\_tail\_rate.py}). We still do \emph{not} claim closure of the
 achievability, but the quenched tail bound --- the form in which the residual sat after the dual/polymer
 analysis --- is now \emph{proven}, with explicit $p$-uniform constants
 ($c=\tfrac14\ln(1/\bar g)$, $\bar g\le1-\tfrac{11}{16}D(1-D)(1-\cos\varepsilon)$). What remains is
