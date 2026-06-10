@@ -12508,8 +12508,10 @@ CDF Berry--Esseen. Precisely, the residual is a \emph{near-mean} (Edgeworth wind
 $s^*\to0$), density-floor-free, inhomogeneous \emph{lattice} LLT for the tilted forward-filter cocycle
 $L_\alpha^{(x_n)}\cdots L_\alpha^{(x_1)}$ at the integer Hamming lattice, uniform over the $\sqrt
 n$-shell --- the \emph{near-mean sibling} of the third-order $\tfrac12\log n$-prefactor lemma below (the
-same non-elliptic, density-floor-free \emph{lattice} object, relaxed only from fixed-fraction to
-near-mean --- a narrowing of the regime, \emph{not} an easier object), not an ellipticity question.
+same density-floor-free \emph{lattice} object --- non-elliptic \emph{in the filter-side
+representation}; the dual source-side representation below is elliptic --- relaxed only from
+fixed-fraction to near-mean: a narrowing of the regime, \emph{not} an easier object), not an
+ellipticity question.
 
 \emph{The annealed form reduces to a citable theorem; the residual is its quenched upgrade.} Coding the
 forward filter to a Gibbs--Markov subshift (the belief a H\"older function of the past), the integer
@@ -12565,7 +12567,8 @@ i.e.\ $\mathrm{Var}=O(n)$), and every applicable LLT is either homogeneous (Aaro
 Gou\"ezel) or expanding/elliptic (Dolgopyat--Sarig; Dragi\v cevi\'c--Froyland--Gonz\'alez-Tokman--Vaienti
 arXiv:1705.02130). The achievability thus reduces, with everything around it proven, to the
 \emph{single} new theorem isolated above --- not a conjunction of citable facts, but one quenched,
-non-elliptic, inhomogeneous, near-mean \emph{lattice} local-limit regularity, fully separated from the
+inhomogeneous, near-mean \emph{lattice} local-limit regularity (non-elliptic in the filter
+representation; elliptic in the dual source-side representation below), fully separated from the
 rest of the argument. The closest existing tool is the sequential lattice LLT of Hafouta
 (arXiv:2510.24244, 2025), which replaces uniform ellipticity by a weaker \emph{path-ball mass}
 (``physicality'') floor $\inf_{j}\inf_x P_{j}(B(b,r)\mid x)>0$; this still fails for the
@@ -12586,6 +12589,46 @@ is the residual's remaining degree of freedom. \emph{Validated} in \texttt{scrip
 influence uniformly $O(n^{-1/2})$, no $\Theta(1)$ jumps, energy $O(1)$),
 \texttt{probe\_7\_34\_r2\_filter\_decomp.py} (the $\Theta(n)$-cancellation, $\mathrm{corr}\to0.99997$),
 and \texttt{probe\_7\_34\_R1\_chaining\_growth.py} (chaining gives $\Theta(\sqrt n)$, true gap $O(1)$).
+
+\emph{A dual elliptic representation: the filter is eliminable from the quenched object.} Two exact
+facts re-locate where the residual lives. \emph{(Dual identity.)} For any word $x^n$, with
+$\zeta(\beta)=\frac{1-e^{\beta}}{(1+e^{\beta})(1-2D)}$, $\eta=\frac{1-\zeta}{1+\zeta}$,
+$C(\beta)=\frac{(1+e^{\beta})(1+\zeta)}2$,
+\[
+  \mathbb E_{Y^{*}}\!\big[e^{\beta\,d_H(x^n,Y^{*n})}\big]
+  \;=\;C(\beta)^{n}\,\mathbb E_{X'}\!\big[\eta(\beta)^{\,d_H(x^n,X'^n)}\big],
+\]
+where $X'$ is an \emph{independent copy of the source} --- three lines of Walsh algebra (the
+per-coordinate identity $\sum_{y_i}(-1)^{w_iy_i}e^{\beta\mathbf 1[x_i\ne y_i]}=(1+e^\beta)u^{w_i}
+(-1)^{w_ix_i}$, $u=\frac{1-e^\beta}{1+e^\beta}$, applied forward to $Y^*$ and in reverse to $X'$);
+algebraic in $e^\beta$ (complex $\beta$ included), verified exact to $10^{-15}$. At the saddle
+$\beta=\theta_0$: $\zeta=1$, $\eta=0$, $C=\frac1{1-D}$, and $\mathbb E_{Y^*}[e^{\theta_0K}]
+=(1-D)^{-n}P_X(x^n)$ exactly --- the SLB identity re-derived source-side. \emph{(Polymer gas.)} The
+quenched shell polynomial $S_x(\eta):=\mathbb E_{X'}[\eta^{d_H(x,X')}]/P_X(x)$ is the grand partition
+function of a one-dimensional \emph{hard-core domain-wall polymer gas} on $x$: maximal flip-blocks $I$
+with activity $\eta^{|I|}\rho^{\pm1}$ per edge bond ($\rho=\frac p{1-p}$; $+1$ stay, $-1$ switch),
+blocks separated by $\ge1$ unflipped site (verified exact to $10^{-13}$), and the posterior
+characteristic function is $\Phi(s;x)=(C_s/C_0)^n S_x(\eta_s)$ with $\eta_s=\eta(\theta_0+is)$,
+$\eta_0=0$. \emph{Consequence for the localization:} the law on the dual side is the
+\emph{strictly-positive-kernel (elliptic) source} --- the non-ellipticity of the forward filter is a
+property of the filter-side \emph{representation}, not of the residual object, which accordingly should
+be read as: lattice $+$ quenched shell-uniformity $+$ the $\Theta(n)$-cancellation, \emph{with
+representation-dependent ellipticity}. \emph{What the dual route does not give (refuted closure):} a
+contour-wide cluster expansion of $\log S_x(\eta_s)$ fails --- the Kotecky--Preiss radius of the gas is
+$4$--$10\times$ \emph{smaller} than $\max_s|\eta_s|$ at every $p$ (the single-flip activity threshold
+$(p/(1-p))^2$ is not the convergence radius); $S_x$ carries Fisher/Lee--Yang zeros \emph{on} the contour
+near $s=\pm\pi$ for a typical fraction of words (median $\min_s|S_x(\eta_s)|\approx4\times10^{-4}$ at
+$p=0.4$, $n=24$), so $\log S_x$ is singular there (the zeros sit at the benign anti-periodic endpoint
+where $|\Phi(\pi;x)|\to0$ --- a span-$1$ signature --- so they break the \emph{method}, not the LLT);
+and $|C_s/C_0|>1$ on $(0,\pi]$, so the deterministic factor \emph{grows} and all decay of $|\Phi|$ must
+come from $S_x$ --- the same $\Theta(n)$-vs-$\Theta(n)$ cancellation, now as $C^n$-growth vs.\
+partition-function zeros. The residual is unchanged in content and sharper in form: a quenched,
+shell-uniform tail bound $\sup_{|s|\ge\delta_n}|\Phi(s;x)|\le e^{-c(p)n}$ for typical $x$, with the KP
+expansion supplying only the central window $|s|\le\delta_n$. \emph{Validated} in
+\texttt{scripts/verify/lemma\_7\_34b\_dual\_identity.py} (the identity, complex $\beta$, saddle facts),
+\texttt{lemma\_7\_34b\_polymer\_gas.py} (the gas representation, incl.\ pathological words), and
+\texttt{remark\_7\_34b\_kp\_radius\_and\_zeros.py} (the three refutation anchors: KP-vs-contour gap,
+on-contour zeros, $|C_s/C_0|>1$).
 
 \emph{The sign is numerically settled in the achievability-closing direction.} An exact
 $O(n^2)$-per-sample evaluation of $G_n$ --- via the Walsh/Krawtchouk transfer-matrix identity
@@ -12661,11 +12704,15 @@ the literature: every inhomogeneous lattice-or-large-deviation result (Dolgopyat
 Dolgopyat--Hafouta 2022) requires \emph{uniform ellipticity}, while every density-floor-free
 spectral-gap result (Hafouta 2025) is \emph{non-lattice and near-mean} only; the target
 $-\log P(A_n\le nD)=\jmath_n+\tfrac12\log n+O(1)$ for an integer-valued tail sits in their
-\emph{empty intersection}, and the atomic filter kernel has no ellipticity. So the sharp third-order prefactor needs a
+\emph{empty intersection}, and the atomic filter kernel has no ellipticity (in the \emph{filter-side}
+representation; the dual source-side representation of the dispersion-grade object above is elliptic
+but trades the missing floor for the partition-function-zeros obstruction, so the intersection
+statement is unchanged in substance). So the sharp third-order prefactor needs a
 genuinely \emph{new} theorem --- a lattice sharp-LD local-limit expansion for inhomogeneous
 non-elliptic transfer-operator cocycles --- absent from the literature; the dispersion residual is its
-\emph{near-mean sibling} --- the \emph{same} density-floor-free non-elliptic \emph{lattice}
-local-limit object of (a)--(b) above, relaxed only from fixed-fraction to \emph{near-mean} ($s^*\to0$,
+\emph{near-mean sibling} --- the \emph{same} density-floor-free \emph{lattice}
+local-limit object of (a)--(b) above (representation-dependent ellipticity), relaxed only from
+fixed-fraction to \emph{near-mean} ($s^*\to0$,
 the Edgeworth window), not down to CDF Berry--Esseen grade (a CDF bound's $O(n^{-1/2})$ error is exactly
 the order of the local mass $q_t\sim(2\pi v_q)^{-1/2}$ it must resolve; verified
 $r_t=q_t\sqrt{2\pi v_q}\approx0.94$, $\mathrm{Var}(\log_2 S_n)=O(1)$). We therefore do
