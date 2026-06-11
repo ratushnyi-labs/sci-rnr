@@ -12702,7 +12702,8 @@ $D_c(1-D_c)=p^2/(4(1-p)^2)$,
   \Psi_2(D_c)=\frac{1-2p}{4(1-p)^2}+\frac{p^4}{16(1-p)^4}<\frac14+\frac1{16}=\frac5{16}
 \]
 (the first term $<\tfrac14$ since $1-2p<(1-p)^2$). Hence $\Psi_t(D)<\tfrac5{16}$ on the whole closed
-Gray region, and $1-g=\tfrac{4(1-F)-G}{2[(2-F)+\sqrt{F^2+G}]}\ge\tfrac{8D(1-D)t\,(1-5/16)}{16}
+Gray region, and, since $\sqrt{F^2+G}<2-F\le2$ bounds the denominator by $2[(2-F)+\sqrt{F^2+G}]\le8$,
+$1-g=\tfrac{4(1-F)-G}{2[(2-F)+\sqrt{F^2+G}]}\ge\tfrac{8D(1-D)t\,(1-5/16)}{8}
 =\tfrac{11}{16}D(1-D)t$. \hfill$\square$
 
 \emph{Corollary (curvature $=$ posterior variance).} $g(s)=1-a(p,D)s^2+O(s^4)$ with
@@ -12766,14 +12767,20 @@ proven $\Psi_t<\tfrac5{16}$ chain), whence $\bar v\ge\tfrac34D(1-D)>0$ \emph{inc
 \texttt{probe\_7\_34\_R2\_Lb\_variance\_split.py}); the cumulants $(\mu_x,v_x)$ concentrate by
 McDiarmid from the $O(1)$-influence cluster representation; the Abel step holds via the corrected
 weighted-sum mechanism above; and the tail/window handoff tiles all of $(0,\pi]$ with a \emph{fixed}
-$\varepsilon=\delta_{\mathrm{KP}}$ (no shrinking-$\varepsilon$ is ever needed, so $c>0$ is fixed).
-\emph{What remains is exactly one cited estimate} (GAP-1): the \emph{per-word, shell-uniform}
+$\varepsilon=\min\bigl(\delta_{\mathrm{KP}},\,c'\bar v/C_3\bigr)$ --- still a fixed $\Theta(1)$
+threshold (no shrinking-$\varepsilon$ is ever needed, so $c>0$ is fixed; the second entry is where the
+zone-2 quadratic domination $-\log|\Phi|\ge v_xs^2/4$ requires $C_3ns\le v_x/4$).
+\emph{What remains is exactly one estimate} (GAP-1): the \emph{per-word, shell-uniform}
 steepest-descent remainder $R_n(x)=O(\log^3n/\sqrt n)$ in $q_t=(2\pi v_x)^{-1/2}e^{-\beta^2/2}(1+R_n)
-+O(e^{-cn})$, invoked from the local-CLT/Edgeworth literature (Petrov; Bhattacharya--Rao) for the
-homogeneous-source cluster-cumulant sum --- the dual representation having dissolved the inhomogeneity
-and non-ellipticity, this is annealed-grade machinery, but its word-uniform constant over the shell is
-cited, not re-derived here (numerically certified: $\mathrm{RMS}(R_n)=0.063\to0.035\to0.028$ at
-$n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly is stated for
++O(e^{-cn})$. This is of the standard saddle-point/Edgeworth \emph{type}, but we flag honestly that the
+classical sources (Petrov; Bhattacharya--Rao) treat \emph{independent} summands and do not literally
+contain the per-word statement; under the proven KP analyticity (word-uniform Cauchy bound
+$|\partial_s^3\log\Phi|\le C_3n$ on the half-window) plus the unconditional tail lemma it is a
+technique-level adaptation --- a complex-saddle contour shift $z_0=i(\mu_x-t)/v_x$ making the cubic
+error \emph{multiplicative}, with the vertical-end linear term of favorable sign --- rather than a
+quotable theorem; it is the sole step not written out here (numerically certified, and \emph{tight} in
+the $(1+|\beta|)^3/\sqrt n$ form on adversarial fixed-bias ensembles: $\mathrm{RMS}(R_n)=0.063\to0.035
+\to0.028$ at $n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly is stated for
 $0<D<D_c$ and $nD\ge5$; at $D=D_c$ every constant above remains finite and positive ($\bar v(D_c)\ge
 \tfrac34D(1-D)$), the open-interior restriction being only that GAP-1's saddle-interiority threshold
 $n_0(p,D)$ is not controlled uniformly as the spectral margin $c\to0$; and the exceptional-set
