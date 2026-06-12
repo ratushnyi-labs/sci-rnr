@@ -13577,9 +13577,35 @@ hence the converse --- still applies; this is precisely the generalisation the a
 $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ is \emph{closed for the symmetric BSMS} --- instance (1) ---
 throughout the closed Gray
 region (Remark 7.34b's concluding theorem) but remains open for the non-symmetric memory instance
-(2): the 7.34b chain's dual identity, polymer gas, and $4\times4$ replica matrix are built on the
-symmetric chain, and their non-symmetric re-instantiation is not attempted here (the general
-discrete-Markov/Hamming dispersion beyond the BSMS is open; Krishnamachari 2026). What is new is the \emph{unification}: a single source-agnostic lower bound that
+(2), with the residual now \emph{sharply mapped} by a dedicated re-instantiation probe. What
+generalizes at \emph{proof} grade (both sides of the dual identity are degree-$\le n$ polynomials in
+$e^\beta$ over $\mathbb Q(D)$, so exact-rational equality at $>n+1$ points proves it identically ---
+all complex $\beta$, no floating point): the dual identity itself is \emph{chain-agnostic} (its
+derivation uses only the binary character group and the validity of the BSC$(D)$ deconvolution, which
+defines the region, not the identity); the $\mathrm{BSC}(D)$ backward channel survives asymmetry
+\emph{structurally} (Hamming is a difference distortion on $(\mathbb Z/2)^n$, so the tilt
+$e^{-\lambda d}$ is symbol-independent; KKT marginal consistency collapses to the saddle identity
+$M(\theta_0;x)=(1-D)^{-n}P_X(x)$, certified exactly, whence $\jmath_n=\imath_n-n\,h(D)$ and
+$\lambda^*=\ln\tfrac{1-D}{D}$ unchanged --- independently confirmed by random-start Blahut--Arimoto);
+the annealed facts $K\sim\mathrm{Bin}(n,D)$, $\mathbb E[\mu_x]=nD$, and the structural cancellation
+$\Phi(0;x)=1$ are chain-agnostic. The polymer gas survives with \emph{richer} activities (block
+interiors no longer cancel: site-value-dependent ratios join the bond weights; the worst-case-bond KP
+criterion still applies with a smaller radius). What breaks is the \emph{closed-form} replica
+inequality: for $a\ne b$ the global-flip reduction fails, the $\mathbf 1m^T+q\Pi M$ structure and the
+$\tfrac{11}{16}$ chain are lost, and the replica matrix stays $8\times8$ --- yet numerically
+$g(s)=|C_s/C_0|^2\rho(W_8(s))<1$ holds uniformly on $[10^{-3},\pi]$ at every tested corner (slow/fast
+mixing, extreme asymmetry, near-symmetric; $g\sim1-\bar vs^2$ with the curvature still equal to the
+per-site posterior variance), so the instance-(2) achievability residual is exactly: (i) a proof (or
+per-$(a,b,D)$ interval certification --- mechanical, though the slow-mixing small-$D_c$ corner has
+curvature $\sim10^{-4}$ and needs care) of $\sup_{[\varepsilon,\pi]}g<1$ for the asymmetric
+$8\times8$; (ii) the routine Markov bounded-differences (Marton/Paulin) replacement of the i.i.d.\
+switch-bond McDiarmid step; and (iii) the all-$n$ characterization of the asymmetric deconvolution
+threshold $D_c(a,b)$ (measured $0.0075$--$0.044$ at the test chains, still creeping at $n=14$).
+Everything else in the chain --- the tail-lemma Markov$+$net assembly, the KP window analyticity and
+Cauchy bounds, the GAP-1 saddle machinery --- consumes only these inputs (re-instantiation checks,
+exact-rational or machine-precision throughout, in
+\texttt{scripts/verify/probe\_7\_34\_nonsym\_dual\_identity.py}). The general
+discrete-Markov/Hamming dispersion beyond the binary chain remains open (Krishnamachari 2026). What is new is the \emph{unification}: a single source-agnostic lower bound that
 collapses to Kostina 2017 in the memoryless case and extends the 7.34b converse to every finite-state
 source possessing an all-$n$ SLB-tight region, with the non-symmetric chain a worked second memory
 instance. \emph{Validated} in
