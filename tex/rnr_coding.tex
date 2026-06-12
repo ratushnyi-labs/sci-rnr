@@ -12382,10 +12382,11 @@ Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all 
 memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. The natural
 candidate here --- a $D$-independent plateau at the chain's \emph{lossless} varentropy
 $p(1-p)\log_2^2\tfrac{1-p}p$ across the Gray region, mirroring the Gauss--Markov $V(D)=\tfrac12$
-plateau --- is \emph{converse-confirmed} in Remark 7.34b below: we prove the matching lower bound
-$V_{\mathrm{op}}(D)\ge V_{\mathrm{lossless}}$ throughout Gray's region $0<D\le D_c(p)$, with the
-matching achievability the sole open residual (the operational discrete-Markov/Hamming dispersion
-being open in general; Krishnamachari 2026). Only \emph{outside} the Gray region
+plateau --- is \emph{proven} in Remark 7.34b below: $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ on the open
+Gray interior $0<D<D_c(p)$ (the converse for all $n$ throughout the closed region; the achievability as
+an asymptotic theorem with explicit constants), the first discrete memory case resolved --- the general
+discrete-Markov/Hamming dispersion beyond the BSMS remains open (Krishnamachari 2026). Only
+\emph{outside} the Gray region
 ($D>D_c(p)$) does even the converse value fall below $V_{\mathrm{lossless}}$, a separate open question.
 Verified in
 \texttt{scripts/verify/remark\_7\_34a\_gauss\_markov\_rd\_dispersion.py} (V1 reverse-water-filling
@@ -12395,24 +12396,26 @@ $D_c<D<D_{\max}$; V4 the block $d$-tilted-information variance $V_n\to$ the spec
 $\Theta(\sqrt N)$ interplay with $N$-independent ratio; V6 $\delta_\infty^D=-\tfrac12\log(1-\rho^2)>0$,
 increasing in $|\rho|$, $\to0$ as $\rho\to0$).
 
-\textbf{Remark 7.34b (The BSMS Gray-region RD dispersion: a matching converse lower bound at the
-lossless varentropy; the achievability open at the 2026 frontier).} For the binary symmetric Markov
-source (BSMS, switch probability $0<p<\tfrac12$) under Hamming distortion, we prove the \emph{converse}
-bound
+\textbf{Remark 7.34b (The BSMS Gray-region RD-dispersion theorem:
+$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ --- the converse for all $n$, and a fully written asymptotic
+achievability).} For the binary symmetric Markov
+source (BSMS, switch probability $0<p<\tfrac12$) under Hamming distortion, we prove
 \[
-  V_{\mathrm{op}}(D)\ge V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p
-  \qquad\text{throughout Gray's region }0<D\le D_c(p),
+  V_{\mathrm{op}}(D)= V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p
+  \qquad\text{on the open Gray interior }0<D< D_c(p),
 \]
 with Gray's critical distortion $D_c(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (Gray 1970;
-Zhu--Alajaji), \emph{matching} the candidate value of Remark 7.34a. The candidate's equality
-$V_{\mathrm{op}}=V_{\mathrm{lossless}}$ holds iff the matching achievability does; that achievability is
-\emph{open} --- the operational discrete-Markov/Hamming dispersion is open in general (Krishnamachari
-2026), and the precise residual (located below) is a density-floor-free, inhomogeneous CDF
-Berry--Esseen for the temporally-correlated block-optimal cocycle. So on the Gray region the candidate
-is \emph{converse-confirmed} (a rigorous lower bound matching its value), with its achievability the
-sole residual. This is the first rigorous bound on the discrete-Markov (BSMS, Hamming) dispersion, a
-problem otherwise open (Krishnamachari 2026; Tasci--Kostina 2026 list Gauss--Markov as the only
-solved memory case).
+Zhu--Alajaji) --- exactly the candidate value of Remark 7.34a. The \emph{converse}
+$V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ holds throughout the closed region $0<D\le D_c(p)$ at every
+blocklength (the SLB-exact identity below); the matching \emph{achievability} is established by the
+chain developed in this remark --- the dual/polymer representation, the proven $4\times4$ replica
+spectral inequality and its unconditional quenched tail lemma, the ordered-constants central-window
+assembly, and the per-word steepest-descent (GAP-1) lemma, all written out below with closed-form
+constants --- as an \emph{asymptotic} statement (explicit but large $n_0(p,D)$; the $nD\ge5$ regime;
+see the scope notes and the concluding theorem below). This resolves the discrete-Markov (BSMS,
+Hamming) dispersion on the open Gray interior --- the first discrete memory case, the general
+discrete-Markov/Hamming dispersion beyond the BSMS remaining open (Krishnamachari 2026;
+Tasci--Kostina 2026 list Gauss--Markov as the only previously solved memory case).
 
 \emph{The key identity and the converse.} Solving the $n$-letter rate--distortion problem exactly
 (Blahut--Arimoto over the $2^n$-word alphabet) and evaluating the operational $n$-letter d-tilted
@@ -12448,10 +12451,11 @@ $p=0.1,\,D=0.05$ valid only at $n=2$, failing for every $n\ge3$ --- so the ident
 $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$; but that is outside the Gray region.)
 
 \emph{The achievability residual, correctly located at the dispersion level.} The
-matching upper bound $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ remains open; recent work confirms the
-operational discrete-Markov/Hamming dispersion is open in general (Krishnamachari 2026 leaves it
-explicitly open; only the Gauss--Markov memory class is resolved --- Tian--Kostina 2019,
-Tasci--Kostina 2026 --- via $n$-letter informational quantities). Two facts locate the gap. \emph{(a)
+matching upper bound $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ remained open prior to the chain
+developed below (the general discrete-Markov/Hamming dispersion beyond the BSMS is still open ---
+Krishnamachari 2026 leaves it
+explicitly open; before this remark only the Gauss--Markov memory class was resolved --- Tian--Kostina
+2019, Tasci--Kostina 2026 --- via $n$-letter informational quantities). Two facts locate the gap. \emph{(a)
 The leading dispersion is a CDF Berry--Esseen object; the achievability residual is a (near-mean)
 local-limit object.} The $\sqrt{V/n}$ coefficient is carried by the additive d-tilted information
 $\jmath_n$ through a CDF Berry--Esseen (lattice-agnostic, ellipticity-free --- this is what the converse
@@ -12649,10 +12653,10 @@ $n=320$, well past the integer-ball-floor $nD\ge5$), a residual variance $\mathr
 that \emph{decays to $0$} (weighted extrapolated intercept $0\pm2\times10^{-5}$; $\mathrm{Cov}(\jmath_n,
 \log_2 S_n)/n\to0$ likewise), so $\mathrm{Var}(G_n)/n\to V_{\mathrm{lossless}}$. Thus the candidate
 $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ is \emph{numerically certified} and the residual is
-achievability-consistent (not a loose converse); the \emph{sole} remaining gap is the \emph{analytic}
+achievability-consistent (not a loose converse); the \emph{sole} remaining gap was the \emph{analytic}
 proof of the ball-probability$\,\to\,$additive-functional reduction $\mathrm{Var}(\log_2 S_n)/n\to0$,
-uniform over the shell. (This strong numerical evidence of the \emph{sign} is not itself the
-achievability theorem, which still awaits that analytic ingredient.)
+uniform over the shell --- supplied by the chain below. (This numerical evidence of the \emph{sign}
+preceded and guided the analytic chain that now completes the theorem.)
 
 \emph{The second-moment (replica) route: the analytic ingredient reduces to one explicit
 finite-dimensional spectral inequality plus a routine assembly.} Averaging over the schedule
@@ -12750,9 +12754,9 @@ rates $g_n(s;x)=-\tfrac1n\log|\Phi(s;x)|$ evaluated directly by an $O(n)$ two-te
 above the replica-implied floor $\tfrac{11}{32}D(1-D)(1-\cos s)$ at every $p$, on $nD$-matched
 schedules to $nD=10$ ($n=3589$ at $p=0.1$), with the small-$p$ flat-$|\Phi|$ appearance resolved as the
 frozen-radius ($nD<1$) artifact plus the $n$-independent Gaussian shoulder
-(\texttt{probe\_7\_34\_quenched\_tail\_rate.py}). We still do \emph{not} claim closure of the
-achievability, but the quenched tail bound --- the form in which the residual sat after the dual/polymer
-analysis --- is now \emph{proven}, with explicit $p$-uniform constants
+(\texttt{probe\_7\_34\_quenched\_tail\_rate.py}). The quenched tail bound --- the form in which the
+residual sat after the dual/polymer
+analysis --- is \emph{proven}, with explicit $p$-uniform constants
 ($c=\tfrac14\ln(1/\bar g)$, $\bar g\le1-\tfrac{11}{16}D(1-D)(1-\cos\varepsilon)$). The
 ordered-constants central-window chain \emph{(R2)} is moreover now executed and adversarially verified
 step by step: the window is \emph{analytic}, $\delta_{\mathrm{KP}}\ge r_{\mathrm{KP}}(p)/A(D)>0$ with
@@ -12770,7 +12774,7 @@ weighted-sum mechanism above; and the tail/window handoff tiles all of $(0,\pi]$
 $\varepsilon=\min\bigl(\delta_{\mathrm{KP}},\,c'\bar v/C_3\bigr)$ --- still a fixed $\Theta(1)$
 threshold (no shrinking-$\varepsilon$ is ever needed, so $c>0$ is fixed; the second entry is where the
 zone-2 quadratic domination $-\log|\Phi|\ge v_xs^2/4$ requires $C_3ns\le v_x/4$).
-\emph{What remains is exactly one estimate} (GAP-1): the \emph{per-word, shell-uniform}
+\emph{The last estimate to be written out} (GAP-1) \emph{is}: the \emph{per-word, shell-uniform}
 steepest-descent remainder $R_n(x)=O(\log^3n/\sqrt n)$ in $q_t=(2\pi v_x)^{-1/2}e^{-\beta^2/2}(1+R_n)
 +O(e^{-cn})$. This is of the standard saddle-point/Edgeworth \emph{type}, but we flag honestly that the
 classical sources (Petrov; Bhattacharya--Rao) treat \emph{independent} summands and do not literally
@@ -12785,14 +12789,16 @@ quotable theorem; it is now \emph{written out below} with explicit constants (an
 certified \emph{tight} in the $(1+|\beta|)^3/\sqrt n$ form on adversarial fixed-bias ensembles:
 $\mathrm{RMS}(R_n)=0.063\to0.035\to0.028$ at $n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly is stated for
 $0<D<D_c$ and $nD\ge5$; at $D=D_c$ every constant above remains finite and positive ($\bar v(D_c)\ge
-\tfrac34D(1-D)$), the open-interior restriction being only that GAP-1's saddle-interiority threshold
-$n_0(p,D)$ is not controlled uniformly as the spectral margin $c\to0$; and the exceptional-set
-absorption $O(n^3e^{-cn})\to0$ holds for each fixed $(p,D)$ but its crossover is large near the Gray
-boundary (small $c$). The residual thus \emph{transforms} twice over: from a quenched, inhomogeneous,
+\tfrac34D(1-D)$), the open-interior restriction being a \emph{conservative} choice of the verified
+domain (the endpoint would need its own verification round) rather than a degeneration of any constant
+at fixed $(p,D)$; and the exceptional-set
+absorption $O(n^3e^{-cn})\to0$ holds for each fixed $(p,D)$ but its crossover is large where the
+spectral margin $c$ is small (small $D$, or $p$ near $\tfrac12$). The residual thus \emph{transforms} twice over: from a quenched, inhomogeneous,
 near-mean lattice local-limit regularity --- the form in which it sat in the empty intersection of the
 LLT literature --- to an explicit $4\times4$ spectral-radius inequality (now a \emph{theorem}) plus
 \emph{one} per-word-uniform Edgeworth remainder, now written out below with every constant
-closed and machine-checked.
+closed and machine-checked. With both in hand the chain is complete; the closure is stated as the
+concluding theorem after the write-out.
 
 \emph{The GAP-1 write-out (two-scale architecture; adversarially verified; every numbered inequality machine-checked in \texttt{scripts/verify/probe\_7\_34\_gap1\_writeout\_v2.py} at $(p,D)\in\{(0.25,0.9D_c),(0.4,0.5D_c)\}$, $n$ to $2048$, two seeds, plus referee corner checks at $(0.1,0.5D_c)$ and $(0.45,0.9D_c)$).} \emph{Standing objects (all committed; cited, not re-derived).}
 Fix $p\in(0,\tfrac12)$ and $0<D\le D_c(p)$ in the closed Gray region, and
@@ -13298,6 +13304,39 @@ only the crossings (N0), (N3)--(N5) shift $B_3\to B_3+1$, changing
 $n_0$ but not $C$.
 \end{itemize}
 
+\textbf{Theorem (BSMS Gray-region rate--distortion dispersion).} \emph{Fix $p\in(0,\tfrac12)$ and
+$0<D<D_c(p)$, with $V_{\mathrm{op}}(D)$ the operational dispersion under the fixed-$\varepsilon$
+excess-distortion criterion (the second-order coefficient of $R(n,D,\varepsilon)$,
+$\varepsilon\in(0,1)$ fixed; criterion restated in Remark 7.34d below). Then}
+\[
+  V_{\mathrm{op}}(D)\;=\;V_{\mathrm{lossless}}\;=\;p(1-p)\log_2^2\tfrac{1-p}p .
+\]
+\emph{Proof.} The converse $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ follows from the SLB-exact
+identity together with the one-shot Kostina--Verd\'u $d$-tilted converse and the varentropy CLT (the
+opening of this remark). For the
+achievability: by the GAP-1 lemma just proven, for $n\ge n_0(p,D)$ (which enforces $nD\ge5$) and every
+word outside
+$\widetilde E_1\cup E_2\cup E_3$, $-\log_2 q_t=\tfrac12\log_2(2\pi v_x)+\tfrac{\beta^2}{2}\log_2e
+-\log_2(1+R_n)$ with $|R_n|\le C(1+|\beta|)^3/\sqrt n$; the Abel factoring (with remark (f)'s
+uniformity in the shifted counts) converts this to $-\log_2 S_n=\tfrac12\log_2(2\pi v_x)
++\tfrac{\beta^2}{2}\log_2e-\{nD\}\log_2\phi+\log_2(1-\phi)+o(1)$ on the good set (the last two terms
+deterministic per $n$); $\beta$ is sub-Gaussian $O(1)$ and
+$\mathrm{Var}(\log_2 v_x)=O(1/n)$ (the (R2) chain), so $\mathrm{Var}(\log_2 S_n\mid\text{shell})=O(1)$,
+the bad sets being absorbed by the pointwise $|\log_2 S_n|=O(n)$ floor against their exponential
+($\widetilde E_1$, $E_2$) and polynomial ($E_3$: $2n^{-3}$) probabilities. Hence
+$\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the
+$\sqrt n$-typical shell, $\mathrm{Var}(G_n)/n\to V_{\mathrm{lossless}}$ with
+$\mathrm{Cov}(\jmath_n,\log_2 S_n)/n\to0$ (Cauchy--Schwarz from the $O(1)$ variance), and the committed
+ball-probability reduction yields $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$. \hfill$\square$
+
+\emph{Scope of the theorem (honest restatement).} Asymptotic with explicit but large $n_0(p,D)$
+(remark (d)). We restrict to the open interior $0<D<D_c$ \emph{conservatively}: the (R2) assembly was
+stated and adversarially verified on the open interior only; although every constant is finite and
+positive at $D=D_c$ (including $\bar v\ge\tfrac34D(1-D)$ and the replica margin) and the GAP-1 lemma
+holds there pointwise, we do not extend the assembly to the endpoint without a dedicated verification
+round. The exceptional word set is intrinsic (atypical schedules genuinely violate the
+tail bound) and enters only through its measure. Beyond-BSMS (non-symmetric chains, larger alphabets)
+and beyond-Gray ($D>D_c$) remain open, as does the third-order prefactor below.
 
 \emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
 $\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
@@ -13363,16 +13402,19 @@ representation; the dual source-side representation of the dispersion-grade obje
 but trades the missing floor for the partition-function-zeros obstruction, so the intersection
 statement is unchanged in substance). So the sharp third-order prefactor needs a
 genuinely \emph{new} theorem --- a lattice sharp-LD local-limit expansion for inhomogeneous
-non-elliptic transfer-operator cocycles --- absent from the literature; the dispersion residual is its
+non-elliptic transfer-operator cocycles --- absent from the literature; the dispersion residual
+\emph{was} its
 \emph{near-mean sibling} --- the \emph{same} density-floor-free \emph{lattice}
 local-limit object of (a)--(b) above (representation-dependent ellipticity), relaxed only from
 fixed-fraction to \emph{near-mean} ($s^*\to0$,
 the Edgeworth window), not down to CDF Berry--Esseen grade (a CDF bound's $O(n^{-1/2})$ error is exactly
 the order of the local mass $q_t\sim(2\pi v_q)^{-1/2}$ it must resolve; verified
-$r_t=q_t\sqrt{2\pi v_q}\approx0.94$, $\mathrm{Var}(\log_2 S_n)=O(1)$). We therefore do
-\emph{not} claim $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$: the candidate is \emph{converse-confirmed}
-on $(0,D_c(p)]$, with the achievability open --- the operational discrete-Markov dispersion being open
-in general as of this writing (Krishnamachari 2026). (Were it supplied, the discrete-Markov case would obey the
+$r_t=q_t\sqrt{2\pi v_q}\approx0.94$, $\mathrm{Var}(\log_2 S_n)=O(1)$) --- and that near-mean sibling is
+exactly what the GAP-1 lemma above now supplies, closing the dispersion while the sharp-LD
+\emph{prefactor} here stays open. So with the dispersion resolved (the concluding theorem above), what
+this paragraph leaves open is the third-order $\tfrac12\log n$ refinement \emph{only}; the
+discrete-Markov dispersion beyond the BSMS also remains open in general (Krishnamachari 2026). (The
+resolved BSMS case obeys the
 memoryless/Gauss--Markov ``lossy dispersion $=$ lossless varentropy in the SLB-tight region'' pattern,
 with the plateau bounded by $D_c(p)$.)
 
@@ -13498,9 +13540,12 @@ exactly as for the symmetric chain. Here $\imath_n$ is no longer affine in a sin
 hence the converse --- still applies; this is precisely the generalisation the abstract principle buys.
 
 \emph{Scope (honest).} This is a \emph{converse} statement; the matching achievability
-$V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ is open for the memory instances (1)--(2) by the same
-density-floor-free inhomogeneous Berry--Esseen residual located in Remark 7.34b, and open in general
-(Krishnamachari 2026). What is new is the \emph{unification}: a single source-agnostic lower bound that
+$V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ is \emph{closed for the symmetric BSMS} --- instance (1) ---
+on the open Gray
+interior (Remark 7.34b's concluding theorem) but remains open for the non-symmetric memory instance
+(2): the 7.34b chain's dual identity, polymer gas, and $4\times4$ replica matrix are built on the
+symmetric chain, and their non-symmetric re-instantiation is not attempted here (the general
+discrete-Markov/Hamming dispersion beyond the BSMS is open; Krishnamachari 2026). What is new is the \emph{unification}: a single source-agnostic lower bound that
 collapses to Kostina 2017 in the memoryless case and extends the 7.34b converse to every finite-state
 source possessing an all-$n$ SLB-tight region, with the non-symmetric chain a worked second memory
 instance. \emph{Validated} in
