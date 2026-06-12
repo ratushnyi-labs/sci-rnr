@@ -12382,9 +12382,10 @@ Tian--Kostina provide here.) Thus Remark 7.34's open problem narrows from ``all 
 memory'' to the \emph{discrete-Markov, Hamming-distortion} case specifically. The natural
 candidate here --- a $D$-independent plateau at the chain's \emph{lossless} varentropy
 $p(1-p)\log_2^2\tfrac{1-p}p$ across the Gray region, mirroring the Gauss--Markov $V(D)=\tfrac12$
-plateau --- is \emph{proven} in Remark 7.34b below: $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ on the open
-Gray interior $0<D<D_c(p)$ (the converse for all $n$ throughout the closed region; the achievability as
-an asymptotic theorem with explicit constants), the first discrete memory case resolved --- the general
+plateau --- is \emph{proven} in Remark 7.34b below: $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ throughout
+the closed Gray region $0<D\le D_c(p)$ (the converse for all $n$; the achievability as
+an asymptotic theorem with explicit constants, the endpoint included via a dedicated verification
+round), the first discrete memory case resolved --- the general
 discrete-Markov/Hamming dispersion beyond the BSMS remains open (Krishnamachari 2026). Only
 \emph{outside} the Gray region
 ($D>D_c(p)$) does even the converse value fall below $V_{\mathrm{lossless}}$, a separate open question.
@@ -12402,7 +12403,7 @@ achievability).} For the binary symmetric Markov
 source (BSMS, switch probability $0<p<\tfrac12$) under Hamming distortion, we prove
 \[
   V_{\mathrm{op}}(D)= V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p
-  \qquad\text{on the open Gray interior }0<D< D_c(p),
+  \qquad\text{throughout the closed Gray region }0<D\le D_c(p),
 \]
 with Gray's critical distortion $D_c(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (Gray 1970;
 Zhu--Alajaji) --- exactly the candidate value of Remark 7.34a. The \emph{converse}
@@ -12412,8 +12413,10 @@ chain developed in this remark --- the dual/polymer representation, the proven $
 spectral inequality and its unconditional quenched tail lemma, the ordered-constants central-window
 assembly, and the per-word steepest-descent (GAP-1) lemma, all written out below with closed-form
 constants --- as an \emph{asymptotic} statement (explicit but large $n_0(p,D)$; the $nD\ge5$ regime;
-see the scope notes and the concluding theorem below). This resolves the discrete-Markov (BSMS,
-Hamming) dispersion on the open Gray interior --- the first discrete memory case, the general
+see the scope notes and the concluding theorem below; the endpoint $D=D_c$ is included via the
+M\"obius-orbit floor lemma and a dedicated endpoint verification round). This resolves the
+discrete-Markov (BSMS,
+Hamming) dispersion throughout Gray's region --- the first discrete memory case, the general
 discrete-Markov/Hamming dispersion beyond the BSMS remaining open (Krishnamachari 2026;
 Tasci--Kostina 2026 list Gauss--Markov as the only previously solved memory case).
 
@@ -12787,11 +12790,11 @@ technique-level adaptation --- a complex-saddle contour shift $z_0=i(\mu_x-t)/v_
 error \emph{multiplicative}, with the vertical-end linear term of favorable sign --- rather than a
 quotable theorem; it is now \emph{written out below} with explicit constants (and is numerically
 certified \emph{tight} in the $(1+|\beta|)^3/\sqrt n$ form on adversarial fixed-bias ensembles:
-$\mathrm{RMS}(R_n)=0.063\to0.035\to0.028$ at $n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly is stated for
-$0<D<D_c$ and $nD\ge5$; at $D=D_c$ every constant above remains finite and positive ($\bar v(D_c)\ge
-\tfrac34D(1-D)$), the open-interior restriction being a \emph{conservative} choice of the verified
-domain (the endpoint would need its own verification round) rather than a degeneration of any constant
-at fixed $(p,D)$; and the exceptional-set
+$\mathrm{RMS}(R_n)=0.063\to0.035\to0.028$ at $n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly holds for
+$0<D\le D_c$ and $nD\ge5$ --- every constant is finite and positive on the closed region ($\bar
+v(D_c)\ge\tfrac34D(1-D)$), the endpoint $D=D_c$ being covered by its dedicated verification round
+(the M\"obius-orbit floor lemma below for the marginal discriminant, and the full probe suites re-run
+at $D_c$; \texttt{probe\_7\_34\_dc\_endpoint.py}); the exceptional-set
 absorption $O(n^3e^{-cn})\to0$ holds for each fixed $(p,D)$ but its crossover is large where the
 spectral margin $c$ is small (small $D$, or $p$ near $\tfrac12$). The residual thus \emph{transforms} twice over: from a quenched, inhomogeneous,
 near-mean lattice local-limit regularity --- the form in which it sat in the empty intersection of the
@@ -12956,7 +12959,35 @@ Their probabilities (Step 6):
 \]
 with $n_a:=\lceil4|b_0|/\bar v\rceil$ and $n_b$ the explicit threshold
 in Step 6.  All three are summable against the pointwise
-$|\log_2 S_n|=O(n)$ floor, as the committed assembly requires.
+$|\log_2 S_n|=O(n)$ floor, which the following lemma supplies.
+
+\emph{The pointwise floor (M\"obius-orbit lemma; proven at every $0<D\le D_c$, including the marginal
+discriminant).} The deconvolved output law has the exact transfer form
+$P_{Y^*}(y)=2^{-n}\,u(s_1)^TM(s_2)\cdots M(s_n)\,v$ with
+$M(s)=\bigl(\begin{smallmatrix}1&s\\ c\alpha s&\alpha\end{smallmatrix}\bigr)$, $\alpha=1-2p$,
+$c=(1-2D)^{-2}$; the adversarial component-ratio envelope obeys $x_{i+1}=\psi(x_i)$,
+$\psi(x)=\tfrac{1-\alpha x}{1-c\alpha x}$, $x_1=1$, with
+$\psi(x)-x=\tfrac{c\alpha(x-x_-)(x-x_+)}{1-c\alpha x}$, the roots being the transfer-recursion fixed
+points. At $D=D_c$ --- the marginal discriminant, double root $x_\pm=x^*=\tfrac1{1-p}$ and
+$c\alpha=(1-p)^2$ \emph{exactly} (rational; the odd Walsh masks vanish identically, so the irrational
+$1-2D_c$ never enters) --- the pole margin is \emph{strict}: $c\alpha x^*=1-p<1$. The orbit therefore
+rises monotonically to $x^*$ strictly below the pole, every conditional satisfies
+$P(y_{i+1}\mid y^i)\ge p/2$, and
+\[
+  \min_y P_{Y^*}(y)\;\ge\;2^{-n}\,p^{\,n-1}
+  \qquad\text{at }D=D_c,\ \text{and a fortiori (larger fixed-point margin) for all }0<D\le D_c,
+\]
+asymptotically tight (the greedy envelope word is the exact arg-min; per-site factor decreasing to
+$p/2$ --- the historical $60$-digit value $\approx0.0547$ at $p=0.1$ is this orbit at $n\approx70$).
+Consequently $0\le G_n\le n(1+\log_2\tfrac1p)$, while $|\jmath_n|\le n\log_2\tfrac1p+1$ per word from
+the displayed product law, so $|\log_2 S_n|=|G_n-\jmath_n|=O(n)$ for \emph{every}
+word: the floor used above and below --- previously asserted, and on the open interior only implicitly
+backed by the strict deconvolution margin --- is hereby proven on the whole \emph{closed} Gray region,
+and the all-$n$ endpoint deconvolution positivity is upgraded from numerical to exact. Verified in
+exact integer/rational arithmetic (exhaustive minimum over all words to $n=18$ at three $p$, in float
+to $n=24$ and greedy to $n=64$; greedy arg-min match; orbit identities in rationals; the transfer form
+cross-checked against the raw Hadamard deconvolution at $n=10,12$, whose all-words minimum concurs) in
+\texttt{scripts/verify/probe\_7\_34\_dc\_endpoint.py} (DC2).
 
 \bigskip
 \noindent\textbf{Lemma (GAP-1: per-word, shell-uniform steepest-descent
@@ -13305,7 +13336,8 @@ $n_0$ but not $C$.
 \end{itemize}
 
 \textbf{Theorem (BSMS Gray-region rate--distortion dispersion).} \emph{Fix $p\in(0,\tfrac12)$ and
-$0<D<D_c(p)$, with $V_{\mathrm{op}}(D)$ the operational dispersion under the fixed-$\varepsilon$
+$0<D\le D_c(p)$ --- the closed Gray region --- with $V_{\mathrm{op}}(D)$ the operational dispersion
+under the fixed-$\varepsilon$
 excess-distortion criterion (the second-order coefficient of $R(n,D,\varepsilon)$,
 $\varepsilon\in(0,1)$ fixed; criterion restated in Remark 7.34d below). Then}
 \[
@@ -13330,11 +13362,13 @@ $\mathrm{Cov}(\jmath_n,\log_2 S_n)/n\to0$ (Cauchy--Schwarz from the $O(1)$ varia
 ball-probability reduction yields $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$. \hfill$\square$
 
 \emph{Scope of the theorem (honest restatement).} Asymptotic with explicit but large $n_0(p,D)$
-(remark (d)). We restrict to the open interior $0<D<D_c$ \emph{conservatively}: the (R2) assembly was
-stated and adversarially verified on the open interior only; although every constant is finite and
-positive at $D=D_c$ (including $\bar v\ge\tfrac34D(1-D)$ and the replica margin) and the GAP-1 lemma
-holds there pointwise, we do not extend the assembly to the endpoint without a dedicated verification
-round. The exceptional word set is intrinsic (atypical schedules genuinely violate the
+(remark (d); at the small-$D_c$ corner $p=0.1$, $D=D_c$, the crossing reaches $\approx2.9\times
+10^{17}$). The endpoint $D=D_c$ is included by a dedicated verification round: every chain statement
+already covers the closed region (the replica theorem, the variance floor, the GAP-1 lemma's own
+scope), the marginal-discriminant floor is supplied by the M\"obius-orbit lemma above, and the full
+GAP-1 (V0--V9) and central-window suites re-run \emph{at} $D=D_c$ for $p\in\{0.1,0.25,0.4\}$ pass
+identically to the interior profile (\texttt{probe\_7\_34\_dc\_endpoint.py}, DC0--DC4). The
+exceptional word set is intrinsic (atypical schedules genuinely violate the
 tail bound) and enters only through its measure. Beyond-BSMS (non-symmetric chains, larger alphabets)
 and beyond-Gray ($D>D_c$) remain open, as does the third-order prefactor below.
 
@@ -13541,8 +13575,8 @@ hence the converse --- still applies; this is precisely the generalisation the a
 
 \emph{Scope (honest).} This is a \emph{converse} statement; the matching achievability
 $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ is \emph{closed for the symmetric BSMS} --- instance (1) ---
-on the open Gray
-interior (Remark 7.34b's concluding theorem) but remains open for the non-symmetric memory instance
+throughout the closed Gray
+region (Remark 7.34b's concluding theorem) but remains open for the non-symmetric memory instance
 (2): the 7.34b chain's dual identity, polymer gas, and $4\times4$ replica matrix are built on the
 symmetric chain, and their non-symmetric re-instantiation is not attempted here (the general
 discrete-Markov/Hamming dispersion beyond the BSMS is open; Krishnamachari 2026). What is new is the \emph{unification}: a single source-agnostic lower bound that
