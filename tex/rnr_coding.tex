@@ -12781,9 +12781,9 @@ role is here played by the \emph{proven} tail lemma; under the proven KP analyti
 $|\partial_s^3\log\Phi|\le C_3n$ on the half-window) plus the unconditional tail lemma it is a
 technique-level adaptation --- a complex-saddle contour shift $z_0=i(\mu_x-t)/v_x$ making the cubic
 error \emph{multiplicative}, with the vertical-end linear term of favorable sign --- rather than a
-quotable theorem; it is the sole step not written out here (numerically certified, and \emph{tight} in
-the $(1+|\beta|)^3/\sqrt n$ form on adversarial fixed-bias ensembles: $\mathrm{RMS}(R_n)=0.063\to0.035
-\to0.028$ at $n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly is stated for
+quotable theorem; it is now \emph{written out below} with explicit constants (and is numerically
+certified \emph{tight} in the $(1+|\beta|)^3/\sqrt n$ form on adversarial fixed-bias ensembles:
+$\mathrm{RMS}(R_n)=0.063\to0.035\to0.028$ at $n=256/512/1024$, consistent with $\log^3n/\sqrt n$). Scope notes (honest): the assembly is stated for
 $0<D<D_c$ and $nD\ge5$; at $D=D_c$ every constant above remains finite and positive ($\bar v(D_c)\ge
 \tfrac34D(1-D)$), the open-interior restriction being only that GAP-1's saddle-interiority threshold
 $n_0(p,D)$ is not controlled uniformly as the spectral margin $c\to0$; and the exceptional-set
@@ -12791,8 +12791,513 @@ absorption $O(n^3e^{-cn})\to0$ holds for each fixed $(p,D)$ but its crossover is
 boundary (small $c$). The residual thus \emph{transforms} twice over: from a quenched, inhomogeneous,
 near-mean lattice local-limit regularity --- the form in which it sat in the empty intersection of the
 LLT literature --- to an explicit $4\times4$ spectral-radius inequality (now a \emph{theorem}) plus
-\emph{one} cited per-word-uniform Edgeworth remainder, with every constant in between closed and
-machine-checked.
+\emph{one} per-word-uniform Edgeworth remainder, now written out below with every constant
+closed and machine-checked.
+
+\emph{The GAP-1 write-out (two-scale architecture; adversarially verified; every numbered inequality machine-checked in \texttt{scripts/verify/probe\_7\_34\_gap1\_writeout\_v2.py} at $(p,D)\in\{(0.25,0.9D_c),(0.4,0.5D_c)\}$, $n$ to $2048$, two seeds, plus referee corner checks at $(0.1,0.5D_c)$ and $(0.45,0.9D_c)$).} \emph{Standing objects (all committed; cited, not re-derived).}
+Fix $p\in(0,\tfrac12)$ and $0<D\le D_c(p)$ in the closed Gray region, and
+write $\rho=\tfrac{p}{1-p}$, $\theta_0=\log\tfrac{D}{1-D}$,
+$t=\lfloor nD\rfloor$ (we assume the committed floor $nD\ge5$).  For a
+source word $x=x^n$ let $\Phi(s;x)=\mathbb E_Q[e^{isK}\mid x]
+=(C_s/C_0)^n S_x(\eta_s)$ be the posterior characteristic function of the
+Hamming distance $K$ of a posterior draw ($K$ integer, $\Phi$
+$2\pi$-periodic, $|\Phi|\le1$, $\Phi(0;x)=1$), $q_t=q_t(x)=\Pr_Q(K=t\mid
+x)$, and let $\mu_x=\mathbb E_Q[K\mid x]$, $v_x=\mathrm{Var}_Q(K\mid x)$,
+\[
+  \beta=\frac{t-\mu_x}{\sqrt{v_x}},\qquad
+  y_0=\frac{\mu_x-t}{v_x}=-\frac{\beta}{\sqrt{v_x}},\qquad
+  z_0=i\,y_0 .
+\]
+The committed inputs are:
+
+\begin{itemize}
+\item[(I1)] \emph{(KP analyticity; committed L-a/R1.)}  With
+$r_{\mathrm{lb}}:=\tfrac{p^2}{12e(1-p)^2}\le r_{\mathrm{KP}}$,
+$A(D):=\tfrac{D(1-D)}{1-2D}$, and
+$\delta_{\mathrm c}:=\min\!\bigl(\tfrac{r_{\mathrm{lb}}}{4A(D)},\,
+\tau_{\max},\,\tfrac12\bigr)$ the committed complex window
+($\tau_{\max}=\min(\ln2,\ln(1+\tfrac{1-2D}{2D^2}))$; at all
+verification points used here and in the referee corner checks,
+$\delta_{\mathrm c}=\tfrac{r_{\mathrm{lb}}}{4A}$),
+the map $z\mapsto\log\Phi(z;x)$ is analytic on the closed disk
+$D_2:=\{|z|\le\delta_{\mathrm c}\}$ (complex contour slope
+$|\eta_z|\le4A(D)|z|\le r_{\mathrm{lb}}$ there; $S_x$ zero-free on
+$|\eta|\le r_{\mathrm{lb}}$), with the word-uniform extensivity bound
+$\sup_{D_2}|\log\Phi(z;x)|\le K_\Phi\,n$,
+$K_\Phi:=K_C+K_S$ ($K_C=\sup_{D_2}|\log(C_z/C_0)|$ closed-form,
+$K_S=\sup_{|\eta|\le r_{\mathrm{lb}}}\sup_x|\log S_x(\eta)|/n$ from the
+KP cluster expansion).
+\item[(I2)] \emph{(Cauchy third-derivative bound; committed.)}  Define
+the \textbf{strip scale}
+\[
+  \boxed{\;\varepsilon_{\mathrm{strip}}:=\tfrac12\,\delta_{\mathrm c}
+  \;\Bigl(=\tfrac{r_{\mathrm{lb}}}{8A(D)}\text{ at the physical
+  points}\Bigr)\;}
+\]
+Then for every $|z|\le\tfrac43\varepsilon_{\mathrm{strip}}$ the disk of
+radius $\tfrac23\varepsilon_{\mathrm{strip}}$ about $z$ lies in $D_2$,
+and Cauchy gives, word-uniformly,
+\[
+  \tag{I2}
+  \sup_{|z|\le\frac43\varepsilon_{\mathrm{strip}}}
+  \bigl|\partial_z^3\log\Phi(z;x)\bigr|\;\le\;C_3\,n,
+  \qquad
+  C_3:=\frac{81\,K_\Phi}{4\,\varepsilon_{\mathrm{strip}}^{3}} ,
+\]
+\emph{or any smaller constant for which (I2) holds} (the chain below is
+monotone in $C_3$; the numerical instantiation uses the measured
+admissible value $C_3^{\mathrm{meas}}$, reported by the probe).
+\item[(I3)] \emph{(Taylor with exact cumulants.)}  By (I2) and Taylor
+with integral remainder along $[0,z]\subset D_2$,
+\[
+  \tag{I3}
+  \log\Phi(z;x)=i\mu_x z-\tfrac{v_x}{2}z^2+r_3(z;x),\qquad
+  |r_3(z;x)|\le\tfrac{C_3 n}{6}|z|^3
+  \quad\text{for }|z|\le\tfrac43\varepsilon_{\mathrm{strip}} .
+\]
+\item[(I4)] \emph{(Quenched uniform tail lemma; the proven theorem.)}
+For any fixed $\varepsilon>0$, off a bad set of probability $\le\pi
+C_1ne^{-cn}$,
+$\sup_{\varepsilon\le|s|\le\pi}|\Phi(s;x)|\le2e^{-cn}$ with
+$c=c(\varepsilon)=\tfrac14\ln(1/\bar g(\varepsilon))$,
+$\bar g(\varepsilon)\le1-\tfrac{11}{16}D(1-D)(1-\cos\varepsilon)$.
+\item[(I5)] \emph{(Replica second moment; the proven spectral
+inequality, quantitative form of the tail-lemma mechanism.)}  With
+$c_g:=\tfrac{11}{16}D(1-D)$,
+\[
+  \tag{I5}
+  \mathbb E_x\bigl|\Phi(s;x)\bigr|^2\;\le\;C_1\,g(s)^{\,n-1}
+  \;\le\;C_1\,e^{-c_g(1-\cos s)(n-1)}
+  \;\le\;C_1\,e^{-\frac{c_g}{\pi^2}\,n s^2}\quad(n\ge2),
+\]
+the last step by Jordan's inequality $1-\cos s\ge\tfrac{2}{\pi^2}s^2$ on
+$[0,\pi]$ and $n-1\ge n/2$.
+\item[(I6)] \emph{(Word-uniform derivative.)}  $|\partial_s\Phi(s;x)|
+\le\mathbb E_Q[K\mid x]\le n$.
+\item[(I7)] \emph{(McDiarmid; committed L-c/R3.)}  Single-bond
+influences $c_\mu=2A(D)\rho^{-1}(\rho^{-1}-\rho)$ on $\mu_x$ and
+$c_v=O(1)$ on $v_x$ (cluster representation), giving
+$\Pr(|\mu_x-nD|\ge\lambda)\le2e^{-2\lambda^2/((n-1)c_\mu^2)}$ and the
+same for $v_x$ with $c_v$; $\mathbb E[\mu_x]=nD$ exactly.
+\item[(I8)] \emph{(Variance floor; committed L-b/R2.)}
+$\mathbb E[v_x]=\bar v\,n+b_0$ exactly (affine), with
+$\bar v=D(1-D)(1-\Psi_0(D))\ge\tfrac34D(1-D)>0$ on the closed Gray
+region.
+\end{itemize}
+
+\emph{The two scales and the derived constants.}
+The architecture keeps \emph{two distinct, never-conflated scales}:
+\[
+  \varepsilon_2:=\min\Bigl(\varepsilon_{\mathrm{strip}},\,
+  \frac{3\bar v}{32\,C_3}\Bigr)
+  \qquad\text{(contour scale; $=\varepsilon_{\mathrm{strip}}$ at the
+  physical points with $C_3^{\mathrm{meas}}$)},
+\]
+\[
+  \varepsilon_{\mathrm{split}}:=\min\Bigl(\delta_{\mathrm{KP}},\,
+  \frac{\bar v}{4C_3}\Bigr)
+  \qquad\text{(the \emph{committed} tail handoff;
+  $\delta_{\mathrm{KP}}\ge r_{\mathrm{lb}}/A(D)$)} .
+\]
+Note $\varepsilon_2\le\varepsilon_{\mathrm{split}}$ always
+($\varepsilon_{\mathrm{strip}}\le\delta_{\mathrm{KP}}/8$ and
+$\tfrac{3}{32}<\tfrac14$).  Further set
+\[
+  \sigma_n:=\Bigl(\frac{3}{4C_3 n}\Bigr)^{1/3},\qquad
+  \tilde\sigma:=\min(\sigma_n,\varepsilon_2),\qquad
+  c_2:=\frac{c_g}{4\pi^2},\qquad
+  c_4:=\frac{c_g}{16\pi^2},\qquad
+  c_5:=\frac{c_g}{4\pi^2},
+\]
+\[
+  B_3:=\frac{3c_\mu}{\sqrt{\bar v}},\qquad
+  c:=\tfrac14\ln\bigl(1/\bar g(\varepsilon_{\mathrm{split}})\bigr),\qquad
+  J:=\bigl\lceil\log_2(\varepsilon_{\mathrm{split}}/\varepsilon_2)
+  \bigr\rceil ,
+\]
+\[
+  C_a:=\frac{8e\,C_3}{3\sqrt{2\pi}}\Bigl(\frac{2}{\bar v}\Bigr)^{3/2},
+  \qquad
+  C_b:=\frac{2e\,C_3}{3}\Bigl(\frac{2}{\bar v}\Bigr)^{3/2},\qquad
+  \boxed{\;C:=C_a+C_b+5\;}.
+\]
+
+\emph{Good sets.}  Let
+\[
+  \widetilde E_1:=\underbrace{\Bigl\{\sup_{\varepsilon_{\mathrm{split}}
+  \le|s|\le\pi}|\Phi(s;x)|>2e^{-cn}\Bigr\}}_{E_1\text{ (committed tail
+  bad set)}}
+  \;\cup\;
+  \underbrace{\Bigl\{\exists\,s\in[\varepsilon_2,
+  \varepsilon_{\mathrm{split}}]:\ |\Phi(s;x)|>e^{-c_4 n s^2}
+  \Bigr\}}_{E_{2'}\text{ (zone-$2'$ bad set, Step 5)}},
+\]
+\[
+  E_2:=\Bigl\{v_x<\tfrac{\bar v\,n}{2}\Bigr\},\qquad
+  E_3:=\Bigl\{|t-\mu_x|>B_3\sqrt{v_x\log n}\Bigr\}
+  \quad(\text{i.e.\ }|\beta|>B_3\sqrt{\log n}) .
+\]
+Their probabilities (Step 6):
+\[
+  \tag{P}
+  \Pr(\widetilde E_1)\le\pi C_1ne^{-cn}
+  +12\,C_1 J\,n\,\varepsilon_{\mathrm{split}}\,
+  e^{-c_5 n\varepsilon_2^2},
+  \qquad
+  \Pr(E_2)\le e^{-\frac{\bar v^2}{8c_v^2}n}\ (n\ge n_a),
+  \qquad
+  \Pr(E_3\setminus E_2)\le2n^{-3}\ (n\ge n_b),
+\]
+with $n_a:=\lceil4|b_0|/\bar v\rceil$ and $n_b$ the explicit threshold
+in Step 6.  All three are summable against the pointwise
+$|\log_2 S_n|=O(n)$ floor, as the committed assembly requires.
+
+\bigskip
+\noindent\textbf{Lemma (GAP-1: per-word, shell-uniform steepest-descent
+remainder).}
+\emph{Fix $p\in(0,\tfrac12)$, $0<D\le D_c(p)$.  There is an explicit
+$n_0=n_0(p,D)$ --- the largest crossing point of the finitely many
+explicit conditions (N0)--(N5) below together with $n_a,n_b$ and
+$nD\ge5$ --- such that for every $n\ge n_0$ and every word
+$x\notin\widetilde E_1\cup E_2\cup E_3$,}
+\[
+  q_t(x)\;=\;\frac{1}{\sqrt{2\pi v_x}}\;e^{-\beta^2/2}\,
+  \bigl(1+R_n(x)\bigr),
+  \qquad
+  |R_n(x)|\;\le\;\frac{C\,(1+|\beta|)^3}{\sqrt n},
+\]
+\emph{with $C=C_a+C_b+5$ as above.  ($n_0$ is large --- the chain is
+asymptotic --- but every constant is closed-form; the probe prints
+$n_0$ at the physical points.  $n_0(p,D)$ is finite at every fixed
+point of the closed Gray region including $D=D_c$, but is not claimed
+uniform as $(p,D)$ approaches the boundary.)}
+
+\bigskip
+\noindent\emph{Proof.}
+
+\textbf{Step 0 (inversion and contour).}  Since $K$ is integer-valued,
+\[
+  \tag{E0}
+  2\pi\,q_t=\int_{-\pi}^{\pi}\Phi(s;x)\,e^{-ist}\,ds .
+\]
+On the good set, by (N0) below,
+\[
+  |y_0|=\frac{|\beta|}{\sqrt{v_x}}
+  \le\frac{B_3\sqrt{\log n}}{\sqrt{\bar v n/2}}
+  \le\min\Bigl(\tilde\sigma,\;
+  \frac{\varepsilon_{\mathrm{strip}}}{2}\Bigr).
+  \tag{N0}
+\]
+Replace the central segment $[-\varepsilon_2,\varepsilon_2]$ by the
+three sides of the rectangle with vertices $\pm\varepsilon_2$,
+$\pm\varepsilon_2+iy_0$.  Every point $z$ of this rectangle satisfies
+$|z|\le\sqrt{\varepsilon_2^2+y_0^2}\le
+\sqrt{1+\tfrac14}\,\varepsilon_{\mathrm{strip}}<
+\tfrac43\varepsilon_{\mathrm{strip}}$, so the rectangle lies in the
+analyticity domain of (I1)/(I3) and Cauchy's theorem gives
+\[
+  \tag{E1}
+  2\pi q_t=\underbrace{\int_{-\varepsilon_2}^{\varepsilon_2}
+  \Phi(s+iy_0)e^{-i(s+iy_0)t}ds}_{\text{central (Steps 1--3)}}
+  \;+\;\underbrace{V_++V_-}_{\text{vertical ends (Step 4)}}
+  \;+\;\underbrace{\int_{\varepsilon_2\le|s|\le
+  \varepsilon_{\mathrm{split}}}\Phi e^{-ist}ds}_{Z_{2'}\text{ (Step 5)}}
+  \;+\;\underbrace{\int_{\varepsilon_{\mathrm{split}}\le|s|\le\pi}
+  \Phi e^{-ist}ds}_{Z_3\text{ (Step 5)}} .
+\]
+
+\textbf{Step 1 (exact saddle cancellation).}  For $z=s+iy_0$, by (I3)
+and the \emph{algebraic identity}
+\[
+  i(\mu_x-t)(s+iy_0)-\tfrac{v_x}{2}(s+iy_0)^2
+  =-\tfrac{\beta^2}{2}-\tfrac{v_x}{2}s^2
+  \qquad\Bigl(\text{since } y_0=\tfrac{\mu_x-t}{v_x},\
+  v_xy_0^2=\beta^2\Bigr),
+\]
+we get, \emph{exactly},
+\[
+  \tag{E2}
+  \psi(s):=\log\Phi(s+iy_0;x)-i(s+iy_0)t
+  =-\frac{\beta^2}{2}-\frac{v_x s^2}{2}+r_3(s+iy_0;x).
+\]
+The linear term cancels identically --- no $e^{t|y_0|}=e^{\Theta(\sqrt
+n)}$ phase factor ever appears (the refuted draft's pitfall (ii)): the
+modulus $|e^{-izt}|=e^{ty}$ is combined with
+$\mathrm{Re}\,[i\mu_x z]=-\mu_x y$ \emph{before} any bound is taken,
+leaving $(t-\mu_x)y=\Theta(\beta^2)$, not $\Theta(t\,y)$.
+
+\textbf{Step 2 (Gaussian completion).}
+\[
+  \tag{E3}
+  \int_{-\varepsilon_2}^{\varepsilon_2}e^{-v_xs^2/2}ds
+  =\sqrt{\frac{2\pi}{v_x}}-T_G,
+  \qquad
+  0\le T_G\le\frac{2}{v_x\varepsilon_2}\,
+  e^{-v_x\varepsilon_2^2/2}.
+\]
+
+\textbf{Step 3 (cubic error, split at $\tilde\sigma$).}  Write the
+central integral as
+$e^{-\beta^2/2}\bigl[\int_{-\varepsilon_2}^{\varepsilon_2}
+e^{-v_xs^2/2}ds+E_{\mathrm{in}}+E_{\mathrm{out}}\bigr]$ with
+$E_{\bullet}=\int_{\bullet}e^{-v_xs^2/2}(e^{r_3(s+iy_0)}-1)\,ds$ over
+$|s|\le\tilde\sigma$ resp.\ $\tilde\sigma\le|s|\le\varepsilon_2$.
+
+\emph{(3a) Inner.}  For $|s|\le\tilde\sigma$, by (N0)
+$|y_0|\le\tilde\sigma\le\sigma_n$, so
+$|r_3|\le\tfrac{C_3n}{6}(|s|+|y_0|)^3\le\tfrac{C_3n}{6}(2\sigma_n)^3=1$;
+hence $|e^{r_3}-1|\le e\,|r_3|$ and, extending the integral to
+$\mathbb R$ and using $(a+b)^3\le4(a^3+b^3)$,
+$\int_{\mathbb R}|s|^3e^{-v_xs^2/2}ds=4/v_x^2$:
+\[
+  \tag{E5}
+  |E_{\mathrm{in}}|
+  \le e\,\frac{C_3n}{6}\cdot4\Bigl[\frac{4}{v_x^{2}}
+  +|y_0|^3\sqrt{\frac{2\pi}{v_x}}\Bigr]
+  =\frac{2e\,C_3n}{3}\Bigl[\frac{4}{v_x^{2}}
+  +|y_0|^3\sqrt{\frac{2\pi}{v_x}}\Bigr].
+\]
+Dividing by $\sqrt{2\pi/v_x}$ and using $v_x\ge\bar vn/2$ (off $E_2$),
+$|y_0|^3=|\beta|^3v_x^{-3/2}$:
+\[
+  \tag{E5$'$}
+  \frac{|E_{\mathrm{in}}|}{\sqrt{2\pi/v_x}}
+  \le\frac{C_a}{\sqrt n}+\frac{C_b|\beta|^3}{\sqrt n}.
+\]
+
+\emph{(3b) Outer (empty unless $\sigma_n<\varepsilon_2$, i.e.
+$n>\tfrac{3}{4C_3\varepsilon_2^3}$).}  For
+$\tilde\sigma\le|s|\le\varepsilon_2$ we have $|y_0|\le\tilde\sigma\le
+|s|$, so $(|s|+|y_0|)^3\le8|s|^3$, and since
+$\varepsilon_2\le\tfrac{3\bar v}{32C_3}\le\tfrac{3v_x}{16C_3n}$ (off
+$E_2$),
+\[
+  \tag{E6}
+  \mathrm{Re}\,r_3(s+iy_0)\le\frac{4C_3n}{3}|s|^3
+  \le\frac{v_x s^2}{4},
+  \qquad\text{hence}\quad
+  e^{-v_xs^2/2}\bigl|e^{r_3}-1\bigr|\le2e^{-v_xs^2/4},
+\]
+\[
+  \tag{E7}
+  |E_{\mathrm{out}}|\le4\int_{\sigma_n}^{\infty}e^{-v_xs^2/4}ds
+  \le\frac{8}{v_x\sigma_n}e^{-v_x\sigma_n^2/4},
+  \qquad
+  \frac{|E_{\mathrm{out}}|}{\sqrt{2\pi/v_x}}
+  \le\frac{8\,e^{-\frac{\bar v}{8}n\sigma_n^2}}
+  {\sigma_n\sqrt{2\pi\bar vn/2}}
+  \;\overset{\text{(N2)}}{\le}\;\frac{1}{\sqrt n}.
+\]
+(The exponent is $\tfrac{\bar v}{8}(\tfrac{3}{4C_3})^{2/3}n^{1/3}$ ---
+genuinely $e^{-\Theta(n^{1/3})}$.)
+
+\textbf{Step 4 (vertical ends).}  For $z=\pm\varepsilon_2+iy$, $y$
+between $0$ and $y_0$ ($y=\tau y_0$, $\tau\in[0,1]$), by (I3),
+\[
+  \mathrm{Re}\,\bigl[\log\Phi(z)-izt\bigr]
+  =\underbrace{-v_x y_0 y+\tfrac{v_x}{2}y^2}_{=-\beta^2(\tau-\tau^2/2)
+  \,\le\,0}
+  \;-\;\frac{v_x\varepsilon_2^2}{2}
+  \;+\;\mathrm{Re}\,r_3(z),
+\]
+the first brace being the \emph{favorable-sign} exact saddle residual
+(again no $t|y_0|$ appears).  Since $|y_0|\le\varepsilon_2$ by (N0),
+$\mathrm{Re}\,r_3\le\tfrac{C_3n}{6}(2\varepsilon_2)^3\le
+\tfrac{v_x\varepsilon_2^2}{4}$ as in (E6), so
+\[
+  \tag{E8}
+  \sup_{y}\bigl|\Phi(\pm\varepsilon_2+iy)\,e^{-izt}\bigr|
+  \le e^{-v_x\varepsilon_2^2/4},
+  \qquad
+  |V_++V_-|\le2|y_0|\,e^{-v_x\varepsilon_2^2/4}.
+\]
+
+\textbf{Step 5 (the two real-line zones --- the two scales kept
+distinct).}
+
+\emph{(5a) Zone-$2'$, $[\varepsilon_2,\varepsilon_{\mathrm{split}}]$:
+quenched quadratic domination by Markov + dyadic net.}  Partition
+$[\varepsilon_2,\varepsilon_{\mathrm{split}}]$ into $J$ dyadic blocks
+$I_k=[a_k,\min(2a_k,\varepsilon_{\mathrm{split}})]$, $a_k=2^k
+\varepsilon_2$.  On $I_k$ put a net of spacing
+$\delta_k=\theta_k/n$ with threshold
+$\theta_k=\tfrac12e^{-c_2na_k^2}$, so $M_k\le2na_ke^{c_2na_k^2}+1$
+points.  Per net point $u\ge a_k$, by Markov and (I5),
+\[
+  \tag{E9a}
+  \Pr\bigl(|\Phi(u;x)|>\theta_k\bigr)
+  \le\frac{\mathbb E|\Phi(u)|^2}{\theta_k^2}
+  \le4C_1\,e^{2c_2na_k^2}e^{-\frac{c_g}{\pi^2}nu^2}
+  \le4C_1\,e^{-\frac{c_g}{2\pi^2}na_k^2}
+  \quad\Bigl(c_2=\frac{c_g}{4\pi^2}\Bigr),
+\]
+\[
+  \tag{E9b}
+  \Pr\Bigl(\bigcup_k\bigcup_{u\in N_k}\{|\Phi(u)|>\theta_k\}\Bigr)
+  \le\sum_k M_k\cdot4C_1e^{-\frac{c_g}{2\pi^2}na_k^2}
+  \le12\,C_1J\,n\,\varepsilon_{\mathrm{split}}\,
+  e^{-c_5n\varepsilon_2^2}
+\]
+(the $k$-sum is dominated by $k=0$ since $a_k^2=4^k\varepsilon_2^2$;
+the net-count exponent $c_2na_k^2$ is beaten \emph{blockwise} by the
+margin $\tfrac{c_g}{\pi^2}-3c_2=\tfrac{c_g}{4\pi^2}>0$ --- this is why
+the net must be dyadic-local, not global; the constant $12$ assumes
+$n\varepsilon_2\ge1$ --- the binding block being $k=0$ with
+$a_0=\varepsilon_2$ --- subsumed in $n_0$).  Off this event, for any
+$s\in I_k$ with nearest net point $u$, by (I6)
+$|\Phi(s)|\le\theta_k+n\delta_k=2\theta_k=e^{-c_2na_k^2}\le
+e^{-c_2ns^2/4}$ (as $s\le2a_k$), i.e.\ the \emph{per-word} band bound
+\[
+  \tag{E9}
+  |\Phi(s;x)|\le e^{-c_4ns^2}\qquad
+  \forall\,s\in[\varepsilon_2,\varepsilon_{\mathrm{split}}],\
+  x\notin E_{2'},\qquad c_4=\tfrac{c_g}{16\pi^2} .
+\]
+(The measured per-site rate on this band is $\approx\bar v s^2/2$ ---
+two orders above this provable floor; the probe checks both.)  Hence
+\[
+  \tag{E10}
+  |Z_{2'}|\le2\int_{\varepsilon_2}^{\infty}e^{-c_4ns^2}ds
+  \le\frac{1}{c_4n\varepsilon_2}\,e^{-c_4n\varepsilon_2^2}.
+\]
+
+\emph{(5b) Zone 3, $[\varepsilon_{\mathrm{split}},\pi]$: the committed
+tail lemma verbatim at $\varepsilon=\varepsilon_{\mathrm{split}}$.}
+Off $E_1$,
+\[
+  \tag{E11}
+  |Z_3|\le2(\pi-\varepsilon_{\mathrm{split}})\cdot2e^{-cn}
+  \le4\pi e^{-cn}.
+\]
+\emph{Two-scale discipline (the refuted draft's pitfall (i)):} the tail
+bound (E11) with $c=c(\varepsilon_{\mathrm{split}})$ is invoked
+\emph{only} for $|s|\ge\varepsilon_{\mathrm{split}}\approx0.1$; at
+$|s|=\varepsilon_2\approx0.013$--$0.025$ one has $|\Phi|\approx1$
+(per-site rate $O(\varepsilon_2^2\bar v)\sim10^{-5}$) and \emph{only}
+the quadratic bounds (E8)--(E9) are used there.
+
+\textbf{Step 6 (good-set probabilities).}  $E_1$, $E_{2'}$: (I4) and
+(E9b), giving (P).  $E_2$: by (I7)--(I8), for $n\ge
+n_a=\lceil4|b_0|/\bar v\rceil$, $\mathbb E[v_x]-\tfrac{\bar vn}{2}\ge
+\tfrac{\bar vn}{4}$, so $\Pr(E_2)\le e^{-2(\bar vn/4)^2/((n-1)c_v^2)}
+\le e^{-\bar v^2n/(8c_v^2)}$.  $E_3$: off $E_2$,
+$|\beta|>B_3\sqrt{\log n}$ forces $|\mu_x-nD|\ge
+B_3\sqrt{\bar v/2}\sqrt{n\log n}-1$, so by (I7)
+$\Pr(E_3\setminus E_2)\le2\exp\bigl(-\tfrac{2(B_3\sqrt{\bar v/2}
+\sqrt{n\log n}-1)^2}{(n-1)c_\mu^2}\bigr)\le2n^{-3}$ for $n\ge n_b$:
+with $n_b$ the explicit point past which
+$1\le\tfrac16B_3\sqrt{\bar v/2}\sqrt{n\log n}$, the exponent is
+$\ge\tfrac{25}{36}\cdot\tfrac{B_3^2\bar v}{c_\mu^2}\log n
+=\tfrac{25}{36}\cdot9\log n=6.25\log n\ge3\log n$
+(using $B_3=3c_\mu/\sqrt{\bar v}$ and $\tfrac{n}{n-1}\ge1$); the probe
+evaluates $n_b$ numerically ($n_b\approx16$ at both points).
+
+\textbf{Step 7 (assembly and the explicit $n_0$).}  Collecting
+(E1)--(E11),
+\[
+  q_t=\frac{e^{-\beta^2/2}}{\sqrt{2\pi v_x}}
+  \Bigl(1+R_n\Bigr),\qquad
+  R_n=\frac{E_{\mathrm{in}}+E_{\mathrm{out}}-T_G}{\sqrt{2\pi/v_x}}
+  +\frac{(V_++V_-)+Z_{2'}+Z_3}{\sqrt{2\pi/v_x}}\,e^{\beta^2/2},
+\]
+and with $v_x\ge\bar vn/2$, $v_x\le n^2/4$,
+$|\beta|\le B_3\sqrt{\log n}$ (so $e^{\beta^2/2}\le n^{B_3^2/2}$), the
+five exponentially small terms are each $\le n^{-1/2}$ once
+\[
+  \tag{N1}
+  \frac{2}{\varepsilon_2\sqrt{\pi\bar v n}}\,
+  e^{-\frac{\bar v}{4}n\varepsilon_2^2}\le\frac1{\sqrt n}
+  \qquad(T_G),
+\]
+\[
+  \tag{N2}
+  \frac{8}{\sigma_n\sqrt{\pi\bar v n}}\,
+  e^{-\frac{\bar v}{8}n\sigma_n^2}\le\frac1{\sqrt n}
+  \qquad(E_{\mathrm{out}};\ \text{vacuous while }
+  \sigma_n\ge\varepsilon_2),
+\]
+\[
+  \tag{N3}
+  \frac{2B_3\sqrt{\log n}}{\sqrt{2\pi}}\,n^{B_3^2/2}\,
+  e^{-\frac{\bar v}{8}n\varepsilon_2^2}\le\frac1{\sqrt n}
+  \qquad(V_\pm),
+\]
+\[
+  \tag{N4}
+  \frac{1}{c_4n\varepsilon_2}\cdot\frac{n}{2\sqrt{2\pi}}\,
+  n^{B_3^2/2}\,e^{-c_4n\varepsilon_2^2}\le\frac1{\sqrt n}
+  \qquad(Z_{2'}),
+\]
+\[
+  \tag{N5}
+  4\pi e^{-cn}\cdot\frac{n}{2\sqrt{2\pi}}\,
+  n^{B_3^2/2}\le\frac1{\sqrt n}
+  \qquad(Z_3).
+\]
+Together with (E5$'$),
+\[
+  |R_n|\le\frac{C_a+C_b|\beta|^3+5}{\sqrt n}
+  \le\frac{(C_a+C_b+5)(1+|\beta|)^3}{\sqrt n}
+  =\frac{C(1+|\beta|)^3}{\sqrt n}.
+\]
+$n_0(p,D):=$ the largest crossing point of (N0)--(N5), $n_a$, $n_b$,
+$nD\ge5$, $n\ge2$ --- each an explicit inequality in $n$ with
+closed-form constants, hence computable (the probe prints it).
+\hfill$\square$
+
+\bigskip
+\emph{Remarks (deviations from the prescribed route, justified;
+honest scope).}
+\begin{itemize}
+\item[(a)] \emph{Two scales.}  $\varepsilon_2$ (contour/strip,
+$\approx0.013$--$0.025$) and $\varepsilon_{\mathrm{split}}$ (tail
+handoff, $\approx0.1$) carry different symbols throughout; the proof
+never evaluates the tail bound at the strip scale.  This is the exact
+repair of the refuted draft's eps-conflation
+(\texttt{probe\_7\_34\_gap1\_ADV\_eps\_conflation.py}).
+\item[(b)] \emph{The zone-1/zone-2 split at $\sigma_n=\Theta(n^{-1/3})$
+instead of the prescribed $\delta_1=A'\log n/\sqrt n$.}  With the
+$\delta_1$-cut the inner error must be bounded by its worst case on the
+window, $e^{O(n(\delta_1+|y_0|)^3)}$, which yields only
+$|R_n|=O((\log n+|\beta|)^3/\sqrt n)$ --- the committed text's
+$\log^3n/\sqrt n$ form.  The stated target $C(1+|\beta|)^3/\sqrt n$
+(no polylog) \emph{requires} weighting the cubic against the Gaussian
+(E5), and then the natural cut is where the cubic reaches $O(1)$,
+i.e.\ $\sigma_n$.  Geometry (shift, strip, vertical ends, zones
+$2'$/3) is unchanged from the prescription.  Note $\sigma_n>
+\varepsilon_2$ for all $n\lesssim3/(4C_3\varepsilon_2^3)$ (measured:
+$1.1\times10^7$ resp.\ $9.7\times10^5$ at the two physical points): at
+accessible $n$ the outer zone is empty and (E5) covers the whole
+shifted segment --- the probe verifies (E5) directly and (E7)/(N2) by
+explicit arithmetic in the engaged regime.
+\item[(c)] \emph{$C_3$ robustness.}  The chain is stated for any
+admissible $C_3$ in (I2); with the worst-case Cauchy value
+$C_3=\tfrac{81K_\Phi}{4\varepsilon_{\mathrm{strip}}^3}$ all constants
+remain explicit ($\varepsilon_2$ shrinks to $\tfrac{3\bar v}{32C_3}$,
+$n_0$ grows); with the measured admissible $C_3^{\mathrm{meas}}
+\approx0.015$ resp.\ $0.048$ at the two physical points,
+$\varepsilon_2=\varepsilon_{\mathrm{strip}}$.
+\item[(d)] \emph{Honest size of $n_0$.}  Measured crossings: $n_0
+\approx5\times10^8$ at $(0.4,\,0.5D_c)$ (dominated by (N4)) and
+$n_0\approx9\times10^{12}$ at $(0.25,\,0.9D_c)$ (dominated by (N0),
+i.e.\ by the lossy McDiarmid cap $B_3=3c_\mu/\sqrt{\bar v}\approx8.9$
+there).  The lemma is asymptotic with explicit constants, exactly the
+committed scope (``$n_0$ large'').
+\item[(e)] \emph{What is new vs the committed text.}  Nothing is
+assumed beyond (I1)--(I8), all committed; the new content is the
+write-out itself: (E2)'s exact cancellation, the (E5) weighted-cubic
+bound, the (E8) favorable-sign vertical bound, and the (E9) dyadic-net
+quenched quadratic domination with explicit Jordan constants.
+\item[(f)] \emph{Uniformity in the target count (the Abel handoff).}
+The proof is verbatim uniform in $t'$ over $|t'-\mu_x|\le
+B'\sqrt{v_x\log n}$ --- $t$ enters only through $\beta$ and $y_0$ ---
+so the lemma applies unchanged at the shifted counts $t-j$,
+$j\le K\log^2n$, of the committed Abel step with the committed
+$B'=B_3+1$ bookkeeping ($|\beta_j|\le(B_3+1)\sqrt{\log n}$ there);
+only the crossings (N0), (N3)--(N5) shift $B_3\to B_3+1$, changing
+$n_0$ but not $C$.
+\end{itemize}
+
 
 \emph{The sharp third-order prefactor (a separate, also-open refinement).} Pinning the exact
 $\tfrac12\log n$ term would additionally require, for the integer Hamming ball, the lower-tail
