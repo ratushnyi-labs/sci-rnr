@@ -1297,17 +1297,17 @@ $Y = M_I(C)$ be decoder-reproducible side information. Fix an
 $E_{12} : \{0, \ldots, 255\} \to \{0, 1\}^{12}$ so that, given $Y$,
 the error variable $E = E_{12}(X) \oplus Y$ stands in bijection with
 $X$ (the decoder recovers $X$ from $(Y, E)$ via
-$X = E_{12}^{-1}(E \oplus Y)$). Then:
+$X = E_{12}^{-1}(E \oplus Y)$). Then:}
 \begin{itemize}
-\item[\textbf{(C)}] (\emph{Converse}) Any uniquely decodable lossless
+\item[\textbf{(C)}] \emph{(\emph{Converse}) Any uniquely decodable lossless
 code for $X$ whose decoder uses only the codeword and $Y$ has
-expected length at least $H(X \mid Y)$.
-\item[\textbf{(A)}] (\emph{Ideal achievability}) An \emph{ideal}
+expected length at least $H(X \mid Y)$.}
+\item[\textbf{(A)}] \emph{(\emph{Ideal achievability}) An \emph{ideal}
 Type-I class-and-payload coder driven by the true conditional law
 of $E$ achieves expected length $H(X \mid Y) + \varepsilon_N$, plus
-the constant headers $L(M_I) + L(V) + L(\Theta)$.
+the constant headers $L(M_I) + L(V) + L(\Theta)$.}
 \end{itemize}
-A concrete coder using an approximate class model or a uniform
+\emph{A concrete coder using an approximate class model or a uniform
 within-class payload pays the corresponding cross-entropy, which
 matches the bound only when those models match the true
 conditional law. Non-injective $E_{12}$ would
@@ -2927,9 +2927,9 @@ be any distribution over $A_{16}^N$. Define the total correlation
 1998)
 $\mathrm{TC}(D_N) = \sum_{i=1}^N H_{\text{marg}}(X_i) - H(D_N)$, where
 $H_{\text{marg}}(X_i)$ is the marginal entropy at position $i$ under
-$D_N$. Then:
+$D_N$. Then:}
 \begin{enumerate}
-\item[\textnormal{(F)}] (Factorized rate.) The optimal factorized
+\item[\textnormal{(F)}] \emph{(Factorized rate.) The optimal factorized
 per-position arithmetic coder driven by the true marginals
 $Q^{\mathrm{marg}}_v(i) = \Pr_{X \sim D_N}(x_i = v)$ has expected
 length \emph{at least} $\sum_i H_{\mathrm{marg}}(X_i)$ bits per block
@@ -2937,16 +2937,16 @@ length \emph{at least} $\sum_i H_{\mathrm{marg}}(X_i)$ bits per block
 arithmetic coder under those marginals attains
 $\sum_i H_{\mathrm{marg}}(X_i) + \varepsilon_N$ in expectation
 (achievability), with $\varepsilon_N$ the per-block entropy-coder
-redundancy of §2.3.
-\item[\textnormal{(J)}] (Joint rate.) Any uniquely decodable lossless
+redundancy of §2.3.}
+\item[\textnormal{(J)}] \emph{(Joint rate.) Any uniquely decodable lossless
 code for $X$ has expected length \emph{at least} $H(D_N)$ bits per
 block (Shannon's converse), and a block arithmetic coder driven by
 the joint distribution $D_N$ attains
-$H(D_N) + \varepsilon_N$ in expectation (achievability).
-\item[\textnormal{(S)}] (Separation.) The gap between the optimal
+$H(D_N) + \varepsilon_N$ in expectation (achievability).}
+\item[\textnormal{(S)}] \emph{(Separation.) The gap between the optimal
 factorized and the optimal joint expected per-block rates equals
-$\mathrm{TC}(D_N) + O(\varepsilon_N)$.
-\end{enumerate}}
+$\mathrm{TC}(D_N) + O(\varepsilon_N)$.}
+\end{enumerate}
 
 \emph{\textbf{Proof.}} (F) The converse is Shannon's source coding
 theorem applied to the product distribution
@@ -3807,18 +3807,18 @@ qualitatively across natural classes:}
 \[
 \mathrm{TC}(D_N) \;=\; N \cdot h(K/N) - \log_2 \binom{N}{K}.
 \]
-Asymptotic regimes (Stirling expansion of $\log_2 \binom{N}{K}$):
+Asymptotic regimes (Stirling expansion of $\log_2 \binom{N}{K}$):}
 \begin{itemize}
-\item Fixed $K$, $N \to \infty$: $\mathrm{TC}(D_N) \to \log_2(K!) -
+\item \emph{Fixed $K$, $N \to \infty$: $\mathrm{TC}(D_N) \to \log_2(K!) -
 K \log_2 K + K \log_2 e$, a constant in $N$. For $K = 1$ this
 equals $\log_2 e \approx 1.44$; for $K = 10$ it equals $\approx
 3.00$; asymptotically $\approx \tfrac{1}{2} \log_2(2 \pi K)$ for
-large $K$.
-\item $K = \alpha N$ with $\alpha \in (0, 1)$ constant:
+large $K$.}
+\item \emph{$K = \alpha N$ with $\alpha \in (0, 1)$ constant:
 $\mathrm{TC}(D_N) = \tfrac{1}{2} \log_2(2 \pi N \alpha (1-\alpha))
-+ O(1/N) = \tfrac{1}{2} \log_2 N + O(1)$.
++ O(1/N) = \tfrac{1}{2} \log_2 N + O(1)$.}
 \end{itemize}
-\emph{Both regimes are sub-linear: $\mathrm{TC}(D_N) = o(N)$.}}
+Both regimes are sub-linear: $\mathrm{TC}(D_N) = o(N)$.
 \item \emph{(Uniform permutations: linear --- counterexample.) For
 $\mathcal{C} = \{$permutations of $[N]\}$ embedded in $[N]^N$ as
 $x = (\pi(1), \ldots, \pi(N))$ (uniform on permutations):
@@ -6531,21 +6531,21 @@ or the per-tile encoding is itself prefix-free as a binary string
 --- so that the decoder, after parsing the mode flag, can isolate
 the bits belonging to tile $t$'s repair stream before applying the
 mode-specific decoder. Fix a mechanism by which the decoder
-recovers the mode of tile $t$:
+recovers the mode of tile $t$:}
 \begin{itemize}
-\item[\textbf{(F)}] (\emph{Explicit flag}) The mode of every tile
+\item[\textbf{(F)}] \emph{(\emph{Explicit flag}) The mode of every tile
 is stored as a uniquely decodable flag in metadata; the decoder
-reads the flag and decodes the tile under that mode.
-\item[\textbf{(A)}] (\emph{Argmin reproduction}) The cost field
+reads the flag and decodes the tile under that mode.}
+\item[\textbf{(A)}] \emph{(\emph{Argmin reproduction}) The cost field
 $U_*(t)$ is decoder-reproducible (computable from public state and
 the verified prefix of $X$), and the encoder commits to
 $\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ with fixed
 lexicographic tie-breaking from Definition 3.3; the decoder
 reproduces $U_*(t)$ and recomputes the same argmin. Stored mode
 flags are then required only on tiles where the encoder departs
-from the predicted argmin (override flags).
+from the predicted argmin (override flags).}
 \end{itemize}
-Under framing and either (F) or (A), the Type-III-A composition
+\emph{Under framing and either (F) or (A), the Type-III-A composition
 produces a uniquely decodable codeword for $X$.}
 
 \emph{\textbf{Proof.}} The decoder reads the metadata (including the
@@ -16853,24 +16853,24 @@ foil.)
 rule-cost SGP).} \emph{Let $\mathcal A$ be any polynomial-time SGP
 algorithm whose output is a CNF grammar and whose symbol-count ratio is
 $\rho = \rho(N) = O(\log(N/g^\star))$ (e.g.\ Rytter 2003 or Je\.z 2015).
-Then for the additive objective $L_\alpha = L_{\mathrm{sym}} + \alpha K$:
+Then for the additive objective $L_\alpha = L_{\mathrm{sym}} + \alpha K$:}
 \begin{enumerate}
-\item[(i)] (Unconditional, all $\alpha \geq 0$.) $\mathcal A$ is a
+\item[(i)] \emph{(Unconditional, all $\alpha \geq 0$.) $\mathcal A$ is a
 polynomial-time $(1+\alpha)\rho$-approximation for $L_\alpha$. In
 particular for every fixed $\alpha = O(1)$ the ratio is
-$O(\rho) = O(\log(N/g^\star))$.
-\item[(ii)] (CNF subproblem, all $\alpha \geq 0$.) Against the
+$O(\rho) = O(\log(N/g^\star))$.}
+\item[(ii)] \emph{(CNF subproblem, all $\alpha \geq 0$.) Against the
 additive optimum restricted to CNF grammars, $\mathcal A$ attains ratio
 at most $\rho = O(\log(N/g^\star))$, with no $(1+\alpha)$ loss (and
-strictly below $\rho$ for $\alpha > 0$).
-\item[(iii)] (General optimum, super-constant $\alpha$.) Granting the
+strictly below $\rho$ for $\alpha > 0$).}
+\item[(iii)] \emph{(General optimum, super-constant $\alpha$.) Granting the
 folklore constant-equivalence $g^\star = O(\kappa^\star)$ of the
 grammar-size measure $g^\star = L_{\mathrm{sym}}$-optimum and the
 rule-count measure $\kappa^\star = K$-optimum, $\mathcal A$ is an
 $O(\rho) = O(\log(N/g^\star))$-approximation for $L_\alpha$ for
-\emph{every} $\alpha \geq 0$, including $\alpha = \Theta(\log N)$.
+\emph{every} $\alpha \geq 0$, including $\alpha = \Theta(\log N)$.}
 \end{enumerate}
-Consequently the additive-rule-cost approximability ratio lies in the
+\emph{Consequently the additive-rule-cost approximability ratio lies in the
 window $[\,1+\Omega(1/\log N),\,O(\log N)\,]$: the lower endpoint is
 Lemma 6.8k's constant inapproximability $\gamma_\alpha \in
 [1+\tfrac{1}{8568}, 1+\tfrac{1}{1008}]$ (which exceeds $1$ but is below
