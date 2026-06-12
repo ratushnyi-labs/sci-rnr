@@ -13598,7 +13598,8 @@ mixing, extreme asymmetry, near-symmetric; $g\sim1-\bar vs^2$ with the curvature
 per-site posterior variance), so the instance-(2) achievability residual is exactly: (i) a proof (or
 per-$(a,b,D)$ interval certification --- mechanical, though the slow-mixing small-$D_c$ corner has
 curvature $\sim10^{-4}$ and needs care) of $\sup_{[\varepsilon,\pi]}g<1$ for the asymmetric
-$8\times8$; (ii) the routine Markov bounded-differences (Marton/Paulin) replacement of the i.i.d.\
+$8\times8$, now discharged per-$(a,b,D)$ --- on all of $(0,\pi]$, floored, with an explicit margin
+constant --- by Lemma 7.34e below; (ii) the routine Markov bounded-differences (Marton/Paulin) replacement of the i.i.d.\
 switch-bond McDiarmid step; and (iii) the all-$n$ characterization of the asymmetric deconvolution
 threshold $D_c(a,b)$ (measured $0.0075$--$0.044$ at the test chains, still creeping at $n=14$).
 Everything else in the chain --- the tail-lemma Markov$+$net assembly, the KP window analyticity and
@@ -13615,6 +13616,197 @@ C3 out-of-Gray $\rho<1$; C4 the shift $c_n=\jmath_n-(\imath_n-n\,h(D))$ is deter
 (per-word std $\lesssim10^{-8}$, so $\mathrm{Var}(\jmath_n)=\mathrm{Var}(\imath_n)$ exactly); C5 the
 centering $\kappa_n=\mathbb E[\jmath_n]-nR(D)=H(X^n)-n\bar h$ is $O(1)$ and $n$-stable (hypothesis (ii):
 $\kappa=0.2392,0.1134$ at $n=10,12,14$, exactly constant); across $(a,b)\in\{(0.1,0.3),(0.2,0.4)\}$).
+
+\textbf{Lemma 7.34e (instance (2): the asymmetric replica spectral
+inequality --- exact block-CP structure, the generalised curvature
+identity, and a one-shot exact certification on all of $(0,\pi]$).}
+\emph{Let $T=\bigl(\begin{smallmatrix}1-a&a\\ b&1-b\end{smallmatrix}\bigr)$
+with $a,b\in(0,1)$, $a+b<1$, $a\ne b$, let $0<D<\tfrac12$, and let
+$W_8(s)$, $\eta_s$, $C_s$, $g(s)=|C_s/C_0|^2\rho(W_8(s))$ be the committed
+asymmetric replica objects (the dual identity being chain-agnostic at proof
+grade). Write $x\in\{0,1\}$ for the outer (source) index and $(x',x'')$ for
+the replica pair, $\bar d:=D(1-D)$, $c:=1-2D$.}
+
+\emph{\textbf{(i) (Block-Kraus form and the variational certificate.)} With
+$M_y:=T\,\mathrm{diag}_y(\eta_s)$ --- $\mathrm{diag}_0=\mathrm{diag}(1,\eta_s)$,
+$\mathrm{diag}_1=\mathrm{diag}(\eta_s,1)$, i.e.\
+$M_y[d,e]=T(d,e)\,\eta_s^{\,y\oplus e}$ --- the replica matrix has the exact
+block form}
+\[
+  W_8\bigl[(x,\cdot),(y,\cdot)\bigr]\;=\;\frac1{T(x,y)}\;M_y\otimes\overline{M_y},
+\]
+\emph{so its column action is the completely positive map on pairs of
+$2\times2$ matrices $\Psi_s(Z)_x=\sum_y M_y Z_y M_y^\dagger/T(x,y)$.
+Consequently, for \emph{every} Hermitian positive-definite pair
+$Z=(Z_0,Z_1)$ and every $\nu>0$:}
+\[
+  \Psi_s(Z)_x\prec\nu\,Z_x\ (x=0,1)
+  \;\Longrightarrow\;\rho\bigl(W_8(s)\bigr)<\nu .
+\]
+\emph{\textbf{(ii) (The curvature identity generalises in closed form.)}
+$W_8$ is multilinear in $(\eta,\bar\eta)$, and $W_8(0)$ has rank two with
+nonzero spectrum $\mathrm{spec}(T)=\{1,\,1-a-b\}$; the Perron eigenvalue $1$
+is simple, with right eigenvector $r[(x,x',x'')]=\sum_yT(x',y)T(x'',y)/T(x,y)$
+(as a pair: $Z_x(0)=\sum_y v_yv_y^{T}/T(x,y)$, $v_y:=T[\,\cdot\,,y]$, carrying
+\emph{unit} --- not stationary --- weights) and left functional
+$l=\pi_0e_{(000)}+\pi_1e_{(111)}$, $lr=1$. Analytic perturbation at this
+simple eigenvalue, with the first/second-order coefficients evaluated
+\emph{exactly} symbolically over $\mathbb Q(a,b)$ ($\alpha_1=1$, $\alpha_2=0$,
+$\alpha_{11}$ in closed form), gives}
+\[
+  g(s)=1-\bar v\,s^2+O(s^4),\qquad
+  \bar v(a,b,D)=D(1-D)\Bigl[\,1-\kappa_{\mathrm{eff}}^2(a,b)\,
+  \frac{D(1-D)}{(1-2D)^2}\Bigr],\qquad
+  \kappa_{\mathrm{eff}}^2:=\alpha_{11}-1,
+\]
+\emph{where $\kappa_{\mathrm{eff}}^2(a,b)$ is an explicit $D$-independent
+rational function (denominator $ab(1-a)^2(1-b)^2(a+b)$, degree-$7$ numerator
+symmetric in $(a,b)$; e.g.\ $\kappa_{\mathrm{eff}}^2(0.1,0.3)=1080/49$,
+$\kappa_{\mathrm{eff}}^2(0.2,0.4)=130/27$) with
+$\kappa_{\mathrm{eff}}^2(p,p)=(1-2p)^2/(p^2(1-p)^2)=\kappa^2$ --- the
+committed symmetric curvature recovered exactly --- and the curvature again
+equals the per-site posterior variance (Richardson-extrapolated brute force
+agrees to $10^{-14}$). In particular $g<1$ on a punctured neighbourhood of
+$s=0$ whenever $\bar\Psi_0(a,b,D):=\kappa_{\mathrm{eff}}^2\,D(1-D)/(1-2D)^2<1$,
+an exact rational test; $\bar\Psi_0\le0.385$ across the scanned asymmetric
+Gray grid (maximum at $(a,b)=(0.05,0.45)$, $D=D_c$).}
+
+\emph{\textbf{(iii) (One-shot exact certification on all of $(0,\pi]$.)} Let
+$(a,b,D)$ and $\tilde c\in[0,2)$ be rational, and define the \emph{s-dressed
+pair} $Z(s):=r+\eta_s\,c_{10}+\bar\eta_s\,c_{01}$ (reshaped to a pair of
+$2\times2$ matrices), where $c_{10}=SW_{10}r$, $c_{01}=SW_{01}r$ are the
+exact first-order perturbation corrections at the rank-two object ($S$ the
+reduced resolvent, $W_{10},W_{01}$ the multilinear parts) --- all data
+rational over $\mathbb Q(a,b)$, and $Z(s)$ Hermitian identically. Under
+$t=\tan(s/2)$, $e^{is}=\frac{(1-t^2)+2it}{1+t^2}$, every entry of $Z$,
+$\Psi_s(Z)$ and $|C_s/C_0|^2$ is rational in $t$ over $\mathbb Q(i)$ with
+explicit positive denominators; clearing them turns the family of matrix
+inequalities}
+\[
+  Z(s)\succ0\quad\text{and}\quad
+  \Psi_s\bigl(Z(s)\bigr)_x\;\prec\;
+  \frac{1-\tilde c\,D(1-D)(1-\cos s)}{|C_s/C_0|^2}\;Z(s)_x\qquad(x=0,1)
+\]
+\emph{into the positivity on $t\in(0,\infty)$ of \emph{eight explicit
+polynomials} over $\mathbb Q$ (the traces and determinants of the cleared
+$2\times2$ Hermitian forms; degrees $\le24$), each decided exactly by a
+Sturm root count after factoring out the $t=0$ root of orders $t^2$
+(traces) and $t^4$ (determinants) --- precisely the curvature order, since
+$Z(0)$ is the exact Perron pair and the dressing is first-order exact ---
+the $s=\pi$ endpoint being checked directly in exact rational arithmetic.
+By (i), success of this single finite computation \emph{proves}}
+\[
+  g(s)\;<\;1-\tilde c\,D(1-D)(1-\cos s)\qquad\text{for all }s\in(0,\pi]
+\]
+\emph{at that $(a,b,D)$ --- the exact per-point analogue of the symmetric
+$\tfrac{11}{16}$ theorem. Executed (zero floating point): at the four test
+corners $\times\ D\in\{0.9D_c,D_c\}$ the certificates succeed at
+$\tilde c=\lfloor64(1-\bar\Psi_0)\rfloor/64$ on the first attempt every
+time --- $\tilde c\in[\tfrac{43}{64},\tfrac{25}{32}]\approx[0.67,0.78]$,
+seven of the eight values above the symmetric $\tfrac{11}{16}=0.6875$, the
+one below being the slow-mixing corner $(0.05,0.3)$ at $D=D_c$ exactly ---
+while the off-Gray control $(0.1,0.2,D=0.03)$, where $g>1$, is correctly
+refused.}
+
+\emph{Proof.} (i) The block identity is term-by-term algebra: the committed
+entry $W_8[(x,x',x''),(y,y',y'')]=T(x',y')T(x'',y'')\,
+\eta^{y\oplus y'}\bar\eta^{\,y\oplus y''}/T(x,y)$ equals
+$M_y[x',y']\,\overline{M_y[x'',y'']}/T(x,y)$ by the definition of $M_y$.
+$\Psi_s$ is completely positive (Kraus form, operators
+$M_y/\sqrt{T(x,y)}$ per component). For the certificate, let $Z$ be a
+Hermitian PD pair with $\Psi_s(Z)_x\prec\nu Z_x$ and set
+$\Gamma_Z(X)_x:=Z_x^{1/2}X_xZ_x^{1/2}$, an invertible congruence of
+$M_2\oplus M_2$; then $\Phi:=\Gamma_Z^{-1}\circ\Psi_s\circ\Gamma_Z$ is
+completely positive and similar to $\Psi_s$ as a linear operator, so
+$\rho(W_8)=\rho(\Psi_s)=\rho(\Phi)\le\|\Phi\|$, and a positive map on a
+unital $C^*$-algebra attains its norm at the identity (Russo--Dye; see
+Paulsen, \emph{Completely Bounded Maps and Operator Algebras}, 2002,
+Cor.~2.9): $\|\Phi\|=\|\Phi(I)\|=\max_x\lambda_{\max}\bigl(Z_x^{-1/2}
+\Psi_s(Z)_xZ_x^{-1/2}\bigr)<\nu$. (The bound is tight: the Perron
+eigenvector of the positive map lies in the PSD cone by Kre\u{\i}n--Rutman,
+is strictly PD at every tested parameter, and the power-iterated pair
+tightens geometrically at the subdominant ratio.)
+
+(ii) Multilinearity is read off the entries ($D$ enters only through
+$\eta_s$). At $\eta=0$ only the columns $(y,y,y)$ survive, the reduced
+$2\times2$ weight-evolution matrix is $T$ itself (row-stochastic, hence the
+\emph{unit} weights of $r$; the stationary law belongs to the left
+functional $l$), giving rank two and the displayed spectrum; $1-a-b\in(0,1)$
+makes the eigenvalue $1$ simple, so Kato analytic perturbation applies to
+the multilinear family. Rayleigh--Schr\"odinger at $(e_1,e_2):=(\eta,\bar\eta)$
+gives $\lambda_{\mathrm{top}}=1+\alpha_1(e_1+e_2)+\alpha_2(e_1^2+e_2^2)
++\alpha_{11}e_1e_2+O(|e|^3)$ with $\alpha_1=lW_{10}r=lW_{01}r$,
+$\alpha_2=lW_{10}SW_{10}r$, $\alpha_{11}=lW_{11}r+lW_{10}SW_{01}r
++lW_{01}SW_{10}r$; the exact symbolic evaluation over $\mathbb Q(a,b)$
+yields $\alpha_1=1$ and $\alpha_2=0$, so on the contour $e_2=\bar e_1$:
+$\lambda_{\mathrm{top}}=|1+\eta_s|^2+\kappa_{\mathrm{eff}}^2|\eta_s|^2
++O(|\eta_s|^3)$. The two chain-agnostic exact identities
+$(C_s/C_0)(1+\eta_s)=1-D+De^{is}$ and $(C_s/C_0)\,\eta_s=\bar d\,(e^{is}-1)/c$
+give $|C_s/C_0|^2|1+\eta_s|^2=1-2\bar d\,(1-\cos s)$ and
+$|C_s/C_0|^2|\eta_s|^2=2\bar d^{\,2}(1-\cos s)/c^2$, whence
+$g(s)=1-2\bar d(1-\cos s)\bigl[1-\kappa_{\mathrm{eff}}^2\bar d/c^2\bigr]
++O(s^3)$; $g$ is even in $s$ (complex conjugation of the contour), so the
+remainder is $O(s^4)$ and the displayed $\bar v$ follows. The symmetric
+specialisation is an exact symbolic identity.
+
+(iii) On $t\in(0,\infty)$ one has $\eta_s=p(t)/q(t)$ with
+$p=2\bar d\,t(i-t)$, $q=(A-B)+(A+B)t^2-2iBt$ ($A=(1-D)^2$, $B=D^2$);
+$|q|^2>0$ on $\mathbb R$ since the root $e^{is}=A/B>1$ of $A-Be^{is}$ is off
+the unit circle; $|C_s/C_0|^{-2}=c^2(1+t^2)/\bigl(c^2(1+t^2)+4\bar
+d^{\,2}t^2\bigr)$, and $1-\cos s=2t^2/(1+t^2)$. Multiplying the two matrix
+inequalities by the positive quantities $|q|^2$, $|q|^4$, the
+$|C|^{-2}$-denominator and $(1+t^2)$ clears all denominators; Hermiticity
+of the cleared pair $\widehat Z$ is an exact symbolic identity (the swap
+symmetry $c_{01}=\mathrm{swap}(c_{10})$), so positive-definiteness of each
+cleared $2\times2$ Hermitian form is equivalent to positivity of its trace
+and determinant --- real polynomials in $t$ over $\mathbb Q$. A polynomial
+positive at $0$ (after factoring out an exact $t=0$ root) with Sturm count
+zero on $[0,\infty)$ is positive there by the intermediate value theorem;
+the multiplicities $2$ and $4$ are forced because
+$\Psi_0(Z(0))=Z(0)$ exactly and the dressing removes the $O(s)$ error, so
+the certified margin opens at the curvature order $\bar vs^2$ --- and
+indeed the certified $\tilde c\approx1-\bar\Psi_0=\bar v/\bar d$ is
+one half of the small-$s$ optimum $2\bar v/\bar d$, leaving room. The
+$s=\pi$ point ($t=\infty$) is a single exact rational $2\times2$ PSD check
+($\eta_\pi=-2\bar d/(A+B)$ real). Success at $(a,b,D,\tilde c)$ therefore
+proves, via (i) with $\nu=\nu_{\tilde c}(s)/|C_s/C_0|^2$, that
+$g(s)<\nu_{\tilde c}(s)=1-\tilde c\,\bar d\,(1-\cos s)$ for every
+$s\in(0,\pi]$. $\square$
+
+\emph{Two negative structural facts make the per-point certificate the
+right grade here, not a stopgap: the characteristic polynomial of $W_8$ ---
+multilinear in $(\eta,\bar\eta)$ over $\mathbb Q(a,b)$ --- is
+\emph{irreducible} over $\mathbb Q(a,b)$ (a single degree-$8$ factor,
+fully symbolic; at $a=b$ it factors and the committed flip-even quartic
+divides it), so the symmetric quadratic factorisation is genuinely lost for
+$a\ne b$; and the naive transplant of the symmetric Perron root with
+$\kappa\mapsto\kappa_{\mathrm{eff}}$, although it matches
+$\lambda_{\mathrm{top}}$ through $O(|\eta|^2)$, is \emph{refuted} as a
+global bound (violated near $s=\pi$ at every tested asymmetric corner).
+Combined with the quenched tail lemma --- whose Markov$+$net assembly is
+chain-agnostic and consumes only $\bar g:=\max_{[\varepsilon,\pi]}g<1$ ---
+each certified $(a,b,D)$ inherits the explicit constants
+$\bar g\le1-\tilde c\,D(1-D)(1-\cos\varepsilon)$,
+$c=\tfrac14\ln(1/\bar g)$, exactly as in the symmetric pipeline. Residual
+item (i) of instance (2) therefore now reads: \emph{proven near $s=0$ in
+closed form (the curvature identity), and proven on all of $(0,\pi]$ per
+rational $(a,b,D)$ modulo one finite exact computation --- scheme specified,
+margins explicit, executed at the test corners}. What remains open is only
+the \emph{uniform-in-$(a,b,D)$} statement, with two mapped routes: a
+uniform Gray bound $\sup_{(a,b)}\bar\Psi_0(a,b,D_c(a,b))<1$ (scan maximum
+$0.385$; blocked on the all-$n$ threshold characterisation, residual item
+(iii)), or two-variable $(t,D)$ positivity of the same eight polynomials by
+exact CAD at fixed $(a,b)$. Items (ii) (Marton/Paulin bounded differences)
+and (iii) ($D_c(a,b)$) of the instance-(2) residual are untouched by this
+lemma. Validated in
+\texttt{scripts/verify/probe\_7\_34\_asym\_replica\_structure.py}
+(A0--A11: the anchored block-Kraus identity to $9\times10^{-16}$; CP/cone
+preservation and Collatz--Wielandt validity on random PD pairs; the
+symbolic irreducibility, $\alpha_1=1$, $\alpha_2=0$, and the symmetric
+reduction of $\kappa_{\mathrm{eff}}^2$; curvature against brute-force
+posterior variance to $10^{-14}$; the dressed-pair coverage map with floor
+ratio $\ge1.09$ at every corner; the eight Sturm certificates and the
+off-Gray refusal).}
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
