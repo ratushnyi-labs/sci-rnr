@@ -13353,7 +13353,13 @@ $\widetilde E_1\cup E_2\cup E_3$, $-\log_2 q_t=\tfrac12\log_2(2\pi v_x)+\tfrac{\
 uniformity in the shifted counts) converts this to $-\log_2 S_n=\tfrac12\log_2(2\pi v_x)
 +\tfrac{\beta^2}{2}\log_2e-\{nD\}\log_2\phi+\log_2(1-\phi)+o(1)$ on the good set (the last two terms
 deterministic per $n$); $\beta$ is sub-Gaussian $O(1)$ and
-$\mathrm{Var}(\log_2 v_x)=O(1/n)$ (the (R2) chain), so $\mathrm{Var}(\log_2 S_n\mid\text{shell})=O(1)$,
+$\mathrm{Var}(\log_2 v_x)=O(1/n)$ (the (R2) chain). One threshold bookkeeping point: the
+$\log_2(1+R_n)$ term is bounded \emph{proof-grade} by the worst-case majorant only once
+$C(1+B_3\sqrt{\log n})^3/\sqrt n<1$, i.e.\ for $n\ge n_1(p,D)$, which exceeds the GAP-1 threshold
+($n_1\approx1.2\times10^{14}$ vs $n_0\approx8.8\times10^{12}$ at $(0.25,0.9D_c)$); we therefore take
+the theorem's threshold to be $n_0':=\max(n_0,n_1)$ --- immaterial to the asymptotic statement, while
+the \emph{measured} $R_n$ decay (RMS $0.060\to0.017$ over $n=256$--$2048$, $n$-stable form constant)
+corroborates the bound far below $n_1$. So $\mathrm{Var}(\log_2 S_n\mid\text{shell})=O(1)$,
 the bad sets being absorbed by the pointwise $|\log_2 S_n|=O(n)$ floor against their exponential
 ($\widetilde E_1$, $E_2$) and polynomial ($E_3$: $2n^{-3}$) probabilities. Hence
 $\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the
