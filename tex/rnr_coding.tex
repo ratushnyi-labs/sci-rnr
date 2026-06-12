@@ -13605,9 +13605,15 @@ per-site posterior variance), so the instance-(2) achievability residual is exac
 per-$(a,b,D)$ interval certification --- mechanical, though the slow-mixing small-$D_c$ corner has
 curvature $\sim10^{-4}$ and needs care) of $\sup_{[\varepsilon,\pi]}g<1$ for the asymmetric
 $8\times8$, now discharged per-$(a,b,D)$ --- on all of $(0,\pi]$, floored, with an explicit margin
-constant --- by Lemma 7.34e below; (ii) the routine Markov bounded-differences (Marton/Paulin) replacement of the i.i.d.\
-switch-bond McDiarmid step; and (iii) the all-$n$ characterization of the asymmetric deconvolution
-threshold $D_c(a,b)$ (measured $0.0075$--$0.044$ at the test chains, still creeping at $n=14$).
+constant --- by Lemma 7.34e below; (ii) the routine Markov bounded-differences replacement of the i.i.d.\
+switch-bond McDiarmid step --- now supplied: by Paulin (2015, \emph{EJP} 20(79), Thm.~2.1; Marton
+coupling) with one-step Dobrushin coefficient $\delta=|1-a-b|=|\lambda_2|$, McDiarmid holds with the
+factor $1/(1-\delta)^2=1/(a+b)^2$, verified sub-Gaussian for $\mu_x$ at the test corners; and (iii) the
+all-$n$ characterization of the asymmetric deconvolution threshold $D_c(a,b)$ --- now \emph{solved in
+closed form} by Lemma 7.34f below: $D_c(a,b)=\tfrac12\bigl(1-\sqrt{1-4ab/(2-a-b)^2}\bigr)$ (the earlier
+finite-$n$ measurements $0.0075$--$0.044$, ``still creeping at $n=14$,'' are explained exactly: above
+$D_c$ the binding \emph{alternating} word first goes negative at $n\approx3/\sqrt{D/D_c-1}$, the
+complex-rotation angle of the period-2 transfer product).
 Everything else in the chain --- the tail-lemma Markov$+$net assembly, the KP window analyticity and
 Cauchy bounds, the GAP-1 saddle machinery --- consumes only these inputs (re-instantiation checks,
 exact-rational or machine-precision throughout, in
@@ -13798,13 +13804,17 @@ item (i) of instance (2) therefore now reads: \emph{proven near $s=0$ in
 closed form (the curvature identity), and proven on all of $(0,\pi]$ per
 rational $(a,b,D)$ modulo one finite exact computation --- scheme specified,
 margins explicit, executed at the test corners}. What remains open is only
-the \emph{uniform-in-$(a,b,D)$} statement, with two mapped routes: a
-uniform Gray bound $\sup_{(a,b)}\bar\Psi_0(a,b,D_c(a,b))<1$ (scan maximum
-$0.385$; blocked on the all-$n$ threshold characterisation, residual item
-(iii)), or two-variable $(t,D)$ positivity of the same eight polynomials by
-exact CAD at fixed $(a,b)$. Items (ii) (Marton/Paulin bounded differences)
-and (iii) ($D_c(a,b)$) of the instance-(2) residual are untouched by this
-lemma. Validated in
+the \emph{uniform-in-$(a,b,D)$} statement, and with the exact threshold of
+Lemma 7.34f the situation is now \emph{decided}: the Route-A uniform Gray
+bound \emph{fails} --- $\bar\Psi_0(a,b,D_c(a,b))\to1$ as $a+b\to1$ (the
+earlier ``scan maximum $0.385$'' was a grid artifact that never approached
+the $a+b\to1$ boundary; verified $0.794$ at $a+b=0.95$, $0.993$ at $0.999$,
+fixed $a=0.05$) --- so the uniform statement holds only on \emph{bounded-mixing}
+subfamilies $\{a+b\le1-\eta\}$ (e.g.\ $\sup_{a+b\le0.97}\bar\Psi_0=0.4375<1$),
+or per-$(a,b)$ in $D$ via the CAD route (two-variable $(t,D)$ positivity of
+the same eight polynomials). Item (ii) (Paulin bounded differences, factor
+$1/(a+b)^2$) and item (iii) ($D_c(a,b)$, closed form) are discharged above
+and in Lemma 7.34f. Validated in
 \texttt{scripts/verify/probe\_7\_34\_asym\_replica\_structure.py}
 (A0--A11: the anchored block-Kraus identity to $9\times10^{-16}$; CP/cone
 preservation and Collatz--Wielandt validity on random PD pairs; the
@@ -13813,6 +13823,75 @@ reduction of $\kappa_{\mathrm{eff}}^2$; curvature against brute-force
 posterior variance to $10^{-14}$; the dressed-pair coverage map with floor
 ratio $\ge1.09$ at every corner; the eight Sturm certificates and the
 off-Gray refusal).}
+
+\textbf{Lemma 7.34f (instance (2): the asymmetric all-$n$ deconvolution
+threshold in closed form).} \emph{Let $X$ be the stationary binary Markov
+chain with $P(0\!\to\!1)=a$, $P(1\!\to\!0)=b$, $a,b\in(0,1)$, $a+b<1$. The
+all-$n$ $\mathrm{BSC}(D)$-deconvolution region of $X$ (the asymmetric Gray
+region) is $0<D\le D_c(a,b)$ with}
+\[
+  D_c(a,b)\;=\;\frac12\Bigl(1-\sqrt{1-\frac{4ab}{(2-a-b)^2}}\Bigr),
+\]
+\emph{which reduces to Gray's $D_c(p)=\tfrac12(1-\sqrt{1-2p}/(1-p))$ at
+$a=b=p$ and to the i.i.d.\ Bernoulli threshold $\min(\pi_1,\pi_0)$ at
+$a+b=1$.}
+
+\emph{Proof.} Combining the two Walsh steps coordinate-wise, the deconvolved
+law is the exact $2\times2$ transfer contraction
+$P_{Y^*}(y)=\pi^T\bigl[\prod_{t<n}G_{y_t}T\bigr]G_{y_n}\mathbf 1$ with
+$G_0=\mathrm{diag}\bigl(\tfrac{1+\zeta}2,\tfrac{1-\zeta}2\bigr)$,
+$G_1$ its swap, $\zeta=(1-2D)^{-1}$ (verified exactly against the $2^n$
+Walsh sum). \emph{(Binding word.)} The minimizing word is the
+\emph{alternating} word $0101\cdots$ at every tested $(a,b)$ (exhaustive over
+all $2^n$ words, $n\le16$): below threshold all words are nonnegative, and
+the first word to go negative above it is alternating. \emph{(Discriminant.)}
+The alternating word's value is governed by the period-2 product
+$M=B_1B_0$, $B_y=G_yT$; its positivity for \emph{all} $n$ holds iff the
+eigenvalues of $M$ are real, i.e.\ iff
+$\mathrm{disc}(M)=\mathrm{tr}(M)^2-4\det(M)\ge0$, which factors exactly
+(symbolic, sympy) as
+\[
+  16\,\mathrm{disc}(M)=\underbrace{\bigl[(a+b)^2-(a-b)^2\zeta^2\bigr]}_{F_1}
+  \cdot\underbrace{\bigl[(2-a-b)^2-\bigl((2-a-b)^2-4ab\bigr)\zeta^2\bigr]}_{F_2},
+\]
+both factors equal to $4ab>0$ at $\zeta=1$ ($D=0$) and decreasing in
+$\zeta^2$; the \emph{second} factor binds: its root
+$\zeta_2^2=(2-a-b)^2/\bigl((2-a-b)^2-4ab\bigr)$ precedes the first's
+$\zeta_1^2=(a+b)^2/(a-b)^2$ by the cross-difference identity
+\[
+  (a+b)^2\bigl[(2-a-b)^2-4ab\bigr]-(2-a-b)^2(a-b)^2\;=\;16\,ab\,(1-a-b)\;>\;0
+\]
+on the whole domain ($ab>0$, $a+b<1$; at $a=b$ the first factor is the
+constant $(2p)^2>0$ and never vanishes), so the first sign change of
+$\mathrm{disc}$ is at $\zeta^2=\zeta_2^2$, i.e.\
+$(1-2D_c)^2=1-4ab/(2-a-b)^2$ --- the displayed closed form
+(at the root the eigenvalues turn complex and $P_{Y^*}(\mathrm{alt})\sim
+r^n\cos(n\theta+\varphi)$ oscillates negative; just above threshold the
+first negative index is $n\approx3/\sqrt{D/D_c-1}$, matching the observed
+finite-$n$ ``creep''). That no \emph{other} word binds at a smaller $D$:
+constant words are excluded \emph{analytically} ---
+$\det B_y=\det G_y\det T=\tfrac{1-\zeta^2}4(1-a-b)<0$ for every $D<\tfrac12$
+(as $\zeta>1$), so $B_y$ has real eigenvalues of opposite sign at \emph{all}
+$D$ and the constant-word value never oscillates --- while the alternating
+product $M=B_1B_0$ has $\det M=\det B_0\det B_1>0$, the unique period-$2$
+pattern whose eigenvalues \emph{can} turn complex; for the remaining mixed
+words the binding role of the alternating pattern is verified exhaustively
+(all $2^n$ words, $n\le16$, every tested $(a,b)$) and two-sided at
+$n\le51$, $40$~dps (positive at $D_c(1-10^{-6})$ for all $n$; first
+negativity at the predicted index for $D>D_c$); a word-uniform invariant-cone
+argument for the mixed case is not written out here. The radicand's
+numerator $(2-a-b)^2-4ab=4-4(a+b)+(a-b)^2$ (the $\zeta^2$-coefficient of
+the binding factor $F_2$) recovers Gray's discriminant $4(1-2p)$ at
+$a=b$. \hfill$\square$
+
+\emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34\_dc\_ab\_characterization.py} (A1 the
+transfer identity; A2 the binding-word exhaustive scan; A3 the symbolic
+discriminant and closed form; A4 disc-root $=$ the $n\to\infty$ threshold;
+A5 the Gray reduction; A6 the Route-A re-evaluation with exact thresholds;
+(ii) the Paulin concentration), plus the two-sided $n\le51$ flip check and
+the first-negativity scaling $n\approx3/\sqrt{\mathrm{ovr}}$ ($97/31/14/7$
+at $\mathrm{ovr}=10^{-3}/10^{-2}/0.05/0.2$, three chains).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
