@@ -13878,8 +13878,12 @@ pattern whose eigenvalues \emph{can} turn complex; for the remaining mixed
 words the binding role of the alternating pattern is verified exhaustively
 (all $2^n$ words, $n\le16$, every tested $(a,b)$) and two-sided at
 $n\le51$, $40$~dps (positive at $D_c(1-10^{-6})$ for all $n$; first
-negativity at the predicted index for $D>D_c$); a word-uniform invariant-cone
-argument for the mixed case is not written out here. The radicand's
+negativity at the predicted index for $D>D_c$); the word-uniform
+invariant-cone argument for the mixed case is supplied separately in
+Lemma 7.34g below (a two-state sign automaton, proven as a certificate
+criterion and shown sharp; its existence below $D_c$ is settled per
+rational $(a,b)$ by one finite computation, the uniform-in-$(a,b)$
+statement remaining open). The radicand's
 numerator $(2-a-b)^2-4ab=4-4(a+b)+(a-b)^2$ (the $\zeta^2$-coefficient of
 the binding factor $F_2$) recovers Gray's discriminant $4(1-2p)$ at
 $a=b$. \hfill$\square$
@@ -13892,6 +13896,89 @@ A5 the Gray reduction; A6 the Route-A re-evaluation with exact thresholds;
 (ii) the Paulin concentration), plus the two-sided $n\le51$ flip check and
 the first-negativity scaling $n\approx3/\sqrt{\mathrm{ovr}}$ ($97/31/14/7$
 at $\mathrm{ovr}=10^{-3}/10^{-2}/0.05/0.2$, three chains).
+
+\textbf{Lemma 7.34g (the mixed-word leaf: a sign-automaton certificate, and
+its sharpness).} \emph{Notation as in Lemma 7.34f. Write the backward
+transfer recursion $v_n=B_{y_n}\mathbf1$, $v_k=B_{y_k}v_{k+1}$, so that
+$P_{Y^*}(y)=\pi^Tv_1$; track the slope $s_k=v_{k,2}/v_{k,1}$ and sign
+$\tau_k=\operatorname{sign}v_{k,1}$. Then $B_0,B_1$ act on the slope by the
+M\"obius maps $m_0(s)=\nu\,\psi(s)$, $m_1(s)=\psi(s)/\nu$, where
+$\nu=(1-\zeta)/(1+\zeta)\in(-1,0)$ and $\psi(s)=\bigl(b+(1-b)s\bigr)/
+\bigl((1-a)+as\bigr)$, while $(B_yv)_1=g_y\cdot\tfrac{1+\zeta}2$-type
+factor times $\bigl((1-a)+as\bigr)v_1$ with $g_0=+1$, $g_1=-1$; the pole of
+$\psi$ sits at $p_T=-(1-a)/a$ and the final functional $\pi^Tv_1$ changes
+sign at $p_\pi=-b/a>p_T$.}
+
+\emph{\textbf{(I) Certificate criterion.} If there are intervals
+$A\subset(p_\pi,0)$ and $B\subset(-\infty,p_T)$ with}
+\[
+  m_0(A)\subseteq A,\;\; m_0(B)\subseteq A,\;\; m_1(A)\subseteq B,\;\;
+  m_1(B)\subseteq B,\;\; \nu\in A,\;\; \nu^{-1}\in B,
+\]
+\emph{then $P_{Y^*}(y)>0$ for every word $y\in\{0,1\}^n$ and every $n$. (Backward
+induction: a state with $y_k=0$ stays in $\{+\}\times A$, one with $y_k=1$ in
+$\{-\}\times B$; the $1$-symbol's sign flip $g_1=-1$ is compensated by landing
+below $p_T$, and $\tau_1=+,s_1>p_\pi$ or $\tau_1=-,s_1<p_\pi$ both give
+$\pi^Tv_1>0$.) \textbf{(II) Downward closure.} If $P_{Y^*}\ge0$ for all words at
+$D$, the same holds at every $D'\in(0,D]$ (BSC divisibility $K_\delta
+K_{D'}=K_D$, $\delta=(D-D')/(1-2D')\in(0,\tfrac12)$, applied to the nonnegative
+deconvolved law). \textbf{(III) Sharpness.} No such $A,B$ (open, closed, bounded, or unbounded)
+exist for $D>D_c$: $m_1\circ m_0$ would carry $B$, hence its closure
+$\overline B$ --- a \emph{proper} closed arc of the projective line
+$\mathbb{RP}^1$, since $\overline B\subseteq[-\infty,p_T]$ misses the arc
+$(p_T,0]\supseteq A$ --- into itself (the composition is a genuine M\"obius
+homeomorphism of $\mathbb{RP}^1$, as $\det B_1B_0>0$, and $m_0(B)\subseteq A$
+avoids the pole $p_T$ of $m_1$). A real M\"obius map taking a proper arc of
+$\mathbb{RP}^1$ into itself cannot be elliptic --- an elliptic map is a
+fixed-point-free rotation, which maps any proper arc to an arc of equal length
+and hence never into a sub-arc of itself --- so it is parabolic or hyperbolic,
+with a real fixed point, i.e.\ a real eigenvector of $B_1B_0$. Thus
+$\operatorname{disc}(B_1B_0)=F_1F_2/16\ge0$, and (as $F_1>0$) $F_2\ge0$, i.e.\
+$D\le D_c$. Above $D_c$ the composite is exactly elliptic (complex-conjugate
+eigenvalue pair, $\det>0$) and the alternating word itself goes negative
+(Lemma 7.34f).
+\textbf{(IV) Existence below $D_c$.} For $1<\zeta<\zeta_c$ the canonical
+endpoints $a_1=s_{01}$, $a_2=m_0(s_{01})$, $b_2=m_1(s_{01})$,
+$b_1=m_1^2(s_{01})$ --- $s_{01}$ the real fixed point of the slope map of
+$B_0B_1$ --- furnish such a certificate; four of the eight closure inclusions
+are M\"obius identities, and the residual margin inequalities hold per rational
+$(a,b)$ for all $D<D_c$ at once by one exact computation in
+$\mathbb Q(\zeta)[\sqrt{F_1F_2}]$ (executed at representative corners). The
+all-$n$ deconvolution region is therefore $(0,D_c(a,b)]$, conditional only on
+this last per-$(a,b)$ existence step.}
+
+\emph{Provenance and scope.} \emph{The symmetric case $a=b$ is Gray's 1969/1970
+theorem} (R.\,M.\ Gray, \emph{Information rates of autoregressive sources}, USC-EE
+Report 369, 1969, Ch.\ IV; \emph{Information rates of autoregressive processes},
+IEEE Trans.\ IT-16(4):412--421, 1970): his proof is exactly an invariant cone
+anchored at the eigenvectors of the alternating composite $GM_0$ (his
+Fig.\ 4.3, eqs.\ (4.25)--(4.28)), with sharpness by complex-eigenvalue rotation
+when the discriminant goes negative --- the present mechanism at $a=b$, where his
+worked example $\alpha=3/8\Rightarrow D_c=\tfrac1{10}$ matches
+$D_c(\tfrac38,\tfrac38)=\tfrac1{10}$ and his $e^{-\rho}=D/(1-D)=-\nu$. Gray's
+reduction to a single generator plus the swap involution uses $M_1=GM_0G$,
+which is precisely the $a=b$ flip symmetry; the asymmetric $a\ne b$ case
+requires the genuine two-generator (sign-automaton / path-complete) certificate
+above, which is new (cf.\ Forni--Jungers--Sepulchre, \emph{Path-complete
+positivity of switching systems}, IFAC 2017, for the cone-family formalism, and
+Avila--Bochi--Yoccoz, Comment.\ Math.\ Helv.\ 85(4), 2010, in whose language
+$D_c$ is where the $\{B_0,B_1\}$-cocycle leaves the uniformly-hyperbolic
+multicone locus through a parabolic period-2 product). No published asymmetric
+extension exists (Gray 1971 gives only existence of a positive $D_c$ for
+finite-state sources; Avram--Berger 1985 an underbound). \emph{Open (G1):} the
+uniform-in-$(a,b)$ proof of the residual margin inequalities of (IV) --- a
+finite three-variable semialgebraic statement, grid- and corner-verified but
+not yet closed in one stroke.
+
+\emph{Validated} (independent cold reproduction) in
+\texttt{scripts/verify/lemma\_7\_34g\_sign\_automaton.py} (V0 transfer form
+$=$ direct $(K^{-1})^{\otimes n}$ deconvolution, exact; V1 the slope maps and
+sign factor, sympy; V2 the sign-chain parity identity $=$ direct sign,
+exhaustive $n\le10$ below \emph{and} above $D_c$; V3 the criterion --- exact
+rational certificates constructed and exhaustive words positive, plus a
+$50$-point high-precision existence grid with zero failures; V4 sharpness ---
+$\operatorname{disc}(B_1B_0)<0$ and the alternating word negative just above
+$D_c$; V5 the Gray cross-check; V6 BSC divisibility).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
