@@ -13852,19 +13852,84 @@ $8=2{+}6$ characteristic polynomial --- no radical form for $a\ne b$).
 \emph{Were the convexity of $G$ proven}, item (i) would collapse to this
 single endpoint constant, $g(s)\le1-\tilde c(a,b,D)\,D(1-D)(1-\cos s)$ on
 $(0,\pi]$, eliminating the $s$-Sturm; the convexity is then the sole
-residual. The obstruction is structural: $W_8(s)$ is genuinely \emph{complex}
-(non-real, signed) for $s\in(0,\pi)$ --- $s=\pi$ is the only real-$\eta$
-interior-or-endpoint point besides $s=0$ --- so the Perron-root convexity
-theorems (Kingman 1961; Cohen 1981; Nussbaum 1986), which require
-entrywise-nonnegative \emph{real} matrices, do not apply; and a single fixed
-pair cannot stand in for the $s$-dressed one (the frozen-$Z(\pi)$
-Collatz--Wielandt slack is $\approx$constant in $s$ and overshoots away from
-$s=\pi$). Validated in
+residual. The obstruction is \emph{not} merely that $W_8(s)$ is complex: even
+after the real, single-valued reduction below ($G$ is an algebraic, branch-free
+function of $u$), the classical Perron-root convexity theorems still do not
+apply, because $u$ enters through \emph{off-diagonal}, \emph{non-log-convex}
+M\"obius entries. Cohen (1981), Kato (1982) and Nussbaum (1986) give $\rho$
+convex (resp.\ the spectral bound convex) only when the parameter enters as a
+\emph{diagonal} (multiplication) perturbation --- the off-diagonal case can
+fail (Cohen's counterexample) --- and Kingman (1961) gives log-convexity only
+under entrywise \emph{log-convex} dependence, which the M\"obius entries are
+not. The generic non-self-adjoint variational handles point the wrong way: the
+Collatz--Wielandt formula $\rho=\inf\{c:\Psi\varphi\le c\varphi,\varphi>0\}$
+(Donsker--Varadhan; Anantharam--Borkar 2019) is an \emph{infimum} of
+affine-in-$\Psi$ functionals, hence \emph{concave} in an affine parameter, and
+the Rayleigh sup-form yields convexity only for self-adjoint families (\S below:
+$M(u)$ is self-adjoint only w.r.t.\ an \emph{indefinite} fixed metric). A
+single fixed pair likewise cannot stand in for the $s$-dressed one (the
+frozen-$Z(\pi)$ Collatz--Wielandt slack is $\approx$constant in $s$ and
+overshoots away from $s=\pi$). The only interior-or-endpoint point with real
+$\eta$ besides $s=0$ is $s=\pi$.
+
+\emph{Where the obstruction really lies (a real-representation
+sharpening).} The complexity of $W_8(s)$ is, however, \emph{not} the genuine
+barrier. Writing $u:=\cos s$ and acting $\Psi_s$ on a real Pauli basis
+$\{I,\sigma_x,\sigma_y,\sigma_z\}$ of each $2\times2$ block gives an explicit
+\emph{real} $8\times8$ representation $M(u)$ with $\rho(M(u))=\rho(W_8(s))$.
+On the contour one has the exact closed forms (proven symbolically; common
+linear denominator $\mathrm{DEN}(u):=(A^2+B^2)-2AB\,u>0$, $A=(1-D)^2$,
+$B=D^2$): $\operatorname{Re}\eta_s$, $|\eta_s|^2$ and $|C_s/C_0|^2$ are
+\emph{rational} in $u$, while
+$(\operatorname{Im}\eta_s)^2=\bar d^{\,2}c^2(1-u^2)/\mathrm{DEN}(u)^2$ ---
+the lone $\sqrt{1-u^2}$ enters $M(u)=P(u)+\sqrt{1-u^2}\,Q(u)$ \emph{linearly},
+and $Q$ couples \emph{only} the $\sigma_y$ channel to the rest. Eliminating
+that channel by a Schur complement replaces $\sqrt{1-u^2}$ by $1-u^2$, so the
+characteristic polynomial of $M(u)$ is a \emph{polynomial} in $(\lambda,u)$
+over $\mathbb Q(a,b,D)$ (equivalently: the char poly of $W_8$ is symmetric in
+$\eta_s\leftrightarrow\bar\eta_s$, hence a polynomial in
+$(\eta_s+\bar\eta_s,\,\eta_s\bar\eta_s)=(2\operatorname{Re}\eta_s,|\eta_s|^2)$,
+both rational in $u$). Consequently the Perron branch
+$G(u)=|C_s/C_0|^2\,\lambda(u)$ is an \emph{algebraic} function of $u$,
+real-analytic on $[-1,1]$ with \emph{no} branch point at $u=\pm1$ (verified by
+single-valued analytic continuation). Thus ``$G$ convex on $[-1,1]$'' is a
+\emph{decidable} polynomial-positivity ($\mathrm{d}^2/\mathrm{d}u^2$ of an
+algebraic function $\ge0$, one CAD/Sturm question per rational $(a,b,D)$), not
+a transcendental statement --- consistent with, and explaining, the per-point
+certificate of (iii). The residual barrier to a \emph{closed-form} proof is
+purely \emph{quantitative}: by Rellich perturbation
+$\lambda''(u)=\langle l|M''|r\rangle+2\langle l|M'\,S\,M'|r\rangle$ is a small
+positive residual of a near-cancellation between the (concave) $M''$ curvature
+$\langle l|M''|r\rangle<0$ (the $w''=-(1-u^2)^{-3/2}$ from the $\sqrt{}$) and
+the (positive) second-order level-repulsion $2\langle l|M'SM'|r\rangle>0$,
+with $(|t_1|+|t_2|)/|t_1+t_2|$ up to $\sim40$ on the test grid --- no
+term-wise sign certificate. The repulsion term is itself \emph{not} a sum of
+squares: although $M(u)$ is self-adjoint with respect to a single
+$u$-\emph{independent} bilinear form $H$ (a one-dimensional nullspace of the
+stacked commutator constraint, residual $\sim10^{-57}$ at 60~dps), that $H$ is
+\emph{indefinite}, so the standard Rayleigh--Schr\"odinger expansion
+$\sum_{k}|\langle l|M'|r_k\rangle|^2/(\rho-\lambda_k)$ has mixed-sign per-mode
+contributions (4 of 7 negative at a representative point) and is positive only
+on \emph{net}. The naive variational route is likewise refuted: for a
+\emph{fixed} pair $Z$ the Collatz--Wielandt value
+$\max_x\lambda_{\max}(Z_x^{-1/2}\Psi_s(Z)_xZ_x^{-1/2})$ is itself
+\emph{non}-convex in $u$, and the cone Perron root is the \emph{inf} envelope
+of these, not a sup of convex functions. The convexity margin is moreover
+genuinely tight, degenerating as $D^2$ when $D\to0$ and vanishing at $u\to1$
+(the curvature point), so any closed-form certificate must capture an
+$O(D^2)$-small positive quantity at the endpoint. Validated in
 \texttt{scripts/verify/lemma\_7\_34e\_spi\_closed\_form.py} (the closed-form
 $\eta_\pi,|C_\pi/C_0|^2$; the exact $D$-Sturm for $g(\pi)<1$ on $(0,D_c]$;
-the signed-cone correction and the once-iterated fix) and
+the signed-cone correction and the once-iterated fix),
 \texttt{probe\_7\_34e\_endpoint\_reduction.py} (the $s=\pi$ minimisation, the
-$G$-convexity to 50~dps, and the refuted one-pair closer).
+$G$-convexity to 50~dps, and the refuted one-pair closer), and
+\texttt{probe\_7\_34e\_trackA\_real\_rep\_convexity.py} (the real $8\times8$
+representation; the rational reductions; the $\sqrt{}$-elimination /
+algebraicity of $G(u)$; the refuted variational route; the
+curvature-vs-repulsion near-cancellation), and
+\texttt{probe\_7\_34\_trackB\_perturbation.py} (the exact
+Rayleigh--Schr\"odinger $\rho''(u)$ decomposition; the $u$-independent but
+indefinite self-adjointness metric; the mixed-sign per-mode contributions).
 
 \textbf{Lemma 7.34f (instance (2): the asymmetric all-$n$ deconvolution
 threshold in closed form).} \emph{Let $X$ be the stationary binary Markov
