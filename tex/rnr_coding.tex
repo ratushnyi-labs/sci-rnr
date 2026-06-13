@@ -13824,6 +13824,48 @@ posterior variance to $10^{-14}$; the dressed-pair coverage map with floor
 ratio $\ge1.09$ at every corner; the eight Sturm certificates and the
 off-Gray refusal).}
 
+\textbf{Remark 7.34e$'$ (the binding endpoint $s=\pi$ and the residual
+convexity conjecture).} The per-point certificate of (iii) has a sharp
+structural reduction. Numerically (50~dps, $4000+$ parameter points, no
+exception) the ratio $R(a,b,D,s):=[1-g(s)]/[D(1-D)(1-\cos s)]$ is
+\emph{minimised at the endpoint $s=\pi$}; equivalently, in $u=\cos s$, the
+map $G(u):=g(\arccos u)$ is \emph{convex} on $[-1,1]$ with
+$G(1)=\lim_{s\to0}g(s)=1$, so the secant slope
+$[G(1)-G(u)]/(1-u)=R$ is nondecreasing and attains its minimum
+$R(a,b,D,\pi)$ at $u=-1$. The endpoint is exactly solvable: at $s=\pi$ the
+contour data is real and rational,
+$\eta_\pi=-2D(1-D)/\bigl((1-D)^2+D^2\bigr)$ and
+$|C_\pi/C_0|^2=(c^2+4D^2(1-D)^2)/c^2$ ($c=1-2D$), and $g(\pi)<1$ holds on the
+open Gray interior by a closed-form-in-$D$ certificate: since $\eta_\pi<0$
+makes $W_8$ \emph{signed}, the Kre\u{\i}n--Rutman/Collatz--Wielandt PSD-cone
+bound (\emph{not} the M-matrix minor test, which is invalid for a signed
+matrix) applies, and the once-iterated dressed pair $Z_1=\Psi_\pi(Z_{\mathrm
+{dr}})$ satisfies $\Psi_\pi(Z_1)_x\preceq\mu\,Z_{1,x}$ with
+$\mu=c^2/(c^2+4D^2(1-D)^2)$ throughout $D\in(0,D_c]$ --- one exact
+Sturm-in-$D$ per rational $(a,b)$ (executed at representative corners; a
+single CP-map iteration is load-bearing, the bare pair over-estimating
+$\rho$ in a thin sliver below $D_c$). Hence
+$\tilde c(a,b,D):=R(a,b,D,\pi)=[1-g(\pi)]/(2D(1-D))>0$ is explicit, though an
+algebraic number of degree $6$ over $\mathbb Q(a,b)$ (the $s=\pi$ Perron
+value sits in the irreducible degree-$6$ symmetric-pair block of the split
+$8=2{+}6$ characteristic polynomial --- no radical form for $a\ne b$).
+\emph{Were the convexity of $G$ proven}, item (i) would collapse to this
+single endpoint constant, $g(s)\le1-\tilde c(a,b,D)\,D(1-D)(1-\cos s)$ on
+$(0,\pi]$, eliminating the $s$-Sturm; the convexity is then the sole
+residual. The obstruction is structural: $W_8(s)$ is genuinely \emph{complex}
+(non-real, signed) for $s\in(0,\pi)$ --- $s=\pi$ is the only real-$\eta$
+interior-or-endpoint point besides $s=0$ --- so the Perron-root convexity
+theorems (Kingman 1961; Cohen 1981; Nussbaum 1986), which require
+entrywise-nonnegative \emph{real} matrices, do not apply; and a single fixed
+pair cannot stand in for the $s$-dressed one (the frozen-$Z(\pi)$
+Collatz--Wielandt slack is $\approx$constant in $s$ and overshoots away from
+$s=\pi$). Validated in
+\texttt{scripts/verify/lemma\_7\_34e\_spi\_closed\_form.py} (the closed-form
+$\eta_\pi,|C_\pi/C_0|^2$; the exact $D$-Sturm for $g(\pi)<1$ on $(0,D_c]$;
+the signed-cone correction and the once-iterated fix) and
+\texttt{probe\_7\_34e\_endpoint\_reduction.py} (the $s=\pi$ minimisation, the
+$G$-convexity to 50~dps, and the refuted one-pair closer).
+
 \textbf{Lemma 7.34f (instance (2): the asymmetric all-$n$ deconvolution
 threshold in closed form).} \emph{Let $X$ be the stationary binary Markov
 chain with $P(0\!\to\!1)=a$, $P(1\!\to\!0)=b$, $a,b\in(0,1)$, $a+b<1$. The
