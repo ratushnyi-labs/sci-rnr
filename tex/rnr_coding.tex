@@ -13881,9 +13881,10 @@ $n\le51$, $40$~dps (positive at $D_c(1-10^{-6})$ for all $n$; first
 negativity at the predicted index for $D>D_c$); the word-uniform
 invariant-cone argument for the mixed case is supplied separately in
 Lemma 7.34g below (a two-state sign automaton, proven as a certificate
-criterion and shown sharp; its existence below $D_c$ is settled per
-rational $(a,b)$ by one finite computation, the uniform-in-$(a,b)$
-statement remaining open). The radicand's
+criterion and shown sharp; its existence below $D_c$ holds for all
+$(a,b)$ with $a+b<1$ simultaneously, by the closed-form chain
+\eqref{eq:G1chain} of Lemma 7.34h --- no per-rational computation is
+needed). The radicand's
 numerator $(2-a-b)^2-4ab=4-4(a+b)+(a-b)^2$ (the $\zeta^2$-coefficient of
 the binding factor $F_2$) recovers Gray's discriminant $4(1-2p)$ at
 $a=b$. \hfill$\square$
@@ -13937,15 +13938,28 @@ $\operatorname{disc}(B_1B_0)=F_1F_2/16\ge0$, and (as $F_1>0$) $F_2\ge0$, i.e.\
 $D\le D_c$. Above $D_c$ the composite is exactly elliptic (complex-conjugate
 eigenvalue pair, $\det>0$) and the alternating word itself goes negative
 (Lemma 7.34f).
-\textbf{(IV) Existence below $D_c$.} For $1<\zeta<\zeta_c$ the canonical
-endpoints $a_1=s_{01}$, $a_2=m_0(s_{01})$, $b_2=m_1(s_{01})$,
-$b_1=m_1^2(s_{01})$ --- $s_{01}$ the real fixed point of the slope map of
-$B_0B_1$ --- furnish such a certificate; four of the eight closure inclusions
-are M\"obius identities, and the residual margin inequalities hold per rational
-$(a,b)$ for all $D<D_c$ at once by one exact computation in
-$\mathbb Q(\zeta)[\sqrt{F_1F_2}]$ (executed at representative corners). The
-all-$n$ deconvolution region is therefore $(0,D_c(a,b)]$, conditional only on
-this last per-$(a,b)$ existence step.}
+\textbf{(IV) Existence below $D_c$ (uniform in $(a,b)$; closes G1).} For
+$1<\zeta<\zeta_c$ the canonical certificate exists for \emph{all} $(a,b)$ with
+$a+b<1$ and \emph{all} $\zeta\in(1,\zeta_c)$ at once. Take $a_1$ to be the
+\emph{larger} real root of the fixed-point quadratic $\mathcal Q(s):=
+A_\zeta s^2+B_\zeta s+C_\zeta$ of the slope map $m_0\circ m_1$ of $B_0B_1$,
+where
+\[
+  A_\zeta=-\frac{a\,W}{\zeta-1},\quad
+  C_\zeta=-\frac{b\,W}{\zeta+1},\quad
+  B_\zeta=\frac{(a-b)(a+b-2)(\zeta^2-1)-4ab\,\zeta}{\zeta^2-1},\quad
+  W:=(a-b)\zeta+(2-a-b),
+\]
+and set $a_2=m_0(a_1)$, $b_2=m_1(a_1)$, $b_1=m_1(b_2)$, $A=[a_1,a_2]$,
+$B=[b_1,b_2]$. The entire certificate is then equivalent to the single strict
+chain of real inequalities
+\begin{equation}\label{eq:G1chain}
+  b_1<\nu^{-1}<b_2<p_T<p_\pi<a_1<\nu<a_2<0,
+\tag{$\ast$}
+\end{equation}
+each link of which is established in closed form, uniformly in $(a,b,\zeta)$, by
+Lemma 7.34h below. The all-$n$ deconvolution region is therefore exactly
+$(0,D_c(a,b)]$ on the open interior, unconditionally.}
 
 \emph{Provenance and scope.} \emph{The symmetric case $a=b$ is Gray's 1969/1970
 theorem} (R.\,M.\ Gray, \emph{Information rates of autoregressive sources}, USC-EE
@@ -13965,10 +13979,14 @@ Avila--Bochi--Yoccoz, Comment.\ Math.\ Helv.\ 85(4), 2010, in whose language
 $D_c$ is where the $\{B_0,B_1\}$-cocycle leaves the uniformly-hyperbolic
 multicone locus through a parabolic period-2 product). No published asymmetric
 extension exists (Gray 1971 gives only existence of a positive $D_c$ for
-finite-state sources; Avram--Berger 1985 an underbound). \emph{Open (G1):} the
-uniform-in-$(a,b)$ proof of the residual margin inequalities of (IV) --- a
-finite three-variable semialgebraic statement, grid- and corner-verified but
-not yet closed in one stroke.
+finite-state sources; Avram--Berger 1985 an underbound). \emph{Gap G1 now
+closed:} the uniform-in-$(a,b)$ existence is proven in closed form in
+Lemma 7.34h --- the asymmetric two-generator replacement for Gray's flip
+$M_1=GM_0G$ is to anchor the certificate at the larger root of the
+$B_0B_1$ slope-quadratic and collapse all eight closure inclusions to the
+single chain \eqref{eq:G1chain}, four links being M\"obius identities and the
+remaining four each a one-line sign reduction. No per-rational $(a,b)$
+computation is needed.
 
 \emph{Validated} (independent cold reproduction) in
 \texttt{scripts/verify/lemma\_7\_34g\_sign\_automaton.py} (V0 transfer form
@@ -13979,6 +13997,118 @@ rational certificates constructed and exhaustive words positive, plus a
 $50$-point high-precision existence grid with zero failures; V4 sharpness ---
 $\operatorname{disc}(B_1B_0)<0$ and the alternating word negative just above
 $D_c$; V5 the Gray cross-check; V6 BSC divisibility).
+
+\textbf{Lemma 7.34h (closure of G1: the chain \eqref{eq:G1chain} holds for all
+$a,b\in(0,1)$, $a+b<1$, $\zeta\in(1,\zeta_c)$).} \emph{With $a_1$ the larger
+root of $\mathcal Q$ and $a_2,b_1,b_2,A,B$ as in part (IV) of Lemma 7.34g,
+every link of \eqref{eq:G1chain} holds strictly; consequently $A\subset
+(p_\pi,0)$, $B\subset(-\infty,p_T)$, $\nu\in A$, $\nu^{-1}\in B$, and $m_0(A\cup
+B)\subseteq A$, $m_1(A\cup B)\subseteq B$. The certificate criterion {\rm(I)} of
+Lemma 7.34g is therefore met for every $(a,b,\zeta)$ in range.}
+
+\emph{Proof.} Throughout, $a,b\in(0,1)$, $a+b<1$, $\zeta\in(1,\zeta_c)$, so
+$\nu=(1-\zeta)/(1+\zeta)\in(-1,0)$. Write
+$f_a:=(a-b)\zeta-(a+b)$, $W:=(a-b)\zeta+(2-a-b)$,
+$W':=(a-b)\zeta+(a+b-2)$, and the standing factorisations from Lemma 7.34f,
+$16\,\mathrm{disc}=F_1F_2$, with the cross-difference
+$(a+b)^2[(2-a-b)^2-4ab]-(2-a-b)^2(a-b)^2=16ab(1-a-b)>0$, which forces
+$\zeta_1:=(a+b)/|a-b|>\zeta_c$ (the root of $F_1$), and the elementary
+identity $(2-a-b)^2-4ab=4(1-a-b)+(a-b)^2$.
+
+\emph{(0) Foundations.} $W>0$ on $(1,\zeta_c]$: if $a\ge b$, $W$ is
+nondecreasing in $\zeta$ with $W(1)=2(1-b)>0$; if $a<b$, $W$ is nonincreasing
+and $W(\zeta_c)>0$ because $(2-a-b)^2-(b-a)^2-4ab=-4(a+b-1)>0$. Hence
+$A_\zeta=-aW/(\zeta-1)<0$: $\mathcal Q$ is a downward parabola. Its
+discriminant is $F_1F_2/(\zeta^2-1)^2>0$ on the open interval (both $F_1,F_2>0$:
+$F_1(1)=4ab>0$ and $\zeta_1>\zeta_c$; $F_2>0$ strictly below $\zeta_c$), so
+$\mathcal Q$ has two distinct real roots; write $r_-<r_+=:a_1$. Their product
+$C_\zeta/A_\zeta=b(\zeta-1)/(a(\zeta+1))=-(b/a)\nu>0$ and sum
+$-B_\zeta/A_\zeta$ are both positive-product/negative-sum because the trace
+numerator $\mathrm{Bnum}:=(a-b)(a+b-2)(\zeta^2-1)-4ab\zeta$ is negative on
+$(1,\zeta_c]$ ($\mathrm{Bnum}(1)=-4ab<0$; for $a<b$ it is upward in $\zeta$ with
+$\mathrm{Bnum}(\zeta_c)=-(4ab(2-a-b)/d^2)\bigl((a-b)+d\bigr)<0$,
+$d=\sqrt{(2-a-b)^2-4ab}>|a-b|$); thus \emph{both roots are negative}.
+
+\emph{Q-test.} For the downward parabola $\mathcal Q$ with vertex
+$v=(r_-+r_+)/2$ and $\mathcal Q'(s)=2A_\zeta(s-v)$, one has the elementary
+equivalences $\ s<a_1=r_+\iff \mathcal Q(s)>0\ \text{or}\ \mathcal Q'(s)>0$,
+and $\ s>a_1\iff \mathcal Q(s)<0\ \text{and}\ \mathcal Q'(s)<0$.
+
+\emph{(1) $a_1>p_\pi$ and $a_1<\nu$.} A direct computation gives
+$\mathcal Q(p_\pi)=-2b\zeta(a+b-1)f_a/\bigl(a(\zeta^2-1)\bigr)$ and
+$\mathcal Q(\nu)=-2\zeta(a+b-1)f_a/(\zeta+1)^2$. Now $f_a<0$ on
+$(1,\zeta_c]$ ($f_a(1)=-2b<0$ and its root is $\zeta_1>\zeta_c$), so both
+values are $<0$ (signs $(-)(-)(-)$ over a positive denominator). Their
+derivatives factor as $\mathcal Q'(p_\pi)=f_a\,g_1/(\zeta^2-1)$ with
+$g_1:=(a+3b-2)\zeta+(a+b-2)$, and $\mathcal Q'(\nu)=f_a\,g_2/(\zeta^2-1)$ with
+$g_2:=(3a+b-2)\zeta+(2-a-b)$. Here $g_1<0$: $g_1(1)=2(a+2b-2)<0$, and if
+$a+3b-2>0$ then $g_1(\zeta_c)<0$ because $(2-a-b)^2-4ab-(a+3b-2)^2=8b(1-a-b)>0$;
+while $g_2>0$: $g_2(1)=2a>0$, and if $3a+b-2<0$ then $g_2(\zeta_c)>0$ because
+$(2-a-b)^2-4ab-(2-3a-b)^2=8a(1-a-b)>0$. Thus $\mathcal Q'(p_\pi)>0$
+(so $p_\pi<a_1$, i.e.\ $a_1>p_\pi$) and $\mathcal Q'(\nu)<0$ with
+$\mathcal Q(\nu)<0$ (so $\nu>a_1$, i.e.\ $a_1<\nu$). In particular $a_1>p_\pi>
+p_T$ since $p_\pi-p_T=(1-a-b)/a>0$, so the denominator $(1-a)+aa_1>0$.
+
+\emph{(2) $\nu<a_2<0$.} The pointwise identity
+$\psi(s)-1=(a+b-1)(1-s)/\bigl((1-a)+as\bigr)$ shows $\psi(a_1)<1$ (numerator
+$<0$ as $a+b<1$, $a_1<0$; denominator $>0$), hence $a_2=\nu\psi(a_1)>\nu$
+($\nu<0$). For $a_2<0$ it suffices that $\psi(a_1)>0$, i.e.\ $a_1>-b/(1-b)$, the
+zero of $\psi$ (the denominator being positive). Since $a_1=r_+$ is the
+\emph{larger} root, it exceeds the vertex $v:=\tfrac12(r_-+r_+)=-B_\zeta/(2A_\zeta)$
+of the downward parabola; and $v>-b/(1-b)$ because
+\[
+  v+\frac{b}{1-b}=\frac{\mathcal N(a,b,\zeta)}{2a(1-b)(\zeta+1)W},
+  \qquad \mathcal N=U(a,b)\,\zeta^2+V(a,b)\ \text{affine in }\zeta^2,
+\]
+has positive denominator ($W>0$ from (0)) and a numerator positive at both
+endpoints of $[1,\zeta_c]$: $\ \mathcal N|_{\zeta=1}=4ab(1-b)>0\ $ and
+$\ \mathcal N|_{\zeta=\zeta_c}=8ab\,(2-a-b)(1-a-b)/\bigl((2-a-b)^2-4ab\bigr)>0\ $
+(its denominator $=4(1-a-b)+(a-b)^2>0$), so $\mathcal N>0$ on all of
+$[1,\zeta_c]$ by affineness in $\zeta^2$. Hence $-b/(1-b)<v<a_1$, whence
+$\psi(a_1)>0$, giving $a_2<0$; with $\psi(a_1)<1$ this is $\nu<a_2<0$.
+(The direct value $\mathcal Q(-b/(1-b))=-b(a+b-1)W'/\bigl((b-1)^2(\zeta+1)\bigr)$
+is in fact $<0$ --- the point lies below \emph{both} roots --- consistent with
+$-b/(1-b)<r_-<v<a_1$.)
+
+\emph{(3) $b_2<p_T$ and $b_1<\nu^{-1}<b_2$.} Since $\psi(a_1)\in(0,1)$ from (2),
+$b_2=\psi(a_1)/\nu$ satisfies $b_2-\nu^{-1}=(\psi(a_1)-1)/\nu>0$, i.e.\
+$\nu^{-1}<b_2$. The inequality $b_2<p_T$ is equivalent (clearing the negative
+denominator $\nu$) to $a\psi(a_1)+\nu(1-a)>0$, whose numerator is
+\emph{linear} in $a_1$ with leading coefficient $aW>0$; thus it reads
+$a_1>s_4$ where $\mathcal Q(s_4)=-(\zeta-1)(a+b-1)^2/(aW)<0$ and
+$\mathcal Q'(s_4)=-\mathrm{Bnum}/(\zeta^2-1)>0$ (as $\mathrm{Bnum}<0$ from (0)),
+so by the Q-test $s_4<a_1$ and $b_2<p_T$. Finally
+$b_1=\psi(b_2)/\nu<\nu^{-1}\iff\psi(b_2)>1$, and
+$\psi(b_2)-1=(a+b-1)(1-b_2)/\bigl((1-a)+ab_2\bigr)>0$ because $b_2<p_T$ makes the
+denominator negative while the numerator $(a+b-1)(1-b_2)<0$. This proves
+$b_1<\nu^{-1}<b_2$, and $p_T<p_\pi$ is $(1-a-b)/a>0$.
+
+\emph{(4) Closure.} The maps $m_0,m_1$ are M\"obius homeomorphisms of
+$\mathbb{RP}^1$ sharing the single pole $p_T$ (denominator $(1-a)+as=a(s-p_T)$),
+with $m_y(p_T)=\infty$. The four identities $m_0(a_1)=a_2$, $m_1(a_1)=b_2$,
+$m_1(b_2)=b_1$, and $m_0(b_2)=a_1$ (the last because $a_1$ is fixed by
+$m_0\circ m_1$) are exact. Let $J:=\{s\ge a_1\}\cup\{s\le b_2\}\cup\{\infty\}$,
+the closed arc complementary to the open arc $(b_2,a_1)$. By \eqref{eq:G1chain},
+$A=[a_1,a_2]\subseteq\{s\ge a_1\}\subseteq J$ and $B=[b_1,b_2]\subseteq\{s\le
+b_2\}\subseteq J$, while $p_T\in(b_2,a_1)$, so $p_T\notin J$. Hence $m_0$ is a
+pole-free homeomorphism on $J$; by injectivity $\infty=m_0(p_T)\notin m_0(J)$,
+so $m_0(J)$ is the \emph{finite} closed arc between $m_0(a_1)=a_2$ and
+$m_0(b_2)=a_1$, namely $[a_1,a_2]=A$. Identically $m_1(J)=[b_1,b_2]=B$. Thus
+$m_0(A\cup B)\subseteq m_0(J)=A$ and $m_1(A\cup B)\subseteq m_1(J)=B$. Together
+with $\nu\in A$, $\nu^{-1}\in B$ (from \eqref{eq:G1chain}) this is exactly the
+hypothesis of criterion {\rm(I)}. \hfill$\square$
+
+\emph{Validated} in
+\texttt{scripts/verify/lemma\_7\_34g\_G1\_uniform\_existence.py} (Step 0 the
+fixed-point quadratic $=(A_\zeta,B_\zeta,C_\zeta)$, $\det=(1-a-b)^2$,
+$\mathrm{disc}=F_1F_2/(\zeta^2-1)^2$; Step 1 the foundations $W>0$, $A_\zeta<0$,
+$F_1>0$, both roots negative; Steps 2--3 the closed-form sign reductions of all
+eight links via the Q-test, every algebraic identity confirmed symbolically;
+Step 4 the closure collapse $p_T\notin J\Rightarrow m_0(J)=A$, $m_1(J)=B$,
+including $m_0(m_1(a_1))=a_1$ modulo the fixed-point quadratic; Step 5 a
+$1352$-point high-precision witness for \eqref{eq:G1chain} with positive margins
+and an independent corner/seed check of $m_0(A\cup B)\subseteq A$,
+$m_1(A\cup B)\subseteq B$ --- all PASS).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
