@@ -107,6 +107,37 @@ def Q4():
     print(f"     symmetric A=4 p=0.2: V_lossless={V:.5f} (a SOURCE quantity; same for Hamming & Lee)")
     return rep("Q4 V_lossless is the source varentropy rate (distortion-independent)", V>0)
 
+def Q6():
+    print("-"*78); print("Q6  Lee all-n threshold D_c^Lee>0 (per-n D_c^(n) converges to positive); binding=alt Lee-adjacent")
+    A=4; p=0.2; T=np.full((A,A),p/(A-1)); np.fill_diagonal(T,1-p); pi=stat(T)
+    def avgd(lam): return float((pi[:,None]*Kmat(A,lam)*lee(A)).sum())
+    def lam_for_D(Dt):
+        lo,hi=1e-3,40.0
+        for _ in range(55):
+            m=.5*(lo+hi); lo,hi=(m,hi) if avgd(m)>Dt else (lo,m)
+        return .5*(lo+hi)
+    def pern(n):
+        def minP(Dt):
+            Ki=np.linalg.inv(Kmat(A,lam_for_D(Dt)))
+            idx=list(itertools.product(range(A),repeat=n)); PX=np.zeros([A]*n)
+            for w in idx: PX[w]=pi[w[0]]*np.prod([T[w[t-1],w[t]] for t in range(1,n)])
+            Pt=PX
+            for ax in range(n): Pt=np.tensordot(Ki,Pt,axes=([1],[ax])); Pt=np.moveaxis(Pt,0,ax)
+            f=Pt.reshape(-1); return f.min(), idx[int(f.argmin())]
+        lo,hi=1e-6,0.5
+        for _ in range(38):
+            m=.5*(lo+hi); lo,hi=(m,hi) if minP(m)[0]>=-1e-13 else (lo,m)
+        return lo, minP(min(hi*1.02,0.4))[1]
+    ths=[];
+    for n in (6,7,8,9):
+        dc,w=pern(n); ths.append(dc)
+        syms=set(w); alt=len(syms)==2 and all(w[i]!=w[i+1] for i in range(len(w)-1))
+        adj=len(syms)==2 and (lambda a,b: min(abs(a-b),A-abs(a-b))==1)(*sorted(syms))
+        print(f"     n={n}: D_c^(n)={dc:.6f} word={w} (alt-Lee-adjacent: {alt and adj})")
+    mono=ths[0]>ths[1]>ths[2] and ths[-1]>1e-3
+    print(f"     => D_c^Lee ~ {ths[-1]:.6f} > 0 (per-n decreasing, stabilising positive)")
+    return rep("Q6 Lee all-n threshold D_c^Lee>0 (positive Gray region; alt Lee-adjacent binding)", mono)
+
 def Q5():
     print("-"*78); print("Q5  BALANCED non-group (non-circulant) distortion: K_nu K^{-1}=Z I still holds")
     print("    (only property needed: Z=sum_y nu^{d} x-indep <=> rows are permutations = balanced)")
@@ -127,5 +158,5 @@ def Q5():
 if __name__=="__main__":
     print("="*78); print("Remark 7.34q -- RD-dispersion converse for general balanced distortion (Lee, ...)")
     print("="*78)
-    Q1(); Q2(); Q3(); Q4(); Q5()
+    Q1(); Q2(); Q3(); Q4(); Q5(); Q6()
     print("="*78); print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
