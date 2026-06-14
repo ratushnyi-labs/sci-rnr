@@ -87,6 +87,7 @@ jobs:
             probe_7_34m_convexity_endpoint
             probe_7_34n_aary_asym
             probe_7_34p_lossy_devhier
+            probe_7_34q_lee_general_distortion
             probe_7_34m_endpoint_pi
           "
           for p in $probes; do

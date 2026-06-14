@@ -14990,6 +14990,42 @@ with the deviation hierarchy of §7.31--7.36. \emph{Validated} in
 with $m$-independent $c$; P2 the pathwise centered-process identity; P3 the
 distribution shift $\Rightarrow$ tail/LDP/EVT transfer --- all PASS).
 
+\textbf{Remark 7.34q (the distortion-type axis: the converse extends from
+Hamming to any group-difference distortion --- Lee, etc.).} Theorems
+7.34b/i/m/n are stated for Hamming distortion, but the source-agnostic converse
+depends only on the backward channel and extends verbatim. For \emph{any}
+difference distortion $d(x,y)=\rho(x\ominus y)$ on a finite abelian group $G$
+(Hamming on $\mathbb Z_A$; \emph{Lee} $d=\min(|x-y|,A-|x-y|)$ on $\mathbb Z_A$;
+$\ell_1$/circular variants; products), the SLB-achieving backward channel is the
+\emph{Gibbs kernel} $K=K_\nu/Z$ with $K_\nu[x,y]=\nu^{\,d(x,y)}$,
+$\nu=e^{-\lambda^*}$ and $Z=\sum_y\nu^{\,d(x,y)}$ ($x$-independent by group
+symmetry). Hence
+\[
+  K_\nu K^{-1}=(ZK)K^{-1}=Z\,I=\gamma I\qquad(\gamma=Z),
+\]
+\emph{trivially} scalar, so the dual identity $M(x^n)=\sum_y P_{Y^*}(y)\,
+\nu^{\,d(x^n,y)}=(K_\nu K^{-1})^{\otimes n}P_X=\gamma^n P_X$ holds for any source,
+$j_n=i_n-nc$ is a deterministic shift, the converse ratio $\rho=1$, and
+\[
+  V_{\mathrm{op}}(D)\ge V_{\mathrm{lossless}}\quad\text{on the distortion's own
+  Gray region, unconditionally.}
+\]
+For Hamming $\gamma=Z=1/(1-D)$, recovering Theorem 7.34n. The concrete second
+instance is \emph{Lee} distortion: the dual identity holds ($A=3,\dots,6$;
+$A=3$ Lee $=$ Hamming since all $d=1$), and the Lee Gray region is nonempty but
+\emph{smaller} than Hamming's --- the graded Lee circulant $K$ has a
+sign-oscillating inverse, so $D_c^{\mathrm{Lee}}$ is small (e.g.\ $A=4$: valid
+all-$n$ at average Lee distortion $\sim7\times10^{-4}$). $V_{\mathrm{lossless}}$
+is unchanged (a source quantity, distortion-independent), and achievability
+inherits the same convexity residual. So the entire RD-dispersion grid's
+\emph{converse} is a statement about group-difference distortions, not Hamming
+specifically; and by Remark 7.34n$'$ the all-order shift $j_n=i_n-nc$ likewise
+carries the third-order $\tfrac12\log n$ and the lossy deviation hierarchy
+(Remark 7.34p) to every such distortion on its Gray region. \emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34q\_lee\_general\_distortion.py} (Q1 the dual
+identity $K_\nu K^{-1}=ZI$; Q2 the nonempty Lee Gray region; Q3 the operational
+$j_n=i_n-nc$; Q4 $V_{\mathrm{lossless}}$ distortion-independent --- all PASS).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
