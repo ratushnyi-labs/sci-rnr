@@ -14672,6 +14672,58 @@ positive dominant root and $g_A(\pi)=|C_\pi/C_0|^2\rho$; M4 the $\approx\tfrac32
 endpoint floor; M5 the signed-cone $g_A(\pi)<1$; M6 the $s=\pi$ binding /
 convexity --- all PASS).
 
+\textbf{Remark 7.34m$''$ (the binding-endpoint reduction of the convexity
+residual: an affine-at-$D{=}0$ law and the cubic dispersion correction).} The
+convexity conjecture left open by Remarks 7.34m$'$ and 7.34e$'$ --- that
+$G(u):=g_A(\arccos u)$ is convex on $[-1,1]$ (so that the floor ratio $R_A$ is
+minimised at $s=\pi$) --- has a sharp leading-order reduction at its
+\emph{tightest} point $u\to1$ (the $s\to0$ curvature anchor, where $\min_u G''$
+sits).
+
+\emph{The reduction (exact).} Write the even expansion $g_A(s)=1-v\,s^2
++g_4\,s^4+O(s^6)$, with $v$ the per-site posterior variance of Lemma 7.34l(iii)
+and $g_4$ the quartic coefficient. The substitution $u=\cos s$ (using
+$1-\cos s=\tfrac{s^2}2-\tfrac{s^4}{24}+\cdots$) gives, as $u\to1$,
+\[
+  G''(1^-)=8g_4-\tfrac23 v,\qquad\text{so}\qquad
+  G''(1^-)\ge0\iff g_4\ge\tfrac{v}{12}.
+\]
+
+\emph{The structure (the new content).} At $D=0$ the disagreement tilt is
+$\eta(s)=-D(1-e^{is})/(A-1)+O(D^2)=O(D)$, whence $g_A(s)=1-2v(1-\cos s)+O(D^3)$:
+$G(u)$ is \emph{affine} in $u$ at leading order ($G''\equiv0$), i.e.\
+$g_4=\tfrac{v}{12}$ \emph{exactly} at $D=0$. The binding-endpoint convexity is
+therefore a pure \emph{cubic-in-$D$} effect, and the inequality $g_4\ge v/12$ is
+asymptotically tight. Its leading coefficient
+$c_A(p):=\lim_{D\to0}(g_4-v/12)/D^3$ is positive for every $A$, and at $A=2$ it
+is, \emph{in closed form}, the dispersion constant of Lemma 7.34l(iii):
+\[
+  c_2(p)=\kappa_2^2=\frac{(1-2p)^2}{p^2(1-p)^2},\qquad
+  G''(1^-)=8\kappa_2^2\,D^3+O(D^4)>0 .
+\]
+Thus the binding-endpoint convexity holds at leading order in $D$, governed by
+the \emph{same} constant $\kappa_A^2$ that sets the second-order dispersion
+($\bar v_A=D(1-D)[1-\kappa_A^2 D(1-D)/(1-2D)^2]$); the double cancellation that
+makes $g_4-v/12=O(D^3)$ (agreement of $g_4$ and $v/12$ through $O(D^2)$) is the
+\emph{symmetric-case} sharpening of the near-cancelling convexity margin recorded
+in Remark 7.34e$'$, which degenerates only as $O(D^2)$ in the asymmetric case
+(the symmetry buys one extra order of cancellation). For $A\ge3$, $c_A(p)>0$
+numerically and tracks the (no-closed-form) $\kappa_A^2$, but the exact identity
+$c_A=\kappa_A^2$ is established only at $A=2$.
+
+\emph{Status.} This \emph{proves} $G''(1^-)>0$ at leading order in $D$ (closed
+form at $A=2$), and numerically $g_4\ge v/12$ throughout the Gray region for
+every tested $A$ --- the binding-endpoint convexity, the tightest instance of
+the conjecture. The \emph{full} convexity on all of $[-1,1]$ (whence $s=\pi$
+binding, whence Theorem 7.34m's achievability unconditional) remains the
+residual; what is new is that its hardest instance is now an explicit,
+positive, cubic-in-$D$ quantity tied to the dispersion constant, rather than an
+opaque spectral inequality. \emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34m\_convexity\_endpoint.py} (E1 the reduction
+$G''(1^-)=8g_4-\tfrac23 v$; E2 $g_4\ge v/12$ on the Gray region; E3 the
+affine-at-$D{=}0$ law; E4 $c_A>0$ for all $A$ and $c_2=\kappa_2^2$ in closed
+form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$ --- all PASS).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
