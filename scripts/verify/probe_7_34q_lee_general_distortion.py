@@ -107,8 +107,25 @@ def Q4():
     print(f"     symmetric A=4 p=0.2: V_lossless={V:.5f} (a SOURCE quantity; same for Hamming & Lee)")
     return rep("Q4 V_lossless is the source varentropy rate (distortion-independent)", V>0)
 
+def Q5():
+    print("-"*78); print("Q5  BALANCED non-group (non-circulant) distortion: K_nu K^{-1}=Z I still holds")
+    print("    (only property needed: Z=sum_y nu^{d} x-indep <=> rows are permutations = balanced)")
+    # A=4 balanced symmetric, rows permutations of {0,1,2,3}, NOT circulant
+    Dm=np.array([[0,1,2,3],[1,0,3,2],[2,3,0,1],[3,2,1,0]])
+    # confirm balanced (each row a permutation of row 0's multiset) and symmetric, diag 0
+    base=sorted(Dm[0]); balanced=all(sorted(Dm[r])==base for r in range(4))
+    sym=np.allclose(Dm,Dm.T); diag0=all(Dm[i,i]==0 for i in range(4))
+    # NOT circulant: row1 != cyclic shift of row0
+    circ=all(Dm[1,j]==Dm[0,(j-1)%4] for j in range(4))
+    lam=1.3; Knu=np.exp(-lam*Dm); Z=Knu.sum(axis=1)[0]; K=Knu/Z
+    P=Knu@np.linalg.inv(K); off=np.abs(P-np.diag(np.diag(P))).max(); spread=np.diag(P).max()-np.diag(P).min()
+    print(f"     balanced={balanced} symmetric={sym} diag0={diag0} circulant={circ} (want balanced,sym,diag0,NOT circulant)")
+    print(f"     K_nu K^-1: off={off:.1e} spread={spread:.1e} gamma={P[0,0]:.4f}=Z={Z:.4f}")
+    ok = balanced and sym and diag0 and (not circ) and off<1e-9 and spread<1e-9 and abs(P[0,0]-Z)<1e-9
+    return rep("Q5 dual identity holds for balanced NON-group distortion (Z x-indep is all)", ok)
+
 if __name__=="__main__":
-    print("="*78); print("Remark 7.34q -- RD-dispersion converse for general group-difference distortion (Lee)")
+    print("="*78); print("Remark 7.34q -- RD-dispersion converse for general balanced distortion (Lee, ...)")
     print("="*78)
-    Q1(); Q2(); Q3(); Q4()
+    Q1(); Q2(); Q3(); Q4(); Q5()
     print("="*78); print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")

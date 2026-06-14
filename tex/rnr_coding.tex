@@ -15021,7 +15021,15 @@ inherits the same convexity residual. So the entire RD-dispersion grid's
 \emph{converse} is a statement about group-difference distortions, not Hamming
 specifically; and by Remark 7.34n$'$ the all-order shift $j_n=i_n-nc$ likewise
 carries the third-order $\tfrac12\log n$ and the lossy deviation hierarchy
-(Remark 7.34p) to every such distortion on its Gray region. \emph{Validated} in
+(Remark 7.34p) to every such distortion on its Gray region. Indeed the
+\emph{only} property used is that $Z=\sum_y\nu^{\,d(x,y)}$ is $x$-independent,
+which holds for every \emph{balanced} distortion in Gray's (1971) sense --- each
+row of the distortion matrix $[d(x,y)]$ a permutation of the others, so the
+distance multiset $\{d(x,y):y\}$ is common to all $x$ --- the group-difference
+(circulant) distortions being the concrete computable sub-case. Hence the
+unconditional converse $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ holds for the
+\emph{entire balanced-distortion class} on its Gray region, the natural setting
+of Gray's tight-SLB theorem. \emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34q\_lee\_general\_distortion.py} (Q1 the dual
 identity $K_\nu K^{-1}=ZI$; Q2 the nonempty Lee Gray region; Q3 the operational
 $j_n=i_n-nc$; Q4 $V_{\mathrm{lossless}}$ distortion-independent --- all PASS).
