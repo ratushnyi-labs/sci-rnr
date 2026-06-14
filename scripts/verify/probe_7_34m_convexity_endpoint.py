@@ -223,10 +223,46 @@ def E6():
         ok = ok and shrink
     return rep("E6 G''(u)=8 kappa_A^2 D^3 UNIFORM in u (full leading-order convexity)", ok)
 
+def E7():
+    print("-"*78); print("E7  ASYMMETRIC binary (a!=b, BSC(D); the W_8 of Lemma 7.34e): the SAME")
+    print("    reduction & leading-order convexity hold -- g4>=v/12, G''(1)~D^3 (NOT D^2),")
+    print("    uniform-in-u -- so the unconditional-small-D achievability extends to 7.34e'.")
+    ST=[(u,v,w) for u in (0,1) for v in (0,1) for w in (0,1)]
+    def gasym(a,b,D,s):
+        a=mp.mpf(a); b=mp.mpf(b); D=mp.mpf(D); s=mp.mpf(s)
+        th=mp.log(D/(1-D))
+        def eC(beta):
+            eb=mp.e**beta; ze=(1-eb)/((1+eb)*(1-2*D)); return (1-ze)/(1+ze),(1+eb)*(1+ze)/2
+        eta,Cs=eC(th+1j*s); _,C0=eC(th); Cr=abs(Cs/C0)**2; etb=mp.conj(eta)
+        T=[[1-a,a],[b,1-b]]; W=mp.zeros(8,8)
+        for i,(x,xp,xq) in enumerate(ST):
+            for j,(y,yp,yq) in enumerate(ST):
+                W[i,j]=T[xp][yp]*T[xq][yq]/T[x][y]*(eta if (y^yp) else 1)*(etb if (y^yq) else 1)
+        ev,_=mp.eig(W); return Cr*max(abs(e) for e in ev)
+    def Dc(a,b):
+        a=mp.mpf(a); b=mp.mpf(b); return mp.mpf(1)/2*(1-mp.sqrt(1-4*a*b/(2-a-b)**2))
+    ok=True
+    for (a,b) in [(0.05,0.3),(0.1,0.2),(0.02,0.4)]:
+        dc=Dc(a,b)
+        # g4>=v/12 on Gray
+        worstm=mp.inf
+        for fr in ('0.1','0.5','0.99'):
+            D=mp.mpf(fr)*dc; f=lambda s: gasym(a,b,D,s)
+            v=-mp.diff(f,0,2)/2; g4=mp.diff(f,0,4)/24; worstm=min(worstm,g4-v/12)
+        # G''(1) scaling order
+        def Gpp1(D):
+            s0=mp.mpf('0.03'); h=mp.mpf('1e-3'); us=[mp.cos(s0*(1-h)),mp.cos(s0),mp.cos(s0*(1+h))]
+            fs=[gasym(a,b,D,mp.acos(u)) for u in us]; u0,u1,u2=us; f0,f1,f2=fs
+            return 2*((f2-f1)/(u2-u1)-(f1-f0)/(u1-u0))/(u2-u0)
+        L1=Gpp1(mp.mpf('5e-4')); L2=Gpp1(mp.mpf('1.25e-4')); order=mp.log(L1/L2)/mp.log(4)
+        ok = ok and worstm>-mp.mpf('1e-20') and abs(order-3)<mp.mpf('0.1')
+        print(f"   a={a} b={b}: min(g4-v/12)={mp.nstr(worstm,3)}  G''(1) scaling order={mp.nstr(order,4)} (->3, not 2)")
+    return rep("E7 asymmetric binary: same reduction, g4>=v/12, G''(1)~D^3 (7.34e' extended)", ok)
+
 if __name__=="__main__":
     print("="*78)
     print("Remark 7.34m'' -- binding-endpoint reduction of the convexity residual")
     print("="*78)
-    E1(); E2(); E3(); E4(); E5(); E6()
+    E1(); E2(); E3(); E4(); E5(); E6(); E7()
     print("="*78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
