@@ -14217,6 +14217,91 @@ $1352$-point high-precision witness for \eqref{eq:G1chain} with positive margins
 and an independent corner/seed check of $m_0(A\cup B)\subseteq A$,
 $m_1(A\cup B)\subseteq B$ --- all PASS).
 
+\textbf{Theorem 7.34i (asymmetric BSMS operational rate-distortion dispersion;
+the consolidation of instance (2)).} \emph{Let $X$ be the stationary binary
+Markov chain of Lemma 7.34f --- $P(0\!\to\!1)=a$, $P(1\!\to\!0)=b$,
+$a,b\in(0,1)$, $a+b<1$, $a\ne b$ --- under Hamming distortion and the
+fixed-$\varepsilon$ excess-distortion criterion. Then for every
+$D\in(0,D_c(a,b))$ at which the one-shot spectral certificate of
+Lemma 7.34e\,(iii) succeeds --- every $(a,b,D)$ tested, and unconditionally on
+any bounded-mixing subfamily $\{a+b\le1-\eta\}$ below threshold (Remark
+7.34e$'$, by compactness) --- the operational second-order dispersion equals
+the lossless varentropy rate of $X$ and is $D$-independent across the Gray
+interval:}
+\[
+  V_{\mathrm{op}}(D)\;=\;V_{\mathrm{lossless}}(a,b)
+  \;:=\;\lim_{n}\frac1n\operatorname{Var}\bigl(-\log_2 P(X^n)\bigr),
+\]
+\emph{the Gordin/Green--Kubo varentropy rate, which decomposes as}
+\[
+  V_{\mathrm{lossless}}(a,b)=\underbrace{\pi_0\,a(1-a)\log_2^2\tfrac{1-a}{a}
+  +\pi_1\,b(1-b)\log_2^2\tfrac{1-b}{b}}_{\text{conditional-varentropy mixture}}
+  \;+\;V_{\mathrm{mem}}(a,b),\quad \pi_0=\tfrac b{a+b},
+\]
+\emph{the stationary mixture of the two per-state conditional varentropies plus
+a memory term $V_{\mathrm{mem}}(a,b)\ge0$ with $V_{\mathrm{mem}}\equiv0$ iff
+$a=b$ (so the asymmetric rate strictly exceeds the conditional mixture). At
+$a=b=p$ the statement reduces to the symmetric Remark 7.34b:
+$V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p$ and
+$D_c=\tfrac12(1-\sqrt{1-2p}/(1-p))$. This is the first \emph{asymmetric}
+discrete memory source with a proven operational rate-distortion dispersion.}
+
+\emph{Proof (by assembly of the committed pieces).} \emph{Converse}
+($V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$): Remark 7.34d. In the Gray region
+the SLB is tight and the chain-agnostic dual identity gives the
+\emph{deterministic} shift $\jmath_n=\imath_n-nh(D)+c_n$ with $c_n$
+word-independent, so $\operatorname{Var}(\jmath_n)=\operatorname{Var}(\imath_n)$
+at every $n$, $\rho:=\operatorname{Var}(\jmath_n)/\operatorname{Var}(\imath_n)=1$,
+and the Kostina--Verd\'u fixed-$\varepsilon$ liminf converse yields
+$V_{\mathrm{op}}\ge\lim_n\operatorname{Var}(\jmath_n)/n=V_{\mathrm{lossless}}(a,b)$
+(centering $\kappa_n=H(X^n)-n\bar h=O(1)$, $n$-stable). \emph{Achievability}
+($V_{\mathrm{op}}\le V_{\mathrm{lossless}}$): the symmetric closure machinery of
+Remark 7.34b --- the quenched uniform tail lemma, the KP window analyticity and
+Cauchy bounds, the (R2) ordered-constants central window, and the complex-saddle
+GAP-1 lemma --- is \emph{chain-agnostic}, consuming only (i) the replica
+spectral gap $\bar g=\max_{[\varepsilon,\pi]}g<1$ with the positive curvature
+floor $\bar v=D(1-D)(1-\bar\Psi_0)>0$, supplied per-$(a,b,D)$ by
+Lemma 7.34e\,(iii) --- the symmetric constant $\tfrac{11}{16}$ enters the
+GAP-1 write-out solely as $c_g=\tfrac{11}{16}D(1-D)$, and every downstream
+constant ($c_2=\tfrac{c_g}{4\pi^2}$, $c_4=\tfrac{c_g}{16\pi^2}$,
+$c_5=\tfrac{c_g}{4\pi^2}$, the $E_{2'}$ margin $\tfrac{c_g}{4\pi^2}>0$) is a
+positive multiple of $c_g$, so the substitution
+$c_g\mapsto\tilde c(a,b,D)D(1-D)$, $\tilde c\in[\tfrac{43}{64},\tfrac{25}{32}]$,
+is monotone with no sign change anywhere in the chain; (ii) the Markov
+bounded-differences concentration of $\mu_x$, supplied by Paulin (2015,
+Thm.~2.1; Marton coupling) with Dobrushin coefficient $\delta=|1-a-b|$ and
+factor $1/(a+b)^2$; and (iii) the all-$n$ validity of the $\mathrm{BSC}(D)$
+deconvolution on $(0,D_c(a,b))$, supplied by Lemmas 7.34f--h; together with the
+chain-agnostic facts $K\sim\mathrm{Bin}(n,D)$, $\mathbb E[\mu_x]=nD$,
+$\Phi(0;x)=1$, $\lambda^*=\ln\tfrac{1-D}D$. The \emph{only} $a=b$-specific
+structure (global-flip $W$-invariance, the $W_4=\mathbf 1m^T+q\Pi M$ form, the
+closed-form $\tfrac{11}{16}$ replica inequality) is confined to the symmetric
+replica theorem, i.e.\ to item (i), which Lemma 7.34e replaces at proof grade
+for $a\ne b$. The open-interval scope avoids the symmetric Möbius-orbit
+endpoint floor (a genuinely $a=b$-specific lemma); the closed endpoint
+$D=D_c(a,b)$ is reached per-$(a,b)$ by the closed-form-in-$D$ $s=\pi$ certificate
+of Remark 7.34e$'$. \hfill$\square$
+
+\emph{Scope (honest).} The statement is per-source and per-$(a,b,D)$: item (i)
+is certified by one finite exact computation per point, not a single
+closed-form inequality. The uniform-in-$(a,b,D)$ version reduces to the
+convexity conjecture of Remark 7.34e$'$ and otherwise holds only on
+bounded-mixing subfamilies ($\bar\Psi_0\to1$ as $a+b\to1$ on asymmetric paths,
+where the curvature degenerates). The discrete-Markov dispersion beyond the
+binary chain, and beyond the Gray region ($D>D_c$), remain open (Remark 7.34c).
+\emph{Validated} in
+\texttt{scripts/verify/theorem\_7\_34i\_asym\_dispersion.py} (T1 the Gordin
+rate, the $V=V_{\mathrm{mix}}+V_{\mathrm{mem}}$ decomposition with
+$V_{\mathrm{mem}}=0$ iff $a=b$, the simulation cross-check, and the exact
+symmetric reduction; T2 the $c_g$-monotonicity of the GAP-1 constants), on top
+of the per-piece verifiers
+(\texttt{remark\_7\_34d\_general\_converse\_discrete\_markov.py},
+\texttt{probe\_7\_34\_nonsym\_dual\_identity.py},
+\texttt{probe\_7\_34\_asym\_replica\_structure.py},
+\texttt{lemma\_7\_34e\_spi\_closed\_form.py},
+\texttt{lemma\_7\_34g\_sign\_automaton.py},
+\texttt{lemma\_7\_34g\_G1\_uniform\_existence.py}).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
