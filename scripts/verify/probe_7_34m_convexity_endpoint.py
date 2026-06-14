@@ -287,10 +287,39 @@ def E8():
         ok = ok and last_ok_p>0.25
     return rep("E8 Chebyshev-tail LB>0 proves all-D convexity on the memory bulk", ok)
 
+def E9():
+    print("-"*78); print("E9  prefactor carries NO curvature: |C_s/C0|^2 is EXACTLY affine in u=cos s")
+    print("    (C_s linear in e^{is} => |C_s/C0|^2 affine). Binary closed form 1+[2D^2(1-D)^2/")
+    print("    (1-2D)^2](1-cos s); A-ary: Chebyshev modes k>=2 vanish. => convexity is purely")
+    print("    spectral (rho), G''=Cr2 rho'' + 2 Cr2' rho'.")
+    ok=True
+    # binary closed form check
+    import sympy as sp
+    Ds,ss=sp.symbols('D s',positive=True); zz=sp.exp(sp.I*ss)
+    Cs=((1-Ds)**2-Ds**2*zz)/(1-2*Ds); Cm=((1-Ds)**2-Ds**2/zz)/(1-2*Ds)
+    cr=sp.simplify((Cs*Cm).rewrite(sp.cos))
+    claim=1+2*Ds**2*(1-Ds)**2/(1-2*Ds)**2*(1-sp.cos(ss))
+    bin_ok = sp.simplify(sp.expand_trig(cr-claim).rewrite(sp.cos))==0
+    print(f"     binary |C_s/C0|^2 == 1+[2D^2(1-D)^2/(1-2D)^2](1-cos s): {bin_ok}")
+    ok = ok and bin_ok
+    # A-ary: Chebyshev modes k>=2 ~ 0
+    for A in (3,4,5):
+        D=0.01; N=16; sj=[math.pi*(j+0.5)/N for j in range(N)]
+        th=math.log(D/((A-1)*(1-D)))
+        def cr_n(sv):
+            E=mp.e**(th+1j*sv); den=A*D-(A-1)
+            C=((A-1)*D*E+D-(A-1))/den; C0=((A-1)*D*math.exp(th)+D-(A-1))/den
+            return float(abs(C/C0)**2)
+        g=[cr_n(sv) for sv in sj]
+        hi=max(abs(sum(g[j]*math.cos(k*sj[j]) for j in range(N))*2/N) for k in range(2,6))
+        print(f"     A={A}: max|Chebyshev mode k>=2| = {hi:.1e} (=0 => affine)")
+        ok = ok and hi<1e-12
+    return rep("E9 |C_s/C0|^2 exactly affine in u (all A) => curvature purely spectral", ok)
+
 if __name__=="__main__":
     print("="*78)
     print("Remark 7.34m'' -- binding-endpoint reduction of the convexity residual")
     print("="*78)
-    E1(); E2(); E3(); E4(); E5(); E6(); E7(); E8()
+    E1(); E2(); E3(); E4(); E5(); E6(); E7(); E8(); E9()
     print("="*78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")

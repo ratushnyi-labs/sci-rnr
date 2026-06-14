@@ -14724,6 +14724,24 @@ is the \emph{second harmonic} $\cos2s=2u^2-1$ --- a pure $u^2$ curvature, hence 
 \emph{constant} $G''$ --- with positive coefficient $4\kappa_A^2 D^3$; the
 affine ($T_0,T_1$) part is the $D=0$ law $1-2v(1-u)$.
 
+\emph{The prefactor carries no curvature (the convexity is purely spectral).}
+The contour prefactor is \emph{exactly affine} in $u$: since $C_s$ is linear in
+$e^{is}$ for every $A$ (the dual identity gives $C_s/C_0$ linear in $E=E_0e^{is}$),
+$|C_s/C_0|^2$ is affine in $u=\cos s$; at $A=2$ in closed form
+\[
+  |C_s/C_0|^2=1+\frac{2D^2(1-D)^2}{(1-2D)^2}\,(1-\cos s)
+\]
+(verified: its Chebyshev modes $k\ge2$ vanish to $10^{-16}$, $A=3,4,5$). Hence
+$|C_s/C_0|^2$ contributes \emph{zero} curvature, and with $G=|C_s/C_0|^2\rho$,
+$\rho=\rho(W_A)$,
+\[
+  G''(u)=|C_s/C_0|^2\,\rho''(u)+2\,(|C_s/C_0|^2)'\,\rho'(u),
+\]
+so the convexity of $G$ --- the sole achievability residual --- is \emph{purely}
+the spectral convexity of the replica Perron eigenvalue $\rho(W_A)$, modulated by
+the known affine prefactor; the curvature constant $4\kappa_A^2 D^3$ above is
+$\rho$'s.
+
 \emph{Asymmetric binary (the residual of Remark 7.34e$'$ too).} The whole
 analysis transfers verbatim to the asymmetric binary instance (source
 $P(0\!\to\!1)=a$, $P(1\!\to\!0)=b$, $a\ne b$, BSC$(D)$ channel; the $8\times8$
