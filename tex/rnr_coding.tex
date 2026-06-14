@@ -14353,12 +14353,59 @@ exhaustive word-positivity scan --- the same proof grade as Lemma 7.34f.
 \emph{Open} (the ternary analog of Lemmas 7.34g/h): the word-uniform
 invariant-cone ``all words, all $n$'' certificate; the non-monotone large-$p$
 regime ($p\gtrsim0.67$, where the constant word binds first --- a near-i.i.d.\
-crossover); and the full A-ary ($A\ge4$) generalisation. \emph{Validated} in
+crossover); and the full A-ary ($A\ge4$) generalisation (now Lemma 7.34k).
+\emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34j\_ternary\_gray.py} (V1 the exact $K^{-1}$;
 V2 the transfer form vs full brute deconvolution; V3 $Q$ irreducible and its
 smallest root $=$ the alternating-word threshold; V4 binding word alternating;
 V5 the $p^2/8$ vs binary $p^2/4$ ratio $\tfrac12$; V6 the large-$p$
 constant-word crossover --- all PASS).
+
+\textbf{Lemma 7.34k (the A-ary symmetric Gray threshold: the general alphabet
+law).} \emph{Let $X$ be the stationary A-ary symmetric Markov chain on
+$\{0,\dots,A-1\}$ ($A\ge2$) with $T(i,i)=1-p$, $T(i,j)=p/(A-1)$ ($j\ne i$),
+$\pi$ uniform, under Hamming distortion, and let the backward test channel be
+the A-ary symmetric channel $K=(1-D-b_0)I+b_0J$, $b_0=D/(A-1)$, so
+$K^{-1}=\tfrac1{1-D-b_0}\,(I-b_0J)$. With $D_c^{(A)}(p)=\sup\{D:(K^{-1})^{\otimes
+n}P_X\ge0\ \forall n\}$:}
+\begin{itemize}
+\item[(i)] \emph{for every $A\ge2$ the binding word is the period-$2$ two-symbol
+\emph{alternating} word; under the residual $S_{A-2}$ symmetry the $A-2$
+non-participating symbols split into one coupled average mode and $A-3$
+decoupled \emph{spectator} modes, so the period product $M=B_1B_0$
+($B_y[a,b]=K^{-1}[y,a]\,T(a,b)$) has characteristic polynomial $(\text{relevant
+cubic})\cdot(\text{spectator linear})^{A-3}$ for $A\ge3$ (a quadratic for
+$A=2$);}
+\item[(ii)] \emph{$D_c^{(A)}(p)$ is the complex-onset of the relevant block's
+dominant eigenpair --- a clean radical ($\sqrt{\ }$) only for $A=2$ (binary,
+Lemma 7.34f), and the smallest positive root of an $A$-dependent
+\emph{irreducible quartic} (the cubic-discriminant) for all $A\ge3$ (the case
+$A=3$ is Lemma 7.34j); the spectator modes add no degree, so the threshold stays
+a quartic for \emph{all} $A\ge3$;}
+\item[(iii)] \emph{small-$p$, $D_c^{(A)}(p)=\dfrac{p^2}{4(A-1)}+O(p^3)$: the Gray
+region is strictly decreasing in $A$ and shrinks as $1/(A-1)$ in the alphabet
+size.}
+\end{itemize}
+\emph{Proof grade.} parts (i)--(ii) are \emph{proven for every $A\ge3$} by the centralizer-algebra
+argument: $B_y=D_yT$ with $D_y=\mathrm{diag}(K^{-1}[y,\cdot])$ uniform on the
+spectator block, so $M=B_1B_0$ commutes with the $S_{A-2}$-action permuting
+$\{2,\dots,A-1\}$; under $S_{A-2}$, $\mathbb R^A=\mathrm{span}\{e_0\}\oplus
+\mathrm{span}\{e_1\}\oplus\mathrm{span}\{\sum_{i\ge2}e_i\}\oplus V_{\mathrm{std}}$
+($V_{\mathrm{std}}$ the $(A-3)$-dimensional standard irrep), and by Schur's lemma
+$M$ acts as a scalar on $V_{\mathrm{std}}$ --- the $(A-3)$-fold spectator
+eigenvalue --- while the three trivial-isotypic lines form the $3$-dimensional
+relevant block (cubic) for \emph{all} $A\ge3$, so the binding factor is a quartic
+\emph{independent of $A$}; (the case checks are exact symbolic for $A=3,4,5$). The
+small-$p$ coefficient $1/(4(A-1))$ is exact-symbolic for $A\le4$ and numeric
+($D_c^{(A)}/p^2\to1/(4(A-1))$) for $A\le8$; the binding word is the alternating
+one by exhaustive scan ($A\le5$, all $A^n$ words $n\le7$: no word binds below the
+alternating-onset). \emph{Open} (as for Lemma 7.34j): the
+word-uniform all-$n$ certificate; the large-$p$ constant-word crossover; and
+exact $A$-uniform symbolic forms beyond the small-$p$ coefficient.
+\emph{Validated} in \texttt{scripts/verify/probe\_7\_34k\_aary\_gray.py} (K1 the
+A-ary $K^{-1}$; K2 the spectator decoupling; K3 the quartic binding factor for
+$A=3,4$; K4 the $1/(4(A-1))$ small-$p$ law; K5 the alternating-onset as the
+all-$n$ threshold; K6 monotonicity in $A$ --- all PASS).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
