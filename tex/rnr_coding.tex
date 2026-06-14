@@ -14771,7 +14771,16 @@ a \emph{$u$-independent} lower bound. $\mathrm{LB}(D)>0$ throughout the Gray
 region for $p$ in the \emph{memory regime} (verified for $p\lesssim0.3$ at $A=2$,
 $p\lesssim0.4$ at $A=3$; tail/$4a_2$ ratio $0.001$--$0.21$), \emph{proving the
 full all-$D$ convexity there} (modulo making the $O(D^{k+1})$ coefficient bounds
-rigorous, e.g.\ from the Bernstein-ellipse analyticity radius $\sim1/D$). It
+rigorous). The analyticity route is concrete: $g(s)$'s nearest singularity is the
+Perron branch point of $W(s)$, numerically at $|\mathrm{Im}\,s|=\tau^*\approx
+\ln(1/D)$ (the top-two eigenvalue gap stays $>0.1$ up to $\tau=5\approx\ln(1/D)$
+at $p=0.2$), and $\tau^*\ge\ln(1/D)-O(1)$ follows \emph{rigorously} from
+gap-stability (Bauer--Fike) of the frozen operator $W_0$ (gap $\Delta_0$) against
+$\|W(s)-W_0\|\le B\,D\,e^{|\mathrm{Im}\,s|}$. The one subtlety is that the bare
+Bernstein bound $|a_k|\le2M\,e^{-k\tau^*}=O((cD)^k)$ is one $D$-power looser than
+the observed $O(D^{k+1})$ decay (the harmonic cancellation), so a sharp tail
+closure must also capture that extra cancellation --- a genuine
+several-step analyticity task, not a one-shot. It
 degrades only as $p\to\tfrac{A-1}{A}$ (the near-uniform edge, where $D_c$ is
 largest and the geometric decay slows), where the crude endpoint bound
 $T_k''(1)$ over-counts and a sharper interior estimate is needed --- though the
