@@ -14581,6 +14581,97 @@ classical first-order statement this theorem upgrades to second order.
 \emph{Validated} in \texttt{scripts/verify/probe\_7\_34l\_aary\_replica.py}
 (V0--V10, all PASS).
 
+\textbf{Remark 7.34m$'$ (the A-ary binding endpoint $s=\pi$ and the residual
+convexity conjecture --- the A-ary analogue of Remark 7.34e$'$).} The
+achievability residual of Theorem 7.34m --- a symbolic certification of
+$\sup_{[\varepsilon,\pi]}g_A(s)<1$ on the $\le5\times5$ $S_A$-quotient ---
+admits the same sharp structural reduction the asymmetric binary instance
+received in Remark 7.34e$'$, with one new feature (the irreducible \emph{quartic}
+endpoint block, in place of the binary degree-$6$ one).
+
+\emph{The binding endpoint.} Numerically (a geometric-near-$0$ plus $\pi$-dense
+$s$-grid, every $A\le6$, all $(p,D)$ on the Gray region) the floor ratio
+$R_A(s):=[1-g_A(s)]/[D(1-D)(1-\cos s)]$ is \emph{minimised at $s=\pi$};
+equivalently, in $u=\cos s$ the Perron branch $G(u):=g_A(\arccos u)$ is convex
+on $[-1,1]$ with $G(1)=1$, so the chord slope $[1-G(u)]/(1-u)=D(1-D)\,R_A$ is
+nondecreasing in $u$ and $R_A$ attains its minimum $R_A(\pi)$ at $u=-1$. The
+$s\to0$ end is a closed-form anchor: $R_A(0^+)=2\bar v_A/[D(1-D)]=2[1-\kappa_A^2
+D(1-D)/(1-2D)^2]$ (with $\bar v_A$ the per-site posterior variance of
+Lemma 7.34l(iii)), which is $\approx2$ for the small $D=O(p^2)$ of the Gray
+region, while $R_A(\pi)$ descends from $\approx2$ at $D\to0$ to its $\approx\tfrac32$
+infimum at the small-$p$, $D\to D_c$ corner --- so $R_A(0^+)\ge R_A(\pi)$, and the
+endpoint \emph{ordering} is robust; only the \emph{interior} convexity is
+conjectural. (Because $R_A$ is a $0/0$ limit as $s\to0$, float-$64$ fine grids
+are noisy in the $s,D\to0$ corner; $60$-dps recomputation there gives
+$R_A(s)-R_A(\pi)>0$ for all $s$, e.g.\ $+2\times10^{-7}$ at $A{=}3,p{=}0.02,
+D{=}2\times10^{-6}$, confirming the minimiser is $s=\pi$.) The endpoint is exactly solvable: at $s=\pi$ the disagreement tilt $\nu e^{is}=-\nu$ (with
+$\nu=e^{-\lambda^*}=D/((1-D)(A-1))$) is real, so with
+\[
+  N:=AD-2D^2-(A-1),\qquad \mathrm{Den}:=AD-(A-1)=N+2D^2
+  \qquad(\text{both }<0\text{ on the Gray region}),
+\]
+the contour data is real and rational, \emph{proven uniformly in $A$}:
+\[
+  \eta_\pi=\frac{2D(1-D)}{N}<0,\qquad
+  \Big|\frac{C_\pi}{C_0}\Big|^2=\Big(\frac{N}{\mathrm{Den}}\Big)^2
+  =\Big(1-\frac{2D^2}{\mathrm{Den}}\Big)^2,
+\]
+reducing at $A=2$ to the committed binary $\eta_\pi=-2D(1-D)/((1-D)^2+D^2)$ and
+$|C_\pi/C_0|^2=(c^2+4D^2(1-D)^2)/c^2$ ($c=1-2D$) of Remark 7.34e$'$ (the
+identity $((1-D)^2+D^2)^2=(1-2D)^2+4D^2(1-D)^2$ matches the two forms).
+
+\emph{The endpoint spectrum (the wall).} The $5\times5$ $S_A$-quotient
+characteristic polynomial at $s=\pi$ \emph{factors} as
+$(\text{linear})\times(\text{quartic})$, the quartic irreducible over
+$\mathbb Q(p,D)$ for $A=3,4$ (symbolically). The linear factor has a clean root
+(e.g.\ at $A=3$, $\lambda_{\mathrm{lin}}=D(1-D)(2-3p)^2/[\,p(1-p)(2D^2-3D+2)\,]$)
+but is \emph{subdominant}; the spectral radius $\rho(Q_A(\pi))$ is the
+\emph{positive} dominant root of the irreducible \emph{quartic} factor --- a
+genuine degree-$4$ algebraic number (solvable by radicals via Ferrari, but with
+\emph{no clean closed form}: in particular no reduction to a quadratic-in-$\lambda$,
+i.e.\ no single-$\sqrt{\,}$ Perron root as in the binary \emph{symmetric} $W_4$
+block). This is precisely the wall the binary $W_8\to W_4$ determinant
+factorisation $\mathbf1m^T+q\Pi M$ does not cross; the binary \emph{asymmetric}
+endpoint of Remark 7.34e$'$ sits one step further, in a degree-$6$
+symmetric-pair block (genuinely radical-free).
+Because the dominant root is \emph{positive} --- so
+$g_A(\pi)=|C_\pi/C_0|^2\,\rho(Q_A(\pi))>0$ is a genuine Perron value --- the
+signed-operator Kre\u{\i}n--Rutman/Collatz--Wielandt PSD-cone (Russo--Dye)
+certificate of Lemma 7.34e, which is \emph{dimension- and alphabet-agnostic}
+($\eta_\pi<0$ makes $Q_A$ signed, forbidding the M-matrix minor test), is the
+route to $\rho(Q_A(\pi))<1/|C_\pi/C_0|^2=(\mathrm{Den}/N)^2$, i.e.\
+$g_A(\pi)<1$ on the open Gray interior; numerically the gap
+$\rho(Q_A(\pi))-(\mathrm{Den}/N)^2$ is strictly negative throughout, growing in
+magnitude toward $D_c$ (e.g.\ $\approx-2\times10^{-2}$ at $D\to D_c$, $p=0.2$,
+$A=3$) and vanishing only at the $D\to0$ (equivalently $s=0$) Perron anchor where
+$g_A\to1$, $A\in\{3,4,5\}$. A uniform-in-$A$ \emph{closed-form} cone witness (the
+explicit once-iterated dressed pair, as written out for binary in Lemma 7.34e)
+remains open.
+
+\emph{The residual.} Were the convexity of $u\mapsto g_A(\arccos u)$ proven,
+Theorem 7.34m's achievability would collapse to this single endpoint,
+\[
+  g_A(s)\le1-\tilde c_A(p,D)\,D(1-D)(1-\cos s)\ \text{ on }(0,\pi],\qquad
+  \tilde c_A(p,D):=R_A(\pi)=\frac{1-g_A(\pi)}{2D(1-D)}>0,
+\]
+with $\tilde c_A$ explicit (an algebraic number of degree $4$ over
+$\mathbb Q(p,D)$ for $A\ge3$), eliminating the $s$-Sturm; the convexity is then
+the sole residual, exactly as in the binary case. The endpoint floor is uniform
+and \emph{comfortable}: $\inf_{\text{Gray}}\tilde c_A(p,D)\approx\tfrac32$,
+attained in the small-$p$, $D\to D_c$ corner and \emph{increasing} mildly in $A$
+($1.5000$ at $A=2$, $1.5049$ at $A=3$, rising to $1.5085$ at $A=8$) --- well
+above the conservative alphabet-uniform $\tfrac{11}{16}$ the achievability
+machinery actually consumes (Lemma 7.34l(iii)). Thus the A-ary residual is the
+\emph{same shape} as the binary one: a single endpoint convexity, with the
+endpoint value now a degree-$4$ algebraic number and $g_A(\pi)<1$ cone-certified
+(numerically here; the explicit uniform-in-$A$ witness, as in Lemma 7.34e,
+open). \emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34m\_endpoint\_pi.py} (M1 the closed forms and
+$A=2$ binary reduction; M2 the linear$\times$irreducible-quartic split; M3 the
+positive dominant root and $g_A(\pi)=|C_\pi/C_0|^2\rho$; M4 the $\approx\tfrac32$
+endpoint floor; M5 the signed-cone $g_A(\pi)<1$; M6 the $s=\pi$ binding /
+convexity --- all PASS).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
