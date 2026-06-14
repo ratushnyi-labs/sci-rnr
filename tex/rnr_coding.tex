@@ -14796,6 +14796,75 @@ form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$; E6 the uniform-in-$u$
 $G''(u)=8\kappa_A^2 D^3+O(D^4)$; E7 the asymmetric-binary transfer; E8 the
 Chebyshev-tail all-$D$ closure on the memory bulk --- all PASS).
 
+\textbf{Theorem 7.34n (the general A-ary \emph{asymmetric} Gray-region
+rate--distortion dispersion --- the grid capstone).} \emph{Let $X$ be a
+stationary irreducible aperiodic A-ary Markov chain with a general (possibly
+non-symmetric) transition matrix $T$, stationary $\pi$, under Hamming distortion,
+with the A-ary symmetric backward channel $K(D)$ of Lemma 7.34k. There is a
+positive Gray threshold $D_c(T)>0$ --- the all-$n$ SLB-tight
+(valid-deconvolution) region --- whose binding word is a $2$-symbol alternating
+word. On $0<D\le D_c(T)$ the operational fixed-$\varepsilon$ excess-distortion
+dispersion satisfies the} \textbf{converse}
+\[
+  V_{\mathrm{op}}(D)\;\ge\;V_{\mathrm{lossless}}
+  \;=\;\mathrm{Var}_\pi(g)+2\sum_{k\ge1}\mathrm{Cov}(g_0,g_k),\qquad
+  g(x,y):=-\log_2 T(x,y),
+\]
+\emph{\textbf{unconditionally}} \emph{(the Gordin/Green--Kubo varentropy rate of
+$-\log_2 P(X^n)$, carrying the Markov memory term), and the matching}
+\textbf{achievability} \emph{$V_{\mathrm{op}}(D)\le V_{\mathrm{lossless}}$ modulo
+the convexity residual of Remarks 7.34m$'$/7.34m$''$ (established at leading order
+in $D$, all-$D$ on the memory bulk), so that $V_{\mathrm{op}}=V_{\mathrm{lossless}}$.}
+
+\emph{Proof. Converse.} Remark 7.34d is source-agnostic; its two hypotheses hold:
+(i) the varentropy CLT for $i_n=-\log_2 P(X^n)$ (Theorem 7.28, any finite-state
+Markov), and (ii) the all-$n$ SLB-tight region $D_c(T)>0$ (non-empty: at $D=0$,
+$K=I$ and $P_{Y^*}=P_X\ge0$; $D_c(T)$ is the first $D$ at which the alternating
+binding word's deconvolution goes negative). On the region the \emph{dual
+identity} holds for \emph{any} source:
+\[
+  M(x^n):=\sum_y P_{Y^*}(y)\,\nu^{\,d_H(x^n,y)}
+  =(K_\nu K^{-1})^{\otimes n}P_X(x^n)=\gamma^n P_X(x^n),
+  \qquad \nu=\tfrac{D}{(A-1)(1-D)},
+\]
+with $\gamma$ \emph{$x$-independent}, because $K_\nu K^{-1}=\gamma I$ is scalar:
+writing $K_\nu=(1-\nu)I+\nu J$ (the $\nu^{d_H}$ kernel) and
+$K^{-1}=\tfrac1{a_0}(I-b_0 J)$ ($a_0=1-D-b_0$, $b_0=\tfrac D{A-1}$), the
+$J$-component of $K_\nu K^{-1}$ vanishes \emph{exactly} at $\nu(1-D)=b_0$, i.e.\
+the SLB tilt --- a property of the A-ary symmetric \emph{channel}, independent of
+the source. Hence the SLB shift $j_n-i_n$ is deterministic,
+$\mathrm{Var}(j_n)=\mathrm{Var}(i_n)$ (converse ratio $\rho=1$, machine-checked to
+$10^{-15}$), and the one-shot Kostina--Verd\'u $d$-tilted converse with the $i_n$
+CLT gives $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$. The varentropy rate is the
+\emph{Gordin} variance: for a non-symmetric $T$ the increments
+$g_t=-\log_2 T(X_{t-1},X_t)$ are \emph{not} i.i.d.\ (unlike the symmetric chain of
+Theorem 7.34m, whose increment law is state-independent), so the memory
+cross-terms $2\sum_k\mathrm{Cov}(g_0,g_k)$ are present and nonzero (e.g.\ $+0.11$
+to $+1.13$ of $V$ in the tested chains).
+
+\emph{Achievability.} The chain-agnostic machinery consumes (a) the replica
+spectral floor $\sup g<1$ with the $s=\pi$ binding, (b) Markov bounded-differences
+(Paulin 2015), (c) deconvolution validity $D_c(T)$. Item (a)'s binding is exactly
+the convexity residual of Remarks 7.34m$'$/7.34m$''$, established at leading order
+in $D$ and all-$D$ on the memory bulk. \hfill$\square$
+
+\emph{Scope (honest).} The \emph{converse} is the first fully-general operational
+RD-dispersion lower bound for discrete Markov sources (any finite-state $T$,
+A-ary symmetric channel, Gray region); it specialises to Remarks 7.34b (binary
+symmetric), 7.34i (binary asymmetric), Theorem 7.34m (A-ary symmetric), and to
+Kostina (2017) in the i.i.d.\ limit. The Markov memory term distinguishes it from
+the symmetric i.i.d.-increment cases. The threshold \emph{mechanism} also
+differs: for a non-symmetric $T$ the binding pair's period-2 product $B_iB_j$
+($B_y[a,b]=K^{-1}[y,a]T[a,b]$) has \emph{complex} dominant eigenpair already
+\emph{below} $D_c$ (complex-onset $D_{\mathrm{complex}}<D_c$), so $D_c$ is the
+oscillation-driven \emph{negativity} onset, not the complexity onset (the two
+coincide only in the symmetric case). Achievability inherits the convexity
+residual. \emph{Validated} in \texttt{scripts/verify/probe\_7\_34n\_aary\_asym.py}
+(N1 the threshold $D_c(T)>0$; N2 the $2$-symbol alternating binding word; N3 the
+complex/negativity onset $D_{\mathrm{complex}}<D_c$; N4 the Gordin
+$V_{\mathrm{lossless}}$ with nonzero memory term; N5 the source-agnostic dual
+identity $\Rightarrow\rho=1$ --- all PASS).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
