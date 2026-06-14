@@ -207,8 +207,36 @@ def N5():
         ok=ok and spread<1e-9
     return rep("N5 SLB shift x-independent (rho=1): converse V_op>=V_lossless applies", ok)
 
+def N6():
+    print("-"*78); print("N6  ALL-ORDER dual identity: the d-tilted info j_n = i_n - n c EXACTLY on Gray")
+    print("    (not just Var(j_n)=Var(i_n)): j_n(x,D)=-lam* n D - log2 M(x), M=gamma^n P_X,")
+    print("    so j_n - i_n = -n(lam* D + log2 gamma) is a DETERMINISTIC constant. Hence the")
+    print("    WHOLE d-tilted-info distribution = source surprisal shifted -> every finite-")
+    print("    blocklength order (dispersion AND the 1/2 log n third-order) transfers from")
+    print("    lossless source coding, shifted by n R(D).")
+    ok=True
+    for nm,T in [("A=3 asym-a",T3a),("A=3 sym",T3sym)]:
+        A=T.shape[0]; pi=stat(T); dc=Dc(T)
+        for D in (0.5*dc,0.9*dc):
+            Ki=Kinv(A,D); n=6; idx=list(itertools.product(range(A),repeat=n))
+            PX=np.zeros([A]*n)
+            for w in idx: PX[w]=pi[w[0]]*np.prod([T[w[t-1],w[t]] for t in range(1,n)])
+            Pt=PX
+            for ax in range(n):
+                Pt=np.tensordot(Ki,Pt,axes=([1],[ax])); Pt=np.moveaxis(Pt,0,ax)
+            nu=D/((A-1)*(1-D)); lam=math.log((1-D)*(A-1)/D)
+            diffs=[]
+            for wx in idx:
+                if PX[wx]<=0: continue
+                M=sum(Pt[wy]*nu**sum(1 for t in range(n) if wx[t]!=wy[t]) for wy in idx)
+                jn=(-lam*n*D-math.log(M))/math.log(2); diffs.append(jn-(-math.log2(PX[wx])))
+            spread=max(diffs)-min(diffs)
+            ok = ok and spread<1e-10
+        print(f"     {nm}: max spread of (j_n - i_n) over words = {spread:.2e} (=0 => deterministic shift)")
+    return rep("N6 j_n=i_n-nc EXACT (all-order transfer: lossy on Gray = lossless shifted)", ok)
+
 if __name__=="__main__":
     print("="*78); print("Theorem 7.34n -- general A-ary ASYMMETRIC Gray-region RD-dispersion")
     print("="*78)
-    N1(); N2(); N3(); N4(); N5()
+    N1(); N2(); N3(); N4(); N5(); N6()
     print("="*78); print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
