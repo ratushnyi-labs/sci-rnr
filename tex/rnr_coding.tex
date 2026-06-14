@@ -14307,6 +14307,59 @@ of the per-piece verifiers
 \texttt{lemma\_7\_34g\_sign\_automaton.py},
 \texttt{lemma\_7\_34g\_G1\_uniform\_existence.py}).
 
+\textbf{Lemma 7.34j (the first leaf beyond binary: the ternary symmetric Gray
+threshold).} \emph{Let $X$ be the stationary symmetric ternary Markov chain on
+$\{0,1,2\}$ with $T(i,i)=1-p$, $T(i,j)=p/2$ ($j\ne i$), $\pi$ uniform, under
+Hamming distortion, and let the backward test channel be the ternary symmetric
+channel $K=(1-\tfrac{3D}2)I+\tfrac D2 J$ ($J$ all-ones), so that
+$K^{-1}=\tfrac1{2-3D}\,(2I-D\,J)$ ($D\ne\tfrac23$). Define the all-$n$ Gray
+threshold $D_c^{(3)}(p)=\sup\{D:(K^{-1})^{\otimes n}P_X\ge0\ \forall n\}$. Then
+for $p\in(0,p^*)$, $p^*\approx0.67$:}
+\begin{itemize}
+\item[(i)] \emph{$D_c^{(3)}(p)>0$ --- the ternary Gray region is nonempty;}
+\item[(ii)] \emph{the binding word is the period-$2$ two-symbol \emph{alternating}
+word (using only $2$ of the $3$ states), governed by the $3\times3$ period
+product $M=B_1B_0$, $B_y[a,b]=K^{-1}[y,a]\,T(a,b)$; $D_c^{(3)}(p)$ is the
+complex-onset of $M$'s dominant eigenpair --- the smallest root in $(0,\tfrac23)$
+of the cubic-discriminant binding factor, the quartic}
+\[\begin{aligned}
+  Q(D,p)=\;&9p^2(3p-4)^2D^4-4p(3p-4)(27p^2-30p-4)D^3\\
+  &+(441p^4-864p^3+432p^2+64)D^2\\
+  &-8(27p^4-33p^3+36p^2-32p+16)D+16p^2(p^2+1);
+\end{aligned}\]
+\emph{the period-$3$ word $012\cdots$ is phase-protected (complex eigenpair but
+never binds) and constant/run words have real $M$-spectra and never oscillate;}
+\item[(iii)] \emph{$Q$ is \emph{irreducible} over $\mathbb Q(p)$ and does not
+reduce through a quadratic in any $1/(1-2D)$-type variable (the mechanism behind
+the binary clean radical); hence, although $D_c^{(3)}(p)$ as a quartic root does
+admit the general nested-radical quartic-formula expression, it has \emph{no
+clean single-radical closed form} analogous to the binary
+$D_c=\tfrac12(1-\sqrt{1-2p}/(1-p))$ --- a genuine degree-$4$ algebraic number,
+the structural break from Lemma 7.34f, traced to the period product being
+$3\times3$ rather than $2\times2$;}
+\item[(iv)] \emph{small-$p$, $D_c^{(3)}(p)=\tfrac{p^2}8+\tfrac{p^3}4
++\tfrac{45p^4}{128}+O(p^5)$, exactly \emph{half} the binary leading coefficient
+($D_c=\tfrac{p^2}4+\tfrac{p^3}2+\cdots$), so the ternary Gray region is
+asymptotically half the binary one.}
+\end{itemize}
+\emph{Proof grade.} (i)--(iv) are PROVEN by exact symbolic computation ($K^{-1}$,
+the quartic $Q$ and its irreducibility, the matched small-$p$ series) together
+with the period-$2$ eigenvalue-discriminant mechanism (the two dominant
+eigenvalues of $M$ collide into a complex-conjugate pair $re^{\pm i\theta}$ at
+the smallest root of $Q$, after which $P_{Y^*}(\mathrm{alt})\sim r^n\cos(n\theta
++\varphi)$ oscillates negative; just above threshold the first-negative index
+diverges as $\pi/2\theta$, the ternary analog of the binary creep) plus an
+exhaustive word-positivity scan --- the same proof grade as Lemma 7.34f.
+\emph{Open} (the ternary analog of Lemmas 7.34g/h): the word-uniform
+invariant-cone ``all words, all $n$'' certificate; the non-monotone large-$p$
+regime ($p\gtrsim0.67$, where the constant word binds first --- a near-i.i.d.\
+crossover); and the full A-ary ($A\ge4$) generalisation. \emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34j\_ternary\_gray.py} (V1 the exact $K^{-1}$;
+V2 the transfer form vs full brute deconvolution; V3 $Q$ irreducible and its
+smallest root $=$ the alternating-word threshold; V4 binding word alternating;
+V5 the $p^2/8$ vs binary $p^2/4$ ratio $\tfrac12$; V6 the large-$p$
+constant-word crossover --- all PASS).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
