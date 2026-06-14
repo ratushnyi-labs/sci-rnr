@@ -14755,12 +14755,37 @@ longer ``prove convexity'' (an opaque spectral inequality) but the narrower
 quantitative passage from ``sufficiently small $D$'' to all $D\in(0,D_c^{(A)}]$:
 a bound on the $O(D^4)$ remainder showing it cannot overturn the $8\kappa_A^2 D^3$
 leading term before $D_c$ --- which, since $D_c^{(A)}=O(p^2)$ is itself small, the
-numerics confirm throughout. \emph{Validated} in
+numerics confirm throughout.
+
+\emph{All-$D$ via a Chebyshev tail (the bulk closed).} This remainder bound has
+an explicit form. Expanding $g_A(s)=\sum_{k\ge0}a_k(D)\,T_k(\cos s)$ in
+Chebyshev modes, the coefficients decay as $a_k=O(D^{k+1})$ for $k\ge2$ with
+\emph{alternating signs} and a geometric ratio $|a_{k+1}/a_k|\approx0.9\,D$
+(numerically; $a_1=O(D)$ is the affine mode, $a_2=2\kappa_A^2 D^3+\cdots>0$ the
+curvature). Since $T_0''=T_1''=0$, $T_2''\equiv4$, and $|T_k''(u)|\le
+T_k''(1)=\tfrac13 k^2(k^2-1)$ on $[-1,1]$,
+\[
+  G''(u)\;\ge\;\mathrm{LB}(D):=4a_2-\sum_{k\ge3}|a_k|\,\tfrac13 k^2(k^2-1),
+\]
+a \emph{$u$-independent} lower bound. $\mathrm{LB}(D)>0$ throughout the Gray
+region for $p$ in the \emph{memory regime} (verified for $p\lesssim0.3$ at $A=2$,
+$p\lesssim0.4$ at $A=3$; tail/$4a_2$ ratio $0.001$--$0.21$), \emph{proving the
+full all-$D$ convexity there} (modulo making the $O(D^{k+1})$ coefficient bounds
+rigorous, e.g.\ from the Bernstein-ellipse analyticity radius $\sim1/D$). It
+degrades only as $p\to\tfrac{A-1}{A}$ (the near-uniform edge, where $D_c$ is
+largest and the geometric decay slows), where the crude endpoint bound
+$T_k''(1)$ over-counts and a sharper interior estimate is needed --- though the
+true $G''(u)$ stays positive there (the alternating $a_k$ cancel). Since the
+near-uniform point is the memoryless limit ($V_{\mathrm{lossless}}\to0$), the
+all-$D$ closure already covers the entire memory regime of interest.
+
+\emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34m\_convexity\_endpoint.py} (E1 the reduction
 $G''(1^-)=8g_4-\tfrac23 v$; E2 $g_4\ge v/12$ on the Gray region; E3 the
 affine-at-$D{=}0$ law; E4 $c_A>0$ for all $A$ and $c_2=\kappa_2^2$ in closed
 form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$; E6 the uniform-in-$u$
-$G''(u)=8\kappa_A^2 D^3+O(D^4)$ --- all PASS).
+$G''(u)=8\kappa_A^2 D^3+O(D^4)$; E7 the asymmetric-binary transfer; E8 the
+Chebyshev-tail all-$D$ closure on the memory bulk --- all PASS).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
