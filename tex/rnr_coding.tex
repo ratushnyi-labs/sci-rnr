@@ -14933,6 +14933,45 @@ Remark 7.34n$'$). \emph{Validated} in
 D_c$; O2 the identity failure for $D>D_c$; O3 the plateau-and-descent of
 $V_{\mathrm{op}}$ --- all PASS).
 
+\textbf{Remark 7.34p (the lossy deviation hierarchy on the Gray region: §7.34
+$\otimes$ §7.31--7.36).} The all-order identity $j_m=i_m-mc$ of Remark 7.34n$'$
+holds for \emph{every} block length $m$ (the dual identity is per-length; the
+per-symbol constant $c=\lambda^*D\log_2 e+\log_2\gamma$ is $m$-independent ---
+machine-checked constant across $m$ to $10^{-16}$). The shift is thus a
+\emph{deterministic linear drift}, so the \emph{centered} $d$-tilted-information
+process equals the centered surprisal process \emph{pathwise}:
+\[
+  j_m-mR(D)=i_m-mh\qquad(\text{every }m\text{ on the Gray region},\ R(D)=h-c).
+\]
+Consequently the \emph{entire} second- and higher-order deviation hierarchy of §7
+--- established there for the lossless surprisal/archive process --- transfers
+verbatim to the lossy rate--distortion setting on the Gray region under
+$i_m\mapsto j_m=i_m-mc$:
+\begin{itemize}
+\item \emph{Functional CLT / streaming buffer (Theorem 7.36).} The centred
+process is pathwise identical, so the lossy repair/write-buffer process converges
+to the \emph{same} Brownian motion with the \emph{same} $V=V_{\mathrm{lossless}}$;
+the half-normal high-water-mark and Lindley draw-up laws carry over unchanged.
+\item \emph{Large-deviation overflow exponent (Theorem 7.31).}
+$E^{\mathrm{lossy}}(R)=E^{\mathrm{lossless}}(R+c)$: the lossy archive-overflow
+exponent is the lossless one evaluated at the rate shifted by $c$.
+\item \emph{Moderate deviations / RA fade (Theorem 7.33).} The standardized
+moderate-deviation law transfers (same $V$, mean shifted by $c$ per symbol).
+\item \emph{Extreme-value worst-case query (Theorem 7.35).} The maximal block
+$d$-tilted information equals the maximal block surprisal minus $Kc$, so the
+Gumbel law and the read-buffer provisioning $M_m=KR(D)+\sqrt{2KV\ln(N/K)}+\cdots$
+follow with $h\mapsto R(D)$.
+\end{itemize}
+Thus a \emph{single} varentropy rate $V_{\mathrm{lossless}}$ governs the lossy
+dispersion, streaming/read/write buffers, overflow exponent, and query-cost
+extremes on the entire Gray region, exactly as in the lossless case: to all these
+orders the rate--distortion problem on Gray \emph{is} the lossless source-coding
+problem, shifted by $nR(D)$. This unifies the rate--distortion results of §7.34
+with the deviation hierarchy of §7.31--7.36. \emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34p\_lossy\_devhier.py} (P1 the per-$m$ identity
+with $m$-independent $c$; P2 the pathwise centered-process identity; P3 the
+distribution shift $\Rightarrow$ tail/LDP/EVT transfer --- all PASS).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
