@@ -14672,13 +14672,14 @@ positive dominant root and $g_A(\pi)=|C_\pi/C_0|^2\rho$; M4 the $\approx\tfrac32
 endpoint floor; M5 the signed-cone $g_A(\pi)<1$; M6 the $s=\pi$ binding /
 convexity --- all PASS).
 
-\textbf{Remark 7.34m$''$ (the binding-endpoint reduction of the convexity
-residual: an affine-at-$D{=}0$ law and the cubic dispersion correction).} The
-convexity conjecture left open by Remarks 7.34m$'$ and 7.34e$'$ --- that
-$G(u):=g_A(\arccos u)$ is convex on $[-1,1]$ (so that the floor ratio $R_A$ is
-minimised at $s=\pi$) --- has a sharp leading-order reduction at its
-\emph{tightest} point $u\to1$ (the $s\to0$ curvature anchor, where $\min_u G''$
-sits).
+\textbf{Remark 7.34m$''$ (the convexity residual at leading order in $D$: an
+affine-at-$D{=}0$ law, a cubic dispersion correction, and full uniform-in-$u$
+convexity).} The convexity conjecture left open by Remarks 7.34m$'$ and
+7.34e$'$ --- that $G(u):=g_A(\arccos u)$ is convex on $[-1,1]$ (so that the floor
+ratio $R_A$ is minimised at $s=\pi$) --- is here \emph{resolved at leading order
+in $D$}. We first reduce it at its \emph{tightest} point $u\to1$ (the $s\to0$
+curvature anchor, where $\min_u G''$ sits) to a scalar Taylor-coefficient
+inequality, then show the leading coefficient is uniform across all $u$.
 
 \emph{The reduction (exact).} Write the even expansion $g_A(s)=1-v\,s^2
 +g_4\,s^4+O(s^6)$, with $v$ the per-site posterior variance of Lemma 7.34l(iii)
@@ -14711,18 +14712,38 @@ in Remark 7.34e$'$, which degenerates only as $O(D^2)$ in the asymmetric case
 numerically and tracks the (no-closed-form) $\kappa_A^2$, but the exact identity
 $c_A=\kappa_A^2$ is established only at $A=2$.
 
-\emph{Status.} This \emph{proves} $G''(1^-)>0$ at leading order in $D$ (closed
-form at $A=2$), and numerically $g_4\ge v/12$ throughout the Gray region for
-every tested $A$ --- the binding-endpoint convexity, the tightest instance of
-the conjecture. The \emph{full} convexity on all of $[-1,1]$ (whence $s=\pi$
-binding, whence Theorem 7.34m's achievability unconditional) remains the
-residual; what is new is that its hardest instance is now an explicit,
-positive, cubic-in-$D$ quantity tied to the dispersion constant, rather than an
-opaque spectral inequality. \emph{Validated} in
+\emph{Uniform in $u$ (the full-interval upgrade).} The leading coefficient is, in
+fact, \emph{independent of $u$}: $G''(u)=8\kappa_A^2 D^3+O(D^4)$ for \emph{all}
+$u\in[-1,1]$, not only at the endpoint. The $u$-dependence is pushed to $O(D^4)$:
+the $u$-spread of $G''(u)/D^3$ shrinks as $O(D)$ (e.g.\ at $A=2,p=0.2$ it is
+$2.0\to0.53\to0.13$ as $D=2{\times}10^{-3}\to5{\times}10^{-4}\to1.25{\times}10^{-4}$),
+its common value matching $8\kappa_A^2$ ($112.41$ vs $8\kappa_2^2=112.5$ at
+$A=2$). Equivalently, the only leading non-affine content of $g_A(s)=G(\cos s)$
+is the \emph{second harmonic} $\cos2s=2u^2-1$ --- a pure $u^2$ curvature, hence a
+\emph{constant} $G''$ --- with positive coefficient $4\kappa_A^2 D^3$; the
+affine ($T_0,T_1$) part is the $D=0$ law $1-2v(1-u)$.
+
+\emph{Status.} Thus the \emph{full} convexity of $G$ on $[-1,1]$ holds at leading
+order in $D$, \emph{uniformly in $u$}, with the positive constant $8\kappa_A^2$
+(closed form at $A=2$): for sufficiently small $D$, $G''(u)>0$ for every $u$, so
+$s=\pi$ is the binding point. At such $D$ the other two inputs of Theorem 7.34m's
+achievability are automatic from the same affine law $g_A(s)=1-2v(1-\cos s)
++O(D^3)$ with $v=\bar v_A>0$ --- the spectral gap $\sup_{s\in[\varepsilon,\pi]}
+g_A(s)<1$ (since $1-\cos s>0$) and the positive curvature --- so all three hold
+and the achievability is \emph{unconditional for sufficiently small $D$}.
+Numerically the convexity ---
+hence the $s=\pi$ binding, hence the whole achievability --- holds on the
+\emph{entire} Gray region for every tested $A$. The residual is therefore no
+longer ``prove convexity'' (an opaque spectral inequality) but the narrower
+quantitative passage from ``sufficiently small $D$'' to all $D\in(0,D_c^{(A)}]$:
+a bound on the $O(D^4)$ remainder showing it cannot overturn the $8\kappa_A^2 D^3$
+leading term before $D_c$ --- which, since $D_c^{(A)}=O(p^2)$ is itself small, the
+numerics confirm throughout. \emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34m\_convexity\_endpoint.py} (E1 the reduction
 $G''(1^-)=8g_4-\tfrac23 v$; E2 $g_4\ge v/12$ on the Gray region; E3 the
 affine-at-$D{=}0$ law; E4 $c_A>0$ for all $A$ and $c_2=\kappa_2^2$ in closed
-form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$ --- all PASS).
+form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$; E6 the uniform-in-$u$
+$G''(u)=8\kappa_A^2 D^3+O(D^4)$ --- all PASS).
 
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$

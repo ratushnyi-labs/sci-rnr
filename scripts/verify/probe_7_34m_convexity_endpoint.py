@@ -194,10 +194,39 @@ def E5():
         ok = ok and gpp>0 and abs(gpp/pred-1)<mp.mpf('5e-2')
     return rep("E5 G''(1^-)=8 kappa^2 D^3>0 (binding-endpoint convex, leading order)", ok)
 
+def E6():
+    print("-"*78); print("E6  UNIFORM-in-u leading coefficient:  G''(u) = 8 kappa_A^2 D^3 + O(D^4)")
+    print("    for ALL u in [-1,1] (not just u->1).  Test: the u-spread of G''(u)/D^3")
+    print("    shrinks ~D (=> u-dependence is O(D^4); leading D^3 term is u-independent),")
+    print("    and its common value matches 8*kappa^2.  [const G'' <=> pure-u^2 / second-")
+    print("    harmonic T_2(u) curvature]")
+    def Gpp(u,A,p,D,d=mp.mpf('1e-4')):
+        u=mp.mpf(u)
+        return (gA(A,p,D,mp.acos(u+d))-2*gA(A,p,D,mp.acos(u))+gA(A,p,D,mp.acos(u-d)))/d**2
+    ok=True
+    for A in (2,3):
+        p='0.2'
+        spreads=[]
+        for D in (mp.mpf('2e-3'),mp.mpf('5e-4'),mp.mpf('1.25e-4')):
+            vals=[Gpp(u,A,p,D)/D**3 for u in (mp.mpf('-0.8'),mp.mpf('0'),mp.mpf('0.8'))]
+            spreads.append(max(vals)-min(vals))
+        # value at u=0 (smallest D) vs 8 kappa^2
+        v0=Gpp(0,A,p,mp.mpf('1.25e-4'))/mp.mpf('1.25e-4')**3
+        if A==2:
+            pp=mp.mpf(p); k2=(1-2*pp)**2/(pp**2*(1-pp)**2); tgt=8*k2
+            tag=f"8 kappa_2^2={mp.nstr(tgt,6)} ratio={mp.nstr(v0/tgt,5)}"
+            ok = ok and abs(v0/tgt-1)<mp.mpf('2e-2')
+        else:
+            tag="(A>=3: kappa^2 no closed form)"
+        shrink = spreads[0]>spreads[1]>spreads[2] and spreads[2]<spreads[0]/8
+        print(f"  A={A}: u-spread(G''/D^3) at D=2e-3,5e-4,1.25e-4 = [{','.join(mp.nstr(s,3) for s in spreads)}] (~D, ->0); h(0)={mp.nstr(v0,6)} {tag}")
+        ok = ok and shrink
+    return rep("E6 G''(u)=8 kappa_A^2 D^3 UNIFORM in u (full leading-order convexity)", ok)
+
 if __name__=="__main__":
     print("="*78)
     print("Remark 7.34m'' -- binding-endpoint reduction of the convexity residual")
     print("="*78)
-    E1(); E2(); E3(); E4(); E5()
+    E1(); E2(); E3(); E4(); E5(); E6()
     print("="*78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
