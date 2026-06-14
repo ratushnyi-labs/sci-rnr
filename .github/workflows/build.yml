@@ -63,3 +63,36 @@ jobs:
           name: docx-bundle
           path: build/docx/*.docx
           if-no-files-found: error
+
+  verify:
+    name: verify (executable proofs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: install numeric deps
+        run: pip install numpy sympy mpmath
+
+      - name: run section 7.34 RD-dispersion verification probes
+        run: |
+          set -e
+          probes="
+            probe_7_34j_ternary_gray
+            probe_7_34k_aary_gray
+            probe_7_34o_beyond_gray
+            probe_7_34m_convexity_endpoint
+            probe_7_34n_aary_asym
+            probe_7_34m_endpoint_pi
+          "
+          for p in $probes; do
+            echo "::group::$p"
+            out=$(python scripts/verify/$p.py)
+            echo "$out" | tail -4
+            echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+            echo "::endgroup::"
+          done
+          echo "all section 7.34 verification probes reported OVERALL -> PASS"
