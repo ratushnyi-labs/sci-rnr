@@ -14900,6 +14900,39 @@ identity, requiring no new lossy analysis. \emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34n\_aary\_asym.py} (N6: $j_n-i_n$ deterministic
 to $10^{-14}$).
 
+\textbf{Remark 7.34o (the beyond-Gray regime $D>D_c$: where the dispersion
+plateau ends).} Theorems 7.34b/i/m/n give $V_{\mathrm{op}}=V_{\mathrm{lossless}}$
+on the Gray region $0<D\le D_c$. The following maps what happens beyond it (the
+exact value is open).
+
+\emph{The plateau ends at $D_c$.} The per-$n$ deconvolution threshold $D_c^{(n)}$
+--- the smallest $D$ at which the $n$-block $(K^{-1})^{\otimes n}P_X$ acquires a
+negative entry (on the alternating binding word) --- \emph{decreases
+monotonically} to the all-$n$ threshold $D_c=\inf_n D_c^{(n)}$ (for $p=0.2$:
+$D_c^{(2)}=0.113\to D_c^{(10)}=0.0174\to D_c=0.0159$). Hence at finite $n$ the
+dispersion plateau extends to $D_c^{(n)}>D_c$, but in the operational
+($n\to\infty$) limit it ends exactly at $D_c$.
+
+\emph{Why the Gray machinery stops.} For $D>D_c$ the SLB is no longer tight, the
+deconvolution $P_{Y^*}$ ceases to be a valid distribution, the dual identity
+$M=\gamma^n P_X$ --- hence $j_n=i_n-nc$ (Remark 7.34n$'$) --- fails, and the
+converse's deterministic-shift argument no longer applies.
+
+\emph{What replaces it.} With the optimal (Blahut--Arimoto) output, the
+dispersion $V_{\mathrm{op}}(D)=\lim_n\mathrm{Var}(j_n)/n$ equals
+$V_{\mathrm{lossless}}$ on $[0,D_c]$ and \emph{decreases} below it for $D>D_c$,
+continuously at $D_c$ (the $d$-tilted information being smoother than the
+surprisal once distortion is permitted; numerically at $p=0.2$, $n=7$:
+$V_{\mathrm{op}}/n\approx0.549$ flat through $D_c$, falling to $0.524$ at $3D_c$
+and $0.347$ at $6D_c$). The exact $V_{\mathrm{op}}(D)$ for $D>D_c$ requires the
+optimal non-SLB-tight, memory-aware test channel and \emph{remains open} --- the
+last of the three directions named open after Theorem 7.34m (general asymmetric
+and the $\tfrac12\log n$ prefactor having been closed by Theorem 7.34n and
+Remark 7.34n$'$). \emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34o\_beyond\_gray.py} (O1 $D_c^{(n)}\!\downarrow
+D_c$; O2 the identity failure for $D>D_c$; O3 the plateau-and-descent of
+$V_{\mathrm{op}}$ --- all PASS).
+
 \textbf{Theorem 7.35 (Extreme-value law for the worst-case random-access query cost; the
 read-buffer provisioning margin).} \emph{Let $\{X_t\}$ be stationary with entropy rate $h$
 and varentropy rate $V=\lim_N\frac1N\mathrm{Var}(-\log_2 P(X^N))\in(0,\infty)$. Partition
