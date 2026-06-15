@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** DECOMPOSED
+**Status:** DONE (fully closed; no external leaf)
 **Complexity:** VERY_HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -87,3 +87,14 @@ honestly closeable in-repo. No genuinely-hard research residual remains.
 
 Sequencing: A -> B (B consumes A's inventory); C can run in parallel and pairs with B as its
 green-CI anchor. Recommended first leaf: BUG-004-A.
+
+
+## Resolution (2026-06-15)
+FULLY CLOSED in-repo (A/B/C -> done/; no D-leaf). The exact ideal RNR rate H(X^N) is now
+scoped as an intractable (#P-hard/FP^#P-complete, Rem 7.15g) BENCHMARK -- not an efficiently
+computable encoder target -- at every site that presented it as the operative target (Thm
+6.6c.1, §7.1b, §7.27'), with the operative object being the eps-approximation tractable under
+filter stability (Rem 7.15c) / the achievable scheme; converse inequalities preserved.
+Gap probe bug_004_ideal_vs_achievable_gap.py (intractable exact vs poly eps-approx vs
+achievable-realizes-rate; OVERALL -> PASS) + CI job. POST_AUDIT (hostile referee) clean;
+both probes (bug_004 + the cited remark_7_15g) pass cold. Nothing parked -- bug complete.

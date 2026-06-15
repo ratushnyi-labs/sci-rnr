@@ -164,3 +164,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "sync-point overhead-fraction probe reported OVERALL -> PASS"
+
+      - name: run ideal-vs-achievable-gap probe (BUG-004)
+        run: |
+          set -e
+          p=bug_004_ideal_vs_achievable_gap
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -8
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "ideal-vs-achievable-gap probe reported OVERALL -> PASS"

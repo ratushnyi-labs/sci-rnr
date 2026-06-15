@@ -5728,7 +5728,14 @@ optimality is conditional).} The lower bound (6.6c.1) holds for
 \emph{every} Type-III-C code, with no assumption on how $D$ is built ---
 it is the standard entropy-rate floor (the value-add, as for the
 Type-III-B converse Theorem 6.3b, is not new machinery but the
-\emph{tightness} it certifies). The matching \emph{achievability}
+\emph{tightness} it certifies). The floor $H(X^N)$ is an
+information-theoretic \emph{benchmark}, not an efficiently computable
+encoder target: its exact value is $\#P$-hard --- $\mathrm{FP}^{\#P}$-complete
+--- to compute (Remark 7.15g), $\varepsilon$-approximable in polynomial time
+only under filter stability (Remark 7.15c); the bound's \emph{validity} is
+of course independent of its computational cost, and the operative object the
+code attains is the achievable scheme (the realized container, one forward
+pass per symbol), not the exact optimum. The matching \emph{achievability}
 (6.6) is conditional on a universal builder (Theorem 6.6b), so the
 asymptotic optimality holds precisely under that condition; whether the
 \emph{specific} greedy marginal-MDL builder of Theorem 6.5 is itself
@@ -6818,7 +6825,12 @@ Theorem 6.6b, $\tfrac1N \mathbb{E}[L_{\mathrm{IIIC}}] \to h(X)$; by
 calibration the two remaining terms are $o(N)$. \emph{Converse.} The RNR
 codeword is uniquely decodable for $X$, so McMillan and the entropy
 bound give $\mathbb{E}[L_{\mathrm{RNR}}] \ge H(X^N)$, and the
-entropy-rate floor (Theorem 6.6c) gives $H(X^N) \ge N h(X)$. Hence
+entropy-rate floor (Theorem 6.6c) gives $H(X^N) \ge N h(X)$ (the floor
+$H(X^N)$ is a benchmark, not a computable encoder target --- its exact
+value is $\mathrm{FP}^{\#P}$-complete, Remark 7.15g, and only
+$\varepsilon$-approximable in poly time under filter stability, Remark
+7.15c; the achievability above attains the realized scheme, not the exact
+optimum). Hence
 $h(X) \le \tfrac1N \mathbb{E}[L_{\mathrm{RNR}}] \le \tfrac1N
 \mathbb{E}[L_{\mathrm{IIIC}}] + o(1) \to h(X)$. The almost-sure statement
 replaces Theorem 6.6b's expectation convergence with the a.s.\
@@ -11786,7 +11798,10 @@ Theorem 7.27$'$), not a new bound.
 coordinate permutation, so $\sum_{\text{nodes}}-\log_2 P(X_{\text{node}}\mid
 \text{coded-so-far})=-\log_2 P(X^N)$ exactly (chain rule). For an \emph{observable}
 order-$m$ Markov source with $m$-wide anchors the two anchors $d$-separate the midpoint, so
-the bridge equals the chain-rule conditional and the ideal rate is $H(X^N)=Nh+O(1)$; a
+the bridge equals the chain-rule conditional and the ideal rate is $H(X^N)=Nh+O(1)$ (a
+benchmark, not a computable target: the exact $H(X^N)$ is $\mathrm{FP}^{\#P}$-complete,
+Remark 7.15g, $\varepsilon$-approximable in poly time only under filter stability, Remark
+7.15c --- the deployed coder pays the realized one-forward-pass length, Remark 7.15b); a
 model $M'$ adds the \emph{bisection-query} divergence $\sum_{\text{nodes}}\mathbb E\,
 D_{\mathrm{KL}}\!\big(P(\cdot\mid\text{coded})\,\Vert\,M'(\cdot\mid\text{anchors})\big)$
 (\emph{not} the causal $N\,D_{\mathrm{KL}}(P\Vert M')$). Verified to machine precision

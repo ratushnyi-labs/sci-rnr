@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** ABOVE_EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -94,3 +94,7 @@ one-liner.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
 - Sequentially blocked on BUG-004-A (needs the inventory). This is the in-repo-closeable-now
   edit core; no genuinely-hard residual (the hard math, Rem 7.15g, is already proven).
+
+
+## Resolution (2026-06-15, opus-4-8; POST_AUDIT passed)
+Closed in-repo as part of BUG-004 (FULLY closed -- no external leaf). A: audited all ideal-rate/H(X^N)-target sites; B: scoped the 3 unscoped computable-target sites (Thm 6.6c.1 floor, §7.1b converse, §7.27' ideal rate) with one canonical clause -- H(X^N) is an info-theoretic BENCHMARK, exact value #P-hard/FP^#P-complete (Rem 7.15g), poly-eps-approximable only under filter stability (Rem 7.15c); operative object = achievable scheme; converse inequalities preserved verbatim. Sites with a non-finite-block sense (§7.36 drain rate, §7.20 LD rate function, §7.32 empirical Hhat) correctly left alone. C: scripts/verify/bug_004_ideal_vs_achievable_gap.py (G1 intractable exact target recovers #SAT; G2 poly eps-approx under FS geometric A_d->H; G3 achievable one-pass realizes the rate, exact optimum never computed) + CI job. Hostile-referee POST_AUDIT clean.
