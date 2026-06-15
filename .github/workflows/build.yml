@@ -208,3 +208,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "conditional-scope / no-universal-dominance precondition probe reported OVERALL -> PASS"
+
+      - name: run cross-reference integrity guard (named-block pointers resolve)
+        run: |
+          set -e
+          p=crossref_integrity
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -12
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "cross-reference integrity guard reported OVERALL -> PASS"

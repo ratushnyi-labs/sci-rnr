@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+r"""
+Cross-reference integrity guard for tex/rnr_coding.tex.
+
+The paper numbers its structure MANUALLY -- named blocks are
+\textbf{Definition N.M (...)} / \textbf{Theorem N.M (...)} / \textbf{Lemma ...} /
+\textbf{Proposition ...} / \textbf{Corollary ...} / \textbf{Remark ...} (a few via
+\emph{...}). Cross-references are therefore PROSE ("see Theorem 8.1", "(Remark
+7.34o)") and NOT LaTeX \ref/\label, so a pointer to a non-existent object compiles
+with NO warning. Two such dangling pointers were once present (the phantom "Remark
+7.34c"; "Definition 2.1" cited six times before any such header existed). This
+probe makes that failure mode mechanical.
+
+CHECK -- phantom named-block references. For every prose reference "<Kind>
+N.M[suffix]" it checks that SOME named block numbered N.M[suffix] exists. The
+match is KIND-AGNOSTIC: the paper sometimes calls a "theorem"-titled Remark a
+Theorem in a list ("Theorems 7.34b/i/m/n", where 7.34b/i are Remarks) -- the
+NUMBER is what must resolve to a real header, not the kind word. A reference whose
+number matches no block, and which is not an external citation, is a phantom and
+fails the probe.
+
+False-positive controls (so the gate is trustworthy):
+  - Primes are matched ONLY as $'$/$''$/$'''$ (math mode); a bare apostrophe is an
+    English possessive ("Theorem 5.4's"), so the number is taken as "5.4".
+  - A block number is two-part (N.M[letters][primes]) and must NOT be followed by
+    a further ".K" -- a three-part number is the signature of an EXTERNAL citation
+    (Cover & Thomas 2006 Theorem 10.3.1) and is skipped entirely.
+  - A reference preceded (within ~48 chars) by an author/year citation cue (a
+    19xx/20xx year, "et al", "&", a known external author, "ed.") is external and
+    is skipped.
+  - A small, documented ALLOWLIST covers the residue: external theorems cited
+    without a nearby cue, and objects DELIBERATELY mentioned as retracted.
+
+Section-reference (§N.M) integrity is deliberately OUT OF SCOPE: §-subsection
+header conventions in this paper vary (some groupings carry no \textbf{N.M Title}
+header) and many §-refs are external (Wyner--Ziv 1976 §3.5), which would make a
+§-gate untrustworthy. The two real defects this guard targets were both named-
+block references.
+
+Stdlib only. Prints PASS/FAIL and "OVERALL -> PASS" on success.
+Run:  /Users/para/.venvs/rnr/bin/python scripts/verify/crossref_integrity.py
+"""
+
+import os
+import re
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+REPO = os.path.dirname(os.path.dirname(HERE))
+MAIN = os.path.join(REPO, "tex", "rnr_coding.tex")
+
+KINDS = ["Definition", "Theorem", "Lemma", "Proposition", "Corollary", "Remark"]
+
+# Internal block number: N.M, optional letter suffix, optional math-mode primes,
+# and NOT the prefix of a three-part (external) number.
+BNUM = r"[0-9]+\.[0-9]+[a-z]*(?:\$'+\$)?(?!\.[0-9])"
+
+DEF_BLOCK = re.compile(r"\\(?:textbf|emph)\{(?:" + "|".join(KINDS) + r")~?\s+(" + BNUM + r")")
+REF_BLOCK = re.compile(r"(" + "|".join(KINDS) + r")s?~?\s+(" + BNUM + r")")
+
+# Citation cue in the ~48 chars preceding a reference => external, skip.
+EXTERNAL_CUE = re.compile(
+    r"(?:19|20)\d\d"                              # a year
+    r"|et al|&|\bed\.|2nd ed|, ?p\.|pp\.|Press"   # bibliographic cues
+    r"|Cover|Thomas|Gray 1|Muirhead|Ibragimov|Lezaud|Dembo|Zeitouni"
+    r"|Aldous|Wyner|Ziv|Slepian|Charikar|Watanabe|Paulin|Bryc|Petrov"
+    r"|Tian|Kostina|Polyanskiy|Barron|LPW|Levin|Peres|Bobkov|Marton"
+)
+PRECEDING = 48
+
+# Documented residue. Each entry is a normalized block number with a reason it
+# legitimately has no internal header. Kept tiny and justified so the gate stays
+# meaningful.
+ALLOWLIST_BLOCK_NUM = {
+    "1.1": "external: Lezaud 1998 Thm 1.1 (concentration), back-referenced without a nearby cue; no internal block 1.1",
+    "3.6": "external: a beta-mixing corollary cited with a DOI; no internal block 3.6",
+    "6.8c": "retracted: Lemma 6.8c was removed in an earlier draft and is mentioned only historically",
+    "7.3a": "retracted: Theorem 7.3a was an attempted closure, retracted; mentioned only historically",
+}
+
+
+def read(path):
+    with open(path, "r", encoding="utf-8") as fh:
+        return fh.read()
+
+
+def norm(s):
+    return re.sub(r"[$~\\\s]", "", s).lower()
+
+
+def strip_comments(text):
+    return "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("%"))
+
+
+def defined_block_nums(text):
+    return {norm(m.group(1)) for m in DEF_BLOCK.finditer(text)}
+
+
+def phantom_block_refs(text, block_nums):
+    out = {}
+    for m in REF_BLOCK.finditer(text):
+        num = norm(m.group(2))
+        if num in block_nums or num in ALLOWLIST_BLOCK_NUM:
+            continue
+        if EXTERNAL_CUE.search(text[max(0, m.start() - PRECEDING):m.start()]):
+            continue
+        ctx = text[max(0, m.start() - 22):m.start() + 46].replace("\n", " ")
+        out.setdefault((m.group(1), num), ctx)
+    return sorted(out.items())
+
+
+def main():
+    print("Cross-reference integrity: prose Definition/Theorem/Lemma/Proposition/")
+    print("Corollary/Remark pointers resolve to a numbered block (kind-agnostic).")
+    print("=" * 74)
+
+    text = strip_comments(read(MAIN))
+    block_nums = defined_block_nums(text)
+    print(f"  defined: {len(block_nums)} distinct block numbers")
+    print(f"  allowlisted (external/retracted, documented): "
+          f"{sorted(ALLOWLIST_BLOCK_NUM)}")
+
+    dangling = phantom_block_refs(text, block_nums)
+    print("\n-- phantom named-block references (number matches no block) --")
+    if dangling:
+        for (kind, num), ctx in dangling:
+            print(f"  [PHANTOM] {kind} {num}   ...{ctx.strip()}...")
+    else:
+        print("  (none -- every internal block reference resolves to a header)")
+
+    # Non-vacuity: a fabricated reference to a guaranteed-absent block must be caught.
+    probe = text + "\n\nThis cites the nonexistent Theorem 99.99 to test the guard.\n"
+    caught = any(num == "99.99" for (_, num), _ in phantom_block_refs(probe, block_nums))
+    print("\n-- self-test (non-vacuity) --")
+    print(f"  [{'PASS' if caught else 'FAIL'}] fabricated 'Theorem 99.99' is "
+          f"{'flagged' if caught else 'NOT flagged -- guard is vacuous!'}")
+
+    ok = (not dangling) and caught
+    print("\n" + "=" * 74)
+    if ok:
+        print("OVERALL -> PASS")
+        return 0
+    print("OVERALL -> FAIL")
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
