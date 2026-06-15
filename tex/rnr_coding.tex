@@ -92,7 +92,10 @@ Kieffer--Yang 2000), the construction attains $N \cdot h(X) + o(N)$ for
 stationary ergodic sources, the hierarchical index being rate-neutral
 (Lemma 6.6a) and the $K = O(N/\log N)$ dictionary entries adding only
 $o(N)$ overhead; whether the specific greedy marginal-MDL builder of
-Theorem 6.5 is itself a universal transform is left open (Remark 6.6b).
+Theorem 6.5 is itself a universal transform is partially resolved: it is
+universal once its literals are entropy-coded under a universal predictor
+and a one-bit baseline guard is added (Lemma 6.6d), leaving only the bare
+flat-$8\ell$ literal rule open (Remarks 6.6b, 6.6e).
 Matching converses are given for Type-I (Theorem 4.2), Type-II
 (Theorem 5.3b), and Type-III-B (Theorem 6.3b, the byte coder cannot beat
 the joint conditional entropy $H(H,L\mid C)$, so the $I(H;L\mid C)$
@@ -111,9 +114,9 @@ rather than of the partition representation. Type-III-C is
 \emph{asymptotically rate-optimal} under a universal dictionary builder:
 the achievability bound (Theorem 6.6b) is matched by the entropy-rate
 converse (Theorem 6.6c), so $\tfrac{1}{N}\mathbb{E}[L_{\mathrm{IIIC}}]
-\to h(X)$ whenever the dictionary is built universally (the
-greedy-MDL-builder universality being the one residual sub-question,
-Remark 6.6b). Type-III-A has both a \emph{relative} converse --- the
+\to h(X)$ whenever the dictionary is built universally (the bare
+greedy-MDL builder's own universality being the one residual sub-question,
+Remark 6.6b, partially resolved in augmented form by Lemma 6.6d). Type-III-A has both a \emph{relative} converse --- the
 $2\varepsilon$ approximate-oracle gap is tight (Theorem 6.2) --- and an
 \emph{absolute-rate} converse (Theorem 6.2b): $\mathbb{E}[L_{\mathrm{IIIA}}]
 \ge H(X\mid Y)$, attained within $2\sum_t\varepsilon_t$ iff the modes are
@@ -243,7 +246,8 @@ that the actual overhead is on the order of one percent for natural
 data at typical parameters, but neither a tight upper bound in
 general nor a measured value on a specific corpus is provided here;
 this conjecture is the falsifiable subject of Hypothesis H10(c) in
-the experimental-design companion (Section 11), whose pre-registered
+the experimental-design companion (cross-linked from §11 of this paper),
+whose pre-registered
 test (sync-point ratio overhead below 2 percent at $K = 64$\,KiB)
 would confirm or refute it. The
 ratio comparison against existing dictionary-based seekable formats
@@ -546,7 +550,9 @@ This article makes the following contributions.
   the learned hierarchical dictionary under a universal grammar
   transform (LZ78 or irreducible-grammar, Theorem 6.6b), with the
   hierarchical family/variant index shown rate-neutral (Lemma 6.6a) and
-  the greedy-MDL builder's own universality left open (Remark 6.6b),
+  the greedy-MDL builder's own universality partially resolved (universal
+  under an entropy-coded literal fallback and baseline guard, Lemma 6.6d;
+  the bare flat-$8\ell$ rule open, Remark 6.6b),
   NP-hardness of the restricted (constant-predictor, normal-form
   recursive dictionary, symbol-count objective) dictionary-learning
   problem (Theorem 6.7), APX-hardness of the same restricted
@@ -5429,8 +5435,11 @@ encoder whose dictionary is produced by a universal grammar transform
 achieves the entropy rate, with the hierarchical index of
 Definition~3.5 contributing only $o(N)$. This is achievability
 \emph{under a universal dictionary builder}; whether the specific
-greedy marginal-MDL builder of Theorem~6.5 is itself universal is a
-separate question we do not resolve (Remark~6.6b).
+greedy marginal-MDL builder of Theorem~6.5 is itself universal is
+partially resolved below --- universal once (A) its literals are
+entropy-coded under a universal predictor and (B) a one-bit baseline
+guard is added (Lemma~6.6d), the bare flat-$8\ell$ rule remaining open
+(Remarks~6.6b, 6.6e).
 
 We first isolate the index-accounting step, which is where the
 hierarchical structure of Definition~3.5 enters and where the new
@@ -8563,7 +8572,7 @@ $\approx 1.92$): $\approx 15\,\mathrm{kB}$; at $\delta = 10^{-6}$
 of archive). This is the
 practical sizing estimate, well below the Azuma worst-case bound.
 \item Predicted total: $\approx 79\,\mathrm{MB}$ at $\delta = 10^{-6}$,
-with rigorous concentration bands of $\pm 1.3\,\mathrm{GB}$
+with rigorous concentration bands of $\pm 1.4\,\mathrm{GB}$
 (Azuma worst-case, T7.14) or $\pm 2.1$--$4.2\,\mathrm{MB}$
 (variance-aware Bernstein, T7.25 with long-run variance
 $v^2 = \sigma_\ell^2 (2W_N+1) + O(B^2)$ and
@@ -10299,7 +10308,7 @@ term yields $C_1 \sqrt{N v^2 \log(2/\delta)} \approx 2.1$--$4.2\,
 Merlev\`ede-Peligrad-Rio formulation; Bernstein-tail term $C_2 B
 (\log N)^2 \log(2/\delta) \approx 0.024\,\mathrm{MB}$ is sub-leading
 by $\sim 100\times$), versus Theorem 7.14's Azuma worst-case of
-$\approx 1.3\,\mathrm{GB}$ --- a $\approx 300\times$--$630\times$
+$\approx 1.4\,\mathrm{GB}$ --- a $\approx 300\times$--$630\times$
 improvement.
 The bound remains $\sim 40$--$80\times$ loose against the practical
 CLT estimate of $\approx 42\,\mathrm{kB}$; the residual gap stems
@@ -10390,7 +10399,7 @@ in the deviation scale (or equivalently $\approx 300\times$--$630\times$
 in the absolute $\delta = 10^{-6}$ deviation bound, depending on
 the choice of $C_1 \in [1, 2]$). The end-to-end
 Chinchilla-class prediction of Theorem 7.15 thus admits the dual
-concentration band $\pm 1.3\,\mathrm{GB}$ (Azuma, T7.14) or
+concentration band $\pm 1.4\,\mathrm{GB}$ (Azuma, T7.14) or
 $\pm 2.1$--$4.2\,\mathrm{MB}$ (Bernstein, T7.25; constants
 $C_1 \in [1,2]$ from MPR 2009) at $\delta = 10^{-6}$ on enwik9.
 Theorem 7.14 remains the operational bound for non-mixing sources
@@ -15215,8 +15224,14 @@ $i_n$-lattice being the only obstruction) by Kontoyiannis--Verd\'u (2014). Thus
   L_{\mathrm{lossy}}(n,\varepsilon,D)=nR(D)+\sqrt{nV_{\mathrm{lossless}}}\,
   Q^{-1}(\varepsilon)+\tfrac12\log n+O(1)\quad\text{on the Gray region (non-lattice $i_n$),}
 \]
-the same $\tfrac12\log n$ as lossless --- a direct corollary of the exact dual
-identity, requiring no new lossy analysis. \emph{Validated} in
+the same $\tfrac12\log n$ as lossless. The dual identity delivers this for the
+\emph{converse} (lower-bound) third-order for free, being a functional of the
+$j_n$ marginal alone; the matching \emph{achievability} third-order, like the
+dispersion term, inherits the convexity residual of Remarks 7.34m$'$/7.34m$''$
+(fully proven for BSMS on its whole Gray region, closed modulo the $a_k$ bound on
+the general-A memory bulk per the ledger of Remark 7.34m$'''$), so the two-sided
+expansion holds wherever that achievability does, not from the dual identity
+alone. \emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34n\_aary\_asym.py} (N6: $j_n-i_n$ deterministic
 to $10^{-14}$).
 
@@ -15251,8 +15266,10 @@ whereas the operational $V_{\mathrm{op}}(D)$ is the $n\to\infty$ limit.
 \emph{Why the exact value is open, and the shared obstruction.} The exact
 $V_{\mathrm{op}}(D)$ for $D>D_c$ requires the optimal non-SLB-tight, memory-aware
 test channel and \emph{remains open} --- the last of the three directions named
-open after Theorem 7.34m (general asymmetric and the $\tfrac12\log n$ prefactor
-having been closed by Theorem 7.34n and Remark 7.34n$'$). Its clean
+open after Theorem 7.34m (the general-asymmetric \emph{converse} and the
+converse $\tfrac12\log n$ prefactor having been closed by Theorem 7.34n and
+Remark 7.34n$'$; the matching general-A achievability remaining modulo the $a_k$
+residual of Remark 7.34m$'''$). Its clean
 characterization is the Green--Kubo variance rate
 $V_{\mathrm{conv}}(D)=\lim_n\mathrm{Var}(j_n)/n=\chi''(0)$ (the second
 cumulant-rate of the $\lambda^*$-tilted joint (source, optimal-output) transfer
@@ -15830,8 +15847,9 @@ The Abstract and §1.1 phrase the central claim conditionally: RNR is
 advantageous only on data classes for which the side information buys
 more than it costs. Definition 2.1 fixes the operational meaning of
 ``advantageous'' --- $\mathbb{E}[L(\mathsf{Enc}(X))] <
-\mathbb{E}[L(B(X))]$ --- and Theorem 8.1 fixes that this is conditional
-and distributional, never universal. This subsection assembles that
+\mathbb{E}[L(B(X))]$ --- and Theorem 8.1 (no code shortens every input)
+implies the advantage cannot be universal, hence is necessarily
+conditional and distributional. This subsection assembles that
 predicate into a single auditable inequality whose every term is
 already defined or bounded elsewhere in the paper; it states no new
 result and measures no corpus (which real corpora satisfy it is the
@@ -15846,7 +15864,7 @@ RNR is conditionally advantageous on $D$ (Definition 2.1) when
 \begin{equation}
 \underbrace{H(X\mid Y)}_{\text{(a) residual uncertainty, §2.2}}
 \;+\;
-\underbrace{\tfrac{L(M)}{m}}_{\text{(b) amortized model, §10.2}}
+\underbrace{\tfrac{L(M)}{mN}}_{\text{(b) amortized model, §10.2}}
 \;+\;
 \underbrace{\rho(D)}_{\text{(c) repair residual, §2.3/§5}}
 \;+\;
@@ -15869,8 +15887,9 @@ are, with their paper-side definition or bound:
   Thomas 2006, Theorem 5.4.1). This is the term the side information
   is meant to drive down; the whole conditional advantage hinges on
   $H(X\mid Y)$ being below the baseline rate by more than (b)--(e).
-\item[(b)] $L(M)/m$, the model description amortized over the $m$
-  blocks of the archive (§10.2). In the single-block regime $L(M)$
+\item[(b)] $L(M)/(mN)$, the total model description amortized over the
+  $mN$ symbols of the $m$-block archive --- the per-block share $L(M)/m$
+  of §10.2 expressed per symbol (§10.2). In the single-block regime $L(M)$
   dominates and (10.1) typically fails; as $m$ grows (streaming) this
   term vanishes. This is precisely the term that forces the
   ``only the model-amortization regime can win'' reading of §10.2: for
@@ -15908,7 +15927,12 @@ row; charging (b) in full is its self-contained row; letting $m$ grow
 is its per-regime-amortization row. No term is double-counted: (a) is
 the floor, (c) is the realized excess \emph{over} that floor, and
 (b),(d),(e) are the disjoint side costs (model, verification,
-metadata). The baseline rate $R_B(D)$ is the same $\mathbb{E}[L(B(X))]$
+metadata) --- with one shared structure charged once: the per-subblock
+repair-stream offset table of §10.3 (counted in (d)) and the seekable
+random-access index of §10.7 are the same $\lceil\log_2 L(R)\rceil$-bit
+offsets-into-$R$ when subblock boundaries fall on sync points, so (e)'s
+seek index adds only the source-position field for non-uniform spacing,
+not a second copy of the offsets. The baseline rate $R_B(D)$ is the same $\mathbb{E}[L(B(X))]$
 of Definition 2.1 and the same baseline family (sequential dictionary /
 entropy-only coders, and the seekable formats bgzip / zstd-seekable)
 scoped in §11.
@@ -17874,7 +17898,7 @@ point to the relevant theorems.
   Theorem~2, with the long-run-variance proxy $v^2 = \sigma_\ell^2
   (2W_N + 1) + O(B^2)$ derived via Davydov 1968 covariance inequality:
   for Chinchilla-class enwik9, the rigorous $\delta = 10^{-6}$
-  deviation drops from $\approx 1.3\,\mathrm{GB}$ (Azuma, T7.14) to
+  deviation drops from $\approx 1.4\,\mathrm{GB}$ (Azuma, T7.14) to
   $\approx 2.1$--$4.2\,\mathrm{MB}$ (Bernstein, T7.25), a
   $\approx 300\times$--$630\times$ improvement and within
   $\sim 50$--$100\times$ of the practical CLT estimate; two earlier drafts of T7.25 were

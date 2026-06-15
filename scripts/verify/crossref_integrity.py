@@ -62,7 +62,8 @@ DOCS = [
     os.path.join(TEX, "rnr_experimental_design.tex"),
 ]
 
-KINDS = ["Definition", "Theorem", "Lemma", "Proposition", "Corollary", "Remark"]
+KINDS = ["Definition", "Theorem", "Lemma", "Proposition", "Corollary", "Remark",
+         "Conjecture", "Observation"]
 
 # Internal block number: N.M, optional letter suffix, optional math-mode primes,
 # and NOT the prefix of a three-part (external) number.

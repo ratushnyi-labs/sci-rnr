@@ -1069,8 +1069,11 @@ converse).
 
 \textbf{Q:} \emph{``Could a better algorithm find a better Code12?''}
 
-\textbf{A:} Theorems 4.3 and 4.4: optimal selection is NP-hard and
-inapproximable.
+\textbf{A:} Theorem 4.3: optimal selection is NP-hard. Constant-gap
+inapproximability for $E_{12}$ is open (Conjecture 4.3e; only the
+vanishing $1+1/(n-1)$ gap of Remark 4.3c is proven). The constant-gap
+APX-hardness that \emph{does} hold is for the Type-III-C joint dictionary
+(Theorem 6.8, $\gamma_{\mathrm{SGP}} = 8569/8568$).
 
 \textbf{Q:} \emph{``Your earlier draft inflated the Type-II gain.''}
 
@@ -1176,9 +1179,12 @@ only assert conditional advantage.
 \textbf{Honest qualifications to keep ready}
 
 \begin{itemize}
-\item Theorem 4.4's reduction relies on QAP inapproximability and
-an isometric Hamming-embedding argument; a fully self-contained
-proof would expand the embedding step.
+\item Theorem 4.4 (an earlier APX-hardness claim) was deleted: its
+reduction inherited a broken QAP--Hamming-embedding argument, and no
+clean constant-gap reduction into the $E_{12}$ geometry is known.
+Constant-gap inapproximability for $E_{12}$ is open (Conjecture 4.3e);
+Theorem 4.3 with Remark 4.3c establishes only NP-hardness with a
+vanishing $1+1/(n-1)$ gap.
 
 \item Theorem 5.5 is unconditional; Remark 5.6's quantification
 depends on the manifold hypothesis being operationalized for the
