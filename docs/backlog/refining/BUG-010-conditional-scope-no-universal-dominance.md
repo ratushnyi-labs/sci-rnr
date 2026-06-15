@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DECOMPOSED
 **Complexity:** MEDIUM
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -16,7 +16,7 @@
 **Priority:** LOW
 **Lawbook Version (intake):** 0.44.0
 **Applicable Lawbook Version:** TBD
-**Created:** 2026-06-14  **Updated:** 2026-06-14
+**Created:** 2026-06-14  **Updated:** 2026-06-15
 **Recovered:** YES
 
 ## Raw Request
@@ -51,7 +51,7 @@ By construction the framework disclaims universal dominance (no lossless code sh
 |---|---|---|
 | CLARIFICATION | PENDING | scope the claim vs close the gap |
 | ESTIMATION | PENDING | set Complexity/Budget |
-| DECOMPOSITION | PENDING | split if proof + empirical both needed |
+| DECOMPOSITION | DONE | split into BUG-010-A, BUG-010-B, BUG-010-C, BUG-010-D |
 | DESIGN | PENDING | proof strategy or experiment design |
 | FRONTEND | N/A | no UI |
 | BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
@@ -70,3 +70,32 @@ By construction the framework disclaims universal dominance (no lossless code sh
   existed; the CodexOfLaws §12 format was read this turn to file compliantly. Flagged
   `Recovered: YES` per §12.1.3; no code/proof change was made to the paper before this file.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
+
+## Decomposition (section 12.7)
+Decomposed on 2026-06-15 into four BLOCKING child leaves. The split separates the part
+that can be honestly closed now in-repo (scope the conditional claim against its formal
+predicate; write the precondition as an auditable inequality; guard it with a verify
+probe) from the genuinely-external empirical residual (which real corpora actually
+satisfy the precondition). Atomic Check remains ATOMIC: this is a decomposition into
+children, not an umbrella peer-split.
+
+- **BUG-010-A** (scope-precondition-claim-crosslink) — edit the Abstract + §1.1
+  conditional-claim sentences to point explicitly at Def 2.1 (conditionally-advantageous
+  predicate), Theorem 8.1 (no universal dominance), and §10.2 (model-amortization regime),
+  uniformly phrased as conditional pending the empirical question. Complexity: EASY.
+  Closeable in-repo: YES.
+- **BUG-010-B** (precondition-accounting-characterization) — state the qualifying data-class
+  precondition as one precise inequality with each component cost term (H(X|Y), L(M)/m,
+  repair residual, §10.3 verification overhead, baseline rate) named and cross-referenced,
+  naming candidate structural data-class families as conjecture, reconciled with
+  BUG-001/002 accounting. Complexity: ABOVE_EASY. Closeable in-repo: YES.
+- **BUG-010-C** (precondition-invariant-verify-probe) — add a `scripts/verify/` PASS/FAIL
+  probe asserting the document invariants: precondition stays conditional with its
+  cross-references, no unconditional universal-dominance sentence exists, and the
+  BUG-010-B inequality's terms are complete and §-anchored; wire as a CI job.
+  Complexity: ABOVE_EASY. Closeable in-repo: YES.
+- **BUG-010-D** (which-corpora-qualify-measurement-external) — the irreducible external
+  residual: MEASURE which real corpora satisfy the BUG-010-B precondition inequality in
+  the §10.2 amortized regime, reconcile with the §1.1 plausibly-qualifying-families
+  conjecture; rides on the BUG-001-D / BUG-002-D campaign. Complexity: VERY_HARD.
+  Closeable in-repo: NO (needs reference implementation + corpora + compute).

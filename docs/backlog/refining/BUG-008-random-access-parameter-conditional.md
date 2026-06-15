@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DECOMPOSED
 **Complexity:** MEDIUM
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -16,7 +16,7 @@
 **Priority:** MEDIUM
 **Lawbook Version (intake):** 0.44.0
 **Applicable Lawbook Version:** TBD
-**Created:** 2026-06-14  **Updated:** 2026-06-14
+**Created:** 2026-06-14  **Updated:** 2026-06-15
 **Recovered:** YES
 
 ## Raw Request
@@ -51,7 +51,7 @@ The polylog random-access claim holds only once sync-spacing K, read window k, p
 |---|---|---|
 | CLARIFICATION | PENDING | scope the claim vs close the gap |
 | ESTIMATION | PENDING | set Complexity/Budget |
-| DECOMPOSITION | PENDING | split if proof + empirical both needed |
+| DECOMPOSITION | DONE | split into BUG-008-A, BUG-008-B, BUG-008-C, BUG-008-D |
 | DESIGN | PENDING | proof strategy or experiment design |
 | FRONTEND | N/A | no UI |
 | BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
@@ -70,3 +70,30 @@ The polylog random-access claim holds only once sync-spacing K, read window k, p
   existed; the CodexOfLaws §12 format was read this turn to file compliantly. Flagged
   `Recovered: YES` per §12.1.3; no code/proof change was made to the paper before this file.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
+
+## Decomposition (§12.7)
+Split into four BLOCKING child leaves. The §12.7 split isolates the part that can be
+HONESTLY CLOSED NOW IN-REPO (surface the `cost(M)` dependence, tabulate per-mode access
+granularity, guard the cost accounting with a verify probe) from the IRREDUCIBLE external
+measurement (a real wall-clock seek-latency). After A/B/C land, the parent's in-repo posture
+is a precisely-scoped random-access claim — `cost(M)` shown as a non-universal dominant
+neural-eval factor, per-mode granularity consolidated, and the cost formula guarded by an
+executable probe; D is the clearly-flagged deferred residual needing out-of-repo work.
+
+- **BUG-008-A — scope-cost-m-dependence**: surface the non-universal, dominant `cost(M)`
+  dependence of the $O(\log L(R)+(K+k)\cdot\mathrm{cost}(M))$ bound at the Abstract / §1.1
+  headline sites and the Theorem 10.3 scope sentence, in one canonical phrasing aligned with
+  Lemma 5.1b. Complexity EASY; closeable-in-repo YES.
+- **BUG-008-B — per-mode-granularity-table**: add one consolidated table near Remark 10.3a
+  giving, per coding mode, the access granularity (byte vs sub-block), the per-query cost
+  formula, the wasted-decode overhead, and source cross-refs — faithful to Thm 10.3 / Rem
+  10.3a / §6.3 / §10.7. Complexity ABOVE_EASY; closeable-in-repo YES.
+- **BUG-008-C — randomaccess-cost-verify-probe**: add a `scripts/verify/` PASS/FAIL probe
+  (+ CI job) modelling the seek + (K+k) decode-window accounting and asserting the Thm 10.3 /
+  Rem 10.3a cost relations, regime boundaries ($K=\Theta(|X|)$ degeneracy; simultaneous-polylog
+  impossibility), and sub-block-granular cost. Complexity ABOVE_EASY; closeable-in-repo YES.
+- **BUG-008-D — measure-seek-latency-external**: execute the pre-registered seek-latency
+  protocol (companion §2.8 H10/H11, optionally §2.9 H12/H13) with a reference coder across
+  archive sizes and hardware paths, then confirm/condition the Rem 10.3a 650 ms and §11
+  20--200 ms / sub-ms estimates. Complexity HARD; closeable-in-repo NO (external work;
+  isolated measurement residual).

@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DECOMPOSED
 **Complexity:** VERY_HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -16,7 +16,7 @@
 **Priority:** MEDIUM
 **Lawbook Version (intake):** 0.44.0
 **Applicable Lawbook Version:** TBD
-**Created:** 2026-06-14  **Updated:** 2026-06-14
+**Created:** 2026-06-14  **Updated:** 2026-06-15
 **Recovered:** YES
 
 ## Raw Request
@@ -51,7 +51,7 @@ Computing the OPTIMAL RNR encoding (support/grammar selection) is NP-/APX-hard i
 |---|---|---|
 | CLARIFICATION | PENDING | scope the claim vs close the gap |
 | ESTIMATION | PENDING | set Complexity/Budget |
-| DECOMPOSITION | PENDING | split if proof + empirical both needed |
+| DECOMPOSITION | DONE | split into BUG-005-A, BUG-005-B, BUG-005-C, BUG-005-D (see Decomposition section) |
 | DESIGN | PENDING | proof strategy or experiment design |
 | FRONTEND | N/A | no UI |
 | BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
@@ -70,3 +70,36 @@ Computing the OPTIMAL RNR encoding (support/grammar selection) is NP-/APX-hard i
   existed; the CodexOfLaws §12 format was read this turn to file compliantly. Flagged
   `Recovered: YES` per §12.1.3; no code/proof change was made to the paper before this file.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
+
+## Decomposition (section 12.7)
+Split on 2026-06-15 into four BLOCKING children. The closeable-now-in-repo work
+(precise scoping, executable-verification coverage, faithful dead-end ledger) is
+carved off into EASY/ABOVE_EASY leaves so the parent's complexity drops to a
+shippable core plus ONE clearly-flagged genuinely-open research residual.
+
+- **BUG-005-A — scope-status-ledger-audit** (EASY; closeable in-repo: YES).
+  Build a single per-sub-question status ledger (OP2a continuous CLOSED / discrete
+  OPEN; OP2b continuous in-P / single+amortized OPEN; OP4 E_12 OPEN / Type-III-C
+  fixed-field CLOSED), each row with status + paper location + named blocker +
+  witnessing script; make §13.2 / §13.4 / §1.3 / abstract prose match this exact
+  granularity (no blanket overclaim, no understatement of what is closed).
+- **BUG-005-B — verify-probe-consolidation** (ABOVE_EASY; closeable in-repo: YES).
+  Cross-check every §13.4 closed attack vector against a present, PASSing
+  `scripts/verify/` script; add one consolidated index/status probe asserting
+  presence+PASS; confirm the CI `verify` job covers the OP2/OP4 closures (verify
+  LOCALLY).
+- **BUG-005-C — dead-end-blocker-crosslink** (ABOVE_EASY; closeable in-repo: YES).
+  Transcribe the validated OP2/OP4 attempt-journal blockers into the §13.4
+  failed-path roadmap at re-attempt-prevention granularity; correct any stale
+  obstacle framing (e.g. "row-stochastic F is THE obstacle" → partial-cube
+  no-robust-NO promise per Remark 4.3d); doc-only, no new math.
+- **BUG-005-D — residual-apx-hardness-research** (HARD; closeable in-repo: NO).
+  The irreducible research residual: close ONE of {OP2a-discrete (Conj 6.8d),
+  OP2b-APX, OP4 E_12 (Conj 4.3e)} OR pin an inapproximability constant, by a route
+  that defeats the recorded blocker. Kept SINGLE (shared obstacle pattern;
+  waterfall = one open theorem at a time). Honest non-closure is an acceptable
+  terminal state and does not block shipping A/B/C; mandatory 3-step adversarial
+  protocol before any commit.
+
+Recommended first leaf: **BUG-005-A** (precise status ledger; unblocks C and D by
+giving a clean obstacle map, and is independently shippable).

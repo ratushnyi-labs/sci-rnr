@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DECOMPOSED
 **Complexity:** MEDIUM
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -16,7 +16,7 @@
 **Priority:** HIGH
 **Lawbook Version (intake):** 0.44.0
 **Applicable Lawbook Version:** TBD
-**Created:** 2026-06-14  **Updated:** 2026-06-14
+**Created:** 2026-06-14  **Updated:** 2026-06-15
 **Recovered:** YES
 
 ## Raw Request
@@ -51,7 +51,7 @@ The headline end-to-end number (~0.664 bpb / ~79 MB on enwik9) carries an explic
 |---|---|---|
 | CLARIFICATION | PENDING | scope the claim vs close the gap |
 | ESTIMATION | PENDING | set Complexity/Budget |
-| DECOMPOSITION | PENDING | split if proof + empirical both needed |
+| DECOMPOSITION | DONE | split into BUG-002-A, BUG-002-B, BUG-002-C, BUG-002-D |
 | DESIGN | PENDING | proof strategy or experiment design |
 | FRONTEND | N/A | no UI |
 | BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
@@ -70,3 +70,34 @@ The headline end-to-end number (~0.664 bpb / ~79 MB on enwik9) carries an explic
   existed; the CodexOfLaws §12 format was read this turn to file compliantly. Flagged
   `Recovered: YES` per §12.1.3; no code/proof change was made to the paper before this file.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
+
+## Decomposition (§12.7)
+Split on 2026-06-15 into four BLOCKING child leaves separating the part that can be
+HONESTLY CLOSED NOW IN-REPO (precise scoping, an accounting table, an executable
+arithmetic probe) from the IRREDUCIBLE EXTERNAL measurement residual. Audit of the
+paper found the model-overhead caveat and break-even $V^*\approx152\,\mathrm{GB}$
+already exist at T7.15 (ll.8573-8606) and §11.7, with the model-encoded total-cost
+formula at T7.21 (ll.9750-9782) and the regime taxonomy at §10.2 (ll.15573-15582);
+the gaps are (i) the break-even is not stated/cross-linked at the Abstract and §10.2,
+(ii) no single consolidated model-inclusive-vs-amortized table, (iii) no executable
+verification of the accounting arithmetic, and (iv) no actual measured end-to-end run.
+
+- **BUG-002-A** (`scope-claim-crosslink-everywhere`) — EASY — closeable in-repo: YES.
+  Cross-link consistency pass: state the break-even amortization (or a pointer to the
+  T7.15 caveat) at EVERY site where the 79 MB / 12.0× / 0.664 bpb number appears
+  (Abstract ll.202-204 and §10.2 currently lack it).
+- **BUG-002-B** (`model-inclusive-accounting-table`) — ABOVE_EASY — closeable in-repo: YES.
+  Synthesize the scattered T7.15 / T7.21 / §10.2 numbers into ONE consolidated
+  model-inclusive-vs-amortized accounting table (regime, bitstream cost, model
+  included, net savings/expansion, break-even); collation only, no new claim.
+- **BUG-002-C** (`breakeven-accounting-verify-probe`) — EASY — closeable in-repo: YES.
+  Add/extend a `scripts/verify/` probe that recomputes the self-contained-vs-amortized
+  arithmetic, the $V^*\approx152\,\mathrm{GB}$ break-even, and T7.21's $L^*(N)$ optimum,
+  emitting PASS/FAIL (internal-consistency check only; does NOT measure the empirical datum).
+- **BUG-002-D** (`empirical-enwik9-measurement-external`) — HARD — closeable in-repo: NO.
+  The irreducible external residual: actually build an RNR archive with a frontier
+  predictor on enwik9 and measure bitstream + self-contained sizes (H15, experimental-design
+  §2.11). Needs external compute + reference implementation (§13.3); the in-repo
+  scoping sliver is delegated to BUG-002-A so this stays a clean external residual.
+
+Recommended first leaf: **BUG-002-B** (canonical accounting table the others anchor to).

@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DECOMPOSED
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -16,7 +16,7 @@
 **Priority:** MEDIUM
 **Lawbook Version (intake):** 0.44.0
 **Applicable Lawbook Version:** TBD
-**Created:** 2026-06-14  **Updated:** 2026-06-14
+**Created:** 2026-06-14  **Updated:** 2026-06-15
 **Recovered:** YES
 
 ## Raw Request
@@ -51,7 +51,7 @@ The random-access sync-point overhead is conjectured '~1% for natural data at ty
 |---|---|---|
 | CLARIFICATION | PENDING | scope the claim vs close the gap |
 | ESTIMATION | PENDING | set Complexity/Budget |
-| DECOMPOSITION | PENDING | split if proof + empirical both needed |
+| DECOMPOSITION | DONE | split into BUG-003-A, BUG-003-B, BUG-003-C, BUG-003-D |
 | DESIGN | PENDING | proof strategy or experiment design |
 | FRONTEND | N/A | no UI |
 | BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
@@ -70,3 +70,28 @@ The random-access sync-point overhead is conjectured '~1% for natural data at ty
   existed; the CodexOfLaws §12 format was read this turn to file compliantly. Flagged
   `Recovered: YES` per §12.1.3; no code/proof change was made to the paper before this file.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
+
+## Decomposition (section 12.7)
+Split on 2026-06-15 into four blocking child leaves along the doc-scoping / theory-bound /
+verification-script / external-measurement boundary. The three in-repo leaves (A, B, C) form
+the shippable core; the genuinely-external residual (D) is isolated and clearly flagged so the
+parent need not wait on a reference implementation. Each child is ATOMIC.
+
+- **BUG-003-A** (scope-abstract-conjecture) — Make the Abstract's "~1%" conjecture sentence
+  self-consistent and traceable: explicit conjecture label + cross-link to the §10.7 warm-rate
+  assumption it rests on + cross-link to the §11 / experimental-design H10 measurement.
+  Complexity EASY. Closeable in-repo: YES.
+- **BUG-003-B** (tighten-bound-accounting) — Consolidate the three already-proved per-sync
+  ceilings (loose floor-only `S·W·log₂(1/η)`; warm-rate-refined; exact-Markov `δ_W'`) into one
+  assumption-graded ladder (corollary/remark + 3-row table) in §10.7; the fully-general tight
+  bound stays open. Complexity ABOVE_EASY. Closeable in-repo: YES.
+- **BUG-003-C** (verify-realized-overhead-probe) — New scripts/verify/ probe computing realized
+  sync overhead AS A FRACTION over a (K, W, η) sweep on synthetic Markov + a non-Markov stress
+  source, PASS/FAIL on loose-ceiling-respected and typical-K ratio in the conjectured band;
+  heuristic support on synthetic data, NOT a real-corpus measurement. Complexity ABOVE_EASY.
+  Closeable in-repo: YES.
+- **BUG-003-D** (measure-named-corpus) — The genuinely-external residual: a real measured
+  sync-point ratio-overhead datum on a NAMED corpus at typical (K, W) per experimental-design
+  H10(c), requiring a reference RNR implementation and a compute run outside this repo.
+  Complexity HARD. Closeable in-repo: NO (external work; in-repo follow-up is only a one-line
+  claim update once a datum exists).
