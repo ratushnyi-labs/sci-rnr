@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** BLOCKED (external)
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -102,3 +102,7 @@ band). Blocked on external implementation + compute; not schedulable inside this
   nature (no runtime product lives here). closeable_in_repo = NO is the honest status.
 - This leaf isolates the genuinely-external residual so the parent's in-repo core (A, B, C)
   is shippable without waiting on an implementation.
+
+
+## Status (2026-06-15)
+IRREDUCIBLE EXTERNAL residual: a real measured sync-point ratio-overhead datum on a NAMED corpus at typical (K,W) per H10(c), needing a reference RNR impl + compute run. Not closeable in this theory repo; in-repo follow-up is a one-line claim update once a datum exists. Parked in blocked/. (Also: the fully-general TIGHT per-sync bound is a separate OPEN theory residual, noted in Corollary 10.2a.)

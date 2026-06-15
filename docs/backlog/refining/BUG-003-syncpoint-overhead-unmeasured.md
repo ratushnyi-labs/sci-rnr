@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** DECOMPOSED
+**Status:** DONE (in-repo); D external-blocked
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -95,3 +95,13 @@ parent need not wait on a reference implementation. Each child is ATOMIC.
   H10(c), requiring a reference RNR implementation and a compute run outside this repo.
   Complexity HARD. Closeable in-repo: NO (external work; in-repo follow-up is only a one-line
   claim update once a datum exists).
+
+
+## Resolution (2026-06-15)
+A/B/C closed in-repo (-> done/): Abstract '~1%' scoped as a heuristic conjecture +
+crosslinks (Cor 10.2a, H10(c)); Corollary 10.2a + 3-rung assumption-graded ceiling ladder
+consolidating the proved S*W*log2(1/eta) / warm-rate / exact-Markov delta_W' bounds (fully-
+general tight bound stays OPEN); realized-overhead-FRACTION probe (rung-1 ceiling respected,
+~1% band on natural sources, ~1/K scaling, honest counterweights) + CI job. POST_AUDIT
+(hostile referee) clean; probe non-vacuous. D (measured named-corpus datum, H10(c)) ->
+blocked/ (external). Open theory residual: fully-general tight per-sync bound (noted in Cor 10.2a).

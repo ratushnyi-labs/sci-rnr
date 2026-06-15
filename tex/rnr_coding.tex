@@ -235,10 +235,17 @@ $\eta$ is the floor and $S$ is the number of floored entropy-coder
 symbols the coding mode emits per source byte ($S = 1$ for Type-I
 and direct byte arithmetic, $S = 2$ for per-byte sequential
 Type-III-B); a sharper bound subtracts a warm-context rate term
-under an additional uniform-warm-rate assumption. We conjecture
-the actual overhead is on the order of one percent for natural data at
-typical parameters, but neither a tight upper bound in general nor
-a measured value on a specific corpus is provided here. The
+under an additional uniform-warm-rate assumption (the rung-2 and
+exact-Markov rung-3 ceilings are consolidated in Corollary 10.2a).
+We conjecture (heuristically, not as a theorem; this rests on the
+warm-rate assumption of Corollary 10.2a, not the bare floor)
+that the actual overhead is on the order of one percent for natural
+data at typical parameters, but neither a tight upper bound in
+general nor a measured value on a specific corpus is provided here;
+this conjecture is the falsifiable subject of Hypothesis H10(c) in
+the experimental-design companion (Section 11), whose pre-registered
+test (sync-point ratio overhead below 2 percent at $K = 64$\,KiB)
+would confirm or refute it. The
 ratio comparison against existing dictionary-based seekable formats
 is an empirical conjecture (Section 11), not a theorem. Bit-exact cross-platform reproduction is
 reduced to a precision-and-determinism specification (Theorem 10.1);
@@ -16071,6 +16078,75 @@ Concrete-number estimates in the abstract and §11 (e.g., the
 based on empirical observations of cold-vs-warm rates for small
 distilled transformers; they are not theorems and depend on the
 sharper assumption above.
+
+\textbf{Corollary 10.2a (Assumption-graded per-sync overhead
+ladder).} \emph{The three per-sync-point cold-context ceilings
+established above and in Lemmas 5.1a, 5.1c stand in a strict
+assumption-vs-sharpness order: each rung below buys a tighter
+ceiling at the cost of a stronger hypothesis on the source/predictor,
+and every entry is a restatement of an already-proved bound (no new
+result is asserted). The fully general tight per-sync overhead --- a
+ceiling matching the realized cold-context excess for an arbitrary
+source under the floor assumption alone --- remains open; rungs~2--3
+are tight (or near-tight) only under their named hypotheses.}
+
+\begingroup\footnotesize\sloppy
+\setlength{\tabcolsep}{4pt}
+\noindent\begin{tabular}{@{}p{2.0cm}p{3.7cm}p{3.6cm}p{2.6cm}@{}}
+\hline
+\textbf{rung (assumption strength)} & \textbf{hypothesis} &
+\textbf{per-sync ceiling $\Delta_{\mathrm{sync}}$ / total over $m$ syncs} &
+\textbf{source}\\
+\hline
+1. loose (floor only)
+& predictor probability floor $\eta>0$ on the emitted symbol
+distribution (nothing on the warm rate or source law)
+& $\Delta_{\mathrm{sync}}\le S\cdot W\cdot\log_2(1/\eta)$; total
+$\le m\cdot S\cdot W\cdot\log_2(1/\eta)$ ($S$ floored symbols/byte,
+$m$ sync count, Def.\ 10.3)
+& this §10.7 (eqns above); Lemma 5.1a\\
+2. warm-rate refined
+& floor $\eta>0$ \emph{and} a uniform per-byte warm-context
+\emph{lower} bound $r^{\mathrm{warm}}_{\min}$ valid at all positions
+& $\Delta_{\mathrm{sync}}\le W\cdot(S\cdot\log_2(1/\eta)-r^{\mathrm{warm}}_{\min})$;
+total $\le m\cdot W\cdot(S\cdot\log_2(1/\eta)-r^{\mathrm{warm}}_{\min})$
+& this §10.7 (warm-rate refinement; a lower bound on warm cost is
+required to yield an upper bound on overhead)\\
+3. exact-Markov ($\delta_{W'}$)
+& strictly stationary order-$W'$ Markov source, $W$-bounded predictor
+with $W\ge W'$ outputting the true conditional, $K\ge W'$, full
+sub-blocks $N=mK$
+& $\Delta_{\mathrm{sync}}=\delta_{W'}=H(X^{W'})-W'h(X)\ge 0$
+(\emph{exact}, not a bound); total excess over $H(D_N)$ is
+$(m-1)\cdot\delta_{W'}$
+& Lemma 5.1c (eqn 5.9)\\
+\hline
+\end{tabular}
+\par\endgroup
+
+\emph{Reading guide.} Rung~1 holds whenever the coder runs under the
+floor and is the worst case used in Lemma 5.1a and Theorem 10.3; it
+does not depend on the warm rate and is loose by construction. Rung~2
+subtracts a guaranteed warm-context rate floor $r^{\mathrm{warm}}_{\min}$
+from the same $S\log_2(1/\eta)$ per-byte cap --- it is sharper exactly
+when the predictor is provably never worse than $r^{\mathrm{warm}}_{\min}$
+bits/byte in warm context, and (as flagged above) the warm-rate
+assumption must be a \emph{lower} bound on warm cost to yield an
+\emph{upper} bound on overhead. Rung~3 replaces the bound by the
+\emph{exact} finite source-specific constant $\delta_{W'}$ for
+finite-order Markov sources (independent of $W$ for $W\ge W'$ and of
+$K$ for $K\ge W'$); for natural-data Markov sources $\delta_{W'}\ll
+S\cdot W\cdot\log_2(1/\eta)$ (Lemma 5.1c gives a $\sim340\times$ gap
+for the order-1 English bigram instance), which is why the realized
+overhead the abstract conjectures ($\approx$ one percent) lives far
+below rung~1 and near rung~3 when the source is approximately Markov.
+No rung discharges the general case: for an arbitrary source under the
+floor alone we have only rung~1, and a tight ceiling matching the
+realized excess in full generality is not proved here. A synthetic
+heuristic check that the realized overhead-as-fraction respects rung~1
+and lands in the conjectured band on Markov sources (and can fail on a
+non-Markov stress source) is
+\texttt{scripts/verify/bug\_003\_syncpoint\_overhead\_fraction.py}.
 
 \textbf{Theorem 10.3 (Random access, output-sensitive, for
 per-position sequential coding).} \emph{Let $X$ be compressed under

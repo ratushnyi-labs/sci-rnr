@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** ABOVE_EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -105,3 +105,7 @@ result is reported as "supports ~1% on Markov synthetic; does not establish real
 - Class: GOVERNANCE/DOCUMENTATION; runtime product stages N/A, but scripts/verify executable
   checks ARE in-scope per the project verification rule.
 - Closeable in-repo: YES (synthetic-data probe). The named-corpus measurement is BUG-003-D.
+
+
+## Resolution (2026-06-15, opus-4-8; POST_AUDIT passed)
+Closed in-repo as part of BUG-003 A/B/C (commit pending). A: Abstract '~1%' scoped as an explicit heuristic CONJECTURE (rests on the warm-rate assumption of Cor 10.2a, not the bare floor) + crosslink to §10.7 ladder + to H10(c) measurement. B: Corollary 10.2a 'assumption-graded per-sync overhead ladder' + 3-row table consolidating the three PROVED ceilings -- rung1 loose S*W*log2(1/eta) [floor only; Lemma 5.1a], rung2 warm-rate-refined [floor + uniform warm LOWER bound], rung3 exact-Markov delta_W' [stationary order-W' Markov; Lemma 5.1c eqn 5.9]; states the fully-general tight bound REMAINS OPEN. C: scripts/verify/bug_003_syncpoint_overhead_fraction.py (realized overhead FRACTION = cold-restart excess / no-sync warm baseline, matching H10(c); rung-1 ceiling respected at 360 points; natural sources in ~1% band; ~1/K scaling; counterweights legitimately exceed, probe can fail honestly) + CI job. Hostile-referee POST_AUDIT clean (3 rungs verified against sources, no hypothesis flipped; probe non-vacuous via injected broken source).

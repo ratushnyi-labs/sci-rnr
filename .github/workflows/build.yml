@@ -153,3 +153,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "random-access cost-accounting probe reported OVERALL -> PASS"
+
+      - name: run sync-point overhead-fraction probe (BUG-003)
+        run: |
+          set -e
+          p=bug_003_syncpoint_overhead_fraction
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -8
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "sync-point overhead-fraction probe reported OVERALL -> PASS"
