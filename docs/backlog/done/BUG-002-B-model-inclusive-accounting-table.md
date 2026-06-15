@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** ABOVE_EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -103,3 +103,7 @@ NOTE: actual tex/rnr_coding.tex edits are made by the supervisor on reconciliati
 - §12.7: created fresh as a BLOCKING child leaf of BUG-002 on 2026-06-15; not recovered.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
 - Stays in `docs/backlog/intake/`; no tex/ edits performed in this turn.
+
+
+## Resolution (2026-06-15, opus-4-8; POST_AUDIT passed)
+Closed in-repo as part of BUG-002 A/B/C (commit pending). Consolidated model-inclusive-vs-amortized table in §10.2 + break-even V*~152 GB crosslinks at Abstract & §10.2 + arithmetic probe scripts/verify/bug_002_model_inclusive_accounting.py (OVERALL -> PASS) + CI job. Collation only, no new claims; hostile-referee POST_AUDIT clean.

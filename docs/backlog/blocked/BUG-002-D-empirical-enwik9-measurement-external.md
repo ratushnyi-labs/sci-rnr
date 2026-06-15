@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** BLOCKED (external)
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -107,3 +107,7 @@ external residual after A/B/C close the in-repo core.
   runtime product). Flagged closeable_in_repo=NO per the parent's experimental caveat.
 - The in-repo scoping/cross-link sliver is intentionally NOT duplicated here — it is
   BUG-002-A — so this leaf is a clean external residual.
+
+
+## Status (2026-06-15)
+IRREDUCIBLE EXTERNAL residual: needs GPU + frontier LM + reference RNR impl on enwik9 (§13.3). Parked in blocked/; the in-repo scoping sliver was closed via BUG-002-A. Not closeable in this theory repo.

@@ -109,3 +109,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "section 6.6 builder-universality probe reported OVERALL -> PASS"
+
+      - name: run model-inclusive accounting probe (BUG-002)
+        run: |
+          set -e
+          p=bug_002_model_inclusive_accounting
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -8
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "model-inclusive accounting probe reported OVERALL -> PASS"

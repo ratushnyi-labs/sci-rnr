@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -108,3 +108,7 @@ verification directory); the supervisor reconciles/commits.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A,
   but the project mandates an executable verify probe for numeric claims.
 - Verify LOCALLY (`/Users/para/.venvs/rnr/bin/python`); CI runs the verify job.
+
+
+## Resolution (2026-06-15, opus-4-8; POST_AUDIT passed)
+Closed in-repo as part of BUG-002 A/B/C (commit pending). Consolidated model-inclusive-vs-amortized table in §10.2 + break-even V*~152 GB crosslinks at Abstract & §10.2 + arithmetic probe scripts/verify/bug_002_model_inclusive_accounting.py (OVERALL -> PASS) + CI job. Collation only, no new claims; hostile-referee POST_AUDIT clean.

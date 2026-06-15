@@ -201,7 +201,9 @@ $\sqrt{NV}$ (Theorem 7.36); it then
 synthesises an end-to-end prediction for Chinchilla-class neural
 LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb; Theorem 7.15, with
 an explicit model-overhead caveat noting that the compression
-ratio excludes the $\approx$140\,GB model).
+ratio excludes the $\approx$140\,GB model and turns net-positive
+once the amortized archive volume exceeds the break-even
+$V^*\!\approx\!152$\,GB).
 Practical extensions cover parallel encoding with linear speedup,
 streaming, cache-aware decoding under Zipf workloads, fail-safe
 store mode, per-sub-block integrity via PRF-based MAC, and
@@ -15580,7 +15582,79 @@ decoder via a public release. For a multi-block archive, the amortized
 cost is $L(M)/m$ where $m$ is the number of blocks; for streaming
 applications where $m$ is large, $L(M)$ effectively vanishes. The
 three regimes have different optimal model sizes and warrant separate
-evaluation.
+evaluation. For a fixed shared frontier predictor, the regimes
+collapse to a single break-even volume: the headline
+$\approx 79\,\mathrm{MB}$ / $12.0\times$ figure of Theorem 7.15 is a
+bitstream-only rate, and charging the $\approx 140\,\mathrm{GB}$
+predictor leaves a net saving only once the combined amortized volume
+exceeds $V^*\approx 152\,\mathrm{GB}$ (the ``Side-information framing
+and model overhead'' caveat in Theorem 7.15 derives $V^*$; the table
+below collates all four regimes).
+
+\emph{Consolidated model-inclusive vs.\ amortized accounting (collation
+of T7.15, T7.21, and the regimes above).} Whether that bitstream-only
+rate is a net saving depends entirely on whether the predictor cost
+$L(M)$ is charged to the archive. The table below puts the four
+accounting regimes side by side, drawing every quantity from an
+already-established result; the break-even row equates the
+self-contained archive size with the raw source size, the condition
+under which charging $L(M)$ still leaves a net saving.
+
+\begingroup\footnotesize\sloppy
+\setlength{\tabcolsep}{4pt}
+\noindent\begin{tabular}{@{}p{2.9cm}p{2.7cm}p{1.4cm}p{2.3cm}p{3.1cm}@{}}
+\hline
+\textbf{regime} & \textbf{bitstream / repair cost} &
+\textbf{$L(M)$ charged?} & \textbf{net savings vs.\ raw} &
+\textbf{break-even / amortization condition}\\
+\hline
+Amortized / model-shared (side information; the headline)
+& $N\!\cdot\! H_{M'}\!\approx\! 79\,\mathrm{MB}$ at $H_{M'}\!=\!0.664$\,bpb,
+$N\!=\!1\,\mathrm{GB}$ (T7.15)
+& no
+& $12.0\times = 8/0.664$ (T7.15)
+& decoder holds $M'$ as shared side information (Slepian--Wolf 1973); the
+operational quantity is $N\!\cdot\! H_{M'}$ (T7.15 caveat)\\
+Self-contained single archive (Kolmogorov framing)
+& same $79\,\mathrm{MB}$ bitstream
+& yes, full $140\,\mathrm{GB}$
+& $\approx 140\times$ \emph{expansion} (negative) for $N\!=\!1\,\mathrm{GB}$ (T7.15 caveat)
+& never net-positive at this $N$: $L(M)\!\approx\!140\,\mathrm{GB}$ dwarfs the
+$1\,\mathrm{GB}$ source (T7.15 caveat)\\
+Self-contained, model encoded \& distilled
+& $N\!\cdot\! h(X)+\Theta(N^{1/(1+\alpha)})$, $L^*\!=\!(NC\alpha)^{1/(1+\alpha)}$ (T7.21)
+& yes, distilled $L^*$
+& overhead sub-linear: $(1{+}1/\alpha)L^*\!=\!\Theta(N^{1/(1+\alpha)})$ bits (T7.21)
+& optimal predictor grows sub-linearly; per-archive overhead vanishes
+relative to $N\!\cdot\! h(X)$ as $N\!\to\!\infty$ (T7.21)\\
+Per-regime amortization (this §10.2)
+& $N\!\cdot\! H_{M'}+L(M)/m$ over $m$ blocks
+& yes, shared $L(M)/m$
+& positive once $L(M)/m \ll N\!\cdot\!(\log_2|\Sigma|-H_{M'})$
+& single-block: $L(M)$ dominates; multi-block: $L(M)/m$; streaming
+($m$ large): $L(M)$ vanishes (this §10.2)\\
+\hline
+\textbf{Break-even volume $V^*$}
+& \multicolumn{4}{@{}p{9.5cm}@{}}{Equating self-contained archive with raw
+source, $V^*\!\cdot\!(\log_2|\Sigma|-H_{M'})=L(M)\!\cdot\!\log_2|\Sigma|$,
+gives for a $140\,\mathrm{GB}$ predictor on byte-alphabet text
+($|\Sigma|\!=\!256$, $H_{M'}\!=\!0.664$): $V^*\approx 140\,\mathrm{GB}\cdot 8/(8-0.664)\approx 152\,\mathrm{GB}$ of compressible text. Net savings turn
+positive once the combined amortized volume $V>V^*$ (T7.15 caveat).}\\
+\hline
+\end{tabular}
+\par\endgroup
+
+\emph{Reading guide.} Rows 1--2 are the same encoder run scored under
+two framings: row 1 (the headline) treats $M'$ as shared side
+information and never charges $L(M)$; row 2 charges the full
+$140\,\mathrm{GB}$ predictor and is therefore net-negative for a
+single $1\,\mathrm{GB}$ archive. Rows 3--4 are the two ways to make a
+self-contained archive net-positive: distil the predictor to its
+$N$-optimal size $L^*(N)$ (T7.21), or amortize a fixed shared
+predictor across enough archives that the combined volume exceeds the
+break-even $V^*\approx 152\,\mathrm{GB}$. No quantity in this table is
+new; each is cross-referenced to its source (Theorem 7.15, Theorem
+7.21, or the per-regime discussion above).
 
 \textbf{10.3 Verification overhead analysis}
 

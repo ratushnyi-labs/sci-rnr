@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** DECOMPOSED
+**Status:** DONE (in-repo); D external-blocked
 **Complexity:** MEDIUM
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -49,14 +49,14 @@ The headline end-to-end number (~0.664 bpb / ~79 MB on enwik9) carries an explic
 ## Lifecycle Coverage Map
 | Stage | Status | Notes |
 |---|---|---|
-| CLARIFICATION | PENDING | scope the claim vs close the gap |
+| CLARIFICATION | DONE | collate+crosslink+verify in-repo (A/B/C); empirical measurement (D) external |
 | ESTIMATION | PENDING | set Complexity/Budget |
 | DECOMPOSITION | DONE | split into BUG-002-A, BUG-002-B, BUG-002-C, BUG-002-D |
-| DESIGN | PENDING | proof strategy or experiment design |
+| DESIGN | DONE | consolidated table in §10.2; break-even V* identity; arithmetic probe |
 | FRONTEND | N/A | no UI |
-| BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
-| TESTING | PENDING | scripts/verify probe or measured datum |
-| POST_AUDIT | PENDING | adversarial re-review per project review protocol |
+| BACKEND | DONE | §10.2 consolidated accounting table + Abstract & §10.2 break-even crosslinks (A,B) |
+| TESTING | DONE | scripts/verify/bug_002_model_inclusive_accounting.py (C), OVERALL -> PASS + CI job |
+| POST_AUDIT | DONE | hostile-referee PASSED: no-new-claims, arithmetic (V*=152.67/12.048x/140.08x/T7.21), crosslinks, compile clean |
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD
@@ -101,3 +101,13 @@ verification of the accounting arithmetic, and (iv) no actual measured end-to-en
   scoping sliver is delegated to BUG-002-A so this stays a clean external residual.
 
 Recommended first leaf: **BUG-002-B** (canonical accounting table the others anchor to).
+
+
+## Resolution (2026-06-15)
+A/B/C closed in-repo (moved to done/): consolidated model-inclusive-vs-amortized
+accounting table in §10.2 (collation of T7.15/T7.21/§10.2, every cell cited, no new
+claims), break-even V*~152 GB crosslinks at the Abstract and §10.2, and the arithmetic
+verify probe + CI job. POST_AUDIT (hostile referee) passed clean. D (empirical enwik9
+measurement) is the irreducible external residual -> blocked/ (needs GPU + frontier LM +
+reference impl, §13.3); NOT claimed closed -- the headline number stays scoped as a
+prediction/conjecture, not a measured datum.
