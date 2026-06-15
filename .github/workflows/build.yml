@@ -99,6 +99,17 @@ jobs:
           done
           echo "all section 7.34 verification probes reported OVERALL -> PASS"
 
+      - name: run a_k Chebyshev-coefficient decay-order probe (BUG-009-B)
+        run: |
+          set -e
+          p=bug_009_ak_decay_convexity
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -10
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "a_k decay-order probe reported OVERALL -> PASS"
+
       - name: run section 6.6 Type-III-C builder-universality probe
         run: |
           set -e

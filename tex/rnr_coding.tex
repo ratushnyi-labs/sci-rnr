@@ -858,10 +858,18 @@ RD-dispersion), consolidated for the \emph{asymmetric} chain in
 Theorem 7.34i and lifted to \emph{every finite alphabet} in Theorem 7.34m,
 where the A-ary symmetric chain attains
 $V_{\mathrm{op}}=V_{\mathrm{lossless}}^{(A)}=p(1-p)\log_2^2\tfrac{(1-p)(A-1)}p$
-on its Gray region $0<D\le D_c^{(A)}(p)$ (the converse unconditional via the
-source-agnostic principle of Remark 7.34d, the achievability via the A-ary
-replica spectral inequality of Lemma 7.34l whose $S_A$ pattern-quotient makes
-it an alphabet-independent $\le5$-dimensional problem). Section 8 states the
+on its Gray region $0<D\le D_c^{(A)}(p)$. Here the \emph{converse}
+$V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ is unconditional and fully general
+(all source types, all balanced / group-difference distortions on each
+distortion's own Gray region; the source-agnostic principle of Remark 7.34d,
+extended in Remarks 7.34n/q), while the matching \emph{achievability} is fully
+proven for the binary symmetric chain on its whole Gray region (Remark 7.34b)
+and, for every finite alphabet, holds at leading order in the distortion $D$ and
+all-$D$ on the memory bulk via the A-ary replica spectral inequality of
+Lemma 7.34l --- whose $S_A$ pattern-quotient makes it an alphabet-independent
+$\le5$-dimensional problem --- with a single 2nd-order residual (a rigorous
+Chebyshev-coefficient $a_k$ bound) and the beyond-Gray ($D>D_c$) exact value
+left open (the residual ledger in Remark 7.34m$'''$). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -14502,7 +14510,8 @@ closed-form inequality. The uniform-in-$(a,b,D)$ version reduces to the
 convexity conjecture of Remark 7.34e$'$ and otherwise holds only on
 bounded-mixing subfamilies ($\bar\Psi_0\to1$ as $a+b\to1$ on asymmetric paths,
 where the curvature degenerates). The discrete-Markov dispersion beyond the
-binary chain, and beyond the Gray region ($D>D_c$), remain open (Remark 7.34c).
+binary chain, and beyond the Gray region ($D>D_c$), remain open (Remarks
+7.34m$'''$ and 7.34o).
 \emph{Validated} in
 \texttt{scripts/verify/theorem\_7\_34i\_asym\_dispersion.py} (T1 the Gordin
 rate, the $V=V_{\mathrm{mix}}+V_{\mathrm{mem}}$ decomposition with
@@ -15017,6 +15026,79 @@ form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$; E6 the uniform-in-$u$
 $G''(u)=8\kappa_A^2 D^3+O(D^4)$; E7 the asymmetric-binary transfer; E8 the
 Chebyshev-tail all-$D$ closure on the memory bulk --- all PASS).
 
+\textbf{Remark 7.34m$'''$ (the operational RD-dispersion residual ledger:
+converse vs.\ achievability, sub-question by sub-question).} The §7.34 grid is a
+\emph{converse} that is unconditional and fully general, plus an
+\emph{achievability} that is closed in two stated regimes (BSMS on its whole
+Gray region; general-A at leading order in $D$ and on the memory bulk) with a
+single, precisely-localised 2nd-order residual --- the rigorous
+cancellation-aware $a_k$ bound --- and the beyond-Gray exact value still open.
+This is a \emph{how-fast-to-$nR(D)$} (2nd-order) residual; the 1st-order rate
+$R(D)$ and the converse dispersion bound do \emph{not} depend on it. The
+following ledger records, per sub-question, its status, paper location, the
+named obstacle (if OPEN) or proof input (if CLOSED), and the witnessing verify
+script.
+
+\begingroup\footnotesize\sloppy
+\setlength{\tabcolsep}{4pt}
+\noindent\begin{tabular}{@{}p{3.0cm}p{1.5cm}p{2.6cm}p{2.9cm}p{3.0cm}@{}}
+\hline
+\textbf{sub-question} & \textbf{status} & \textbf{paper location} &
+\textbf{obstacle (OPEN) / proof input (CLOSED)} & \textbf{witnessing script}\\
+\hline
+\emph{Converse} $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ --- all source types,
+all balanced / group-difference distortions on each distortion's own Gray region
+& \textbf{CLOSED} (unconditional) & Rem 7.34d/n/q; Thm 7.34i/m, Thm 7.34n
+converse & source-agnostic dual identity $K_\nu K^{-1}=\gamma I$ scalar
+$\Rightarrow j_n=i_n-nc$ deterministic, $\rho=1$, $i_n$-CLT $+$ KV $d$-tilted
+one-shot & \texttt{probe\_7\_34n\_aary\_asym} (N5), \texttt{probe\_7\_34q\_lee\_general\_distortion} (Q1--Q4), \texttt{remark\_7\_34d\_general\_converse\_discrete\_markov}\\
+\hline
+\emph{Achievability (a1)} --- BSMS (binary symmetric, Hamming), whole closed Gray
+region $0<D\le D_c(p)$ & \textbf{CLOSED} & Rem 7.34b concluding theorem; Lem
+7.34e (asymmetric binary) & full proof: replica spectral inequality
+$g(s)\le1-\tfrac{11}{16}D(1-D)(1-\cos s)$, quenched tail, GAP-1 steepest descent,
+M\"obius-orbit $D=D_c$ endpoint & \texttt{probe\_7\_34\_gap1\_writeout\_v2}, \texttt{probe\_7\_34\_dc\_endpoint}, \texttt{lemma\_7\_34e\_spi\_closed\_form}\\
+\hline
+\emph{Achievability (a2)} --- general A-ary / asymmetric, leading order in $D$,
+\emph{uniform in $u$} & \textbf{CLOSED} (leading order) & Rem 7.34m$''$
+(reduction, structure, uniform-in-$u$) & affine-at-$D{=}0$ law
+$g_A=1-2v(1-\cos s)+O(D^3)$; second-harmonic curvature $G''(u)=8\kappa_A^2
+D^3+O(D^4)>0$; prefactor $|C_s/C_0|^2$ affine in $u$ (no curvature) & \texttt{probe\_7\_34m\_convexity\_endpoint} (E1--E7), \texttt{probe\_7\_34m\_endpoint\_pi}\\
+\hline
+\emph{Achievability (a3)} --- general A-ary, \emph{all} $D\le D_c$ on the
+\emph{memory bulk} & \textbf{CLOSED modulo} the rigorous $a_k$ bound & Rem
+7.34m$''$ (``All-$D$ via a Chebyshev tail'') & Chebyshev-tail
+$\mathrm{LB}(D)=4a_2-\sum_{k\ge3}|a_k|\tfrac13k^2(k^2{-}1)>0$ on the bulk;
+\emph{obstacle:} the Bauer--Fike/Bernstein majorant $|a_k|=O(D^k)$ is one
+$D$-power loose vs.\ the observed $|a_k|=O(D^{k+1})$ (harmonic cancellation) & \texttt{probe\_7\_34m\_convexity\_endpoint} (E8), \texttt{bug\_009\_ak\_decay\_convexity} (B1--B5)\\
+\hline
+\emph{Achievability (a4)} --- near-uniform / memoryless edge $p\to\tfrac{A-1}A$
+& \textbf{OPEN} & Rem 7.34m$''$ (status paragraph) & \emph{obstacle:} the crude
+endpoint bound $T_k''(1)$ over-counts where the geometric decay slows; true
+$G''(u)>0$ via the alternating-$a_k$ cancellation (a sharper interior estimate
+needed). Outside the memory regime: this is the $V_{\mathrm{lossless}}\to0$
+limit & \texttt{probe\_7\_34m\_convexity\_endpoint} (E8 degradation report)\\
+\hline
+\emph{Exact $V_{\mathrm{op}}$, beyond Gray} $D>D_c$ & \textbf{OPEN} & Rem 7.34o &
+\emph{obstacle:} needs the optimal non-SLB-tight, memory-aware test channel
+(optimal output of growing Markov order, Eswaran--Gastpar 2022); $V_{\mathrm{op}}$
+flat $=V_{\mathrm{lossless}}$ on $[0,D_c]$, decreasing below for $D>D_c$,
+continuous at $D_c$ (finite-$n$ map established; exact value open) & \texttt{probe\_7\_34o\_beyond\_gray} (O1--O3), \texttt{probe\_7\_34\_offgray\_rho}\\
+\hline
+\end{tabular}
+\par\endgroup
+
+\noindent Thus the headline is neither a flat ``achievability open'' nor a flat
+``closed'': the converse is unconditional and fully general; the BSMS Gray
+achievability is fully proven; the general-A achievability is closed at leading
+order in $D$ and (modulo the $a_k$ bound) on the memory bulk; and exactly two
+items remain genuinely open --- the rigorous cancellation-aware $a_k=O(D^{k+1})$
+bound (closing row a3 all the way and removing the ``modulo'') and the
+beyond-Gray exact $V_{\mathrm{op}}(D)$. The $a_k$-decay order itself (the
+$O(D^{k+1})$ scaling, alternating signs, geometric ratio $\approx0.9D$) is
+\emph{observed and reproducible} (\texttt{bug\_009\_ak\_decay\_convexity}); what
+stays open is the rigorous \emph{bound}, not the measured decay.
+
 \textbf{Theorem 7.34n (the general A-ary \emph{asymmetric} Gray-region
 rate--distortion dispersion --- the grid capstone).} \emph{Let $X$ be a
 stationary irreducible aperiodic A-ary Markov chain with a general (possibly
@@ -15143,16 +15225,48 @@ converse's deterministic-shift argument no longer applies.
 dispersion $V_{\mathrm{op}}(D)=\lim_n\mathrm{Var}(j_n)/n$ equals
 $V_{\mathrm{lossless}}$ on $[0,D_c]$ and \emph{decreases} below it for $D>D_c$,
 continuously at $D_c$ (the $d$-tilted information being smoother than the
-surprisal once distortion is permitted; numerically at $p=0.2$, $n=7$:
-$V_{\mathrm{op}}/n\approx0.549$ flat through $D_c$, falling to $0.524$ at $3D_c$
-and $0.347$ at $6D_c$). The exact $V_{\mathrm{op}}(D)$ for $D>D_c$ requires the
-optimal non-SLB-tight, memory-aware test channel and \emph{remains open} --- the
-last of the three directions named open after Theorem 7.34m (general asymmetric
-and the $\tfrac12\log n$ prefactor having been closed by Theorem 7.34n and
-Remark 7.34n$'$). \emph{Validated} in
+surprisal once distortion is permitted). The finite-$n$ descent is
+\emph{illustrative of the plateau-then-descent shape}, not the operational value:
+e.g.\ at $p=0.2$, $n=7$, $V_{\mathrm{op}}/n\approx0.549$ is flat through $D_c$,
+falling to $0.524$ at $3D_c$ and $0.347$ at $6D_c$ --- a finite-block snapshot,
+whereas the operational $V_{\mathrm{op}}(D)$ is the $n\to\infty$ limit.
+
+\emph{Why the exact value is open, and the shared obstruction.} The exact
+$V_{\mathrm{op}}(D)$ for $D>D_c$ requires the optimal non-SLB-tight, memory-aware
+test channel and \emph{remains open} --- the last of the three directions named
+open after Theorem 7.34m (general asymmetric and the $\tfrac12\log n$ prefactor
+having been closed by Theorem 7.34n and Remark 7.34n$'$). Its clean
+characterization is the Green--Kubo variance rate
+$V_{\mathrm{conv}}(D)=\lim_n\mathrm{Var}(j_n)/n=\chi''(0)$ (the second
+cumulant-rate of the $\lambda^*$-tilted joint (source, optimal-output) transfer
+operator), equivalently the converse ratio $\rho(D)=\lim_n\mathrm{Var}(j_n)/
+\mathrm{Var}(i_n)$: elementary in Gray ($\rho\equiv1$, the plateau), but off Gray
+the variance rate of an \emph{infinite-dimensional} operator, because the
+$n$-letter optimal output requires a \emph{growing Markov order}
+(Eswaran--Gastpar 2022). This is the \emph{same growing-order obstruction} that
+walls the in-Gray general-A achievability capstone (the $a_k$ convexity bound of
+Remark 7.34m$'''$, row a3) and the BSMS beyond-Gray analysis (Remark 7.34b's
+``Beyond the Gray region'' discussion): a
+single structural wall governs both the in-Gray 2nd-order achievability \emph{and}
+the off-Gray exact value. Consequently $\rho(D)$ (and hence the exact
+$V_{\mathrm{op}}$ for $D>D_c$) has \emph{no elementary closed form} --- the best
+one-parameter fit $((1-2D)/(1-2D_c))^a$ carries a $p$-dependent exponent with
+max-error far above what a closed form would need (the same beyond-Gray
+discussion) --- so the
+residual is the optimal memory-aware test channel itself, not a missing formula;
+re-hunting an elementary $\rho(D)$ is provably futile.
+
+\emph{Per-distortion.} The boundary is per-distortion: each balanced /
+group-difference distortion has its \emph{own} Gray region with its own
+threshold $D_c$ (Remark 7.34q; e.g.\ $D_c^{\mathrm{Lee}}<D_c^{\mathrm{Hamming}}$),
+and the plateau-then-descent map above holds beyond each distortion's own $D_c$.
+\emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34o\_beyond\_gray.py} (O1 $D_c^{(n)}\!\downarrow
 D_c$; O2 the identity failure for $D>D_c$; O3 the plateau-and-descent of
-$V_{\mathrm{op}}$ --- all PASS).
+$V_{\mathrm{op}}$ --- all PASS) and \texttt{probe\_7\_34\_offgray\_rho.py} (the
+off-Gray $\rho(D)$: $n$-stable, $\rho=1$ at $D_c$, $\to0$ as $D\to\tfrac12$, no
+elementary closed form, the Green--Kubo $\chi''(0)$ characterization with the
+growing-Markov-order obstruction).
 
 \textbf{Remark 7.34p (the lossy deviation hierarchy on the Gray region: §7.34
 $\otimes$ §7.31--7.36).} The all-order identity $j_m=i_m-mc$ of Remark 7.34n$'$

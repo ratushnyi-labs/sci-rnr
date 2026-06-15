@@ -49,14 +49,14 @@ The operational RD-dispersion CONVERSE V_op>=V_lossless is unconditional and gen
 ## Lifecycle Coverage Map
 | Stage | Status | Notes |
 |---|---|---|
-| CLARIFICATION | PENDING | scope the claim vs close the gap |
-| ESTIMATION | PENDING | set Complexity/Budget |
+| CLARIFICATION | DONE | scope the claim (A/B/C) vs close the gap (D, research); ledger separates converse (CLOSED, all types) from achievability rows |
+| ESTIMATION | DONE | A EASY, B/C ABOVE_EASY (closeable in-repo, DONE); D HARD (research, BLOCKED) |
 | DECOMPOSITION | DONE | split into BUG-009-A, BUG-009-B, BUG-009-C, BUG-009-D (see Decomposition section) |
-| DESIGN | PENDING | proof strategy or experiment design |
+| DESIGN | DONE (A/B/C) | ledger as §7.34 status table (Rem 7.34m'''); a_k-decay probe; 7.34o sharpening. D design = research residual, blocked |
 | FRONTEND | N/A | no UI |
-| BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
-| TESTING | PENDING | scripts/verify probe or measured datum |
-| POST_AUDIT | PENDING | adversarial re-review per project review protocol |
+| BACKEND | DONE (A/B/C) | tex: Rem 7.34m''' ledger + §1 scope clause + Rem 7.34o sharpening; scripts/verify/bug_009_ak_decay_convexity.py; CI step added. D research-residual: BLOCKED (a_k bound + beyond-Gray exact V_op stay OPEN) |
+| TESTING | DONE (A/B/C) | bug_009_ak_decay_convexity.py B1--B5 OVERALL -> PASS; E1--E9/O1--O3/Q1--Q6 confirmed PASS + CI-covered; rnr_coding.tex compiles (lualatex, 369pp, EXIT=0) |
+| POST_AUDIT | DONE (A/B/C) | Independent hostile-referee audit PASSED ("BUG-009 A/B/C sound", high conf): every ledger row verified against live text (CARD-vs-TEXT discrepancy: none), probe honest (measures observed O(D^{k+1}) order, does NOT fabricate the open bound), 7.34o a faithful relocation (no new math), two-pass compile EXIT=0/369pp/no undefined-refs. Plus my own cold re-read of rows a4/a5 + §1 summary + probe run (exit 0). For this DOC-ONLY governance closure the hostile-referee pass is the adversarial gate (CLAUDE.md exempts routine doc work from the full theorem 3-step; no new theorem to disprove — only status claims, each grep-verified). BSMS Gray closure NOT re-opened; general-A / beyond-Gray correctly left OPEN. |
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD
