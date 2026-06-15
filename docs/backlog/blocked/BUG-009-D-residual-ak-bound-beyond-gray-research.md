@@ -121,14 +121,40 @@ if a sub-case genuinely closes)
 ## Lifecycle Coverage Map
 | Stage | Status | Notes |
 |---|---|---|
-| CLARIFICATION | PENDING | pick ONE direction (D1 or D2) — waterfall, one open theorem at a time |
-| ESTIMATION | PENDING | HARD/research; outcome may be honest non-closure |
-| DECOMPOSITION | N/A | atomic residual; cannot be honestly split further (shared growing-order obstacle, distinct proofs) |
-| DESIGN | PENDING | route must defeat the named blocker (D1: cancellation-aware recursion, not crude Bauer–Fike; D2: optimal memory-aware channel, not a closed-form ρ) |
+| CLARIFICATION | DONE | picked D1, A=2 sub-case (the tractable closed-form point); D1/A>=3 and D2 stay open |
+| ESTIMATION | DONE | A=2 closeable (closed-form Perron); A>=3 + D2 remain HARD/research |
+| DECOMPOSITION | N/A | atomic residual; A=2 vs A>=3 is a regime split within D1, not a card split |
+| DESIGN | DONE (A=2) | defeated the Bauer-Fike blocker via the PERFECT-SQUARE cancellation: f=B^2+4k2 W=P^2+R, R=O(D^2)(1-u), so sqrt(f) affine-through-O(D^2) and non-affine harmonics O(D^{k+1}) |
 | FRONTEND | N/A | no UI |
-| BACKEND | PENDING | new lemma + proof IF closed; else no paper change beyond A/B/C scoping |
-| TESTING | PENDING | constructive / coefficient-bound or test-channel verify script IF a sub-case closes |
-| POST_AUDIT | PENDING | mandatory 3-step protocol (cold + independent adversarial re-review + adversarial disprove) before any commit; amend any auto-commit trailers (stealth) |
+| BACKEND | DONE (A=2) | new Remark 7.34m'' sub-paragraph ("the A=2 case in closed form") + ledger row a3 updated (A=2 CLOSED / A>=3 modulo); scripts/verify/lemma_7_34m_ak_bound_A2.py |
+| TESTING | DONE (A=2) | lemma_7_34m_ak_bound_A2.py C1-C6 OVERALL -> PASS; CI-wired (§7.34 probe list); rnr_coding 373pp EXIT=0 |
+| POST_AUDIT | DONE (A=2) | adversarial-disprove gate (3 skeptics) -> attack-failed-holds; the rigor-gap on the SCRIPT prose (wrong leading-coeff asymptotic, loose "affine" wording, finite-tail-vs-majorant) was FIXED (geometric majorant encoded, EXACT-vs-certified framing). A>=3 + D2 still open -> card stays blocked |
+
+## Status (2026-06-15): PARTIAL CLOSURE of D1 (A=2); A>=3 + D2 stay open
+D1 (the rigorous cancellation-aware a_k bound) is **closed in closed form for A=2**
+(binary symmetric) on the memory regime:
+- The 4x4 pattern-quotient Perron branch is the larger root of a QUADRATIC,
+  rho=1/2[B+sqrt(B^2+4 kappa^2 eta etb)], B=(1+eta)(1+etb), kappa^2=(1-2p)^2/(p^2(1-p)^2)
+  (EXACT, sympy-derived; verified <1e-30 vs the matrix Perron across the Gray region).
+- B,W:=eta*etb are real rational functions of u=cos s; the discriminant
+  f=B^2+4kappa^2 W = P^2 + R is a PERFECT SQUARE P=1+2 alpha(1-u) plus an
+  O(D^2)(1-u) deviation (leading const 4+8 kappa^2), so sqrt(f) is affine through
+  O(D^2) and its non-affine Chebyshev harmonics are O(D^{k+1}) -- the exact
+  cancellation the bare Bauer-Fike majorant misses (this DEFEATS the journalled
+  blocker: not the crude analyticity-strip split, but the perfect-square structure).
+- |a_k| <= 8 kappa^2 D^{k+1} + uniform ratio r0=2|alpha|+O(D)<1 => a CONVERGENT
+  geometric majorant => LB(D)>0 on (0,D_c], p<=0.3 (margin LB/4a_2 in [0.84,0.99]).
+Artifacts: Remark 7.34m'' new sub-paragraph + ledger row a3; scripts/verify/
+lemma_7_34m_ak_bound_A2.py (C1-C6 PASS), CI-wired; rnr_coding 373pp EXIT=0.
+HONEST SCOPE: the closed-form Perron + perfect-square are SYMBOLIC IDENTITIES; the
+explicit uniform-in-u remainder bound (analyticity/Bernstein) is the narrow
+elementary step to a one-line theorem -- certified here via the geometric majorant.
+A=2 achievability was ALREADY unconditional via GAP-1 (ledger a1); this closes the
+distinct CONVEXITY route's residual at A=2 and exhibits the cancellation mechanism.
+STILL OPEN (card stays blocked): (i) D1 for A>=3 -- degree-5 Perron (NO single
+sqrt), reduces to the degree-2 trig-poly coefficient recursion, with the A=2
+perfect square as template; (ii) D2 -- beyond-Gray exact V_op(D). The residual is
+now SHARPLY PINNED (A=2 done; A>=3 = the named recursion).
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD

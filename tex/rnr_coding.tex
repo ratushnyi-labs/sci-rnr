@@ -15027,7 +15027,8 @@ a \emph{$u$-independent} lower bound. $\mathrm{LB}(D)>0$ throughout the Gray
 region for $p$ in the \emph{memory regime} (verified for $p\lesssim0.3$ at $A=2$,
 $p\lesssim0.4$ at $A=3$; tail/$4a_2$ ratio $0.001$--$0.21$), \emph{proving the
 full all-$D$ convexity there} (modulo making the $O(D^{k+1})$ coefficient bounds
-rigorous). The analyticity route is concrete: $g(s)$'s nearest singularity is the
+rigorous --- discharged in closed form for $A=2$ below, $A\ge3$ reducing to the
+degree-2 coefficient recursion). The analyticity route is concrete: $g(s)$'s nearest singularity is the
 Perron branch point of $W(s)$, numerically at $|\mathrm{Im}\,s|=\tau^*\approx
 \ln(1/D)$ (the top-two eigenvalue gap stays $>0.1$ up to $\tau=5\approx\ln(1/D)$
 at $p=0.2$), and $\tau^*\ge\ln(1/D)-O(1)$ follows \emph{rigorously} from
@@ -15044,7 +15045,62 @@ true $G''(u)$ stays positive there (the alternating $a_k$ cancel). Since the
 near-uniform point is the memoryless limit ($V_{\mathrm{lossless}}\to0$), the
 all-$D$ closure already covers the entire memory regime of interest.
 
+\emph{The $A=2$ case in closed form (the cancellation made rigorous).} For $A=2$
+the residual is dischargeable in closed form. The $4\times4$ pattern-quotient
+operator's characteristic polynomial factors (the $W_8\to W_4$ reduction), and the
+Perron branch is the larger root of a \emph{quadratic},
+\[
+  \rho(s)=\tfrac12\bigl[\,B+\sqrt{B^2+4\kappa^2\,\eta\bar\eta}\,\bigr],\qquad
+  B=(1+\eta)(1+\bar\eta),\quad \kappa^2=\tfrac{(1-2p)^2}{p^2(1-p)^2}
+\]
+(checked $<10^{-30}$ against the matrix Perron eigenvalue throughout the Gray
+region). Both $B$ and $W:=\eta\bar\eta$ are invariant under $s\to-s$ (the
+$z\to1/z$ symmetry), hence real functions of $u=\cos s$: with $a_0=D-1$,
+$\gamma=D^2/(1-D)$, $\Delta(u)=a_0^2+\gamma^2+2a_0\gamma u$,
+\[
+  \eta+\bar\eta=\frac{2D(a_0-\gamma)(1-u)}{\Delta(u)},\qquad
+  \eta\bar\eta=\frac{2D^2(1-u)}{\Delta(u)} .
+\]
+The discriminant is a \emph{perfect square plus an $O(D^2)$ deviation}:
+$f:=B^2+4\kappa^2 W=P^2+R$ with the affine root $P=1+2\alpha(1-u)$
+($\alpha=D/(D-1)$) and $R=4(1{+}2\kappa^2)\alpha^2(1-u)+O(D^3)=O(D^2)(1-u)$
+uniformly in $u$ (the worst point $u\to1$ is finite, with leading constant
+$4+8\kappa^2$; $B,W$ are affine in $u$ \emph{only through $O(D^2)$}, their
+non-affine modes themselves $O(D^{k+1})$). Hence
+$\sqrt f=P+R/(2P)-R^2/(8P^3)+\cdots$ is affine through $O(D^2)$, and its non-affine
+Chebyshev harmonics inherit the deviation order times the geometric per-harmonic
+ratio $2|\alpha|+O(D)=2D/(1-D)+O(D)<1$, giving $|a_k|\le 8\kappa^2 D^{k+1}$ for
+$k\ge2$. This is the rigorous form of the cancellation the bare Bernstein
+majorant misses --- $f$ being a perfect square through $O(D^2)$ is exactly why
+$\sqrt f$ is affine through $O(D^2)$ and its non-affine tail is one $D$-power
+below $O(D^k)$. The uniform ratio then closes the tail by a \emph{convergent
+geometric majorant} (not a truncation),
+$\sum_{k\ge3}|a_k|\tfrac13 k^2(k^2-1)\le|a_3|\sum_{k\ge3}r_0^{\,k-3}\tfrac13
+k^2(k^2-1)$ with $r_0=2|\alpha|+O(D)<1$, so $\mathrm{LB}(D)>0$ throughout
+$(0,D_c]$ on the memory regime ($p\lesssim0.3$; the surviving fraction
+$\mathrm{LB}/4a_2$ runs from $0.99$ at small $p$ to $0.84$ at $p=0.3$). Thus the
+all-$D$ convexity --- hence the $s=\pi$ binding, hence the achievability --- is
+closed in closed form for $A=2$ on the memory regime. The exact Perron root and
+the perfect-square decomposition are symbolic identities; the explicit
+uniform-in-$u$ remainder bound (the analyticity/Bernstein step) is the narrow
+elementary task that upgrades the certified geometric majorant to a one-line
+theorem. For $A=2$ the achievability was already unconditional via the GAP-1
+floor route of Remark 7.34b; this discharges the distinct \emph{convexity}
+route's residual at $A=2$ and exhibits the cancellation mechanism. For $A\ge3$
+the Perron branch is a root of an irreducible \emph{degree-five} polynomial (no
+single radical), so the closed-form route does not transfer; but the
+characteristic polynomial's coefficients are trigonometric polynomials of degree
+$\le2$ in $s$ ($\eta,\bar\eta$ each inject a single harmonic), so the
+$a_k=O(D^{k+1})$ bound reduces to a cancellation-aware coefficient recursion from
+that degree-2 characteristic equation, with the $A=2$ perfect square as its
+template --- the remaining open content of the convexity capstone.
+
 \emph{Validated} in
+\texttt{scripts/verify/lemma\_7\_34m\_ak\_bound\_A2.py} (C1 the exact Perron
+quadratic; C2 the perfect-square deviation $R=O(D^2)(1-u)$; C3 the geometric
+majorant $|a_k|\le8\kappa^2 D^{k+1}$; C6 the all-$k$ closure via the convergent
+geometric majorant; C4 $\mathrm{LB}(D)>0$ on $(0,D_c]$; C5 the $O(D^4)$ tail ---
+all PASS) and in
 \texttt{scripts/verify/probe\_7\_34m\_convexity\_endpoint.py} (E1 the reduction
 $G''(1^-)=8g_4-\tfrac23 v$; E2 $g_4\ge v/12$ on the Gray region; E3 the
 affine-at-$D{=}0$ law; E4 $c_A>0$ for all $A$ and $c_2=\kappa_2^2$ in closed
@@ -15092,11 +15148,13 @@ $g_A=1-2v(1-\cos s)+O(D^3)$; second-harmonic curvature $G''(u)=8\kappa_A^2
 D^3+O(D^4)>0$; prefactor $|C_s/C_0|^2$ affine in $u$ (no curvature) & \texttt{probe\_7\_34m\_convexity\_endpoint} (E1--E7), \texttt{probe\_7\_34m\_endpoint\_pi}\\
 \hline
 \emph{Achievability (a3)} --- general A-ary, \emph{all} $D\le D_c$ on the
-\emph{memory bulk} & \textbf{CLOSED modulo} the rigorous $a_k$ bound & Rem
-7.34m$''$ (``All-$D$ via a Chebyshev tail'') & Chebyshev-tail
-$\mathrm{LB}(D)=4a_2-\sum_{k\ge3}|a_k|\tfrac13k^2(k^2{-}1)>0$ on the bulk;
-\emph{obstacle:} the Bauer--Fike/Bernstein majorant $|a_k|=O(D^k)$ is one
-$D$-power loose vs.\ the observed $|a_k|=O(D^{k+1})$ (harmonic cancellation) & \texttt{probe\_7\_34m\_convexity\_endpoint} (E8), \texttt{bug\_009\_ak\_decay\_convexity} (B1--B5)\\
+\emph{memory bulk} & \textbf{CLOSED} ($A=2$, closed form) / \textbf{CLOSED modulo}
+the $a_k$ bound ($A\ge3$) & Rem 7.34m$''$ (``$A=2$ in closed form'' / ``All-$D$
+via a Chebyshev tail'') & $A=2$: closed-form Perron quadratic $+$ perfect-square
+deviation $\Rightarrow|a_k|\le8\kappa^2D^{k+1}$, geometric majorant
+$\Rightarrow\mathrm{LB}(D)>0$. $A\ge3$ \emph{obstacle:} degree-5 Perron; the
+$O(D^k)$ Bauer--Fike majorant is one $D$-power loose vs.\ $O(D^{k+1})$ (the
+degree-2 coefficient recursion) & \texttt{lemma\_7\_34m\_ak\_bound\_A2} (C1--C6), \texttt{probe\_7\_34m\_convexity\_endpoint} (E8), \texttt{bug\_009\_ak\_decay\_convexity} (B1--B5)\\
 \hline
 \emph{Achievability (a4)} --- near-uniform / memoryless edge $p\to\tfrac{A-1}A$
 & \textbf{OPEN} & Rem 7.34m$''$ (status paragraph) & \emph{obstacle:} the crude

@@ -89,6 +89,7 @@ jobs:
             probe_7_34p_lossy_devhier
             probe_7_34q_lee_general_distortion
             probe_7_34m_endpoint_pi
+            lemma_7_34m_ak_bound_A2
           "
           for p in $probes; do
             echo "::group::$p"
