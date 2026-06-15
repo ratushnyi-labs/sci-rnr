@@ -13,3 +13,6 @@ tex/*.pdf
 
 # Local analysis scratch
 .analysis/
+
+# local reference PDFs (source-only repo; CI builds paper PDFs)
+refs/

@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -49,20 +49,35 @@ Type-III-C is 'asymptotically rate-optimal' (Nh+o(N), converse-matched) only UND
 ## Lifecycle Coverage Map
 | Stage | Status | Notes |
 |---|---|---|
-| CLARIFICATION | PENDING | scope the claim vs close the gap |
-| ESTIMATION | PENDING | set Complexity/Budget |
-| DECOMPOSITION | PENDING | split if proof + empirical both needed |
-| DESIGN | PENDING | proof strategy or experiment design |
+| CLARIFICATION | DONE | partial-close (augmented universality) + honest residual localization, not bare-rule resolution |
+| ESTIMATION | DONE | HARD; single proof-lemma + probe |
+| DECOMPOSITION | DONE | one lemma (6.6d) + one scoping remark (6.6e); no empirical split needed |
+| DESIGN | DONE | guard-against-universal-baseline: features (A) entropy-coded literal fallback + (B) min{learned,empty} baseline guard |
 | FRONTEND | N/A | no UI |
-| BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
-| TESTING | PENDING | scripts/verify probe or measured datum |
-| POST_AUDIT | PENDING | adversarial re-review per project review protocol |
+| BACKEND | DONE | Lemma 6.6d + Remark 6.6e in tex/rnr_coding.tex (~5720-5876); Rem 6.6b + §13.2 updated; bib [134] Ryabko 1984, [135] Willems et al. 1995 |
+| TESTING | DONE | scripts/verify/lemma_6_6d_mdl_entropy_fallback_universal.py (D1-D4 PASS, cold-run); CI job added to build.yml |
+| POST_AUDIT | DONE | hostile-referee re-review PASSED ("sound and honestly scoped"): proof upper/converse/a.s. branches non-circular; no overclaim (abstract left saying open; §13.2 bare-rule (i)-(iii) open); fixed 2 dangling citations |
+
+## Resolution
+Partial-close per FIX TARGET's "OR scope the claim" branch, upgraded to a positive
+universality result for the augmented builder. **Lemma 6.6d:** the greedy marginal-MDL
+builder of Thm 6.5 is universal (rate -> h(X), a.s. for ergodic) for EVERY stationary
+source once its entropy stage satisfies (A) entropy-coded literal fallback under a
+universal predictor Q and (B) a one-bit baseline guard min{learned dict, empty dict} ---
+because the empty dict already entropy-codes at Nh+o(N), the guard forbids worse, the
+converse (Thm 6.6c) forbids better, so the admission decisions are rate-irrelevant.
+**Remark 6.6e** localizes the genuinely-open residual to the *bare* flat-8*ell literal
+rule of Thm 6.5 (where the empty-dict baseline is 8N >> Nh, so the guard is useless and
+the burden falls entirely on the admissions = the smallest-grammar-adjacent question);
+§13.2 sub-questions (i)-(iii) for the bare rule remain open. The MAIN-IDEA load is
+discharged: any implementation wanting a provable rate guarantee adds (A)+(B) and may use
+the greedy dictionary freely for its structural (random-access) benefits with no rate penalty.
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD
 **Start Timestamp:** TBD
 **End Timestamp:** TBD
-**Token Stats (per work session):** input: UNKNOWN (not yet worked) ; output: UNKNOWN ; model: UNKNOWN ; level: UNKNOWN
+**Token Stats (per work session):** drafted 2026-06-14 (prior session, uncommitted); recovered, POST_AUDIT'd, and closed 2026-06-15 (model: claude-opus-4-8; hostile-referee subagent for POST_AUDIT)
 
 ## Compliance Notes
 - §12.1.1 (Backlog-File-First): the gap analysis was performed in the immediately

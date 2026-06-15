@@ -98,3 +98,14 @@ jobs:
             echo "::endgroup::"
           done
           echo "all section 7.34 verification probes reported OVERALL -> PASS"
+
+      - name: run section 6.6 Type-III-C builder-universality probe
+        run: |
+          set -e
+          p=lemma_6_6d_mdl_entropy_fallback_universal
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -6
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "section 6.6 builder-universality probe reported OVERALL -> PASS"

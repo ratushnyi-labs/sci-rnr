@@ -5707,10 +5707,174 @@ Type-III-B converse Theorem 6.3b, is not new machinery but the
 \emph{tightness} it certifies). The matching \emph{achievability}
 (6.6) is conditional on a universal builder (Theorem 6.6b), so the
 asymptotic optimality holds precisely under that condition; whether the
-greedy marginal-MDL builder of Theorem 6.5 is itself universal remains
-the open sub-question of Remark 6.6b. With Theorems 6.6b and 6.6c the
+\emph{specific} greedy marginal-MDL builder of Theorem 6.5 is itself
+universal is the open sub-question of Remark 6.6b, now \emph{partially
+resolved}: Lemma 6.6d below shows the greedy-MDL builder is universal
+under two benign specifications of its entropy stage (an entropy-coded
+literal fallback and a one-bit baseline guard), and Remark 6.6e
+localizes the residual that stays open to the literal flat-$8\ell$ rule.
+With Theorems 6.6b and 6.6c the
 Type-III-C achievability/converse cell is complete: \emph{tight under a
 universal dictionary builder}.
+
+\textbf{Lemma 6.6d (The greedy marginal-MDL builder is universal under
+an entropy-coded literal fallback and a baseline guard).} \emph{Consider
+the Type-III-C container of Theorem 6.6b encoding a block $X^N$ of a
+stationary source $X$ on a finite alphabet $\mathcal{A}$, with the
+following two specifications of the otherwise-abstract entropy stage that
+Theorem 6.5 leaves open:}
+\begin{itemize}
+\item[(A)] \emph{(Entropy-coded literal fallback.) Both the
+token-reference stream and the literal stream --- the positions left
+uncovered by the dictionary, equivalently the length-one tokens --- are
+coded under one common sequential predictor $Q$ that is universal for the
+family of stationary sources, meaning $\tfrac1N \mathbb{E}[-\log_2
+Q(X^N)] \to h(X)$ for every stationary $X$ and a.s.\ for every stationary
+ergodic $X$. The default such $Q$ is the \textsc{Lz78} coder
+(Cover--Thomas \S13.5), already serving as the universal builder of
+Theorem 6.6b route~(i); a growing-order or countable mixture that
+competes with every finite Markov order at $o(N)$ regret (Ryabko's
+twice-universal measure, Ryabko 1984, or context-tree weighting
+with depth $\to\infty$, Willems--Shtarkov--Tjalkens 1995) is
+equally admissible. A \emph{fixed}-order
+Krichevsky--Trofimov estimator or bounded-depth CTW is universal only for
+finite-order (tree) sources, so it is admissible here only when the
+source is known to have finite order. An uncovered symbol then costs its
+model code length $-\log_2 Q(\cdot \mid \mathrm{past})$ rather than a flat
+$8\ell$ raw-byte literal.}
+\item[(B)] \emph{(Baseline guard.) The builder emits the shorter of the
+two archives $\{$dictionary $D$ learned by the greedy marginal-MDL rule
+of Theorem 6.5; empty dictionary $D = \varnothing\}$, prefixed by one bit
+identifying which was used.}
+\end{itemize}
+\emph{Then, \textbf{regardless of which tokens the greedy rule of
+Theorem 6.5 admits},}
+\[
+\frac{1}{N}\,\mathbb{E}\!\left[L_{\mathrm{IIIC}}(X^N)\right]
+\xrightarrow[N\to\infty]{} h(X)
+\]
+\emph{for every stationary source $X$, and $\tfrac{1}{N}
+L_{\mathrm{IIIC}}(X^N) \to h(X)$ almost surely for every stationary
+ergodic $X$. That is, the specific greedy-MDL builder of Theorem 6.5 is
+universal in the sense of Theorem 6.6b once (A)--(B) hold.}
+
+\emph{\textbf{Proof.}} Write $L_\varnothing :=
+L_{\mathrm{IIIC}}(X^N \mid D = \varnothing)$ and $L_D :=
+L_{\mathrm{IIIC}}(X^N \mid D)$ for the realized archive lengths under the
+empty and the greedy-learned dictionaries, both with the entropy
+stage~(A).
+
+\emph{Upper bound (achievability, admission-independent).} Under
+$D = \varnothing$ every position is a length-one literal, so by~(A) the
+archive is exactly the sequential $Q$-code of $X^N$,
+$L_\varnothing = \sum_{i=1}^{N} -\log_2 Q(X_i \mid X^{i-1}) + O(1)$,
+where the $O(1)$ is the trivial-parser/header of (3.1). Because $Q$ is
+universal for the stationary family --- the defining property required in
+(A) --- $\tfrac{1}{N}\mathbb{E}[L_\varnothing] \to h(X)$ (and a.s.\ in the
+ergodic case). For the default $Q = \textsc{Lz78}$ this is the
+empty-dictionary specialization of Theorem 6.6b route~(i) (the
+Ziv--Lempel theorem, Cover--Thomas \S13.5). For a growing-order mixture
+it is the finite-state-to-stationary Markov-approximation argument used in
+the proof of Theorem 6.6b route~(ii): the mixture competes with every
+fixed order $k$ at $o(N)$ regret, so $\limsup_N
+\tfrac{1}{N}\mathbb{E}[L_\varnothing] \le H(X_{k+1}\mid X_1^k)$ for
+\emph{every} $k$, and $H(X_{k+1}\mid X_1^k) \downarrow h(X)$ as
+$k\to\infty$ (Cover--Thomas \S4.2). (A fixed-order KT would stall this
+limit at its own order, which is why (A) excludes it for infinite-order
+sources.) The guard~(B) ships an archive of
+length $\min(L_D, L_\varnothing) + 1 \le L_\varnothing + 1$, so
+\[
+\tfrac{1}{N}\mathbb{E}[L_{\mathrm{IIIC}}]
+\;\le\; \tfrac{1}{N}\mathbb{E}[L_\varnothing] + \tfrac{1}{N}
+\;\xrightarrow[N\to\infty]{}\; h(X).
+\]
+Crucially this bound does not reference the admission decisions at all:
+whatever dictionary the greedy rule of Theorem 6.5 produces --- optimal,
+suboptimal, or actively harmful --- the guard never ships an archive
+longer than the empty-dictionary universal code, the single guard bit
+being $o(N)$.
+
+\emph{Lower bound (converse).} The guarded archive is a
+uniquely-decodable lossless Type-III-C code: the one guard bit makes the
+two modes prefix-distinguishable, and each mode (the greedy archive, and
+the all-literal $Q$-code, which is the degenerate Type-III-C code with
+$D=\varnothing$ and empty reference stream) is itself uniquely decodable.
+Hence Theorem 6.6c applies verbatim,
+$\mathbb{E}[L_{\mathrm{IIIC}}] \ge H(X^N) \ge N\,h(X)$, i.e.
+$\tfrac{1}{N}\mathbb{E}[L_{\mathrm{IIIC}}] \ge h(X)$.
+
+The two bounds sandwich the rate at $h(X)$. In the stationary ergodic
+case the convergence also holds almost surely, by the two matching a.s.\
+bounds below. \emph{Upper branch:} the empty-dictionary archive is the
+sequential $Q$-code, whose per-symbol length tends to $h(X)$ a.s.\ by the
+\emph{pointwise} universality of the chosen coder for stationary ergodic
+sources (for $Q = \textsc{Lz78}$ this is the Ziv--Lempel pointwise
+optimality theorem, Cover--Thomas \S13.5, as in Theorem 6.6b route~(i);
+for a growing-order mixture it is the a.s.\ form of its
+stationary-ergodic universality),
+so $\limsup_N \tfrac1N L_{\mathrm{IIIC}} \le \limsup_N \tfrac1N
+L_\varnothing = h(X)$ a.s.\ by the guard. \emph{Lower branch:} unique
+decodability gives the Kraft inequality $\sum_{x^N}
+2^{-L_{\mathrm{IIIC}}(x^N)} \le 1$ (McMillan), so the likelihood-ratio
+variable $W_N := 2^{-L_{\mathrm{IIIC}}(X^N)}/\mu(X^N)$ has
+$\mathbb{E}_\mu[W_N] = \sum_{x^N} 2^{-L_{\mathrm{IIIC}}(x^N)} \le 1$;
+Barron's lemma (Barron 1985) is then Markov's inequality on $W_N \ge 0$:
+$\Pr[L_{\mathrm{IIIC}}(X^N) < \log_2(1/\mu(X^N)) - 2\log_2 N] =
+\Pr[W_N > N^2] \le \mathbb{E}_\mu[W_N]/N^2 \le N^{-2}$, and since
+$\sum_N N^{-2} < \infty$, Borel--Cantelli gives $L_{\mathrm{IIIC}}(X^N)
+\ge \log_2(1/\mu(X^N)) - 2\log_2 N$ for all but finitely many $N$ a.s.;
+dividing by $N$ and applying the Shannon--McMillan--Breiman theorem
+$\tfrac1N \log_2(1/\mu(X^N)) \to h(X)$ a.s.\ yields $\liminf_N \tfrac1N
+L_{\mathrm{IIIC}} \ge h(X)$ a.s. The two a.s.\ bounds give $\tfrac1N
+L_{\mathrm{IIIC}}(X^N) \to h(X)$ a.s. \hfill$\blacksquare$
+
+\textbf{Remark 6.6e (What Lemma 6.6d resolves of Remark 6.6b, and the
+residual that stays open).} Lemma 6.6d does not settle the
+open problem of Remark 6.6b --- enumerated as sub-questions (i)--(iii) in
+\S13.2 --- as literally posed: those concern the \emph{bare} Theorem 6.5
+rule, with (i) requiring an irreducible post-processing \emph{without
+changing its admission decisions} and (ii) asking for \emph{direct}
+universality of the rule on a natural source class. Instead it resolves a
+closely related \emph{augmented} question: the Theorem 6.5 builder, run
+with the two benign specifications (A)--(B) of its entropy stage, is
+universal for \emph{every} stationary source, not merely for a special
+source class. The mechanism is itself the point and is what bears on
+\S13.2 --- it shows that under (A)--(B) \emph{the builder's admission
+decisions are irrelevant to the rate}. Once the literal fallback is entropy-coded under a universal
+predictor, the empty dictionary already reaches $h(X)$, the guard forbids
+doing worse, and the converse forbids doing better; the dictionary is
+then doing structural and computational work (random access, parse
+locality, a smaller working model), not rate work --- the same separation
+between a rate-bearing entropy stage and an access- or structure-bearing
+layout that recurs in the random-access architecture of \S10
+(Theorem 10.3). In particular the
+Charikar et al.\ (2005) constant-factor grammar-size lower bounds do not
+bear on the rate here: a grammar a constant factor larger than the
+smallest grammar still occupies only $o(N)$ header bits, and \textsc{Lz78}
+is itself the standing example of a greedy, grammar-size-suboptimal, yet
+universal transform.
+
+What stays open is the universality of the \emph{literal} Theorem 6.5
+rule as written --- with the flat $8\ell$ raw-byte literal cost
+(feature~(A) violated) and no guard (feature~(B) absent). There the
+empty-dictionary archive costs $8N$ bits, not $N\,h(X)$, so the guard
+cannot rescue it and the entire burden falls on the admissions: reaching
+$h(X)$ then requires the greedy rule both to \emph{cover} a
+$(1-o(1))$-rate fraction of the corpus with admitted tokens and to
+entropy-code their references near $h(X)$ --- exactly the
+smallest-grammar-adjacent question that Theorem 6.6b sidesteps by fiat.
+Lemma 6.6d thus shows this residual is an artifact of the two
+non-essential features of the literal rule, not of the Type-III-C
+container; \S13.2 sub-question~(iii) (a source family on which
+the literal flat-$8\ell$ rule is bounded away from $h(X)$), and likewise
+(i)--(ii) for the bare rule, remain
+genuinely open, with Charikar et al.\ (2005) bounding only grammar
+\emph{size}, not \emph{rate}. The practical reading of Remark 6.6b is
+unchanged and now sharpened: a Type-III-C implementation that wants a
+provable rate guarantee should entropy-code its literals under a
+universal predictor and keep the one-bit baseline guard, after which the
+greedy-MDL dictionary may be used freely --- for its structural benefits
+--- with no rate penalty.
 
 \textbf{Theorem 6.7 (Restricted Type-III-C dictionary learning is
 NP-hard).} \emph{Consider the restricted Type-III-C problem in which
@@ -17441,7 +17605,13 @@ listed below.)
   $h(X)$. A positive answer to (i) or (ii) would upgrade Theorem 6.6b
   from ``achievable under a universal builder'' to ``achievable by the
   Theorem 6.5 builder''; a (iii)-style counterexample would show the
-  conditional form is necessary.
+  conditional form is necessary. Lemma 6.6d resolves the \emph{augmented}
+  version of this question: the Theorem 6.5 builder is universal for every
+  stationary source once its literals are entropy-coded under a universal
+  predictor and a one-bit baseline guard is added (so the admission
+  decisions become rate-irrelevant), confining the residual difficulty to
+  the bare rule's flat-$8\ell$ literal cost. Sub-questions (i)--(iii)
+  \emph{for the bare rule} remain open (Remark 6.6e).
 \item
   Tight asymptotic scaling of $\mathrm{TC}(D_N)$ for specific
   natural-data classes --- partially resolved. Four explicit
@@ -21012,5 +21182,12 @@ Math\'ematiques de l'IH\'ES, 81, 73-205.
 
 \textbf{{[}133{]}} Bennett, W. R. (1948). Spectra of Quantized
 Signals. Bell System Technical Journal, 27(3), 446-472.
+
+\textbf{{[}134{]}} Ryabko, B. Ya. (1984). Twice-Universal Coding.
+Problems of Information Transmission, 20(3), 173-177.
+
+\textbf{{[}135{]}} Willems, F. M. J., Shtarkov, Y. M., and Tjalkens,
+T. J. (1995). The Context-Tree Weighting Method: Basic Properties.
+IEEE Transactions on Information Theory, 41(3), 653-664.
 
 \end{document}
