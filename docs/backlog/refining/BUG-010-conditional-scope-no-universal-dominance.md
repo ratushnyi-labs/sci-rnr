@@ -49,14 +49,14 @@ By construction the framework disclaims universal dominance (no lossless code sh
 ## Lifecycle Coverage Map
 | Stage | Status | Notes |
 |---|---|---|
-| CLARIFICATION | PENDING | scope the claim vs close the gap |
-| ESTIMATION | PENDING | set Complexity/Budget |
+| CLARIFICATION | DONE | scope-the-claim branch (A/B/C in-repo) vs close-the-gap (D, external); the conditional claim now traces to its formal predicate |
+| ESTIMATION | DONE | A EASY, B/C ABOVE_EASY (in-repo, DONE); D VERY_HARD (external, BLOCKED) |
 | DECOMPOSITION | DONE | split into BUG-010-A, BUG-010-B, BUG-010-C, BUG-010-D |
-| DESIGN | PENDING | proof strategy or experiment design |
+| DESIGN | DONE (A/B/C) | A: Abstract+§1.1 cross-refs to Def 2.1/Thm 8.1/§10.2; B: §10.2.1 precondition inequality (10.1); C: invariant probe. D: external measurement, blocked |
 | FRONTEND | N/A | no UI |
-| BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
-| TESTING | PENDING | scripts/verify probe or measured datum |
-| POST_AUDIT | PENDING | adversarial re-review per project review protocol |
+| BACKEND | DONE (A/B/C) | tex: Abstract+§1.1 conditional cross-links, new §10.2.1 inequality (10.1), and a new \textbf{Definition 2.1} header (the cross-ref target did not exist — caught in cold review); scripts/verify/bug_010_precondition_invariant.py (inv1-inv4 + 6 self-tests); CI step. D: BLOCKED |
+| TESTING | DONE (A/B/C) | bug_010_precondition_invariant.py inv1-inv4 OVERALL -> PASS; lualatex 371pp EXIT=0, no undefined refs; sibling BUG-001/002 probes still PASS |
+| POST_AUDIT | DONE (A/B/C) | hostile-referee audit PASSED; PLUS my cold re-read caught a real defect BOTH agents missed — "Definition 2.1" was cross-referenced 6x with no such header (same dangling-prose-ref class as the 7.34c fix). Fixed by promoting the §2.1 predicate to a labelled Definition 2.1; hardened the probe with inv4 (anchor-resolution) to prevent recurrence |
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD

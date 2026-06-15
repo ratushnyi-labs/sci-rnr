@@ -197,3 +197,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "optimal-encoding OP2/OP4 status-index probe reported OVERALL -> PASS"
+
+      - name: run conditional-scope / no-universal-dominance precondition probe (BUG-010)
+        run: |
+          set -e
+          p=bug_010_precondition_invariant
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -10
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "conditional-scope / no-universal-dominance precondition probe reported OVERALL -> PASS"

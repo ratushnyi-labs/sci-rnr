@@ -253,9 +253,15 @@ published integer-arithmetic methods (integer SGD, signSGD, integer
 quantized inference) provide candidate components that an implementer
 must verify against the full specification on a chosen target. We do not claim universal
 dominance --- no lossless code can map every input of length $n$ to a
-strictly shorter one --- and the framework is evaluated conditionally
-on data classes for which side information reduces residual
-uncertainty by more than the model and repair overhead costs.
+strictly shorter one (Theorem 8.1) --- and the framework is evaluated
+conditionally, in the precise sense of the conditionally-advantageous
+predicate of Definition 2.1: on data classes for which side
+information reduces residual uncertainty by more than the model,
+repair, verification, and metadata cost, and only in the
+model-amortization regime that makes the model-description cost
+payable (§10.2). The qualifying data-class precondition is assembled
+as one explicit inequality in §10.2.1; which real corpora satisfy it
+is an open empirical question (§11).
 
 \textbf{Keywords:} lossless compression, neural compression, side
 information, Slepian--Wolf coding, syndrome coding, positional coding,
@@ -342,10 +348,20 @@ along a single axis: the dimensionality and target of prediction. Type‑I
 predicts a one‑dimensional stream; Type‑II predicts a two‑dimensional
 symbol‑position partition; Type‑III predicts a multi‑dimensional tensor
 that may include the predicted entropy of prediction itself. The central
-claim is conditional: for data classes in which neural side information
-reduces residual uncertainty by more than the cost of describing the
-model, the repair, the verification, and the metadata, RNR can in
-principle outperform sequential dictionary or entropy‑only baselines.
+claim is conditional, not universal: there is no claim of universal
+dominance (Theorem 8.1), and ``conditional'' here means exactly the
+conditionally-advantageous predicate of Definition 2.1
+($\mathbb{E}[L(\mathsf{Enc}(X))] < \mathbb{E}[L(B(X))]$). For data
+classes in which neural side information reduces residual uncertainty
+by more than the cost of describing the model, the repair, the
+verification, and the metadata --- and only in the model-amortization
+regime in which the per-archive model cost $L(M)/m$ is payable
+(§10.2) --- RNR can in principle outperform sequential dictionary or
+entropy‑only baselines. The qualifying precondition is stated as a
+single inequality with each cost term named and §-anchored in §10.2.1;
+the structural data-class families plausibly satisfying it are listed
+there as a conjecture, and which real corpora actually qualify is an
+open empirical question deferred to §11.
 
 \textbf{1.2 Position relative to existing work}
 
@@ -915,8 +931,9 @@ alphabet, $H(X)$ denotes the Shannon entropy of $X$ in bits. Given
 a side-information variable $Y$, $H(X \mid Y)$ denotes the
 conditional entropy.
 
-For a source $X \sim D$ and a baseline compressor $B$, we say an RNR
-coder $\mathsf{Enc}$ is conditionally advantageous on $D$ if
+\textbf{Definition 2.1 (Conditionally advantageous on a data class).}
+For a source $X \sim D$ and a baseline compressor $B$, an RNR coder
+$\mathsf{Enc}$ is \emph{conditionally advantageous} on $D$ if
 \[
 \mathbb{E}[L(\mathsf{Enc}(X))] < \mathbb{E}[L(B(X))], \quad X \sim D.
 \tag{2.1}
@@ -15806,6 +15823,111 @@ predictor across enough archives that the combined volume exceeds the
 break-even $V^*\approx 152\,\mathrm{GB}$. No quantity in this table is
 new; each is cross-referenced to its source (Theorem 7.15, Theorem
 7.21, or the per-regime discussion above).
+
+\textbf{10.2.1 The qualifying data-class precondition (accounting form)}
+
+The Abstract and §1.1 phrase the central claim conditionally: RNR is
+advantageous only on data classes for which the side information buys
+more than it costs. Definition 2.1 fixes the operational meaning of
+``advantageous'' --- $\mathbb{E}[L(\mathsf{Enc}(X))] <
+\mathbb{E}[L(B(X))]$ --- and Theorem 8.1 fixes that this is conditional
+and distributional, never universal. This subsection assembles that
+predicate into a single auditable inequality whose every term is
+already defined or bounded elsewhere in the paper; it states no new
+result and measures no corpus (which real corpora satisfy it is the
+open empirical question of §11). Throughout we work per source symbol
+and in the amortized regime of §10.2.
+
+\emph{Precondition (data-class advantage, accounting form).} For a
+source $X\sim D$ over alphabet $\Sigma$ with decoder-reproducible side
+information $Y=M(C)$, baseline $B$, and an $m$-block amortized archive,
+the per-symbol expected RNR rate is the sum of its component costs, and
+RNR is conditionally advantageous on $D$ (Definition 2.1) when
+\begin{equation}
+\underbrace{H(X\mid Y)}_{\text{(a) residual uncertainty, §2.2}}
+\;+\;
+\underbrace{\tfrac{L(M)}{m}}_{\text{(b) amortized model, §10.2}}
+\;+\;
+\underbrace{\rho(D)}_{\text{(c) repair residual, §2.3/§5}}
+\;+\;
+\underbrace{\nu}_{\text{(d) verification overhead, §10.3}}
+\;+\;
+\underbrace{\mu}_{\text{(e) metadata, §10.4/§10.7}}
+\;<\;
+\underbrace{R_B(D)}_{\text{baseline rate, Def.\ 2.1}} .
+\tag{10.1}
+\end{equation}
+This is exactly Definition 2.1's inequality
+$\mathbb{E}[L(\mathsf{Enc}(X))] < \mathbb{E}[L(B(X))]$ divided by the
+block length and expanded into the encoder's component costs, with
+$R_B(D)=\mathbb{E}[L(B(X))]/N$ the per-symbol baseline rate. The terms
+are, with their paper-side definition or bound:
+\begin{itemize}
+\item[(a)] $H(X\mid Y)$, the conditional entropy of the source given
+  the side information --- the information-theoretic floor of the
+  repair stream under conditional source coding (§2.2; Cover and
+  Thomas 2006, Theorem 5.4.1). This is the term the side information
+  is meant to drive down; the whole conditional advantage hinges on
+  $H(X\mid Y)$ being below the baseline rate by more than (b)--(e).
+\item[(b)] $L(M)/m$, the model description amortized over the $m$
+  blocks of the archive (§10.2). In the single-block regime $L(M)$
+  dominates and (10.1) typically fails; as $m$ grows (streaming) this
+  term vanishes. This is precisely the term that forces the
+  ``only the model-amortization regime can win'' reading of §10.2: for
+  a fixed shared frontier predictor the regimes collapse to the single
+  break-even volume $V^*$ of the §10.2 table (net saving requires the
+  combined amortized volume $V>V^*\approx152\,\mathrm{GB}$), so (10.1)
+  with (b) charged in full is the per-symbol form of that break-even
+  condition.
+\item[(c)] $\rho(D)$, the expected repair residual --- the excess of
+  the realized repair-stream rate over the entropy floor (a), i.e.\ the
+  entropy-coder redundancy $\varepsilon_n/n$ of §2.3 (assumed
+  $\to 0$) plus any modeling gap between the coding law and the true
+  conditional law. The paper bounds the coder redundancy (§2.3) but
+  does not give a closed distribution-free bound on the modeling gap;
+  $\rho(D)$ is therefore carried as a named residual term (its
+  estimation on real data is part of the §11 / BUG-010-D campaign), not
+  a quantity claimed to be zero.
+\item[(d)] $\nu$, the verification overhead --- the per-subblock hash
+  bytes plus the explicit repair-stream offset table (and any
+  Merkle-tree authenticators for random-access verification), bounded
+  term by term in §10.3 (e.g.\ $\approx0.2\%$ for 64-bit hashes at
+  4\,KiB subblocks plus $\approx0.1\%$ offsets).
+\item[(e)] $\mu$, the metadata --- mode-flag stream and fallback
+  headers (§10.4) and, when seekable random access is used, the seek
+  index of §10.7. By Theorem 8.1 a fallback path is mandatory, so
+  $\mu>0$ always; §10.4/§10.7 bound it.
+\end{itemize}
+\emph{Consistency with the existing accounting.} Inequality (10.1) does
+not introduce a new cost: it is the per-symbol decomposition of the
+self-contained-archive accounting tabulated in §10.2 (the
+model-inclusive vs.\ amortized table) and is the per-symbol companion
+of the absolute-ratio scoping of §11. Summing (a)+(c) gives the
+bitstream/repair rate $\approx H_{M'}$ of the §10.2 table's headline
+row; charging (b) in full is its self-contained row; letting $m$ grow
+is its per-regime-amortization row. No term is double-counted: (a) is
+the floor, (c) is the realized excess \emph{over} that floor, and
+(b),(d),(e) are the disjoint side costs (model, verification,
+metadata). The baseline rate $R_B(D)$ is the same $\mathbb{E}[L(B(X))]$
+of Definition 2.1 and the same baseline family (sequential dictionary /
+entropy-only coders, and the seekable formats bgzip / zstd-seekable)
+scoped in §11.
+
+\emph{Candidate qualifying families (conjecture, not asserted).} We do
+not claim any specific corpus satisfies (10.1); that is the open
+empirical question (§11; the present subsection's role is only to make
+the precondition auditable). As a conjecture, the structural families
+of §1.1 --- data whose redundancy is positional, geometric,
+multi-scale, or coupled across non-adjacent positions (database pages,
+sensor and telemetry grids, structured binary sections, scientific
+tensors), i.e.\ high-mutual-information-with-a-learnable-predictor
+corpora for which a structural predictor reaches conditional entropy
+$H(X\mid Y)$ well below the sequential baseline rate --- are the
+plausible candidates for which (10.1) can hold in the amortized regime.
+Whether the inequality holds for any of them with realistic $L(M)$,
+$\rho(D)$, $\nu$, $\mu$ is exactly what §11's pre-registered
+measurements (and the residual external work) would decide; the claim
+of this paper remains conditional and in-principle.
 
 \textbf{10.3 Verification overhead analysis}
 
