@@ -131,3 +131,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "Theorem 10.1 integer reorder bit-exactness probe reported OVERALL -> PASS"
+
+      - name: run conditional-ratio-claim + mapping invariant probe (BUG-001)
+        run: |
+          set -e
+          p=bug_001_ratio_claim_conditional
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -10
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "conditional-ratio-claim + mapping invariant probe reported OVERALL -> PASS"

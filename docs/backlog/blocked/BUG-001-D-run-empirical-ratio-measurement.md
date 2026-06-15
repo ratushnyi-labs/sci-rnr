@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** BLOCKED (external)
 **Complexity:** VERY_HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -101,3 +101,7 @@ honest outcome, not a failure of this leaf.
 - §12.7: BLOCKING child leaf of BUG-001 -- the isolated external/research residual.
   Flagged closeable_in_repo = NO so the parent's complexity collapses to the
   shippable A/B/C core plus this clearly-marked deferred measurement.
+
+
+## Status (2026-06-15)
+IRREDUCIBLE EXTERNAL residual: run the pre-registered §11/experimental-design protocol (reference RNR impl + baselines incl. bgzip/zstd-seekable + squashfs+zstd + corpora + compute) and report measured bpb; reconcile §11. Not closeable in this theory repo. ALSO ABSORBS the in-repo-flagged coverage gap: add a dedicated quantifying hypothesis for the §11.5 repetitive-structured ratio-vs-dictionary / beats-bgzip-zstd-seekable RATIO target when the measurement is designed. Parked in blocked/.

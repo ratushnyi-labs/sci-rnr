@@ -273,8 +273,11 @@ redundancy is weaker than non-local structural regularity, and
 dictionary-based methods leave entropy unexploited that more structural
 predictors could in principle reach. The conjecture is empirical, not
 proven here: §11 lists falsifiable bit-per-byte targets for specific
-corpora, and the experimental-design companion document specifies the
-pre-registered measurement protocol. Within this paper we make no
+corpora, each cross-referenced to a numbered, pre-registered hypothesis
+(H1--H7, H15--H16) in the experimental-design companion document, which
+specifies the pre-registered measurement protocol and its named
+baselines (including the seekable formats bgzip and zstd-seekable and
+the deployed format squashfs+zstd). Within this paper we make no
 quantitative claim about absolute compression ratios on any specific
 corpus.
 
@@ -16842,6 +16845,20 @@ off by 10-30\% in either direction. Empirical validation against NNCP,
 PixelCNN++, LZMA at maximum preset, and zstd at maximum level on the
 corpora named below is the natural next step.
 
+Each prediction in \S\S11.1--11.6 is a falsifiable empirical conjecture,
+conditional and pending measurement --- not a theorem --- and is
+pre-registered as a numbered hypothesis (with an explicit falsification
+rule) in the experimental-design companion document, to which each
+prediction below is cross-referenced. In particular, the central
+value-proposition claim that the side-information+repair recasting beats
+existing dictionary-based seekable formats on compression ratio remains
+an empirical conjecture pending the measurement specified there; the
+seekable-format random-access baselines (bgzip, zstd seekable) and the
+deployed-format ratio baseline (squashfs+zstd) are named in Hypotheses
+H10--H11 and H12 of the companion, respectively. (\S11.7 is the lone
+exception: it derives from Theorem 7.15 and is verified against a cited
+measurement, not conjectured.)
+
 \textbf{11.1 Type-I, Code12 on text and source code}
 
 Type-I with $E_{12}$-A on English text and source code is predicted
@@ -16849,7 +16866,9 @@ to achieve 1.5 to 2.0 bits per byte before model amortization,
 competitive with LZMA at maximum preset (2.1 to 2.5 bits per byte)
 and behind NNCP (1.3 to 1.6 bits per byte on similar corpora). The
 gap to NNCP is expected to narrow as the Code12 mapping is learned
-(variant $E_{12}$-C) rather than fixed.
+(variant $E_{12}$-C) rather than fixed. This is a conjecture pending
+measurement, pre-registered as Hypothesis H1 (quantifying) of the
+experimental-design companion.
 
 \textbf{11.2 Type-II on structured positional data}
 
@@ -16860,7 +16879,11 @@ while Type-II exploits positional regularity. Against NNCP, the
 comparison depends on how well the byte-level autoregressive model
 captures positional structure; for data whose joint structure exceeds
 what a sequential model can express in moderate context, Type-II is
-predicted to dominate.
+predicted to dominate. This is a conjecture pending measurement,
+pre-registered as Hypothesis H2 (quantifying) of the experimental-design
+companion, with the supporting structural conditions ($\mathrm{TC}(D_N)
+= \Theta(N)$, intrinsic dimension $d \ll N$) pre-registered as
+Hypotheses H3 and H4.
 
 \textbf{11.3 Type-III-A composition on heterogeneous archives}
 
@@ -16876,7 +16899,8 @@ dominance guarantee; on archives where the heterogeneity advantage
 is small relative to $\sum_t \varepsilon_t$ plus mode-flag
 overhead, the composition can be worse than the best fixed single
 coder. Empirical validation is required to determine which side
-wins on specific data classes.
+wins on specific data classes; this conjecture is pre-registered as
+Hypothesis H5 (quantifying) of the experimental-design companion.
 
 \textbf{11.4 Type-III-B on ASCII text and instruction streams}
 
@@ -16885,6 +16909,8 @@ independent nibble coding on ASCII text, in line with the
 $I(H ; L \mid C)$ estimates of Section 6.4. On structured numeric
 arrays (e.g., float32 columns), Type-III-B may recover larger gains
 if the byte-level dependency is strong across the mantissa structure.
+This is a conjecture pending measurement, pre-registered as Hypothesis
+H6 (quantifying) of the experimental-design companion.
 
 \textbf{11.5 Type-III-C on highly repetitive structured data}
 
@@ -16892,7 +16918,15 @@ Type-III-C with a $32 \times 32$ token grid on JSON, XML, source
 code, and protocol streams is predicted to achieve coding rates
 competitive with the best dictionary-based methods (zstd at maximum
 level, LZMA at maximum preset), with the advantage growing as the
-corpus size grows and the dictionary amortizes.
+corpus size grows and the dictionary amortizes. This is a conjecture
+pending measurement. The Type-III-C coder is pre-registered as
+Hypothesis H7 (confirming, bits-back rate within $2\%$ of $H(X\mid Y)$)
+of the experimental-design companion, and the companion's corpus set
+(\S3.1) exercises Type-III-C on source code and JSON/HTML dictionaries;
+the specific ratio-versus-dictionary-method target stated here is
+covered by those corpora but is not itself given a dedicated quantifying
+hypothesis (a residual to close in the measurement of Hypothesis H1's
+text/code corpora and any follow-on Type-III-C quantifying test).
 
 \textbf{11.6 Negative controls}
 
@@ -16900,7 +16934,9 @@ On random or encrypted data, all RNR types are predicted to revert to
 baseline plus overhead, since no side information reduces residual
 uncertainty. On already-compressed data (gzip, xz, zstd output), RNR
 is predicted to be slightly worse than passthrough, since the
-residual entropy is high and the model cost is wasted.
+residual entropy is high and the model cost is wasted. This conjecture
+is pre-registered as Hypothesis H16 (confirming, store-mode fallback
+upper bound on adversarial inputs) of the experimental-design companion.
 
 \textbf{11.7 Large-scale neural predictors (Theorem 7.15 instantiation)}
 

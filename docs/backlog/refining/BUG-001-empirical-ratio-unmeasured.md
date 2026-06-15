@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** DECOMPOSED
+**Status:** DONE (in-repo); D external-blocked
 **Complexity:** UNESTIMATABLE
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -92,3 +92,15 @@ pre-registered test; D is the clearly-flagged deferred residual needing out-of-r
   (reference implementation + baselines incl. bgzip/zstd-seekable + corpora + compute) and
   report measured bits-per-byte, then reconcile §11. Complexity VERY_HARD;
   closeable-in-repo NO (external work; isolated research residual).
+
+
+## Resolution (2026-06-15)
+A/B/C closed in-repo (-> done/): §11.1-11.6 uniformly scoped conditional/pre-registered
++ §11-intro canonical paragraph (Abstract/§1.1 were already scoped); §11.x<->H1-H7/H15-H16
+mapping with seekable-baseline coverage note; document-invariant probe
+bug_001_ratio_claim_conditional.py (inv1 conditional-scoping + inv2 no-orphan, self-tested
+non-vacuous) + CI job. POST_AUDIT (hostile referee) clean; probe hardened (per-paragraph
+locality, dominate-needs-baseline). HONEST RESIDUAL feeding D: §11.5 repetitive-ratio and
+the beats-seekable value-prop have only partial pre-registered coverage (no dedicated
+bgzip/zstd-seekable RATIO hypothesis); flagged in-text, not invented. D (run the measurement)
+-> blocked/ (external).

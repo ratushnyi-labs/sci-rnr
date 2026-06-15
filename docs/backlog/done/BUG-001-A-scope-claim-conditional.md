@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -89,3 +89,7 @@ theorem-backed elsewhere; cross-check against §11.7 before retagging anything.
   no code/proof change made to the paper before this file.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
 - §12.7: this is one BLOCKING child leaf of BUG-001 (the closeable-now scoping layer).
+
+
+## Resolution (2026-06-15, opus-4-8; POST_AUDIT passed)
+Closed in-repo as part of BUG-001 A/B/C (commit pending). A: §11.1-11.6 per-prediction conditional scoping ('falsifiable empirical conjecture, conditional and pending measurement, not a theorem') + canonical §11-intro paragraph; Abstract/§1.1 already scoped (left intact). B: §11.x<->companion-hypothesis mapping added (H1-H7, H15-H16) incl. seekable-baseline coverage note (bgzip/zstd-seekable = H10/H11 random-access TIME baselines; squashfs+zstd = H12 ratio baseline). C: scripts/verify/bug_001_ratio_claim_conditional.py (inv1 conditional-scoping + inv2 no-orphan mapping, non-vacuity self-test; per-paragraph locality + dominate-needs-baseline matcher hardened by supervisor; OVERALL -> PASS) + CI job. Hostile-referee POST_AUDIT clean. HONEST RESIDUAL (feeds D): §11.5 repetitive-ratio-vs-zstd/LZMA target + the beats-seekable value-prop have only PARTIAL pre-registered coverage (H7 = image bits-back; no dedicated bgzip/zstd-seekable RATIO hypothesis) -- flagged in-text, no H-number invented.
