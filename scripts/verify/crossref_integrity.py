@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 r"""
-Cross-reference integrity guard for tex/rnr_coding.tex.
+Cross-reference integrity guard for the four RNR manuscripts (rnr_coding.tex and
+the three companion docs rnr_summary / rnr_engineering_spec / rnr_experimental_design).
+A reference in any document resolves against the UNION of every document's defined
+blocks, because the companions legitimately cite the main paper's results.
 
 The paper numbers its structure MANUALLY -- named blocks are
 \textbf{Definition N.M (...)} / \textbf{Theorem N.M (...)} / \textbf{Lemma ...} /
@@ -47,7 +50,17 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
-MAIN = os.path.join(REPO, "tex", "rnr_coding.tex")
+TEX = os.path.join(REPO, "tex")
+# All four manuscripts. A reference in any one resolves against the UNION of every
+# document's defined blocks, because the companion docs legitimately cross-
+# reference the main paper (e.g. rnr_experimental_design.tex cites "Theorem 7.15"
+# of rnr_coding.tex). A number that resolves in no document is a phantom.
+DOCS = [
+    os.path.join(TEX, "rnr_coding.tex"),
+    os.path.join(TEX, "rnr_summary.tex"),
+    os.path.join(TEX, "rnr_engineering_spec.tex"),
+    os.path.join(TEX, "rnr_experimental_design.tex"),
+]
 
 KINDS = ["Definition", "Theorem", "Lemma", "Proposition", "Corollary", "Remark"]
 
@@ -76,6 +89,7 @@ ALLOWLIST_BLOCK_NUM = {
     "3.6": "external: a beta-mixing corollary cited with a DOI; no internal block 3.6",
     "6.8c": "retracted: Lemma 6.8c was removed in an earlier draft and is mentioned only historically",
     "7.3a": "retracted: Theorem 7.3a was an attempted closure, retracted; mentioned only historically",
+    "4.4": "deleted: Theorem 4.4 (an earlier APX-hardness claim with a broken QAP-Hamming reduction) was removed; rnr_summary.tex documents the deletion and the resulting open E_12 inapproximability",
 }
 
 
@@ -111,31 +125,38 @@ def phantom_block_refs(text, block_nums):
 
 def main():
     print("Cross-reference integrity: prose Definition/Theorem/Lemma/Proposition/")
-    print("Corollary/Remark pointers resolve to a numbered block (kind-agnostic).")
+    print("Corollary/Remark pointers resolve to a numbered block (kind-agnostic),")
+    print("across all four RNR manuscripts (refs resolve against the union).")
     print("=" * 74)
 
-    text = strip_comments(read(MAIN))
-    block_nums = defined_block_nums(text)
-    print(f"  defined: {len(block_nums)} distinct block numbers")
+    texts = {os.path.basename(p): strip_comments(read(p)) for p in DOCS}
+    block_nums = set()
+    for t in texts.values():
+        block_nums |= defined_block_nums(t)
+    print(f"  defined: {len(block_nums)} distinct block numbers "
+          f"(union of {len(texts)} docs)")
     print(f"  allowlisted (external/retracted, documented): "
           f"{sorted(ALLOWLIST_BLOCK_NUM)}")
 
-    dangling = phantom_block_refs(text, block_nums)
-    print("\n-- phantom named-block references (number matches no block) --")
-    if dangling:
-        for (kind, num), ctx in dangling:
-            print(f"  [PHANTOM] {kind} {num}   ...{ctx.strip()}...")
-    else:
-        print("  (none -- every internal block reference resolves to a header)")
+    any_phantom = False
+    for name, text in texts.items():
+        dangling = phantom_block_refs(text, block_nums)
+        print(f"\n-- {name}: phantom named-block references --")
+        if dangling:
+            any_phantom = True
+            for (kind, num), ctx in dangling:
+                print(f"  [PHANTOM] {kind} {num}   ...{ctx.strip()}...")
+        else:
+            print("  (none -- every block reference resolves)")
 
     # Non-vacuity: a fabricated reference to a guaranteed-absent block must be caught.
-    probe = text + "\n\nThis cites the nonexistent Theorem 99.99 to test the guard.\n"
+    probe = next(iter(texts.values())) + "\n\nCites nonexistent Theorem 99.99 here.\n"
     caught = any(num == "99.99" for (_, num), _ in phantom_block_refs(probe, block_nums))
     print("\n-- self-test (non-vacuity) --")
     print(f"  [{'PASS' if caught else 'FAIL'}] fabricated 'Theorem 99.99' is "
           f"{'flagged' if caught else 'NOT flagged -- guard is vacuous!'}")
 
-    ok = (not dangling) and caught
+    ok = (not any_phantom) and caught
     print("\n" + "=" * 74)
     if ok:
         print("OVERALL -> PASS")
