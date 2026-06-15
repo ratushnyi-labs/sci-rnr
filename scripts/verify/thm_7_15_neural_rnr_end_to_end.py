@@ -8,7 +8,7 @@ The boxed formula:
 
 This script:
 1. Computes the predicted archive size for enwik9-scale archive
-   (N=10^9, Chinchilla-class predictor H_M' ≈ 1.04 bpb).
+   (N=10^9, Chinchilla-class predictor H_M' ≈ 0.664 bpb).
 2. Decomposes into the four terms (predictor, sync, AC slack,
    concentration).
 3. Verifies the numerical predictions in the paper match the formula.
@@ -114,19 +114,14 @@ def main() -> int:
           f"({result['total_central']:.2e} bits)")
     print(f"    Total + concentration: {bits_to_human(result['total_with_concentration'])}")
 
-    # Verify paper's specific claims:
-    # - Predictor: 130 MB
-    # - Sync: 4 kB
-    # - AC slack: 125 kB
-    # - Concentration 1-sigma: 1.5 MB
-    # - Total: ~130 +/- 1.5 MB
+    # Verify paper's specific claims (Theorem 7.15, H_M' = 0.664 bpb):
+    # - Predictor: ~79 MB
+    # - Sync: ~4 kB
+    # - AC slack: ~123 kB
+    # - Concentration 1-sigma: ~15 kB
+    # - Total: ~79 MB
+    # (The assertions below compare result[...] against these figures inline.)
     print("\n\nPaper's claimed predictions:")
-    expected = {
-        'predictor': 130 * 1024**2 * 8,  # 130 MB in bits
-        'sync': 4 * 1024 * 8,  # 4 kB
-        'ac_slack': 125 * 1024 * 8,  # 125 kB
-        'concentration': 1.5 * 1024**2 * 8,  # 1.5 MB at delta=0.32
-    }
 
     all_ok = True
 
@@ -194,10 +189,10 @@ def main() -> int:
               f"compression {ratio:.2f}x")
 
     # Sweep N for scaling sanity
-    print(f"\n\nScaling with N (H_M'=1.04, K=sqrt(N)):")
+    print(f"\n\nScaling with N (H_M'=0.664, K=sqrt(N)):")
     for N_var in [10**6, 10**7, 10**8, 10**9, 10**10, 10**11]:
         K_var = int(math.sqrt(N_var))
-        r = predict_archive_size(N_var, 1.04, 1.0, 32, K_var, 1e-6)
+        r = predict_archive_size(N_var, 0.664, 1.0, 32, K_var, 1e-6)
         ratio = (8 * N_var) / r['total_central']
         print(f"  N={N_var:.0e}: total {bits_to_human(r['total_central'])}, "
               f"compression {ratio:.3f}x")
@@ -205,8 +200,8 @@ def main() -> int:
     print()
     if all_ok:
         print("PASS: Theorem 7.15 end-to-end formula verified.")
-        print("      enwik9 prediction (130 MB) and component breakdown match paper.")
-        print("      Compression ratio ~7.7x matches Chinchilla-class LM performance.")
+        print("      enwik9 prediction (~79 MB) and component breakdown match paper.")
+        print("      Compression ratio ~12.0x matches Chinchilla-class LM performance.")
         return 0
     print("FAIL")
     return 1
