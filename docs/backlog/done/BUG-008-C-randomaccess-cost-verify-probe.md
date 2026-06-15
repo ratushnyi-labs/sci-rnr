@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** ABOVE_EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -113,3 +113,7 @@ about an implementation. Mirror the CI-job wiring of the existing §5.1 verify s
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
   The scripts/verify probe is the project-standard executable check, not a product runtime.
 - §12.7: BLOCKING child leaf of BUG-008 (the closeable-now executable-verification layer).
+
+
+## Resolution (2026-06-15, opus-4-8; POST_AUDIT passed)
+Closed in-repo as part of BUG-008 A/B/C (commit pending). A: cost(M) surfaced as a non-universal, dominant per-position neural-eval term at Abstract/§1.1/§10.7/Thm 10.3 (polylog = in archive params with cost(M) fixed, not wall-clock; aligned w/ Lemma 5.1b). B: 6-row per-mode access-granularity table near Rem 10.3a (byte vs sub-block; per-query cost; wasted decode; sources Thm 10.3/Rem 10.3a/§6.3/§10.7; every cell cited, no new claim). C: scripts/verify/bug_008_random_access_cost.py (decode-window count p+k'-P<=K+k; K=Theta(|X|) degeneracy; simultaneous-polylog impossibility via interior K*; sub-block-granular cost; OVERALL -> PASS) + CI job. Hostile-referee POST_AUDIT clean (table byte-vs-sub-block split verified both directions). Supervisor: shortened the Type-III-C cost cell to a §10.7 pointer; table's 39.81pt overfull is house-style (188 such in the paper, many larger).

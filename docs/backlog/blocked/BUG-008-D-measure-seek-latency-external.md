@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** BLOCKED (external)
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -113,3 +113,7 @@ claim (the kill-feature) stands or falls on H10's $N$-sweep.
 - §12.7: BLOCKING child leaf of BUG-008 -- the isolated external/measurement residual.
   Flagged closeable_in_repo = NO so the parent's complexity collapses to the shippable
   A/B/C core plus this clearly-marked deferred seek-latency measurement.
+
+
+## Status (2026-06-15)
+IRREDUCIBLE EXTERNAL residual: measured wall-clock seek latency (companion §2.8 H10/H11) with a reference coder across archive sizes/hardware, to confirm/condition the Rem 10.3a 650 ms and §11 20-200 ms / sub-ms predictions. Not closeable in this theory repo; the in-repo cost accounting + per-mode granularity (BUG-008-A/B/C) is done. Parked in blocked/.

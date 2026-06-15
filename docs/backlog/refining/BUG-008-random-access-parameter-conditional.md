@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** DECOMPOSED
+**Status:** DONE (in-repo); D external-blocked
 **Complexity:** MEDIUM
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -97,3 +97,12 @@ executable probe; D is the clearly-flagged deferred residual needing out-of-repo
   archive sizes and hardware paths, then confirm/condition the Rem 10.3a 650 ms and §11
   20--200 ms / sub-ms estimates. Complexity HARD; closeable-in-repo NO (external work;
   isolated measurement residual).
+
+
+## Resolution (2026-06-15)
+A/B/C closed in-repo (-> done/): cost(M) non-universal/dominant scoping at the headline
+random-access sites + Thm 10.3 (polylog in archive params, cost(M) fixed, not wall-clock);
+6-row per-mode access-granularity table near Rem 10.3a (byte vs sub-block, per-query cost,
+wasted decode, sources); cost-accounting probe bug_008_random_access_cost.py (decode-window,
+K=Theta(|X|) degeneracy, simultaneous-polylog impossibility, sub-block cost) + CI job.
+POST_AUDIT (hostile referee) clean. D (measured seek latency) -> blocked/ (external).

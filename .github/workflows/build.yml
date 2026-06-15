@@ -142,3 +142,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "conditional-ratio-claim + mapping invariant probe reported OVERALL -> PASS"
+
+      - name: run random-access cost-accounting probe (BUG-008)
+        run: |
+          set -e
+          p=bug_008_random_access_cost
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -8
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "random-access cost-accounting probe reported OVERALL -> PASS"

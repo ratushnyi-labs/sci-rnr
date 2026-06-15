@@ -220,8 +220,15 @@ whole-block Type-II/III-B partition-rank modes get only
 sub-block-granular access at separate $O(K \cdot \mathrm{unrank}(K))$
 per requested sub-block, Remark 10.3a) --- polylogarithmic in
 archive size $|X|$ once the sync-point spacing $K$, read window
-$k$, predictor cost, and $\log L(R)$ are treated as fixed (or
-polylogarithmic in $|X|$) parameters. Under an additional probability-floor assumption
+$k$, predictor cost $\mathrm{cost}(M)$, and $\log L(R)$ are treated
+as fixed (or polylogarithmic in $|X|$) parameters. Here
+$\mathrm{cost}(M)$ is one per-position neural-predictor evaluation: it
+is non-universal (architecture- and context-dependent, e.g.\
+$\Theta(W)$ for a windowed transformer of context $W$; Lemma 5.1b)
+and it is the dominant term of the per-query cost in any realistic
+regime, so ``polylogarithmic in $|X|$'' bounds the dependence on
+archive size with $\mathrm{cost}(M)$ held fixed, not the per-query
+cost in absolute (wall-clock) terms. Under an additional probability-floor assumption
 on the predictor (Section 10.7), the sync-point compression overhead
 per sync point is bounded by $S \cdot W \cdot \log_2(1/\eta)$ where
 $\eta$ is the floor and $S$ is the number of floored entropy-coder
@@ -622,9 +629,14 @@ This article makes the following contributions.
   sub-block-granular access with a separate
   $O(K \cdot \mathrm{unrank}(K))$ per sub-block, Remark 10.3a)
   --- polylogarithmic in archive size $|X|$ once sync-point spacing
-  $K$, read window $k$, predictor cost, and $\log L(R)$ are held
-  fixed (or polylog in $|X|$) --- via Theorem 10.3 with Definitions
-  10.2, 10.3 of $W$-bounded predictors and sync points.
+  $K$, read window $k$, predictor cost $\mathrm{cost}(M)$, and
+  $\log L(R)$ are held fixed (or polylog in $|X|$) --- via Theorem 10.3
+  with Definitions 10.2, 10.3 of $W$-bounded predictors and sync points.
+  The factor $\mathrm{cost}(M)$ is a single per-position neural-predictor
+  evaluation: non-universal (architecture-dependent; characterized below
+  via Lemma 5.1b) and the dominant term of the per-query cost, so the
+  ``polylog in $|X|$'' headline bounds the dependence on archive size
+  with $\mathrm{cost}(M)$ fixed, not the per-query cost in absolute terms.
   Theorem 10.4 covers non-$W$-bounded predictors via state snapshots.
   Lemma 5.1b strengthens this under exponentially decaying
   conditional mutual information of the form
@@ -15926,7 +15938,11 @@ uniform-spacing direct-lookup case when $\log L(R)$ is also
 held fixed), provided the predictor has
 bounded context, in a parameter regime where $K$, $k$,
 $\mathrm{cost}(M)$, and $\log L(R)$ are held fixed; the resident
-seek index is $\Theta(|X|/K)$. Whole-block Type-II partition-rank
+seek index is $\Theta(|X|/K)$. The factor $\mathrm{cost}(M)$ is one
+per-position neural-predictor evaluation --- non-universal
+(architecture-dependent, Lemma 5.1b) and the dominant term of the
+per-query cost --- so the polylog claim bounds only the dependence on
+$|X|$ with $\mathrm{cost}(M)$ held fixed. Whole-block Type-II partition-rank
 modes and Type-III-B partition modes give only sub-block-granular
 random access at a separate $O(K \cdot \mathrm{unrank}(K))$ per
 requested sub-block (Remark 10.3a). We make the per-position
@@ -16110,7 +16126,17 @@ $\Theta(|X| \cdot \mathrm{cost}(M))$, no better than full sequential
 decode}. When $(K+k) \cdot
 \mathrm{cost}(M) \gg \log L(R)$ the second term dominates and the
 cost is $O((K+k) \cdot \mathrm{cost}(M))$, independent of $|X|$ in
-that parameter regime.}
+that parameter regime. \emph{The factor $\mathrm{cost}(M)$ is one
+per-position evaluation of the neural predictor $M$; it is
+non-universal --- architecture- and context-dependent (Lemma 5.1b
+records $\Theta(W)$ per token for a windowed transformer of context
+$W$, and $\Theta(\sigma^W)$ model storage with $O(1)$ per-evaluation
+lookup for an explicit table) --- and, since the decode window
+dominates $\log L(R)$ in any realistic regime, it is the dominant
+term of the per-query cost. The polylog conclusion is therefore a
+statement about the dependence on $|X|$ with $\mathrm{cost}(M)$ held
+fixed, not a claim that the per-query cost is small in absolute
+(wall-clock) terms.}}
 
 \emph{\textbf{Proof.}} Under the uniform-spacing convention of
 Definition 10.3, the byte position of the latest sync point
@@ -16206,6 +16232,83 @@ about $|X| / (2(K + k))$ for an average random read at position
 $|X|/2$. For $|X| = 1$ GiB and $K = 64$ KiB the worst-case
 speedup is roughly 16{,}000-fold and the average is roughly
 8{,}000-fold.
+
+\emph{Per-mode access-granularity and per-query cost (collation of
+Theorem 10.3, Remark 10.3a, §6.3, and the §10.7 trade-off bullet).} The
+random-access granularity is not uniform across coding modes: it is the
+per-position-sequential property of Theorem 10.3 that delivers
+byte-granular access, while the whole-block enumerative-rank modes of
+Remark 10.3a give only sub-block granularity. The table below
+consolidates, per coding mode, the granularity actually established, the
+per-query cost formula in that mode, the wasted decode incurred to serve
+one read, and the source of each entry. No row states a new result; each
+is a restatement of the cited theorem, remark, or trade-off bullet.
+In all rows $\mathrm{cost}(M)$ is the per-position predictor evaluation,
+the non-universal, architecture-dependent factor that dominates the
+per-query cost in any realistic regime (Lemma 5.1b); ``polylog in $|X|$''
+qualifies only the \emph{dependence on archive size} with
+$K,k,\mathrm{cost}(M),\log L(R)$ held fixed or polylog.
+
+\begingroup\footnotesize\sloppy
+\setlength{\tabcolsep}{4pt}
+\noindent\begin{tabular}{@{}p{2.5cm}p{1.9cm}p{3.0cm}p{2.6cm}p{2.4cm}@{}}
+\hline
+\textbf{coding mode} & \textbf{access granularity} &
+\textbf{per-query cost} & \textbf{wasted decode per query} &
+\textbf{source}\\
+\hline
+Type-I (direct byte arithmetic; $S\!=\!1$)
+& byte
+& $O(\log L(R) + (K\!+\!k)\,\mathrm{cost}(M))$
+& $\le K$ warmup positions (discarded); decode $\le K\!+\!k$ total
+& Thm 10.3 (incl.); §10.7 bullet (``not affected'')\\
+Type-II enumerative / partition-rank (whole block)
+& sub-block ($K$)
+& $O(\log L(R) + K\!\cdot\!\mathrm{unrank}(K))$ per requested sub-block; $\lceil k/K\rceil\!+\!O(1)$ sub-blocks for a $k$-read
+& up to one full sub-block ($K\!+\!O(K)$ bytes) per request; $k$ requested
+& Rem 10.3a; Thm 10.3 (excl.); §10.7 ``Type-II semi-non-factorized'' bullet\\
+Type-III-A composition over per-position-sequential per-tile modes
+& byte, \emph{iff} $K$ tile-aligned (sync points at tile boundaries)
+& $O(\log L(R) + (K\!+\!k)\,\mathrm{cost}(M))$
+& $\le K$ warmup positions; tile/sync misalignment voids byte granularity
+& Thm 10.3 (incl., tile-alignment caveat)\\
+Type-III-B (byte tensor; §6.3): per-byte sequential strategy (iii); $S\!=\!2$
+& byte
+& $O(\log L(R) + (K\!+\!k)\,\mathrm{cost}(M))$
+& $\le K$ warmup positions (discarded); decode $\le K\!+\!k$
+& Thm 10.3 (incl., strategy (iii)); §6.3 (iii); §10.7 bullet\\
+Type-III-B direct / hierarchical partition strategies (i)/(ii) of §6.3
+& sub-block ($K$)
+& $O(\log L(R) + K\!\cdot\!\mathrm{unrank}(K))$ per sub-block (as Type-II)
+& up to one full sub-block per request
+& Thm 10.3 (excl.); Rem 10.3a; §6.3 (i)/(ii); §10.7 bullet\\
+Type-III-C dictionary / grammar (flat terminal cover)
+& byte (per-position-sequential carrier), under uniform sync only if no token crosses $jK$
+& $O(\log L(R) + (K\!+\!k)\,\mathrm{cost}(M))$; non-uniform sync: a binary-search seek at polylog cost (\S10.7 non-uniform branch)
+& $\le K$ warmup; tokens crossing $jK$ forfeit $\le 8|\tau|$ bits each (split), bounded $8|X|\overline{|\tau|}/K$
+& §10.7 bullet (Type-III-C); Thm 10.3 (non-uniform branch)\\
+\hline
+\end{tabular}
+\par\endgroup
+
+\emph{Reading guide.} Rows 1, 3, 4, and 6 are the per-position
+sequential modes in Theorem 10.3's scope: each is byte-granular and pays
+the $O(\log L(R) + (K\!+\!k)\,\mathrm{cost}(M))$ window cost, with the
+only wasted work the $\le K$ warmup positions discarded before position
+$p$ (Theorem 10.3 step (ii); total decoded positions $p+k'-P\le K+k$).
+Rows 3 and 6 carry an alignment caveat: Type-III-A is byte-granular only
+when $K$ is tile-aligned, and Type-III-C only when no dictionary token
+crosses a sync boundary $jK$ (otherwise the crossed token is split and
+forfeits its saving, §10.7's third trade-off bullet; a non-uniform
+sync-point variant aligns boundaries to token edges at the cost of the
+binary-search seek term). Rows 2 and 5 are the whole-block
+enumerative-rank modes excluded from Theorem 10.3 (Remark 10.3a): they
+are only sub-block-granular, must decode and discard up to a full
+$K$-byte sub-block to serve one byte, and replace the
+$(K\!+\!k)\,\mathrm{cost}(M)$ window term with $K\!\cdot\!\mathrm{unrank}(K)$
+per affected sub-block. No quantity in this table is new; each cell is
+cross-referenced to Theorem 10.3, Remark 10.3a, §6.3, or the §10.7
+trade-off bullet from which it is taken.
 
 \textbf{Theorem 10.4 (Random access for non-$W$-bounded predictors).}
 \emph{Under the same scope as Theorem 10.3 (per-position sequential
