@@ -151,10 +151,23 @@ explicit uniform-in-u remainder bound (analyticity/Bernstein) is the narrow
 elementary step to a one-line theorem -- certified here via the geometric majorant.
 A=2 achievability was ALREADY unconditional via GAP-1 (ledger a1); this closes the
 distinct CONVEXITY route's residual at A=2 and exhibits the cancellation mechanism.
-STILL OPEN (card stays blocked): (i) D1 for A>=3 -- degree-5 Perron (NO single
-sqrt), reduces to the degree-2 trig-poly coefficient recursion, with the A=2
-perfect square as template; (ii) D2 -- beyond-Gray exact V_op(D). The residual is
-now SHARPLY PINNED (A=2 done; A>=3 = the named recursion).
+UPDATE (same session): the A>=3 mechanism is now PROVEN much further. The Perron
+branch is AFFINE on the tilt boundary -- Q_A(eta,0) has RANK 2, trace 1+(A-1)eta,
+all other eigenvalues 0, so rho(eta,0)=1+(A-1)eta is the unique nonzero (Perron)
+eigenvalue -- a one-line rank/trace identity, PROVEN FOR ALL A (verified symbolic-p
+A=2..6). This forces pure-eta^k coeffs to vanish (k>=2), so by mixed-term counting
+the DECAY ORDER a_k=O(D^{k+1}) is now PROVEN FOR ALL A (not just A=2,3). New probe
+scripts/verify/probe_7_34m_boundary_affineness.py (A1 rank/trace; A2 Perron slope;
+A3 pure-eta^k vanish; A4 the resulting order -- all PASS) + Rem 7.34m'' "engine"
+paragraph + ledger a3. Adversarial-disprove gate (2 skeptics): attack-failed on the
+identity; flagged + FIXED two over-claims (the ledger had lumped A=3 with A=2 as
+fully CLOSED, and the prose said "eta single harmonic"/"majorant closes rigorously
+A=2,3") -- corrected to: ORDER proven all-A, LB(D)>0 CLOSURE certified only A=2.
+STILL OPEN (card stays blocked): (i) the EXPLICIT UNIFORM (in A,D) mixed-coefficient
+bound that carries the geometric majorant to D_c and certifies LB(D)>0 for A>=3 (the
+c_{a,b} are finite but LARGE, e.g. c_{2,2}~-1.1e4 at A=3) -- the residual is reduced
+from "prove a_k=O(D^{k+1})" (DONE, all A) to "bound the coefficients uniformly";
+(ii) D2 -- beyond-Gray exact V_op(D).
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD

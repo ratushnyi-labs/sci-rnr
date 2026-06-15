@@ -15108,6 +15108,43 @@ form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$; E6 the uniform-in-$u$
 $G''(u)=8\kappa_A^2 D^3+O(D^4)$; E7 the asymmetric-binary transfer; E8 the
 Chebyshev-tail all-$D$ closure on the memory bulk --- all PASS).
 
+\emph{The representation-free engine (general $A$): boundary affineness.} The
+perfect square above is the $A=2$ shadow of a structure that holds for \emph{every}
+$A$ and needs no closed-form root. At $\bar\eta=0$ the replica operator
+$Q_A(\eta,0)$ has \emph{rank two}, trace $1+(A-1)\eta$, and all other eigenvalues
+zero, so its characteristic polynomial is $\lambda^{\,n-1}\bigl(\lambda-(1+(A-1)
+\eta)\bigr)$ and its \emph{unique nonzero} --- hence Perron --- eigenvalue is
+exactly affine:
+\[
+  \rho(\eta,0)=1+(A-1)\eta,\qquad \rho(0,\bar\eta)=1+(A-1)\bar\eta .
+\]
+This is a one-line trace/rank identity (the unique nonzero eigenvalue of a
+trace-$\tau$ operator whose every other eigenvalue vanishes is $\tau$), uniform in
+$A$ and $p$ --- verified symbolically for $A=2,\dots,6$ (at $A=2$ it is the
+boundary trace $\tfrac12[(1+\eta)+\sqrt{(1+\eta)^2}\,]=1+\eta$ of the perfect
+square). Boundary affineness forces the \emph{pure}-$\eta^k$ and pure-$\bar\eta^k$
+coefficients of $\rho(\eta,\bar\eta)$ to vanish for $k\ge2$, so the only non-affine
+content is the mixed coupling; since $\eta$'s harmonic-$m$ content is $O(D^{m+1})$
+(the leading injection is $\alpha(1-z)$, $\alpha=O(D)$, $z=e^{is}$; higher
+harmonics are more suppressed) and likewise for $\bar\eta$ in $z^{-1}$, the $k$-th
+harmonic of $\rho$ is assembled from mixed monomials $\eta^a\bar\eta^b$ with $a\ge
+k,\ b\ge1$, the minimal $\eta^k\bar\eta$ being $O(D^{k+1})$. Hence the \emph{decay
+order} $a_k=O(D^{k+1})$ ($k\ge2$) is established for \emph{all} $A$ (the mixed
+coefficients are finite). What remains regime-dependent is only the
+\emph{quantitative closure} $\mathrm{LB}(D)>0$: for $A=2$ the explicit
+$|a_k|\le8\kappa^2 D^{k+1}$ and the ratio $2|\alpha|<1$ certify it on the whole
+Gray region (above); for $A\ge3$ the mixed coefficients, though finite, are large
+(e.g.\ $c_{2,2}\approx-1.1\times10^4$ at $A=3,\ p=\tfrac15$), so an \emph{explicit
+uniform} coefficient bound is still needed to carry the geometric majorant up to
+$D_c$. The convexity capstone's residual is thereby reduced from ``prove
+$a_k=O(D^{k+1})$'' (now done, all $A$, via boundary affineness) to ``bound the
+mixed coefficients uniformly in $A$'' --- a sharply narrower analytic task.
+\emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34m\_boundary\_affineness.py} (A1 the rank-two/
+trace identity and $\rho(\eta,0)=1+(A-1)\eta$, symbolic $p$, $A=2,\dots,6$; A2 its
+Perron slope $A{-}1$ at all $p$; A3 the vanishing pure-$\eta^k$ coefficients; A4
+the resulting $a_k=O(D^{k+1})$ order, $A=3,4$ --- all PASS).
+
 \textbf{Remark 7.34m$'''$ (the operational RD-dispersion residual ledger:
 converse vs.\ achievability, sub-question by sub-question).} The §7.34 grid is a
 \emph{converse} that is unconditional and fully general, plus an
@@ -15148,13 +15185,16 @@ $g_A=1-2v(1-\cos s)+O(D^3)$; second-harmonic curvature $G''(u)=8\kappa_A^2
 D^3+O(D^4)>0$; prefactor $|C_s/C_0|^2$ affine in $u$ (no curvature) & \texttt{probe\_7\_34m\_convexity\_endpoint} (E1--E7), \texttt{probe\_7\_34m\_endpoint\_pi}\\
 \hline
 \emph{Achievability (a3)} --- general A-ary, \emph{all} $D\le D_c$ on the
-\emph{memory bulk} & \textbf{CLOSED} ($A=2$, closed form) / \textbf{CLOSED modulo}
-the $a_k$ bound ($A\ge3$) & Rem 7.34m$''$ (``$A=2$ in closed form'' / ``All-$D$
-via a Chebyshev tail'') & $A=2$: closed-form Perron quadratic $+$ perfect-square
-deviation $\Rightarrow|a_k|\le8\kappa^2D^{k+1}$, geometric majorant
-$\Rightarrow\mathrm{LB}(D)>0$. $A\ge3$ \emph{obstacle:} degree-5 Perron; the
-$O(D^k)$ Bauer--Fike majorant is one $D$-power loose vs.\ $O(D^{k+1})$ (the
-degree-2 coefficient recursion) & \texttt{lemma\_7\_34m\_ak\_bound\_A2} (C1--C6), \texttt{probe\_7\_34m\_convexity\_endpoint} (E8), \texttt{bug\_009\_ak\_decay\_convexity} (B1--B5)\\
+\emph{memory bulk} & \textbf{CLOSED} ($A=2$; $\mathrm{LB}>0$ certified) /
+\textbf{$a_k=O(D^{k+1})$ order proven all-$A$, $\mathrm{LB}$-closure modulo the
+explicit coefficient bound} ($A\ge3$) & Rem 7.34m$''$ (``$A=2$ in closed form''
+/ ``boundary affineness'') & boundary affineness $\rho(\eta,0)=1+(A-1)\eta$ (rank-
+two/trace, all $A$) $\Rightarrow$ pure-$\eta^k$ vanish $\Rightarrow$ the order
+$|a_k|=O(D^{k+1})$ (all $A$). $A=2$: explicit $|a_k|\le8\kappa^2D^{k+1}$ $+$ ratio
+$2|\alpha|<1$ $\Rightarrow\mathrm{LB}(D)>0$. $A\ge3$ \emph{obstacle:} the mixed
+coefficients are large; an explicit uniform bound is needed to carry the majorant
+to $D_c$ &
+\texttt{lemma\_7\_34m\_ak\_bound\_A2} (C1--C6), \texttt{probe\_7\_34m\_boundary\_affineness} (A1--A4), \texttt{bug\_009\_ak\_decay\_convexity} (B1--B5)\\
 \hline
 \emph{Achievability (a4)} --- near-uniform / memoryless edge $p\to\tfrac{A-1}A$
 & \textbf{OPEN} & Rem 7.34m$''$ (status paragraph) & \emph{obstacle:} the crude

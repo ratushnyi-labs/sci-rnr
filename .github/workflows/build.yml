@@ -90,6 +90,7 @@ jobs:
             probe_7_34q_lee_general_distortion
             probe_7_34m_endpoint_pi
             lemma_7_34m_ak_bound_A2
+            probe_7_34m_boundary_affineness
           "
           for p in $probes; do
             echo "::group::$p"
