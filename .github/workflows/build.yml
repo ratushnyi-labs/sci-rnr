@@ -175,3 +175,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "ideal-vs-achievable-gap probe reported OVERALL -> PASS"
+
+      - name: run optimal-encoding OP2/OP4 status-index probe (BUG-005)
+        run: |
+          set -e
+          p=bug_005_optimal_encoding_status_index
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -10
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "optimal-encoding OP2/OP4 status-index probe reported OVERALL -> PASS"

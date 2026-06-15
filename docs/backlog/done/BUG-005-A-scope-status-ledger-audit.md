@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -113,3 +113,26 @@ asserting any row CLOSED.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
 - Per project rules (Truth > peremoga): do NOT record any sub-question as CLOSED
   unless the cited lemma + verify script actually establish it on live HEAD.
+
+## BUILD outcome (2026-06-15; HEAD ec42c03)
+DONE. Added a 9-row per-sub-question status ledger table at the head of §13.2
+(tex/rnr_coding.tex, lines ~17685-17787) with columns sub-question / status
+(CLOSED / in-P / OPEN) / paper location / proof-or-named-blocker / witnessing
+verify script. Each row verified against the actual paper text (relocated by
+content):
+  - OP2(a) continuous CLOSED (Lemma 6.8e/6.8b; §13.2 L17741);
+  - OP2(a) discrete integer/ceiling OPEN (Conj 6.8d; §13.4.1 ceiling-discontinuity);
+  - OP2(a) additive rule-cost CLOSED+ (Lemma 6.8k);
+  - OP2(b) free-field continuous in-P (Remark 6.9a L20430);
+  - OP2(b) single/amortised discrete OPEN (Lemma 13.4.2a upper-bound-only;
+    Thm 13.4.2b decision-only);
+  - OP4 Type-II general OPEN (affine n_0(S) dilution);
+  - OP4 Type-III-C fixed-field CLOSED Partial (Lemma 6.9, MESP 5/4);
+  - OP4 E_12 OPEN (Conj 4.3e; Remark 4.3d dilation-1/robust-NO);
+  - OP4 fixed-byte OPEN.
+Card-vs-paper: the card's claimed granularity MATCHES the paper text; no status
+disagreement found. The Abstract (L120-160) and §1.3 (L786-809) prose were
+re-read and are already precise/consistent (no blanket "optimal RNR is NP-hard"
+overclaim; closed sub-cases not hidden) -- no prose edit needed there. The only
+stale prose was the §13.2 E_12 "row-stochastic F is the obstacle" framing, which
+is sibling BUG-005-C's target (corrected there). Compiles clean (tectonic).

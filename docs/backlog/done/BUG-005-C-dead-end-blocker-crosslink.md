@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** ABOVE_EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -116,3 +116,31 @@ in §13.4.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
 - Per project rules: do not re-attempt the journalled dead ends; transcribe only
   their validated blocker conclusions.
+
+## BUILD outcome (2026-06-15; HEAD ec42c03)
+DONE. Walked the §13.4 failed-path lists; the OP2(a) (§13.4.1) and OP2(b)
+(§13.4.2) lists were already faithful at re-attempt-prevention granularity --
+they carry the specific reduction, precise blocker, and witnessing
+negative-control script for each route (density-shifted BK / DS-FGLSS /
+K-escape-budget / K-uniform-LabelCover / SGP-constant for OP2(a); the
+Lemma 13.4.2a UPPER-bound-only correction, GSGP/MSGP absorption, and the
+PRG-decision-only Theorem 13.4.2b for OP2(b)). The OP2(a) ceiling residual is
+stated in the validated "1/8568 < 1/log2 N for all N<2^8568" form (stronger than
+the journal's point-in-time V=615 example). No edit needed in §13.4.1/13.4.2.
+
+CORRECTED the stale obstacle framing flagged by the card. VERIFIED first that
+Remark 4.3d (tex L1647-1741) actually says it: its title and parts (ii)/(iv)
+state row-stochasticity is NOT the obstacle (rho(F)=OPT/2w is rescaling-invariant)
+and localize the real barrier to the missing dilation-1/robust-NO-promise
+hypercube-embedding source. The stale "row-stochastic F is THE obstacle" framing
+lived in the §13.2 E_12 paragraph (tex ~L18260-18277, "multi-LLM brainstorming
+session ... row-stochastic normalization of F prevents ... may require a source
+APX-hard on row-stochastic instances specifically"). Rewrote it to mark that
+framing as SUPERSEDED by Remark 4.3d, stating the corrected obstacle
+(partial-cube tractability + no YES baseline on dense side). Added a parallel
+E_12 sub-locus failed-path bullet to the §13.4.4 OP4 roadmap (tex ~L20091-20111)
+cross-linking the corrected Remark-4.3d framing and the exhausted NCP/CVP /
+0-extension / row-stochastic-source routes with an explicit "do not re-attempt".
+Compiles clean (tectonic). Note: per op4_bitcut_spectral journal, only the
+NEGATIVE conclusions (routes exhausted) were transcribed -- no journal reframing
+was added as paper content.

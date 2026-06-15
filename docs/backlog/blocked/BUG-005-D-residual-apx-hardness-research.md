@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** BLOCKED
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -133,3 +133,14 @@ script if a sub-case genuinely closes)
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
 - Mandatory: project 3-step post-fix protocol + adversarial disprove before any
   commit; "Truth > peremoga"; verify LOCALLY (gh cannot observe this repo's CI).
+
+## Status (2026-06-15; HEAD ec42c03)
+BLOCKED / OPEN -- intentionally NOT worked. This is the research residual; per the
+parent decomposition it stays open. Siblings A (status ledger), B (index probe +
+CI), and C (failed-path blocker crosslink + Remark-4.3d framing correction) are
+DONE and shipped, which precisely pins this residual to the set
+{ OP2(a)-discrete (Conj 6.8d, ceiling discontinuity), OP2(b)-discrete-APX
+(predictor-absorption upper-bound-only / PRG reduces to OP2(a)-APX), OP4 Type-II
+approximability, OP4 E_12 (Conj 4.3e, missing dilation-1/robust-NO source),
+OP4 fixed-byte }. The op2/op4 attempt-journals document DEAD-END routes; do NOT
+re-attempt them. Moved to blocked/.

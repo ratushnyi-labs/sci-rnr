@@ -17682,6 +17682,110 @@ the polynomial-time vs.\ NP-hard dichotomy on the permutation-like
 boundary. Only the approximation side remains research-scale open,
 listed below.)
 
+\emph{Status ledger for ``optimal'' RNR encoding (the OP2/OP4
+support/grammar-selection complexity questions).} Computing the optimal
+RNR encoding is hard only in specific restricted variants; several
+sub-questions are in fact already \emph{closed}. The headline ``optimal
+RNR is not known to be efficiently approximable'' is therefore a
+precisely-pinned residual, \emph{not} a blanket open problem. The
+following ledger states, per sub-question, the exact status (CLOSED /
+\textsc{in P} / OPEN), the paper location, the proof (for closed rows)
+or the named structural blocker (for open rows), and the witnessing
+executable verification script. Each open row names the obstacle that
+blocks it; no closed sub-case is hidden behind an overclaim, and no open
+sub-case is understated as resolved.
+
+\begingroup\footnotesize\sloppy
+\setlength{\tabcolsep}{4pt}
+\noindent\begin{tabular}{@{}p{2.7cm}p{1.5cm}p{2.6cm}p{3.3cm}p{3.0cm}@{}}
+\hline
+\textbf{sub-question} & \textbf{status} & \textbf{paper location} &
+\textbf{proof (CLOSED) / named blocker (OPEN)} &
+\textbf{witnessing verify script}\\
+\hline
+OP2(a) continuous bit-cost SGP
+& CLOSED
+& Lemma 6.8e (this §13.2); Lemma 6.8b; §13.4.1
+& inherits Charikar $\gamma_{\mathrm{SGP}}=8569/8568$ with vanishing
+$O(1/(|V|\log|V|))$ correction (alphabet floor pins $\log_2 N$)
+& \texttt{lemma\_6\_8b\_bit\_cost\_asymptotic.py};
+\texttt{op2a\_k\_escape\_budget\_check.py} (alphabet-floor re-derivation)\\
+OP2(a) discrete integer/ceiling bit-cost SGP
+& OPEN
+& Conj.\ 6.8d (this §13.2); §13.4.1
+& \emph{blocker:} ceiling discontinuity at power-of-two $|\Sigma|+K$
+boundaries; needs an SGP constant $>1+1/\log_2 N$, but
+$\gamma_{\mathrm{SGP}}-1=1/8568<1/\log_2 N$ for all $N<2^{8568}$
+& \texttt{op2a\_sgp\_constant\_survey\_check.py};
+\texttt{op2a\_k\_escape\_budget\_check.py} (open; negative-route only)\\
+OP2(a) additive rule-cost $L_\alpha$ (side result)
+& CLOSED (positive)
+& Lemma 6.8k / 6.8k-approx; §13.4.1
+& APX-hard for every $\alpha\ge0$ with a ceiling-free gap monotone in
+$\alpha$ (not a relabelling of 6.8e)
+& \texttt{lemma\_6\_8k\_approx\_additive\_rule\_cost.py};
+\texttt{op2a\_additive\_rule\_cost\_check.py}\\
+OP2(b) free-field continuous (amortised Gaussian)
+& \textsc{in P}
+& Remark 6.9a; §13.4.4
+& sample-covariance ML plug-in is decoder-reproducible; i.i.d.\ Gaussian
+draws cannot hide their poly-time-estimable covariance
+& \texttt{remark\_6\_9a\_continuous\_op2b\_easy.py}\\
+OP2(b) single-source \& amortised-family discrete (free predictor)
+& OPEN
+& §13.2 (Remark 6.8b); Lemma 13.4.2a; Thm 13.4.2b; §13.4.2
+& \emph{blocker:} predictor-absorption is an \emph{upper bound} only
+(both YES/NO bounded by poly$(n)$ does not bound the ratio); the PRG
+escape merely reduces amortised OP2(b)-APX to single-string
+OP2(a)-APX (Conj.\ 6.8d), open under $\mathrm P\neq\mathrm{NP}$; the
+OWF route gives only average-case \emph{decision} hardness (Thm 13.4.2b)
+& (open; no PASS fabricated --- negative/conditional routes only)\\
+OP4 Type-II general dependent-law support selection
+& OPEN
+& §13.2 (first bullet); Lemma 5.7c/5.7d; §13.4.4
+& \emph{blocker:} affine $n_0(S)$ identity dilutes every count /
+partition-functional gap to $1+\Theta(D_{\mathrm{YES}}/m)$ (worse for
+hyperedges); natural $A_s$ saturates at $1+O(1/\log s)$; only
+average-case (planted-clique) remains
+& \texttt{op4\_dksh\_affine\_dilution.py};
+\texttt{op4\_noncount\_entropy\_objective.py}\\
+OP4 Type-III-C fixed-field (continuous log-det)
+& CLOSED (\textsc{Partial})
+& Lemma 6.9; §13.4.4
+& the cost is a Schur-complement log-det $=$ MESP / $D$-optimal design,
+APX-hard with constant $5/4$ (Ko--Lee--Queyranne; Ohsaka 2022) under
+$\mathrm P\neq\mathrm{NP}$; gap survives the manifold restriction at
+high SNR; legitimate (the log-det \emph{is} the cost, no substitution)
+& \texttt{lemma\_6\_9\_typeiiic\_mesp\_support\_selection.py}\\
+OP4 $E_{12}$ constant-gap (Hamming-restricted labeling)
+& OPEN
+& Conj.\ 4.3e (this §13.2); Remark 4.3d; Thm 4.3 / Remark 4.3c
+& \emph{blocker:} missing dilation-$1$/robust-NO promise gap --- a
+hypercube-embedding source with a YES dilation-$1$ instance and a
+constant-fraction robust-NO instance; \emph{not} affine dilution and
+\emph{not} row-stochasticity (Remark 4.3d)
+& \texttt{remark\_4\_3d\_e12\_constant\_gap\_dilution.py}\\
+OP4 fixed-byte-alphabet restricted Type-III-C ($|\Sigma|=256$)
+& OPEN
+& §13.2 (this list)
+& \emph{blocker:} byte-encoding the $|V|$-vertex terminals adds a
+$\Theta(\log|V|)$ multiplicative overhead that can dilute the
+$\gamma_{\mathrm{SGP}}$ gap toward $1$
+& (none; no gap-preserving construction known)\\
+\hline
+\end{tabular}
+\par\endgroup
+
+\noindent The consolidated index probe
+\texttt{scripts/verify/bug\_005\_optimal\_encoding\_status\_index.py}
+asserts the witnessing scripts for the CLOSED / \textsc{in P} rows are
+present and PASS, and prints the ledger's CLOSED/OPEN status with a final
+\texttt{OVERALL -> PASS} (it fabricates no PASS for an OPEN row). The
+remaining genuinely-open residual is the set
+$\{$OP2(a)-discrete (Conj.\ 6.8d), OP2(b)-discrete-APX, OP4 Type-II
+approximability, OP4 $E_{12}$ (Conj.\ 4.3e), OP4 fixed-byte$\}$; the
+individual entries below give the full detail.
+
 \begin{itemize}
 \item
   Approximability of optimal support selection for general
@@ -18153,24 +18257,39 @@ listed below.)
   --- without it, assigning all vertices to the same codeword gives
   objective $0$ trivially; injectivity (a one-to-one map of $n$
   vertices to distinct $\{0,1\}^m$ codewords) is what makes the
-  problem combinatorially non-trivial. A multi-LLM brainstorming
-  session further identified two convergent structural obstacles:
-  (i) the row-stochastic normalization of $F$ prevents the ``isolated,
-  massive-weight gadget bottleneck'' constructions that typically
-  establish constant-gap APX-hardness in unconstrained graph
-  labeling; (ii) the injective-labeling requirement forces all $n$
-  vertices into distinct codewords, injecting a ``packing noise''
-  / ``gadget leakage'' background cost that can dwarf any
-  constant-$\varepsilon$ gap a multiway-cut or 0-extension reduction
-  might transfer. These two structural constraints together suggest
-  that proving Conjecture 4.3e may require either a reduction from
-  a source problem that is APX-hard on row-stochastic instances
-  specifically, or a continuous / spectral relaxation argument that
-  survives normalization. $E_{12}$ therefore occupies
-  the same theory-gap regime as OP2(a): neither algorithmic
+  problem combinatorially non-trivial. An early multi-LLM
+  brainstorming session proposed two candidate structural obstacles ---
+  (i) row-stochastic normalization of $F$ blocking ``isolated
+  massive-weight gadget bottleneck'' constructions, and (ii) the
+  injective-labeling ``packing noise'' / ``gadget leakage'' background
+  cost --- and conjectured that closing Conjecture 4.3e might require a
+  source problem APX-hard on row-stochastic instances \emph{specifically}.
+  \emph{That framing is now superseded by the exact gap-locus analysis of
+  Remark 4.3d:} row-stochasticity is \emph{not} the obstacle. The ratio
+  $\rho(F)=\mathrm{OPT}/2w$ is invariant under global rescaling of $F$
+  (replacing the weight $1/\Delta$ by $1$ multiplies both $\mathrm{OPT}$
+  and $2w$ by $\Delta$ and leaves $\rho$ unchanged; Remark 4.3d(ii),
+  numerically witnessed in
+  \texttt{scripts/verify/remark\_4\_3d\_e12\_constant\_gap\_dilution.py}).
+  Unlike the affine continuous-cost obstacles elsewhere in the paper,
+  normalization does \emph{not} dilute the gap here --- the cost is a
+  quadratic assignment-type functional and the per-instance forced-excess
+  fraction can be a genuine constant. The real barrier (Remark 4.3d(iii)--(iv))
+  is the absence of a \emph{gap-amplified hypercube-embedding source}: a
+  family that is simultaneously dilation-$1$ embeddable in the YES case
+  (so a YES instance exists at all) and robustly non-embeddable --- a
+  constant fraction of weighted mass stretched beyond distance one --- in
+  the NO case. The two requirements collide with two literature facts:
+  dilation-$1$ embeddable graphs are exactly the partial cubes,
+  recognizable in polynomial time (Djokovi\'c 1973; Winkler 1984;
+  Eppstein 2008), so embeddability alone is not NP-hard; and dense graphs
+  that would force constant stretch (e.g.\ $K_{2,3}$) are never
+  hypercube subgraphs, so they possess no YES baseline. $E_{12}$ therefore
+  occupies the same theory-gap regime as OP2(a): neither algorithmic
   constant-factor upper bound nor inapproximability lower bound is
-  known, leaving room for novel proof strategies (or new hypotheses
-  about the actual approximability class).
+  known, but the missing ingredient is now precisely localized to a
+  robust-NO-promise hypercube-embedding source (Remark 4.3d), not to
+  row-stochasticity.
 
   \emph{Conjecture 4.3e (Varying-parameter $E_{12}$ constant-gap
   inapproximability).} We conjecture that there exists a constant
@@ -19969,6 +20088,27 @@ approximation ratios.
 in the dense regime; Manurangsi 2017 sparse-DkS ETH-hardness does
 not transfer (gap dilutes to $1 + o(1)$ under natural log-binomial
 $A_s$).
+\item \emph{$E_{12}$ sub-locus (Hamming-restricted labeling; see §13.2
+Conj.\ 4.3e and Remark 4.3d for the full treatment).} Gap-amplification
+from NCP / CVP (Arora-Babai-Stern-Sweedyk 1997; Dinur-Kindler-Raz-Safra
+2003), $0$-extension / metric-labeling (Karzanov 1998), and a
+row-stochastic-source / multiway-cut reduction were all considered ---
+none lands a gap-preserving map into the injective-into-$Q_m$ geometry.
+\emph{Corrected obstacle framing (per Remark 4.3d, validated; supersedes
+the earlier ``row-stochastic $F$ is the obstacle'' reading):} the
+blocker is \emph{not} row-stochasticity (the ratio $\rho(F)=\mathrm{OPT}/2w$
+is rescaling-invariant, Remark 4.3d(ii)) and \emph{not} affine dilution
+(the cost is a quadratic assignment functional, gap survives
+normalization), but the absence of a \emph{gap-amplified hypercube-embedding
+source} exhibiting a YES dilation-$1$ instance together with a
+constant-fraction robust-NO instance (Remark 4.3d(iii)--(iv)). The natural
+candidates fail for structurally distinct reasons: partial cubes are
+poly-time recognizable (so embeddability alone is not NP-hard;
+Djokovi\'c 1973 / Winkler 1984 / Eppstein 2008), and dense
+constant-stretch graphs (e.g.\ $K_{2,3}$) are never hypercube subgraphs
+(so they have no YES baseline). Do not re-attempt these routes; the
+precise remaining step is constructing the robust-NO-promise embedding
+source.
 \end{itemize}
 
 \emph{Attack vectors not yet tried:}

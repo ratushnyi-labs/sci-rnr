@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** ABOVE_EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -109,3 +109,27 @@ gh cannot observe this repo's CI (account mismatch) — verify LOCALLY only.
 - Class: GOVERNANCE/DOCUMENTATION; runtime test stages are class-level N/A; the
   scripts/verify probes are the class-appropriate executable checks.
 - Verify LOCALLY (gh cannot observe this repo's CI).
+
+## BUILD outcome (2026-06-15; HEAD ec42c03)
+DONE. Cross-checked every §13.4 CLOSED attack vector against a present, PASSing
+scripts/verify script (all run locally with /Users/para/.venvs/rnr/bin/python,
+exit 0):
+  - OP2(a) continuous CLOSED -> lemma_6_8b_bit_cost_asymptotic.py,
+    op2a_k_escape_budget_check.py (alphabet floor);
+  - OP2(a) additive CLOSED+ -> lemma_6_8k_approx_additive_rule_cost.py,
+    op2a_additive_rule_cost_check.py;
+  - OP2(b) free-field continuous in-P -> remark_6_9a_continuous_op2b_easy.py;
+  - OP4 Type-III-C fixed-field CLOSED Partial -> lemma_6_9_typeiiic_mesp_support_selection.py.
+  - §13.4.1 negative-control routes -> op2a_dinur_safra_attack_check.py,
+    op2a_label_cover_kuniform_check.py, op2a_sgp_constant_survey_check.py;
+    §13.4.4 -> op4_dksh_affine_dilution.py, op4_noncount_entropy_objective.py;
+    Remark 4.3d -> remark_4_3d_e12_constant_gap_dilution.py. All exit 0.
+Added consolidated index probe
+scripts/verify/bug_005_optimal_encoding_status_index.py: asserts witnessing
+scripts for the CLOSED/in-P rows are PRESENT and exit 0, prints the ledger
+CLOSED/OPEN status, and emits OVERALL -> PASS. It does NOT fabricate a PASS for
+any OPEN sub-case (the 5 OPEN rows are carried with no closure script /
+negative-route controls only). Wired into CI: added a "run optimal-encoding
+OP2/OP4 status-index probe (BUG-005)" step to .github/workflows/build.yml verify
+job, mirroring the BUG-002/004 OVERALL->PASS-grep pattern. Full local CI verify
+set (16 probes incl. the new one) all report OVERALL -> PASS, FAIL=0.

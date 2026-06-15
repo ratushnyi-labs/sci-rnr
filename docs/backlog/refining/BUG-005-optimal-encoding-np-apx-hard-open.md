@@ -103,3 +103,23 @@ shippable core plus ONE clearly-flagged genuinely-open research residual.
 
 Recommended first leaf: **BUG-005-A** (precise status ledger; unblocks C and D by
 giving a clean obstacle map, and is independently shippable).
+
+## BUILD outcome (2026-06-15; HEAD ec42c03)
+In-repo leaves A/B/C DONE (moved to done/); research residual D BLOCKED/OPEN
+(moved to blocked/) -- intentionally not worked, per decomposition.
+- A: 9-row per-sub-question status ledger table added at head of §13.2
+  (tex/rnr_coding.tex). Card granularity MATCHES the paper; no card-vs-paper
+  status disagreement. Abstract + §1.3 prose re-read, already precise/consistent
+  (no blanket "optimal RNR is NP-hard" overclaim, no understatement of closures).
+- B: consolidated index probe scripts/verify/bug_005_optimal_encoding_status_index.py
+  (asserts CLOSED/in-P witnessing scripts present + exit 0; OPEN rows carried with
+  NO fabricated PASS; OVERALL -> PASS). Wired into CI verify job (build.yml).
+  Full local CI verify set (16 probes) all OVERALL -> PASS.
+- C: §13.4.1/13.4.2 failed-path lists already faithful; corrected the stale
+  "row-stochastic F is THE obstacle" framing in the §13.2 E_12 paragraph to the
+  partial-cube / no-robust-NO-promise obstruction (Remark 4.3d, verified to say
+  this), and cross-linked it into the §13.4.4 OP4 roadmap.
+Compiles clean (tectonic). Remaining open residual (D): { OP2(a)-discrete
+(Conj 6.8d), OP2(b)-discrete-APX, OP4 Type-II approx, OP4 E_12 (Conj 4.3e),
+OP4 fixed-byte }. Parent stays in refining/ with this clearly-flagged residual,
+mirroring the BUG-004 pattern.
