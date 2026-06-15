@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** BLOCKED (external)
 **Complexity:** ABOVE_EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -106,3 +106,7 @@ informative outcome, not a failure of the theory.
 - Honest-step principle: this is the explicitly-flagged EXTERNAL residual
   (closeable_in_repo = NO). Separating it lets the in-repo core (BUG-007-A scoping,
   BUG-007-B math probe, BUG-007-C cross-links) close now while this stays openly deferred.
+
+
+## Status (2026-06-15)
+IRREDUCIBLE EXTERNAL residual: reference deterministic-integer inference codec (engineering-spec §3) + §12 conformance suite across real hardware for end-to-end cross-platform byte-identity. Not closeable in this theory repo; the in-repo prose now correctly defers it (BUG-007-A). Parked in blocked/.

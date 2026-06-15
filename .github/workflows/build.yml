@@ -120,3 +120,14 @@ jobs:
           echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
           echo "::endgroup::"
           echo "model-inclusive accounting probe reported OVERALL -> PASS"
+
+      - name: run Theorem 10.1 integer reduction-order bit-exactness probe (BUG-007)
+        run: |
+          set -e
+          p=thm_10_1_integer_reorder_bitexact
+          echo "::group::$p"
+          out=$(python scripts/verify/$p.py)
+          echo "$out" | tail -8
+          echo "$out" | grep -q "OVERALL -> PASS" || { echo "::error::$p did not report OVERALL -> PASS"; exit 1; }
+          echo "::endgroup::"
+          echo "Theorem 10.1 integer reorder bit-exactness probe reported OVERALL -> PASS"

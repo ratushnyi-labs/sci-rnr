@@ -15777,13 +15777,22 @@ atomics) that does not commit to a deterministic order; this is
 satisfied by sequential CPU implementations and by GPU implementations
 that use tree-reduction with a fixed schedule.
 
-Theorem 10.1 reduces the reproducibility question from a software
-engineering problem to a precision-and-determinism specification. A
-reference implementation that meets the four conditions is bit-exact
-reproducible across any platform that conforms; cross-platform
-conformance becomes a testable property rather than an empirical hope.
-Constructing such an implementation and certifying conformance is
-engineering work and is deferred to a companion artifact (§13.3).
+Theorem 10.1 is a \emph{sufficient-condition} result: it reduces the
+reproducibility question from a software engineering problem to a
+precision-and-determinism specification, conditions (i)--(iv). Any two
+implementations that both meet (i)--(iv) compute bit-identical output;
+cross-platform conformance thereby becomes a testable property rather
+than an empirical hope. The theorem does \emph{not} itself exhibit a
+reference implementation or demonstrate end-to-end cross-platform
+byte-identity on real hardware: constructing such an implementation and
+\emph{certifying} that a given target meets (i)--(iv) is engineering
+work, deferred to the companion engineering specification and recorded
+as an out-of-scope item in §13.3. The integer reduction-order
+determinism at the mathematical core of (ii)--(iv) --- the per-layer
+no-overflow accumulator bound and the resulting reorder-invariance of
+the integer forward pass, contrasted against the reorder-dependence of
+an undersized accumulator --- is checked by the executable probe
+\texttt{scripts/verify/thm\_10\_1\_integer\_reorder\_bitexact.py}.
 
 \textbf{10.6 Bit-exact adaptive predictors under integer-arithmetic
 optimization}
@@ -16618,10 +16627,17 @@ Trainium in inference mode). Theorem 10.6 is conditional on a
 target satisfying (a)-(g): whether any specific named class
 \emph{actually} conforms is an engineering claim about that
 target's instruction set, kernel library, and serialization
-conventions, not a corollary of Theorem 10.6. With a conformance
-certification of each target, the same RNR archive can be encoded
-on a server GPU, served from cloud storage, and decoded on a phone
-NPU with byte-identity guaranteed by Theorem 10.6.
+conventions, not a corollary of Theorem 10.6. The conformance tests
+that establish (a)--(g) for each named target class are specified in
+the companion engineering specification (\emph{RNR Coding --- Reference
+Implementation Conformance Specification}, §4 per-target paths and §12
+conformance test suite, with cross-target byte-identity as acceptance
+criterion R-12.2.3); a target's certification against that suite is the
+empirical Hypothesis H14 of the experimental-design companion. With
+such a certification of each target, the same RNR archive can be
+encoded on a server GPU, served from cloud storage, and decoded on a
+phone NPU with byte-identity guaranteed by Theorem 10.6 --- a
+conditional guarantee, not a demonstration carried out here.
 
 \emph{\textbf{Cache amortization}}
 
@@ -18078,14 +18094,31 @@ see what additional work is required for a deployable system.
 \item
   Reference implementation conformance. Theorems 10.1 and 10.2 specify
   sufficient conditions for bit-exact reproduction under fixed and
-  adaptive predictors; Theorems 7.16--7.18 additionally require that
-  sub-block-parallel encoding produce bit-identical archives regardless
-  of thread count or scheduling order. A reference implementation
-  meeting all three, plus a conformance test suite that verifies
-  cross-platform identity on a representative corpus, is required for
-  deployable archives. This is software engineering work, not
-  mathematics. Out of scope for this paper; the natural artifact is a
-  separate code release accompanied by a conformance specification.
+  adaptive predictors; Theorem 10.6 lifts Theorem 10.1 to explicit
+  per-target conformance conditions (a)--(g); Theorems 7.16--7.18
+  additionally require that sub-block-parallel encoding produce
+  bit-identical archives regardless of thread count or scheduling order.
+  A reference implementation meeting all of these, plus a conformance
+  test suite that verifies cross-platform byte-identity on a
+  representative corpus, is required for deployable archives. This is
+  software engineering work, not mathematics. Out of scope for this
+  paper. The named artifact is the companion engineering specification
+  (\emph{RNR Coding --- Reference Implementation Conformance
+  Specification}), whose §3 (universal inference requirements R-3.1
+  through R-3.8) and §5 (integer-arithmetic specification) encode
+  Theorem 10.1's conditions (i)--(iv), §4 the per-target conformance of
+  Theorem 10.6, §7 the adaptive-optimizer conformance of Theorem 10.2,
+  and §12 the conformance test suite (cross-target byte-identity
+  acceptance criteria R-12.2.1, R-12.2.3, R-12.2.5); its §14 gives the
+  full theorem-to-requirement traceability matrix. The end-to-end
+  cross-platform demonstration is the empirical work specified as
+  Hypotheses H8 (fixed-predictor byte-identity across six platforms),
+  H9 (adaptive-predictor byte-identity), and H14 (per-hardware-target
+  predictor byte-identity) of the companion experimental-design
+  document. ``Satisfiable end-to-end'' is therefore conditional on a
+  target being \emph{certified} conforming against that specification;
+  this paper proves the sufficient condition, not that any particular
+  target has been certified.
 \item
   Empirical validation. The quantitative predictions in §11 are
   conjectures based on the structural advantages of each Type and on

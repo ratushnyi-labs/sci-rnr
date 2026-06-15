@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** DECOMPOSED
+**Status:** DONE (in-repo); D external-blocked
 **Complexity:** HARD
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -54,9 +54,9 @@ The whole side-information recasting REQUIRES the decoder to reproduce the model
 | DECOMPOSITION | DONE | split into BUG-007-A, BUG-007-B, BUG-007-C, BUG-007-D |
 | DESIGN | PENDING | proof strategy or experiment design |
 | FRONTEND | N/A | no UI |
-| BACKEND | PENDING | tex edit / proof / probe (or N/A if empirical-only) |
-| TESTING | PENDING | scripts/verify probe or measured datum |
-| POST_AUDIT | PENDING | adversarial re-review per project review protocol |
+| BACKEND | DONE | §10.5/§10.8/§13.3 prose scoped (A); crosslinks (C) |
+| TESTING | DONE | thm_10_1_integer_reorder_bitexact.py (B), OVERALL -> PASS + CI job |
+| POST_AUDIT | DONE | hostile-referee PASSED: no-overclaim, bound re-derived, crosslinks real, compile clean |
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD
@@ -87,3 +87,20 @@ ABOVE_EASY) plus one clearly-flagged external leaf (D, closeable_in_repo = NO).
 
 Recommended first leaf: BUG-007-A (scope the claim honestly; quickest, unblocks the
 cross-link wording in C). BUG-007-B is independent and can proceed in parallel.
+
+
+## Resolution (2026-06-15)
+A/B/C closed in-repo (moved to done/): (A) Thm 10.1/§10.5/§10.8(Thm 10.6)/§13.3 prose
+tightened to the proven SUFFICIENT CONDITION over conditions (i)-(iv), explicitly NOT an
+end-to-end cross-platform demonstration, deferred to §13.3 + the companion engineering spec;
+(B) scripts/verify/thm_10_1_integer_reorder_bitexact.py demonstrates the math core -- the
+no-overflow accumulator bit-width bound b>=ceil(log2(d*W*I+1))+1, integer reduction-order
+invariance => bit-identity, with a non-vacuous negative control (undersized width: wrap =
+reorder-invariant-but-WRONG, saturate = reorder-DEPENDENT, the integer analogue of float
+non-associativity) + CI job; (C) §13.3 deferral crosslinked to the engineering-spec
+conformance suite (R-3.x, §5, §12 R-12.2.3, §14 traceability) and experimental-design
+H8/H9/H14, all anchors verified to exist. POST_AUDIT (hostile referee) clean: no overclaim,
+bound re-derived + b=5 saturation instance hand-checked, crosslinks real, compile EXIT 0.
+D (reference impl + real cross-platform conformance run) -> blocked/ (external, §13.3).
+Note (out of scope, future): engineering-spec R-3.2 states a compatible L1-row-norm variant
+of the accumulator bound omitting the +1-inside-log; a future pass could align the notation.

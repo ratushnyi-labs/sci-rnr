@@ -4,7 +4,7 @@
 **Entry Mode:** CODE_FIRST
 **User Mode:** EXPERT
 **Guided Flow Stage:** N/A
-**Status:** INTAKE
+**Status:** DONE
 **Complexity:** EASY
 **Audit Type:** DOCUMENTATION_AUDIT
 **Scan Depth:** N/A
@@ -112,3 +112,7 @@ validation hypothesis at all — if not, that is a finding, not an in-leaf fix.
 - Class: GOVERNANCE/DOCUMENTATION; §6 runtime stages / §7 coverage are class-level N/A.
 - Honest-step principle: this leaf closes the cross-doc accounting NOW; the actual
   end-to-end demonstration remains external (BUG-007-D).
+
+
+## Resolution (2026-06-15, opus-4-8; POST_AUDIT passed)
+Closed in-repo as part of BUG-007 A/B/C (commit pending). A: §10.5/§10.8/§13.3 prose tightened to the proven sufficient-condition + explicit external deferral (no end-to-end-demonstration overclaim). B: scripts/verify/thm_10_1_integer_reorder_bitexact.py (no-overflow bit-width bound + integer reduction-order invariance + saturation/wrap negative control; OVERALL -> PASS) + CI job. C: §13.3 deferral crosslinked to engineering-spec conformance suite (R-3.x/§5/§12 R-12.2.3/§14) + experimental-design H8/H9/H14 (all anchors verified real). Hostile-referee POST_AUDIT clean.
