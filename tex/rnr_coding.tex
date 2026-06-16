@@ -15133,17 +15133,25 @@ order} $a_k=O(D^{k+1})$ ($k\ge2$) is established for \emph{all} $A$ (the mixed
 coefficients are finite). What remains regime-dependent is only the
 \emph{quantitative closure} $\mathrm{LB}(D)>0$: for $A=2$ the explicit
 $|a_k|\le8\kappa^2 D^{k+1}$ and the ratio $2|\alpha|<1$ certify it on the whole
-Gray region (above); for $A\ge3$ the mixed coefficients, though finite, are large
-(e.g.\ $c_{2,2}\approx-1.1\times10^4$ at $A=3,\ p=\tfrac15$), so an \emph{explicit
-uniform} coefficient bound is still needed to carry the geometric majorant up to
-$D_c$. The convexity capstone's residual is thereby reduced from ``prove
-$a_k=O(D^{k+1})$'' (now done, all $A$, via boundary affineness) to ``bound the
-mixed coefficients uniformly in $A$'' --- a sharply narrower analytic task.
+Gray region (above); for $A\ge3$ the convexity $\mathrm{LB}(D)>0$ is certified
+numerically with an even \emph{larger} margin ($\mathrm{LB}/4a_2\approx0.96$--$0.98$,
+vs.\ $0.84$ at $A=2$, since $|\eta|$ shrinks with $A$), and rests on the curvature
+constant $c_A$ being positive. Crucially the perturbation is \emph{benign}: the
+frozen operator $Q_A(0,0)$ has spectral gap $1$ (Perron eigenvalue $1$, every other
+eigenvalue $0$) and the physical $|\eta|\le0.03$ shrinks with $A$ ($0.032$ at $A=2$
+down to $0.001$ at $A=6$), so neither convergence nor the geometric tail is the
+obstruction --- the large mixed coefficients (e.g.\ $c_{2,2}\approx-1.1\times10^4$
+at $A=3$) are offset by the tiny $\eta^{a+b}$. The convexity capstone's residual is
+thereby reduced, from ``prove $a_k=O(D^{k+1})$'' (now done, all $A$, via boundary
+affineness), to the \emph{single positivity} $c_A>0$ (the second-harmonic curvature
+$=$ dispersion constant; $c_2=\kappa_2^2>0$ in closed form, $c_A>0$ verified and
+growing --- $26.4,42.5,60.4$ at $A=3,4,5$) --- a sharply narrower analytic task.
 \emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34m\_boundary\_affineness.py} (A1 the rank-two/
 trace identity and $\rho(\eta,0)=1+(A-1)\eta$, symbolic $p$, $A=2,\dots,6$; A2 its
 Perron slope $A{-}1$ at all $p$; A3 the vanishing pure-$\eta^k$ coefficients; A4
-the resulting $a_k=O(D^{k+1})$ order, $A=3,4$ --- all PASS).
+the resulting $a_k=O(D^{k+1})$ order; A5 the LB-closure diagnostic ($Q_0$ gap $1$,
+$c_A>0$, $\mathrm{LB}/4a_2\gtrsim0.96$, $A=3,4,5$) --- all PASS).
 
 \textbf{Remark 7.34m$'''$ (the operational RD-dispersion residual ledger:
 converse vs.\ achievability, sub-question by sub-question).} The §7.34 grid is a
