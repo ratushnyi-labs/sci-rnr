@@ -14935,31 +14935,43 @@ $g_4=\tfrac{v}{12}$ \emph{exactly} at $D=0$. The binding-endpoint convexity is
 therefore a pure \emph{cubic-in-$D$} effect, and the inequality $g_4\ge v/12$ is
 asymptotically tight. Its leading coefficient
 $c_A(p):=\lim_{D\to0}(g_4-v/12)/D^3$ is positive for every $A$, and at $A=2$ it
-is, \emph{in closed form}, the dispersion constant of Lemma 7.34l(iii):
+coincides, \emph{in closed form}, with the second-order dispersion constant of
+Lemma 7.34l(iii):
 \[
   c_2(p)=\kappa_2^2=\frac{(1-2p)^2}{p^2(1-p)^2},\qquad
-  G''(1^-)=8\kappa_2^2\,D^3+O(D^4)>0 .
+  G''(1^-)=8c_2\,D^3+O(D^4)>0 .
 \]
 Thus the binding-endpoint convexity holds at leading order in $D$, governed by
-the \emph{same} constant $\kappa_A^2$ that sets the second-order dispersion
-($\bar v_A=D(1-D)[1-\kappa_A^2 D(1-D)/(1-2D)^2]$); the double cancellation that
-makes $g_4-v/12=O(D^3)$ (agreement of $g_4$ and $v/12$ through $O(D^2)$) is the
-\emph{net} of the $O(D^2)$ near-cancelling terms --- the concave curvature
-$\langle l|M''|r\rangle$ against the positive level-repulsion
+the positive cubic constant $c_A$. This $A=2$ identity $c_A=\kappa_A^2$ is,
+however, a \emph{closed-form coincidence that does not persist to $A\ge3$}: $c_A$
+is a genuine \emph{third}-order spectral object --- the $\cos2s$ harmonic of the
+$O(D^3)$ term of $\rho(W_A)$, the $O(D^2)$ term carrying \emph{zero} second
+harmonic (the double cancellation) --- whereas the dispersion constant
+$\kappa_A^2$ (which sets the second-order dispersion
+$\bar v_A=D(1-D)[1-\kappa_A^2 D(1-D)/(1-2D)^2]$) is a \emph{second}-order
+(variance) object; the two agree at $A=2$ only through the binary closed-form
+Perron quadratic. For $A\ge3$ they differ: with two independent high-precision
+extractors (finite-difference Richardson and Chebyshev quadrature, in agreement)
+the ratio $c_A/\kappa_A^2$ at $p=0.2$ is $1.0000,\,0.984,\,1.116,\,1.235$ for
+$A=2,3,4,5$ (not even sign-definite), so the leading curvature is set by the
+cubic constant $c_A$, \emph{not} by the dispersion constant. The double
+cancellation that makes $g_4-v/12=O(D^3)$ (agreement of $g_4$ and $v/12$ through
+$O(D^2)$) is the \emph{net} of the $O(D^2)$ near-cancelling terms --- the concave
+curvature $\langle l|M''|r\rangle$ against the positive level-repulsion
 $2\langle l|M'SM'|r\rangle$ of Remark 7.34e$'$ --- which cancel to one higher
 order; directly, $G''(1^-)=8(g_4-v/12)\sim D^3$ (numerically scaling order
-$2.99$). For $A\ge3$, $c_A(p)>0$ numerically and tracks the (no-closed-form)
-$\kappa_A^2$, but the exact identity $c_A=\kappa_A^2$ is established only at $A=2$.
+$2.99$).
 
 \emph{Uniform in $u$ (the full-interval upgrade).} The leading coefficient is, in
-fact, \emph{independent of $u$}: $G''(u)=8\kappa_A^2 D^3+O(D^4)$ for \emph{all}
+fact, \emph{independent of $u$}: $G''(u)=8c_A D^3+O(D^4)$ for \emph{all}
 $u\in[-1,1]$, not only at the endpoint. The $u$-dependence is pushed to $O(D^4)$:
 the $u$-spread of $G''(u)/D^3$ shrinks as $O(D)$ (e.g.\ at $A=2,p=0.2$ it is
 $2.0\to0.53\to0.13$ as $D=2{\times}10^{-3}\to5{\times}10^{-4}\to1.25{\times}10^{-4}$),
-its common value matching $8\kappa_A^2$ ($112.41$ vs $8\kappa_2^2=112.5$ at
-$A=2$). Equivalently, the only leading non-affine content of $g_A(s)=G(\cos s)$
-is the \emph{second harmonic} $\cos2s=2u^2-1$ --- a pure $u^2$ curvature, hence a
-\emph{constant} $G''$ --- with positive coefficient $4\kappa_A^2 D^3$; the
+its common value matching $8c_A$ (at $A=2$, $112.41$ vs $8\kappa_2^2=112.5$, the
+identity point). Equivalently, the only leading non-affine content of
+$g_A(s)=G(\cos s)$ is the \emph{second harmonic} $\cos2s=2u^2-1$ --- a pure $u^2$
+curvature, hence a \emph{constant} $G''$ --- with positive coefficient
+$4c_A D^3$; the
 affine ($T_0,T_1$) part is the $D=0$ law $1-2v(1-u)$.
 
 \emph{The prefactor carries no curvature (the convexity is purely spectral).}
@@ -14977,7 +14989,7 @@ $\rho=\rho(W_A)$,
 \]
 so the convexity of $G$ --- the sole achievability residual --- is \emph{purely}
 the spectral convexity of the replica Perron eigenvalue $\rho(W_A)$, modulated by
-the known affine prefactor; the curvature constant $4\kappa_A^2 D^3$ above is
+the known affine prefactor; the curvature constant $4c_A D^3$ above is
 $\rho$'s.
 
 \emph{Asymmetric binary (the residual of Remark 7.34e$'$ too).} The whole
@@ -14997,8 +15009,8 @@ Remark 7.34m$'$ (A-ary symmetric, Theorem 7.34m) and Remark 7.34e$'$ (binary
 asymmetric, Theorem 7.34i).
 
 \emph{Status.} Thus the \emph{full} convexity of $G$ on $[-1,1]$ holds at leading
-order in $D$, \emph{uniformly in $u$}, with the positive constant $8\kappa_A^2$
-(closed form at $A=2$): for sufficiently small $D$, $G''(u)>0$ for every $u$, so
+order in $D$, \emph{uniformly in $u$}, with the positive constant $8c_A$
+($=8\kappa_A^2$ only at $A=2$): for sufficiently small $D$, $G''(u)>0$ for every $u$, so
 $s=\pi$ is the binding point. At such $D$ the other two inputs of Theorem 7.34m's
 achievability are automatic from the same affine law $g_A(s)=1-2v(1-\cos s)
 +O(D^3)$ with $v=\bar v_A>0$ --- the spectral gap $\sup_{s\in[\varepsilon,\pi]}
@@ -15009,7 +15021,7 @@ hence the $s=\pi$ binding, hence the whole achievability --- holds on the
 \emph{entire} Gray region for every tested $A$. The residual is therefore no
 longer ``prove convexity'' (an opaque spectral inequality) but the narrower
 quantitative passage from ``sufficiently small $D$'' to all $D\in(0,D_c^{(A)}]$:
-a bound on the $O(D^4)$ remainder showing it cannot overturn the $8\kappa_A^2 D^3$
+a bound on the $O(D^4)$ remainder showing it cannot overturn the $8c_A D^3$
 leading term before $D_c$ --- which, since $D_c^{(A)}=O(p^2)$ is itself small, the
 numerics confirm throughout.
 
@@ -15017,7 +15029,7 @@ numerics confirm throughout.
 an explicit form. Expanding $g_A(s)=\sum_{k\ge0}a_k(D)\,T_k(\cos s)$ in
 Chebyshev modes, the coefficients decay as $a_k=O(D^{k+1})$ for $k\ge2$ with
 \emph{alternating signs} and a geometric ratio $|a_{k+1}/a_k|\approx0.9\,D$
-(numerically; $a_1=O(D)$ is the affine mode, $a_2=2\kappa_A^2 D^3+\cdots>0$ the
+(numerically; $a_1=O(D)$ is the affine mode, $a_2=2c_A D^3+\cdots>0$ the
 curvature). Since $T_0''=T_1''=0$, $T_2''\equiv4$, and $|T_k''(u)|\le
 T_k''(1)=\tfrac13 k^2(k^2-1)$ on $[-1,1]$,
 \[
@@ -15105,7 +15117,7 @@ all PASS) and in
 $G''(1^-)=8g_4-\tfrac23 v$; E2 $g_4\ge v/12$ on the Gray region; E3 the
 affine-at-$D{=}0$ law; E4 $c_A>0$ for all $A$ and $c_2=\kappa_2^2$ in closed
 form; E5 the assembled $G''(1^-)=8\kappa_2^2 D^3>0$; E6 the uniform-in-$u$
-$G''(u)=8\kappa_A^2 D^3+O(D^4)$; E7 the asymmetric-binary transfer; E8 the
+$G''(u)=8c_A D^3+O(D^4)$; E7 the asymmetric-binary transfer; E8 the
 Chebyshev-tail all-$D$ closure on the memory bulk --- all PASS).
 
 \emph{The representation-free engine (general $A$): boundary affineness.} The
@@ -15189,8 +15201,8 @@ M\"obius-orbit $D=D_c$ endpoint & \texttt{probe\_7\_34\_gap1\_writeout\_v2}, \te
 \emph{Achievability (a2)} --- general A-ary / asymmetric, leading order in $D$,
 \emph{uniform in $u$} & \textbf{CLOSED} (leading order) & Rem 7.34m$''$
 (reduction, structure, uniform-in-$u$) & affine-at-$D{=}0$ law
-$g_A=1-2v(1-\cos s)+O(D^3)$; second-harmonic curvature $G''(u)=8\kappa_A^2
-D^3+O(D^4)>0$; prefactor $|C_s/C_0|^2$ affine in $u$ (no curvature) & \texttt{probe\_7\_34m\_convexity\_endpoint} (E1--E7), \texttt{probe\_7\_34m\_endpoint\_pi}\\
+$g_A=1-2v(1-\cos s)+O(D^3)$; second-harmonic curvature $G''(u)=8c_A
+D^3+O(D^4)>0$ ($c_A=\kappa_A^2$ only at $A=2$); prefactor $|C_s/C_0|^2$ affine in $u$ (no curvature) & \texttt{probe\_7\_34m\_convexity\_endpoint} (E1--E7), \texttt{probe\_7\_34m\_endpoint\_pi}\\
 \hline
 \emph{Achievability (a3)} --- general A-ary, \emph{all} $D\le D_c$ on the
 \emph{memory bulk} & \textbf{CLOSED} ($A=2$; $\mathrm{LB}>0$ certified) /

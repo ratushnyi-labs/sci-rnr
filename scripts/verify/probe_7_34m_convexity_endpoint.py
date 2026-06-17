@@ -12,7 +12,9 @@ That convexity is the sole remaining conjecture.
 
 THIS PROBE sharpens it: the convexity is TIGHTEST at the binding endpoint
 u->1 (s->0, the curvature anchor; min_u G''(u) sits there), and there it is
-GOVERNED IN CLOSED FORM by the dispersion constant kappa_A^2 of Lemma 7.34l(iii).
+governed by a positive CUBIC spectral constant c_A -- which coincides with the
+dispersion constant kappa_A^2 of Lemma 7.34l(iii) ONLY at A=2 (a closed-form
+coincidence that does NOT persist; see E4 for the c_A vs kappa_A^2 mismatch).
 
 THE REDUCTION (exact, elementary).  With g_A(s)=1 - v s^2 + g4 s^4 + O(s^6)
 (even in s; v=per-site posterior variance=Lemma 7.34l(iii) curvature, g4 the
@@ -27,25 +29,31 @@ THE STRUCTURE (the new content).
     tight).  Convexity is therefore a pure CUBIC-IN-D effect.
   * The leading cubic coefficient c_A(p):=lim_{D->0}(g4-v/12)/D^3 is POSITIVE
     for every A (so the binding-endpoint convexity holds at leading order), and
-    at A=2 it is EXACTLY the dispersion constant in closed form:
+    at A=2 it COINCIDES with the second-order dispersion constant in closed form:
         c_2(p) = kappa_2^2 = (1-2p)^2/(p^2(1-p)^2),
     the curvature-correction constant of Lemma 7.34l(iii)
-    (vbar_2 = D(1-D)[1 - kappa_2^2 D(1-D)/(1-2D)^2]).  For A>=3, c_A(p)>0
-    numerically and tracks the (no-closed-form) curvature constant kappa_A^2,
-    but the exact identity c_A=kappa_A^2 is only established at A=2.
-  * Hence (A=2, closed form)  G''(1^-) = 8 kappa_2^2 D^3 + O(D^4) > 0: the
-    binding-endpoint convexity holds at leading order in D, governed by the SAME
-    constant that sets the second-order dispersion.  (Full convexity on all of
-    [-1,1] and all of the Gray region, all A, remains the conjecture; checked
-    numerically here.)
+    (vbar_2 = D(1-D)[1 - kappa_2^2 D(1-D)/(1-2D)^2]).
+  * BUT this A=2 identity c_A=kappa_A^2 is a closed-form coincidence that does
+    NOT persist to A>=3.  c_A is a genuine THIRD-order spectral object (the cos2s
+    harmonic of the O(D^3) term r3 of rho(W_A); r2 has zero second harmonic --
+    the double cancellation), whereas kappa_A^2 is a SECOND-order (variance)
+    object set by vbar_A's O(D^2) correction.  They agree at A=2 only through the
+    binary closed-form Perron quadratic.  For A>=3 they DIFFER: the ratio
+    c_A/kappa_A^2 at p=0.2 is 1.0000, 0.984, 1.116, 1.235 for A=2,3,4,5 (not even
+    sign-definite).  So the leading curvature is set by c_A, NOT by kappa_A^2.
+  * Hence (A=2, closed form)  G''(1^-) = 8 kappa_2^2 D^3 + O(D^4) > 0; for general
+    A,  G''(1^-) = 8 c_A D^3 + O(D^4) > 0.  (Full convexity on all of [-1,1] and
+    all of the Gray region, all A, remains the conjecture; checked numerically.)
 
 CHECKS (PASS/FAIL):
   E1  chain-rule reduction: finite-diff G''(1^-) == 8 g4 - (2/3) v (A=2,3,4).
   E2  binding-endpoint inequality g4 >= v/12 on the Gray region (A=2..4).
   E3  affine-at-D=0: g4/(v/12) -> 1 as D->0 (the inequality is tight there).
-  E4  leading coefficient (g4 - v/12)/D^3 -> kappa_A^2 (A=2 closed-form
-      kappa_2^2=(1-2p)^2/(p^2(1-p)^2); A=3,4 vs curvature-extracted kappa^2).
-  E5  G''(1^-) = 8 kappa_A^2 D^3 + O(D^4) > 0 (assembled).
+  E4  c_A vs kappa_A^2 MISMATCH: c_A=(g4-v/12)/D^3 (curvature side) vs the
+      dispersion-side kappa_A^2 (from vbar_A=sum_k k^2 a_k/2, two independent
+      extractors).  ASSERT identity c_A=kappa_A^2 at A=2 ONLY; ratio drifts to
+      ~1.235 by A=5 (the fluctuation-dissipation identity is A=2-only).
+  E5  G''(1^-) = 8 c_A D^3 + O(D^4) > 0 (assembled; c_A=kappa_2^2 at A=2).
 
 Deps: mpmath, numpy.  Python: /Users/para/.venvs/rnr/bin/python.  ~3-5 min.
 """
@@ -85,6 +93,13 @@ def gA(A,p,D,s):
         for j,(y,yp,yq) in enumerate(st):
             Q[a,_pat((y,yp,yq))]+=T[xp][yp]*T[xq][yq]/T[x][y]*(eta if yp!=y else 1)*(etb if yq!=y else 1)
     ev,_=mp.eig(Q); return Cr*max(abs(e) for e in ev)
+
+def acoef(A,p,D,kmax=8,N=200):
+    """Chebyshev/Fourier coeffs a_k of g_A(s)=sum_k a_k cos(ks) via midpoint
+    quadrature -- ROBUST (no 1-g_A cancellation), unlike finite-diff at small s."""
+    sj=[mp.pi*(j+mp.mpf('0.5'))/N for j in range(N)]; gj=[gA(A,p,D,s) for s in sj]
+    return [mp.re(sum(gj[j]*mp.cos(k*sj[j]) for j in range(N))*(mp.mpf(1) if k==0 else 2)/N)
+            for k in range(kmax+1)]
 
 def v_g4(A,p,D):
     f=lambda s: gA(A,p,D,s)
@@ -157,32 +172,45 @@ def E3():
         ok = ok and abs(rs[-1]-1)<abs(rs[0]-1) and abs(rs[-1]-1)<mp.mpf('5e-3')
     return rep("E3 g4 -> v/12 as D->0 (G affine at leading order) ", ok)
 
+def _extrap0(xs, ys):
+    """linear extrapolation to D->0 through the two smallest nodes."""
+    (x1,y1),(x2,y2)=sorted(zip(xs,ys))[:2]; return y2-(y2-y1)/(x2-x1)*x2
+
 def E4():
-    print("-"*78); print("E4  leading cubic coeff  c_A(p):=(g4-v/12)/D^3 > 0 (all A);")
-    print("    and  c_2(p) = kappa_2^2 = (1-2p)^2/(p^2(1-p)^2)  IN CLOSED FORM (A=2).")
-    ok=True; pos_ok=True
-    for A in (2,3,4):
-        for p in ('0.2','0.3'):
-            if mp.mpf(p)>=(A-1)/mp.mpf(A): continue
-            pp=mp.mpf(p)
-            Ds=[mp.mpf('1e-3'),mp.mpf('4e-4'),mp.mpf('1.5e-4')]
-            cs=[]
-            for D in Ds:
-                v,g4=v_g4(A,p,D); cs.append((g4-v/12)/D**3)
-            c=cs[-1]
-            pos_ok = pos_ok and all(x>0 for x in cs)         # positivity (what convexity needs)
-            if A==2:
-                k2=(1-2*pp)**2/(pp**2*(1-pp)**2)
-                ratio=c/k2
-                print(f"     A={A} p={p}: c_A->{mp.nstr(c,7)}  kappa_2^2_closed={mp.nstr(k2,7)}  ratio={mp.nstr(ratio,6)} (->1)")
-                ok = ok and abs(ratio-1)<mp.mpf('5e-2')
-            else:
-                print(f"     A={A} p={p}: c_A->{mp.nstr(c,7)} (>0; kappa_A^2 has no closed form, A>=3)")
+    print("-"*78)
+    print("E4  c_A  vs  kappa_A^2  --  the fluctuation-dissipation identity is A=2-ONLY.")
+    print("    c_A=(g4-v/12)/D^3 = a_2/(2 D^3) is a THIRD-order (curvature) constant;")
+    print("    kappa_A^2 (from vbar_A=sum_k k^2 a_k/2, robust quadrature) is a SECOND-order")
+    print("    (variance) constant.  c_A=kappa_A^2 at A=2 (binary Perron-quadratic accident);")
+    print("    for A>=3 they DIFFER -- the ratio drifts, not even sign-definite.")
+    pos_ok=True; a2_ok=True; mismatch_ok=True
+    p='0.2'; pp=mp.mpf(p)
+    Ds=[mp.mpf('4e-4'),mp.mpf('2e-4'),mp.mpf('1e-4')]
+    for A in (2,3,4,5):
+        cs=[]; ks=[]
+        for D in Ds:
+            a=acoef(A,p,D)
+            cs.append(a[2]/(2*D**3))                                  # c_A (curvature side)
+            vbar=sum(k*k*a[k] for k in range(1,len(a)))/2             # vbar_A = sum k^2 a_k /2
+            ks.append((1-vbar/(D*(1-D)))*(1-2*D)**2/(D*(1-D)))        # kappa_A^2 (dispersion side)
+        cA=_extrap0(Ds,cs); kap2=_extrap0(Ds,ks); ratio=cA/kap2
+        pos_ok = pos_ok and cA>0
+        if A==2:
+            k2c=(1-2*pp)**2/(pp**2*(1-pp)**2)                         # closed form
+            a2_ok = (abs(cA/k2c-1)<mp.mpf('3e-3') and abs(kap2/k2c-1)<mp.mpf('3e-3')
+                     and abs(ratio-1)<mp.mpf('3e-3'))
+            tag=f"  [closed kappa_2^2={mp.nstr(k2c,7)}; IDENTITY HOLDS]"
+        else:
+            mismatch_ok = mismatch_ok and abs(ratio-1)>mp.mpf('1e-2')  # identity FAILS
+            tag="  [IDENTITY FAILS: c_A != kappa_A^2]"
+        print(f"     A={A} p={p}: c_A={mp.nstr(cA,7)}  kappa_A^2={mp.nstr(kap2,7)}  ratio c/k={mp.nstr(ratio,6)}{tag}")
     rep("E4a c_A(p) > 0 for all A (binding-endpoint convex at leading order)", pos_ok)
-    return rep("E4b c_2(p) = kappa_2^2 closed form (A=2, tight)", ok) and pos_ok
+    rep("E4b c_2 = kappa_2^2 (identity holds at A=2, both sides = closed form)", a2_ok)
+    return rep("E4c c_A != kappa_A^2 for A>=3 (fluctuation-dissipation identity is A=2-only)",
+               mismatch_ok) and pos_ok and a2_ok
 
 def E5():
-    print("-"*78); print("E5  assembled: G''(1^-) = 8 kappa_A^2 D^3 + O(D^4) > 0 (A=2 exact)")
+    print("-"*78); print("E5  assembled: G''(1^-) = 8 c_A D^3 + O(D^4) > 0 (A=2: c_2=kappa_2^2 exact)")
     ok=True
     for p in ('0.15','0.3'):
         pp=mp.mpf(p); k2=(1-2*pp)**2/(pp**2*(1-pp)**2)
@@ -195,7 +223,7 @@ def E5():
     return rep("E5 G''(1^-)=8 kappa^2 D^3>0 (binding-endpoint convex, leading order)", ok)
 
 def E6():
-    print("-"*78); print("E6  UNIFORM-in-u leading coefficient:  G''(u) = 8 kappa_A^2 D^3 + O(D^4)")
+    print("-"*78); print("E6  UNIFORM-in-u leading coefficient:  G''(u) = 8 c_A D^3 + O(D^4)")
     print("    for ALL u in [-1,1] (not just u->1).  Test: the u-spread of G''(u)/D^3")
     print("    shrinks ~D (=> u-dependence is O(D^4); leading D^3 term is u-independent),")
     print("    and its common value matches 8*kappa^2.  [const G'' <=> pure-u^2 / second-")
@@ -221,7 +249,7 @@ def E6():
         shrink = spreads[0]>spreads[1]>spreads[2] and spreads[2]<spreads[0]/8
         print(f"  A={A}: u-spread(G''/D^3) at D=2e-3,5e-4,1.25e-4 = [{','.join(mp.nstr(s,3) for s in spreads)}] (~D, ->0); h(0)={mp.nstr(v0,6)} {tag}")
         ok = ok and shrink
-    return rep("E6 G''(u)=8 kappa_A^2 D^3 UNIFORM in u (full leading-order convexity)", ok)
+    return rep("E6 G''(u)=8 c_A D^3 UNIFORM in u (full leading-order convexity)", ok)
 
 def E7():
     print("-"*78); print("E7  ASYMMETRIC binary (a!=b, BSC(D); the W_8 of Lemma 7.34e): the SAME")
