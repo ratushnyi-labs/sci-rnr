@@ -16,7 +16,7 @@
 **Priority:** MEDIUM
 **Lawbook Version (intake):** 0.44.0
 **Applicable Lawbook Version:** TBD
-**Created:** 2026-06-15  **Updated:** 2026-06-15
+**Created:** 2026-06-15  **Updated:** 2026-06-17
 **Recovered:** N/A
 
 ## Raw Request
@@ -168,6 +168,35 @@ bound that carries the geometric majorant to D_c and certifies LB(D)>0 for A>=3 
 c_{a,b} are finite but LARGE, e.g. c_{2,2}~-1.1e4 at A=3) -- the residual is reduced
 from "prove a_k=O(D^{k+1})" (DONE, all A) to "bound the coefficients uniformly";
 (ii) D2 -- beyond-Gray exact V_op(D).
+
+UPDATE 2026-06-17 (sideways search; commit aa12267 + handoff). The convexity-route
+residual is the curvature positivity c_A>0. Three lateral routes were scouted to
+either prove c_A>0 or BYPASS it:
+- Route C (fluctuation-dissipation c_A=kappa_A^2): DEAD. The identity holds ONLY at
+  A=2 (binary closed-form Perron quadratic); for A>=3 c_A/kappa_A^2 drifts to 1.235
+  by A=5 (not sign-definite) -- c_A is a 3rd-order spectral object, kappa_A^2 a
+  2nd-order variance object. This FALSIFIED a paper over-claim: Remark 7.34m'' said
+  the curvature is governed by "the same constant kappa_A^2"; corrected in aa12267
+  (~8 sites: general-A curvature is now 8 c_A D^3, kappa_2^2 kept only where A=2 is
+  named) + probe_7_34m_convexity_endpoint.py E4 rewritten as the explicit mismatch
+  check (E1-E9 PASS; recompile EXIT=0, 374 pages). Verified by two independent
+  extractors (Richardson FD + Chebyshev quadrature vbar=sum k^2 a_k/2).
+- Route A (Kingman log-convexity of g_A in s): DEAD (log g_A NOT convex in s; the
+  2nd difference goes negative).
+- Route B (direct replica spectral inequality -- THE PROMISING LEAD, NOT yet
+  verified): generalize the A=2 GAP-1 route (ledger a1, which closed A=2
+  achievability WITHOUT convexity) to all A. Candidate certificate:
+  g_A(s) <= 1 - (3/2) D(1-D)(1-cos s) on the closed Gray region, all A. The "2"
+  is the boundary-affineness linear term (rho(eta,0)=1+(A-1)eta, exact
+  eta=(D/(A-1))(w-1)); the 2nd-order drop is <= 1/2, leaving the floor c=3/2.
+  Numerically supported: inf_s (1-g_A)/[D(1-D)(1-cos s)] ~ 1.5-1.8 (A=2..5),
+  comfortably above 11/16 the achievability machinery needs. If proven (a
+  Collatz-Wielandt test-vector / boundary-affineness argument; the workflow drafted
+  a candidate in scratch probe_7_34_route_b_certificate.py, NOT committed/verified),
+  this RETIRES the c_A>0 convexity residual entirely. NEXT SESSION: verify the 3/2
+  floor over the full interior s in (0,pi) (not just the s=pi corner) and all of the
+  Gray region, then make the boundary-affineness derivation of "2" and the
+  "drop <= 1/2" bound rigorous.
 
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD
