@@ -25,17 +25,25 @@ measured delta_1 = 2 for all A. THIS script derives delta_1 = 2 exactly:
     Both steps are exact polynomial algebra -- no numerics, no root-solving of the
     (dead) A>=3 quartic Perron.
 
-CONCLUSION: delta_1 = 2 is PROVEN for A = 2..5 and A-universality is confirmed
-numerically to A=7 (the fully-symbolic-A derivation is the same computation with A a
-parameter; it is heavy but contains no new mathematical content). One of the two
-pieces of the (A-2)/(A-1) coefficient is now closed-form; the remaining piece is
-eps_1 = -2 - 2(A-2)/(A-1) (D=0 eigenvalue perturbation of W_A(pi)).
+UNIVERSAL-A DERIVATION (the same computation with A a SYMBOLIC parameter) gives, in
+factored closed form,
+    p^12 coefficient of disc:  -W^4 (4 A W - 4 W - 1) / (A-1)^8
+        which vanishes iff  W = 1/(4(A-1))  [or the degenerate W=0], and
+    p^13 coefficient at W*:    -(d1 - 2) / (256 (A-1)^12)
+        which vanishes iff  d1 = 2  --  for EVERY A.
+CONCLUSION: delta_1 = 2 is PROVEN for ALL A (A=2 from the closed form; A>=3 from the
+symbolic-A discriminant expansion; A=3..5 re-derived per-A as independent cross-checks;
+A=6,7 numeric). One of the two pieces of the (A-2)/(A-1) coefficient is now fully
+closed-form; the remaining piece is eps_1 = -2 - 2(A-2)/(A-1) (D=0 degenerate
+eigenvalue perturbation of W_A(pi)).
 
 CHECKS:
   Y1  A=2: series of the closed-form D_c gives (p^2/4)(1 + 2p + O(p^2)) exactly.
   Y2  A=3,4,5: cubic-discriminant leading order p^12 vanishes iff W=1/(4(A-1)) (exact).
   Y3  A=3,4,5: p^13 coefficient at W* vanishes iff d1=2 (exact).
   Y4  A=6,7: numeric confirmation delta_1 -> 2 (bisected D_c, Richardson in p).
+  Y5  UNIVERSAL A (symbolic): p^12 coeff = -W^4(4AW-4W-1)/(A-1)^8 and p^13 coeff at
+      W* = -(d1-2)/(256(A-1)^12)  =>  W*=1/(4(A-1)), d1=2 for every A (exact).
 
 Deps: sympy, numpy, mpmath.  Python: /Users/para/.venvs/rnr/bin/python.  ~2-3 min.
 """
@@ -131,12 +139,53 @@ def Y4():
         print(f"     A={A}: delta_1 (Richardson) = {mp.nstr(d,5)}  (=2: {here})")
     return rep("Y4 A=6,7 numeric delta_1=2 (universality supported)", ok)
 
+def Y5():
+    print("-" * 78); print("Y5  UNIVERSAL A (symbolic): W*=1/(4(A-1)) and d1=2 for every A (exact)")
+    A, p = sp.symbols('A p', positive=True)
+    W, d1 = sp.symbols('W d1')
+    D = W * p**2 * (1 + d1 * p)
+    lam2 = 1 - D * A / (A - 1)
+    al = 1 / A + (1 - 1 / A) / lam2
+    be = 1 / A - (1 / A) / lam2
+    td = 1 - p; to = p / (A - 1)
+    def Bred(y):
+        Ki = {0: (al if y == 0 else be), 1: (be if y == 0 else al), 2: be}
+        Trow = {0: {0: td, 1: to, 2: (A - 2) * to},
+                1: {0: to, 1: td, 2: (A - 2) * to},
+                2: {0: to, 1: to, 2: td + (A - 3) * to}}
+        M = sp.zeros(3, 3)
+        for i in range(3):
+            for j in range(3):
+                M[i, j] = Ki[i] * Trow[i][j]
+        return M
+    M = Bred(1) * Bred(0)
+    M = M.applyfunc(lambda e: sp.cancel(sp.together(e)))
+    c2 = sp.cancel(M.trace())
+    c1 = sp.cancel(sum(M[[i for i in r], [j for j in r]].det() for r in ([0, 1], [0, 2], [1, 2])))
+    c0 = sp.cancel(M.det())
+    a = -c2; b = c1; c = -c0
+    disc = 18 * a * b * c - 4 * a**3 * c + a**2 * b**2 - 4 * b**3 - 27 * c**2
+    ser = sp.expand(sp.series(disc, p, 0, 15).removeO())
+    poly = sp.Poly(ser, p)
+    orders = sorted(m[0] for m in poly.monoms())
+    lead = sp.factor(sp.simplify(poly.coeff_monomial(p**orders[0])))
+    lead_ok = (orders[0] == 12) and sp.simplify(
+        lead - (-W**4 * (4 * A * W - 4 * W - 1) / (A - 1)**8)) == 0
+    Wstar = 1 / (4 * (A - 1))
+    nxt = poly.coeff_monomial(p**orders[1])
+    nxtW = sp.factor(sp.simplify(sp.simplify(nxt).subs(W, Wstar)))
+    nxt_ok = (orders[1] == 13) and sp.simplify(
+        nxtW - (-(d1 - 2) / (256 * (A - 1)**12))) == 0
+    print(f"     p^12 coeff = {sp.sstr(lead)}  [matches -W^4(4AW-4W-1)/(A-1)^8: {lead_ok}]")
+    print(f"     p^13 coeff at W* = {sp.sstr(nxtW)}  [matches -(d1-2)/(256(A-1)^12): {nxt_ok}]")
+    return rep("Y5 universal-A: W*=1/(4(A-1)), d1=2 for EVERY A (symbolic, exact)", bool(lead_ok and nxt_ok))
+
 if __name__ == "__main__":
     print("=" * 78)
-    print("delta_1 = 2 (Gray-threshold small-p correction): exact derivation A=2..5")
+    print("delta_1 = 2 (Gray-threshold small-p correction): exact derivation, ALL A")
     print("=" * 78)
-    Y1(); Y2Y3(); Y4()
+    Y1(); Y2Y3(); Y4(); Y5()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
-    print("First of the two (A-2)/(A-1) pieces is closed-form. Remaining: eps_1 =")
-    print("-2-2(A-2)/(A-1) via D=0 eigenvalue perturbation of W_A(pi).")
+    print("First of the two (A-2)/(A-1) pieces is closed-form for ALL A. Remaining:")
+    print("eps_1 = -2-2(A-2)/(A-1) via D=0 eigenvalue perturbation of W_A(pi).")
