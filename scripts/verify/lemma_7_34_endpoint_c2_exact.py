@@ -37,6 +37,17 @@ CONSEQUENCE: the sharpened two-term margin is positive up to p* = c_1/|c_2|
 (~0.37 at A=3 rising to ~0.72 at A=6), comfortably covering the tight regime;
 consistent with the adversarial all-D sweep (no violations anywhere).
 
+UNIVERSAL-A DERIVATION (check E4). The same assembly with A a SYMBOLIC parameter,
+made tractable by SERIES-RING arithmetic: every PT-recurrence entry is truncated to
+a p-Laurent series (order 6) immediately, so expressions stay bounded (the full
+rational-function recurrence with symbolic A swells terminally -- two runaway
+attempts documented). The finale avoids sympy Laurent pitfalls (negative-power
+.coeff() returns 0 silently; etac^k for k>=3 starts at p^6/p^8, beyond naive series
+cutoffs) by POLE-SHIFTED COEFFICIENT DICTS: multiply by p^pole, extract nonnegative
+coefficients, shift back, convolve exactly. Result (~2 min): margin p^0 = 0,
+p^1 = (A-2)/(A-1), and c_2(A) = -(4A^2+24A-65)/(8(A-1)^2) for EVERY A -- the
+two-term endpoint margin theorem is UNIVERSAL in the alphabet.
+
 CHECKS:
   E1  delta_2 universal (A symbolic): p^14 discriminant coefficient at W*, d1=2
       forces delta_2 = (12A^2-28A+21)/(4(A-1)^2); A=2 closed form gives 13/4.
@@ -44,6 +55,8 @@ CHECKS:
       c_2 = -(4A^2+24A-65)/(8(A-1)^2) EXACTLY.
   E3  truncation: numeric PT ladder at A=3, p=1e-3 -- k=4 contributes ~ -1/16
       (in the eigenvalue; +1/16 in R) and k=5,6 contribute < 1e-6 at O(p^2).
+  E4  UNIVERSAL A (symbolic; series-ring + pole-shifted dicts): p^0=0,
+      p^1=(A-2)/(A-1), c_2(A) = -(4A^2+24A-65)/(8(A-1)^2) for every A.
 
 Deps: sympy, mpmath.  Python: /Users/para/.venvs/rnr/bin/python.  ~4-8 min.
 """
@@ -192,13 +205,77 @@ def E3():
     print(f"     k=5: {mp.nstr(out[5],3)}  k=6: {mp.nstr(out[6],3)}  (vanish)")
     return rep("E3 truncation: lam_4 carries the O(p^2) tail; lam_5,6 vanish", bool(ok4 and ok56))
 
+def E4():
+    print("-" * 78); print("E4  UNIVERSAL A: series-ring PT + pole-shifted coefficient dicts")
+    A, p, et, D = sp.symbols('A p eta_s D')
+    NORD = 6
+    def ser(e):
+        return sp.expand(sp.cancel(sp.series(e, p, 0, NORD).removeO()))
+    REPS = [(0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1), (0, 1, 2)]
+    FRESH = [3, 4, 5]
+    def Tsym(a_, b_): return (1 - p) if a_ == b_ else p / (A - 1)
+    Q0 = sp.zeros(5, 5); Q1 = sp.zeros(5, 5); Q2 = sp.zeros(5, 5)
+    for a_, (x, xp, xq) in enumerate(REPS):
+        for (y, yp, yq) in itertools.product(range(6), repeat=3):
+            fr = [l for l in dict.fromkeys([y, yp, yq]) if l in FRESH]
+            if fr != FRESH[:len(fr)]: continue
+            mult = sp.Integer(1)
+            for i in range(len(fr)): mult *= (A - 3 - i)
+            t = mult * Tsym(xp, yp) * Tsym(xq, yq) / Tsym(x, y)
+            ne = (1 if yp != y else 0) + (1 if yq != y else 0)
+            [Q0, Q1, Q2][ne][a_, _pat((y, yp, yq))] += t
+    Q0 = Q0.applyfunc(ser); Q1 = Q1.applyfunc(ser); Q2 = Q2.applyfunc(ser)
+    v = Q0[:, 0]
+    xs = {0: v}; lams = {}
+    for k in range(1, 5):
+        r = (Q1 * xs[k - 1] + (Q2 * xs[k - 2] if k >= 2 else sp.zeros(5, 1))).applyfunc(ser)
+        lam_k = ser(r[0]); xk = (r - lam_k * v)
+        for j in range(1, k): xk = xk - lams[j] * xs[k - j]
+        xs[k] = xk.applyfunc(ser); lams[k] = lam_k
+    def laurent_c(e, pole, hi):
+        ee = sp.expand(sp.cancel(sp.expand(e) * p**pole))
+        return {k - pole: sp.cancel(ee.coeff(p, k)) for k in range(0, hi + pole + 1)}
+    W = sp.Rational(1, 4) / (A - 1)
+    d2v = (12 * A**2 - 28 * A + 21) / (4 * (A - 1)**2)
+    Dc = W * p**2 * (1 + 2 * p + d2v * p**2)
+    etaD = 2 * D * (1 - D) / (A * D - 2 * D**2 - (A - 1))
+    CrD = ((A * D - 2 * D**2 - (A - 1)) / (A * D - (A - 1)))**2
+    etac_c = laurent_c(sp.series(etaD.subs(D, Dc), p, 0, 7).removeO(), 0, 6)
+    Crc_c = laurent_c(sp.series(CrD.subs(D, Dc), p, 0, 5).removeO(), 0, 4)
+    def conv(a, b, hi):
+        out = {}
+        for i, ai in a.items():
+            if ai == 0: continue
+            for j, bj in b.items():
+                if i + j > hi or bj == 0: continue
+                out[i + j] = sp.cancel(out.get(i + j, 0) + ai * bj)
+        return out
+    eta_pow = {1: etac_c}
+    for k in (2, 3, 4): eta_pow[k] = conv(eta_pow[k - 1], etac_c, 10)
+    lam_c = {k: laurent_c(lams[k], 4, 2) for k in range(1, 5)}
+    lamc_c = {j: (sp.Integer(1) if j == 0 else sp.Integer(0)) for j in range(0, 5)}
+    for k in range(1, 5):
+        t = conv(lam_c[k], eta_pow[k], 4)
+        for j in range(0, 5): lamc_c[j] = sp.cancel(lamc_c[j] + t.get(j, 0))
+    Cl = conv(Crc_c, lamc_c, 4)
+    Nc = {j: sp.cancel((1 if j == 0 else 0) - Cl.get(j, 0)) for j in range(0, 5)}
+    inv_c = laurent_c(sp.series(1 / (2 * Dc * (1 - Dc)), p, 0, 3).removeO(), 2, 2)
+    marg = conv(Nc, inv_c, 2)
+    m0 = sp.cancel(marg.get(0, 0) - sp.Rational(3, 2))
+    m1 = sp.simplify(marg.get(1, 0)); m2 = sp.simplify(marg.get(2, 0))
+    tgt = -(4 * A**2 + 24 * A - 65) / (8 * (A - 1)**2)
+    ok = (sp.simplify(m0) == 0 and sp.simplify(m1 - (A - 2) / (A - 1)) == 0
+          and sp.simplify(m2 - tgt) == 0)
+    print(f"     p^0 = {sp.simplify(m0)}, p^1 = {m1}, c_2(A) = {sp.factor(m2)}")
+    return rep("E4 UNIVERSAL c_2(A) = -(4A^2+24A-65)/(8(A-1)^2) for every A", bool(ok))
+
 if __name__ == "__main__":
     print("=" * 78)
-    print("c_2(A) = -(4A^2+24A-65)/(8(A-1)^2): exact derivation (delta_2 + rank-1 PT k<=4)")
+    print("c_2(A) = -(4A^2+24A-65)/(8(A-1)^2): exact derivation, ALL A")
     print("=" * 78)
-    E1(); E2(); E3()
+    E1(); E2(); E3(); E4()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
-    print("Two-term endpoint margin DERIVED: (A-2)/(A-1) p - |c_2| p^2, positive to")
-    print("p* ~ 0.37-0.72. A=2's 1/8 proven separately. Universal-A c_2 needs the")
-    print("series-ring optimization (symbolic-A x_k rational entries swell).")
+    print("Two-term endpoint margin theorem, UNIVERSAL in A:")
+    print("R_A(pi)|Dc - 3/2 = [(A-2)/(A-1)] p - [(4A^2+24A-65)/(8(A-1)^2)] p^2 + O(p^3),")
+    print("positive to p* ~ 0.37-0.72. A=2's 1/8 proven separately (off-family).")
