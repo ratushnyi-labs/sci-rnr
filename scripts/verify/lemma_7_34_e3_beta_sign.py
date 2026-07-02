@@ -37,6 +37,17 @@ endpoint >= 3/2 with the universal two-term margin -- i.e. the monotone-reductio
 both sub-lemmas hold at their leading nontrivial orders for every tested alphabet.
 Residual: all-orders-in-D (large D up to D_c) monotonicity; universal-A beta formula.
 
+UNIVERSAL FORMULA (derived by the same third-order PT with A SYMBOLIC, series-ring
+in D + Laurent-safe Chebyshev w->t conversion; verified against all per-A anchors):
+    beta(A,p) = -4 (1 - A(1-p))^2 P(A,p) / (p^2 (A-1)^5 (1-p)^2),
+    P(A,p) = 2A^4(1-p)^4 - A^3(4p^4-20p^3+39p^2-32p+9)
+             - A^2(8p^3-33p^2+40p-15) - A(6p^2-16p+11) + 3,
+and P is EXACTLY the lambda_3 numerator polynomial (beta proportional to lam_3 --
+internal consistency across independent derivations). Prefactor and denominator are
+sign-definite, so UNIVERSAL beta<=0  <=>  P(A,p) >= 0 on {A>=2, 0<p<(A-1)/A} --
+one two-variable polynomial positivity (proven per-A below; universal proof is the
+remaining step).
+
 CHECKS:
   X1  e_3 is degree 2 in t with zero constant term (A=2..5, exact).
   X2  beta_A(p) matches the closed forms above (exact).
@@ -44,6 +55,11 @@ CHECKS:
       interval + endpoint sign (exact rational arithmetic).
   X4  assembled: dR/dt at O(D^2) = beta_A(p)/(1-D) * D^2 <= 0 (numeric spot-check
       against the raw replica derivative at A=3, p=0.2, D=0.4 D_c).
+  X5  universal formula: subs A=2..5 reproduces the per-A closed forms (exact).
+  X6  out-of-sample: A=6 via a FRESH per-A derivation matches the universal
+      formula (A=6 was not used in constructing it).
+  X7  sign grid: P(A,p) > 0 at exact rational points for A=6..12 (universal
+      positivity proof = remaining step).
 
 Deps: sympy, mpmath.  Python: /Users/para/.venvs/rnr/bin/python.  ~3-5 min.
 """
@@ -156,11 +172,55 @@ def X4():
     print(f"     numeric dR/dt = {mp.nstr(dRdt_num,6)}  predicted beta D^2/(1-D) = {mp.nstr(pred,6)}  rel={mp.nstr(rel,3)}")
     return rep("X4 raw-replica derivative matches beta_A D^2/(1-D) (15% at O(D^3))", ok)
 
+BETA_UNIV = None
+def _beta_univ():
+    global BETA_UNIV
+    if BETA_UNIV is None:
+        A = sp.symbols('A')
+        Ppoly = (2*A**4*p**4 - 8*A**4*p**3 + 12*A**4*p**2 - 8*A**4*p + 2*A**4
+                 - 4*A**3*p**4 + 20*A**3*p**3 - 39*A**3*p**2 + 32*A**3*p - 9*A**3
+                 - 8*A**2*p**3 + 33*A**2*p**2 - 40*A**2*p + 15*A**2
+                 - 6*A*p**2 + 16*A*p - 11*A + 3)
+        BETA_UNIV = (-4*(A*p - A + 1)**2 * Ppoly / (p**2*(A-1)**5*(p-1)**2), A, Ppoly)
+    return BETA_UNIV
+
+def X5():
+    print("-" * 78); print("X5  universal formula reproduces per-A closed forms")
+    bu, A, _ = _beta_univ()
+    ok = True
+    for Av, cf in BETA_CLOSED.items():
+        here = sp.simplify(bu.subs(A, Av) - cf) == 0
+        ok = ok and here
+        print(f"     A={Av}: universal == per-A closed form: {here}")
+    return rep("X5 universal beta(A,p) matches A=2..5 anchors (exact)", ok)
+
+def X6():
+    print("-" * 78); print("X6  out-of-sample A=6: fresh per-A derivation vs universal formula")
+    E1t6, E2t6, E3t6 = _flat.derive(6)
+    beta6 = sp.cancel(sp.expand(sp.cancel(E3t6)).coeff(tsym, 2))
+    bu, A, _ = _beta_univ()
+    ok = sp.simplify(beta6 - bu.subs(A, 6)) == 0
+    print(f"     A=6 fresh derivation == universal formula: {ok}")
+    return rep("X6 out-of-sample A=6 match (universal formula validated)", ok)
+
+def X7():
+    print("-" * 78); print("X7  P(A,p) > 0 grid A=6..12 (universal positivity = remaining step)")
+    _, A, Ppoly = _beta_univ()
+    ok = True
+    for Av in range(6, 13):
+        for k in range(1, 20):
+            pv = sp.Rational(k, 20)
+            if pv >= sp.Rational(Av - 1, Av): continue
+            val = Ppoly.subs({A: Av, p: pv})
+            if val <= 0: ok = False; print(f"     VIOLATION A={Av} p={pv}: {val}")
+    print(f"     all grid points positive: {ok}")
+    return rep("X7 P(A,p)>0 on grid A=6..12 (sign extends; universal proof pending)", ok)
+
 if __name__ == "__main__":
     print("=" * 78)
     print("beta_A(p) <= 0: monotonicity-in-s at O(D^2) PROVEN (A=2..5)")
     print("=" * 78)
-    X1X2(); X3(); X4()
+    X1X2(); X3(); X4(); X5(); X6(); X7()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("Both monotone-reduction sub-lemmas now hold at their leading nontrivial")
