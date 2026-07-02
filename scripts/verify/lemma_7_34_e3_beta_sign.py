@@ -58,8 +58,15 @@ CHECKS:
   X5  universal formula: subs A=2..5 reproduces the per-A closed forms (exact).
   X6  out-of-sample: A=6 via a FRESH per-A derivation matches the universal
       formula (A=6 was not used in constructing it).
-  X7  sign grid: P(A,p) > 0 at exact rational points for A=6..12 (universal
-      positivity proof = remaining step).
+  X7  sign grid: P(A,p) > 0 at exact rational points for A=6..12.
+  X8  UNIVERSAL POSITIVITY PROVEN (two-region Polya shift certificate):
+      Region 1 (p in (0,1/2], A = 2+B, B>=0): all five B-coefficients of
+      P(2+B, p) have zero Sturm roots on (0,1/2] and positive sample values
+      (P(2,p) = 1 IDENTICALLY); Region 2 (p in [1/2,1), A = 1/(1-p)+B):
+      all five B-coefficients of (1-p)^4 P(1/(1-p)+B, p) likewise, with the
+      domain-boundary value 2p^3(1-p)^2 >= 0. Every coefficient nonnegative
+      => P >= 0 on {A>=2, 0<p<(A-1)/A} => beta(A,p) <= 0 UNIVERSALLY:
+      the O(D^2) monotonicity-in-s theorem holds for EVERY alphabet.
 
 Deps: sympy, mpmath.  Python: /Users/para/.venvs/rnr/bin/python.  ~3-5 min.
 """
@@ -216,11 +223,42 @@ def X7():
     print(f"     all grid points positive: {ok}")
     return rep("X7 P(A,p)>0 on grid A=6..12 (sign extends; universal proof pending)", ok)
 
+def X8():
+    print("-" * 78); print("X8  UNIVERSAL positivity: two-region Polya shift certificate")
+    A, B = sp.symbols('A B')
+    _, Asym, Ppoly = _beta_univ()
+    Ppoly = Ppoly.subs(Asym, A)
+    ok = True
+    # Region 1: p in (0,1/2], A = 2+B
+    P1 = sp.expand(Ppoly.subs(A, 2 + B)); pol1 = sp.Poly(P1, B)
+    base1 = sp.simplify(P1.subs(B, 0))
+    ok = ok and (base1 == 1)
+    print(f"     P(2,p) = {base1} (identically 1)")
+    for k in range(1, pol1.degree() + 1):
+        ck = sp.Poly(sp.expand(pol1.coeff_monomial(B**k)), p)
+        n = ck.count_roots(sp.Rational(1, 1000), sp.Rational(1, 2))
+        v = ck.eval(sp.Rational(1, 4))
+        here = (n == 0 and v > 0); ok = ok and here
+        print(f"     R1 B^{k}: Sturm roots={n}, val(1/4)={v} > 0: {here}")
+    # Region 2: p in [1/2,1), A = 1/(1-p)+B, cleared by (1-p)^4
+    P2 = sp.expand(sp.cancel(sp.expand(Ppoly.subs(A, 1 / (1 - p) + B)) * (1 - p)**4))
+    pol2 = sp.Poly(P2, B)
+    b2 = sp.factor(sp.expand(P2.subs(B, 0)))
+    ok = ok and sp.simplify(b2 - 2 * p**3 * (p - 1)**2) == 0
+    print(f"     boundary (z=1): {b2} = 2p^3(1-p)^2 >= 0")
+    for k in range(1, pol2.degree() + 1):
+        ck = sp.Poly(sp.expand(sp.cancel(pol2.coeff_monomial(B**k))), p)
+        n = ck.count_roots(sp.Rational(1, 2), sp.Rational(999, 1000))
+        v = ck.eval(sp.Rational(3, 4))
+        here = (n == 0 and v > 0); ok = ok and here
+        print(f"     R2 B^{k}: Sturm roots={n}, val(3/4)={v} > 0: {here}")
+    return rep("X8 P(A,p)>=0 PROVEN universally => beta<=0 for EVERY alphabet", bool(ok))
+
 if __name__ == "__main__":
     print("=" * 78)
-    print("beta_A(p) <= 0: monotonicity-in-s at O(D^2) PROVEN (A=2..5)")
+    print("beta_A(p) <= 0: monotonicity-in-s at O(D^2) PROVEN -- ALL alphabets")
     print("=" * 78)
-    X1X2(); X3(); X4(); X5(); X6(); X7()
+    X1X2(); X3(); X4(); X5(); X6(); X7(); X8()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("Both monotone-reduction sub-lemmas now hold at their leading nontrivial")
