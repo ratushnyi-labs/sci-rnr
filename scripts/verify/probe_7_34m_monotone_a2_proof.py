@@ -15,7 +15,11 @@ From the exact factorization the replica floor is g_2 = (1/2)[F + sqrt(F^2+G)] w
     F = 1 - 2 a t,     G = 8 kappa^2 a^2 t (1 - 4a + 2 a^2 t) / (1-4a)^2,
 and R_2(s) = (1-g_2)/(a t) = [(1+2at) - sqrt(F^2+G)] / (2 a t). (Verified vs the
 replica g_A to 1e-36.) Writing H := F^2+G = 1 + B t + C t^2, elementary calculus gives
-    sign(dR_2/dt) = sign( sqrt(H) - 1 - t (sqrt(H))' )  =  sign( 2 sqrt(H) - (2 + B t) ),
+    sign(dR_2/dt) = -sign( 2 sqrt(H) - (2 + B t) )
+(dR_2/dt = [(2+Bt) - 2 sqrt(H)]/(4 a t^2 sqrt(H)); monotone-decreasing iff
+2 sqrt(H) >= 2 + B t). The squaring step below is safe ONE-SIDEDLY:
+4C - B^2 >= 0 gives 2 sqrt(H) >= |2 + B t| >= 2 + B t regardless of the sign
+of 2+Bt (and in fact 2+Bt > 0 on the Gray domain),
 and since 2H - t H' = 2 + B t exactly, the monotone condition 2 sqrt(H) >= 2 + B t
 squares (both sides >=0 in the binding regime) to t^2 (4C - B^2) >= 0, i.e.
 

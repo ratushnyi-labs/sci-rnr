@@ -278,4 +278,4 @@ if __name__ == "__main__":
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("Two-term endpoint margin theorem, UNIVERSAL in A:")
     print("R_A(pi)|Dc - 3/2 = [(A-2)/(A-1)] p - [(4A^2+24A-65)/(8(A-1)^2)] p^2 + O(p^3),")
-    print("positive to p* ~ 0.37-0.72. A=2's 1/8 proven separately (off-family).")
+    print("positive to p* ~ 0.37-0.72. A=2 is ON-family: c_2(2)=+1/8 (proven separately).")

@@ -35,8 +35,13 @@ root
 whence a(D_c) = D_c(1-D_c) = p^2 / (4(1-p)^2), and substituting into P gives the
 EXACT boundary margin
     P(a(D_c(p)), p) = p^2 (1-2p)^3 / (4 (1-p)^8)  >  0    for all p in (0,1/2).
-Since P(0,p)=1>0 and P has no root in (0, a(D_c)] (its smallest positive root
-exceeds a(D_c), coinciding only in the p->0 limit where P_c -> 0+), we have
+The interior (no-root-in-(0,a_c]) step is closed IN CLOSED FORM by the
+f-monotonicity lemma (S7):  P(a,p) >= 0  <=>  kappa^2 <= f(a) :=
+(1-3a)(1-4a)^2 / (4a(1-2a)^2), and
+    d log f / da = -3/(1-3a) - 1/a - 4/((1-2a)(1-4a))  <  0   on (0, 1/4)
+(each term strictly negative there), so f is strictly decreasing and
+min_{(0,a_c]} f = f(a_c); hence kappa^2 <= f(a_c) <=> P(a_c,p) >= 0 -- exactly
+the proven boundary inequality. Therefore
 P(a,p) >= 0 on the whole Gray region 0<D<=D_c(p); hence
     R_2(pi) >= 3/2   on the entire A=2 Gray region, with exact margin P_c above.
 This is the SHARP endpoint constant (3/2 > the committed 11/16), tight as p->0,D->D_c.
@@ -48,8 +53,12 @@ CHECKS:
   S4  monotone-in-a near 0: P decreasing at small a (P(0,p)=1>0).
   S5  closed-form proof (sympy): D_c(p), a(D_c)=p^2/(4(1-p)^2), and the EXACT boundary
       P(a(D_c),p) = p^2(1-2p)^3/(4(1-p)^8) > 0.
-  S6  no interior dip: smallest positive root of the cubic P(.,p) exceeds a(D_c) for
-      all p in (0,1/2) (so P>=0 on (0,a(D_c)] -- the sharp endpoint is PROVEN).
+  S6  no interior dip (numeric cross-check): smallest positive root of the cubic
+      P(.,p) exceeds a(D_c) at sample p (supporting evidence; the PROOF is S7).
+  S7  f-monotonicity closure (symbolic): P>=0 <=> kappa^2 <= f(a), and
+      d log f/da = -3/(1-3a) - 1/a - 4/((1-2a)(1-4a)) < 0 on (0,1/4), so the
+      Gray-interior inequality reduces to the proven boundary P(a_c,p)>=0 --
+      closing the interior step in closed form (the sharp endpoint is PROVEN).
 
 Deps: mpmath, numpy.  Python: /Users/para/.venvs/rnr/bin/python.  ~1 min.
 """
@@ -196,11 +205,28 @@ def S6():
         print(f"     p={mp.nstr(pv,4)}: a_c={mp.nstr(ac,5)} smallest_pos_root={mp.nstr(smallest,5)} root>=a_c:{here}")
     return rep("S6 no interior root in (0,a_c] => P>=0 on Gray => R_2(pi)>=3/2 PROVEN", ok)
 
+def S7():
+    print("-" * 78); print("S7  f-monotonicity closure: dlog f/da < 0 on (0,1/4) (symbolic)")
+    import sympy as sp
+    a, k2 = sp.symbols('a kappa2', positive=True)
+    f = (1 - 3 * a) * (1 - 4 * a)**2 / (4 * a * (1 - 2 * a)**2)
+    # P >= 0 <=> kappa^2 <= f(a):  P = 4a(1-2a)^2 (f(a) - kappa^2) -- verify identity
+    P = (1 - 3 * a) * (1 - 4 * a)**2 - 4 * k2 * a * (1 - 2 * a)**2
+    ok_id = sp.simplify(P - 4 * a * (1 - 2 * a)**2 * (f - k2)) == 0
+    # dlog f/da = -3/(1-3a) - 1/a - 4/((1-2a)(1-4a))  (each term < 0 on (0,1/4))
+    dlog = sp.simplify(sp.diff(sp.log(f), a))
+    target = -3 / (1 - 3 * a) - 1 / a - 4 / ((1 - 2 * a) * (1 - 4 * a))
+    ok_dlog = sp.simplify(dlog - target) == 0
+    print(f"     P == 4a(1-2a)^2 (f - kappa^2): {ok_id}")
+    print(f"     dlog f/da == -3/(1-3a) - 1/a - 4/((1-2a)(1-4a)): {ok_dlog}")
+    print(f"     each term < 0 on (0,1/4) => f strictly decreasing => interior reduces to boundary")
+    return rep("S7 interior closed in closed form (f-monotonicity lemma)", bool(ok_id and ok_dlog))
+
 if __name__ == "__main__":
     print("=" * 78)
     print("BUG-009-D / Route B (A=2): sharp endpoint R_2(pi)>=3/2 -- PROVEN in closed form")
     print("=" * 78)
-    S1(); S2(); S3(); S4(); S5(); S6()
+    S1(); S2(); S3(); S4(); S5(); S6(); S7()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("A=2 sharp endpoint R_2(pi)>=3/2 is PROVEN: exact margin P_c=p^2(1-2p)^3/(4(1-p)^8)>0")
