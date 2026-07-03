@@ -9,8 +9,8 @@ completing the three-term corner expansion
     R_A(pi)|_{D_c} - 3/2 = [(A-2)/(A-1)] p - [(4A^2+24A-65)/(8(A-1)^2)] p^2
                            - [(18A^2-153A+232)/(8(A-1)^3)] p^3 + O(p^4),
 with D_c = [p^2/(4(A-1))] (1 + 2p + delta_2 p^2 + delta_3 p^3 + O(p^4)).
-(Note c_3 > 0 for A <= 8 -- the p^3 term HELPS the margin at small alphabets --
-and c_3(2) = 1/4.)
+(Note c_3 > 0 for A <= 6 (c_3(7) = -43/1728 < 0) -- the p^3 term HELPS the
+margin at small alphabets -- and c_3(2) = 1/4.)
 
 PROVENANCE. Derived in the user-authorized research fan-out (agent artifacts in
 scratchpad/research_p3_remainder/), then INDEPENDENTLY verified through three

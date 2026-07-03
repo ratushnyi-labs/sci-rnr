@@ -27,7 +27,8 @@ THE REFUTATIONS (V3 and V2 witnesses BOTH reproduced in this probe, H1/H4):
 WHAT SURVIVES (the corrected honest map):
   * The TARGET R_A(s;D) >= 3/2 holds at every sweep point; global min
     1.50000999... at the usual tight corner (small p, s=pi, D->D_c). Inside the
-    violation pocket min R = 1.7404 (A=32) -- margin 16x the tight-corner margin.
+    violation pocket min R = 1.7404 (A=32) -- absolute margin +0.2404, four
+    orders of magnitude above the ~1e-5 tight-corner margin.
   * Both monotonicity statements hold with quantified derivative slack for
     p <= 0.97 (A-1)/A -- ALL the committed order-by-order theorems (flatness,
     O(D^2) beta-certificate, endpoint corner + all-D grid at p<=0.3) live deep
@@ -136,7 +137,7 @@ def H2():
             worst = min(worst, r)
             ok = ok and (r >= mp.mpf('1.74'))
     print(f"     worst R over pocket grid = {mp.nstr(worst,8)} (>= 1.74)")
-    return rep("H2 pocket floor >= 1.74 (margin 16x the tight corner; V1 safe)", ok)
+    return rep("H2 pocket floor >= 1.74 (>> the ~1e-5 tight-corner margin; V1 safe)", ok)
 
 def H3():
     print("-" * 78); print("H3  clean region: at p=0.9 pmax (A=16) D-monotonicity STILL holds")

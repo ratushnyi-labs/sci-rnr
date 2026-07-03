@@ -3,7 +3,9 @@ r"""
 lemma_7_34_e3_beta_sign.py
 ============================================================================
 BUG-009-D / Route B: monotonicity-in-s at its FIRST NONTRIVIAL ORDER O(D^2) --
-PROVEN for A = 2, 3, 4, 5 via the one-variable sign certificate beta_A(p) <= 0.
+PROVEN for EVERY alphabet: the universal closed form beta(A,p) (symbolic-A
+series-ring derivation, anchored exactly at A=2..6 incl. out-of-sample A=6)
+times the two-region Polya-shift positivity P(A,p)>=0 (X8, exact).
 
 CONTEXT. The flatness lemma (probe_7_34_monotone_s_leading_D.py) shows R_A(s;D) is
 exactly flat in s through O(D): e_1 = 2t, e_2 = t q_A(p). The genuine s-dependence

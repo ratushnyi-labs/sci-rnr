@@ -891,7 +891,9 @@ all-$D$ on the memory bulk via the A-ary replica spectral inequality of
 Lemma 7.34l --- whose $S_A$ pattern-quotient makes it an alphabet-independent
 $\le5$-dimensional problem --- with a single 2nd-order residual (a rigorous
 Chebyshev-coefficient $a_k$ bound) and the beyond-Gray ($D>D_c$) exact value
-left open (the residual ledger in Remark 7.34m$'''$). Section 8 states the
+left open (the residual ledger in Remark 7.34m$'''$; the sharp replica
+constant $\tfrac32$ is proven at $A=2$ and regionally certified for $A\ge3$,
+Remarks 7.34m$''''$/7.34m$'''''$). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -12925,11 +12927,16 @@ committed walls are \emph{bypassed}, not contradicted: no logarithm of $S_x$ is 
 on-contour zeros are harmless ($g$ is in fact \emph{smallest} at $s=\pi$), and the
 $|C_s/C_0|^{2n}$ growth is absorbed into $g$.
 
-\textbf{Theorem (the replica spectral inequality, proven).} \emph{For every $p\in(0,\tfrac12)$, every
+\textbf{Theorem (the replica spectral inequality, sharp constant, proven).} \emph{For every $p\in(0,\tfrac12)$, every
 $0<D\le D_c(p)$, and every $s\in(0,\pi]$,}
 \[
-  g(s)\;\le\;1-\tfrac{11}{16}\,D(1-D)\,(1-\cos s)\;<\;1 .
+  g(s)\;\le\;1-\tfrac{3}{2}\,D(1-D)\,(1-\cos s)\;<\;1 ,
 \]
+\emph{and the constant $\tfrac32$ is sharp: the floor ratio
+$R_2(s):=[1-g(s)]/[D(1-D)(1-\cos s)]$ satisfies $R_2(s)\ge\tfrac32$ throughout
+the Gray region, with infimum $\tfrac32$ approached only in the corner $s=\pi$,
+$D\to D_c$, $p\to0$ (the endpoint margin at $D=D_c$ is exactly
+$\tfrac18p^2+\tfrac14p^3+O(p^4)$).}
 \emph{Proof.} (i) \emph{Structure.} Writing $W_4[(d_1,d_2),(e_1,e_2)]=B(d_1\!\oplus\!e_1,d_2\!\oplus\!
 e_2)\,\eta^{e_1}\bar\eta^{e_2}$ with $B(f_1,f_2)=\sum_a T_{a\oplus f_1}T_{a\oplus f_2}/T_a$, direct
 evaluation gives $B(0,0)=B(0,1)=B(1,0)=1$ and $B(1,1)=1+q$, $q=(1-2p)^2/(p(1-p))>0$; hence
@@ -12959,16 +12966,70 @@ $D_c(1-D_c)=p^2/(4(1-p)^2)$,
 (the first term $<\tfrac14$ since $1-2p<(1-p)^2$). Hence $\Psi_t(D)<\tfrac5{16}$ on the whole closed
 Gray region, and, since $\sqrt{F^2+G}<2-F\le2$ bounds the denominator by $2[(2-F)+\sqrt{F^2+G}]\le8$,
 $1-g=\tfrac{4(1-F)-G}{2[(2-F)+\sqrt{F^2+G}]}\ge\tfrac{8D(1-D)t\,(1-5/16)}{8}
-=\tfrac{11}{16}D(1-D)t$. \hfill$\square$
+=\tfrac{11}{16}D(1-D)t$ --- the soft uniform floor, retained because its
+$\Psi$-chain constants ($\Psi_t<\tfrac5{16}$, $\Psi_0<\tfrac14$) also feed the
+curvature corollary and the central-window variance floor below. The sharp
+constant takes two further steps. (v) \emph{Monotonicity in $s$ (the
+discriminant certificate).} Write $a:=D(1-D)\in(0,\tfrac14)$ (so $1-4a=(1-2D)^2>0$)
+and $H:=F^2+G=1+Bt+Ct^2$, with, from (iii), $B=-4a+8\kappa^2a^2/(1-4a)$ and
+$C=4a^2+16\kappa^2a^4/(1-4a)^2$. From $g=\tfrac12[F+\sqrt H]$ the floor ratio is
+$R_2=[(1+2at)-\sqrt H]/(2at)$, and --- using the exact identity $2H-tH'=2+Bt$ ---
+\[
+  \frac{dR_2}{dt}=\frac{(2+Bt)-2\sqrt H}{4at^2\sqrt H},
+\]
+so $R_2$ is non-increasing in $t$ iff $2\sqrt H\ge2+Bt$. The squaring is safe
+one-sidedly: if $4C\ge B^2$ then $4H=4+4Bt+4Ct^2\ge(2+Bt)^2$ pointwise, i.e.\
+$2\sqrt H\ge|2+Bt|\ge2+Bt$, regardless of the sign of $2+Bt$. And the
+discriminant is exact: with $m:=8\kappa^2a^2/(1-4a)^2>0$,
+\[
+  4C-B^2=8am\bigl(1-(3+\kappa^2)\,a\bigr),\qquad\text{so}\qquad
+  \frac{dR_2}{dt}\le0\ \text{ for all }t\iff a\le\frac1{3+\kappa^2}.
+\]
+On the Gray region $a\le a_c:=D_c(1-D_c)=p^2/(4(1-p)^2)$, and
+$(3+\kappa^2)\,a_c\le1$ is, cleared of denominators, the quartic inequality
+$4(1-p)^4-3p^2(1-p)^2-(1-2p)^2=p^4-10p^3+17p^2-12p+3\ge0$, which in
+$u:=\tfrac12-p\in(0,\tfrac12)$ reads $(16u^4+128u^3+56u^2+32u+1)/16>0$ ---
+\emph{all} coefficients positive. Hence $4C-B^2>0$ strictly and $R_2$ is
+strictly decreasing in $t$ on the entire Gray region: the binding point is
+$t=2$, i.e.\ $s=\pi$. (vi) \emph{The sharp endpoint.} At $t=2$, $F(\pi)=1-4a$
+and $G(\pi)=16\kappa^2a^2(1-2a)^2/(1-4a)^2$; since $1-2a>0$, the single
+squaring below is an equivalence:
+\[
+  R_2(\pi)\ge\tfrac32\iff(1-2a)\ge\sqrt{(1-4a)^2+G(\pi)}
+  \iff P(a,p):=(1-3a)(1-4a)^2-4\kappa^2a(1-2a)^2\ \ge\ 0
+\]
+(the middle step uses $(1-2a)^2-(1-4a)^2=4a(1-3a)$). Equivalently
+$\kappa^2\le f(a):=(1-3a)(1-4a)^2/[4a(1-2a)^2]$, and
+\[
+  \frac{d\log f}{da}=-\frac{3}{1-3a}-\frac1a-\frac{4}{(1-2a)(1-4a)}<0
+  \quad\text{on }(0,\tfrac14)
+\]
+(each term strictly negative there), so $f$ is strictly decreasing on
+$(0,\tfrac14)\supseteq(0,a_c]$ and the interior inequality reduces to the
+boundary $a=a_c$, where \emph{exactly}
+\[
+  P(a_c,p)=\frac{p^2(1-2p)^3}{4(1-p)^8}\;>\;0\qquad(p\in(0,\tfrac12)).
+\]
+Hence $R_2(s)\ge R_2(\pi)\ge\tfrac32$ on the whole Gray region; sharpness is
+the corner ladder $R_2(\pi)\big|_{D_c}-\tfrac32=\tfrac18p^2+\tfrac14p^3+O(p^4)
+\to0$ as $p\to0$ (Remark 7.34m$''''$). \hfill$\square$
 
-\emph{Corollary (curvature $=$ posterior variance).} $g(s)=1-a(p,D)s^2+O(s^4)$ with
-$a(p,D)=D(1-D)\bigl(1-\Psi_0(D)\bigr)>0$ in closed form, which reproduces the measured curvature range
-$[0.0014,0.0894]$ exactly and equals the per-site posterior variance $\bar v$ ($O(1/n)$ gaps, halving
+\emph{Corollary (curvature $=$ posterior variance).} $g(s)=1-\bar v\,s^2+O(s^4)$ with
+$\bar v=\bar v(p,D)=D(1-D)\bigl(1-\Psi_0(D)\bigr)>0$ in closed form, which reproduces the measured
+curvature range $[0.0014,0.0894]$ exactly and \emph{is} the per-site posterior variance ($O(1/n)$ gaps, halving
 with $n$). The theorem was found numerically first (hostile scans: $77$ combos, corner drills to
 $p=0.005$, margins positive throughout including $D=D_c$; measured prefactor
 $\mathbb E_x|\Phi|^2/g(s)^n\le1$ from $n\ge50$) and then proven as above; two independent adversarial
 reviews re-derived every step from the raw definitions (symbolic identity checks, a $64{,}192$-point
-hostile sweep, exact-rational verification at adversarially chosen corners). With the inequality proven,
+hostile sweep, exact-rational verification at adversarially chosen corners).
+The sharp-constant steps (v)--(vi) are machine-certified separately --- the
+discriminant identity $4C-B^2=8am(1-(3+\kappa^2)a)$, the positive-coefficient
+boundary quartic, and the assembled $dR_2/dt<0$ in
+\texttt{scripts/verify/probe\_7\_34m\_monotone\_a2\_proof.py} (T1--T5); the
+endpoint reduction, the exact boundary margin $p^2(1-2p)^3/(4(1-p)^8)$, and the
+$f$-monotonicity closure in \texttt{probe\_7\_34m\_endpoint\_sharp\_a2.py}
+(S1--S7) --- all PASS.
+With the inequality proven,
 Markov plus an $e^{cn}$-net (the word-uniform bound
 $|\partial_s\Phi|\le\mathbb E_Q[K\mid x]\le n$) yields the quenched uniform tail lemma
 \emph{unconditionally}:
@@ -12993,7 +13054,7 @@ steepest descent gives $q_t=(2\pi v_x)^{-1/2}e^{-\beta^2/2}\bigl(1+O(\log^3 n/\s
 $e^{-\beta^2/2}$ --- precisely the committed $\mathrm{Var}(\log_2 r_t)=O(1)$ allowance, now
 \emph{explaining} the $O(n^{-1/2})$ single-flip influence ($D_i\log_2 q_t\approx-\beta\,D_i\mu_x/
 \sqrt{v_x}$) --- whence $\mathrm{Var}(\log_2 S_n\mid\text{shell})=O(1)$ and the reduction assembles.
-There is no middle zone: the KP window is fixed while $g(s)\sim1-as^2$ ($a>0$) lets the replica bound
+There is no middle zone: the KP window is fixed while $g(s)\sim1-\bar v s^2$ ($\bar v>0$) lets the replica bound
 reach $s\sim n^{-1/2+\kappa}$, so the handoff overlaps with $\Theta(1)$ slack. Machine-checked
 end-to-end at $n$ up to $1024$ ($150$ shell words per $n$): $\mathrm{Var}(\log_2 q_t)$ $n$-stable and
 matched by the Gaussian model, steepest-descent residual decaying as $n^{-1/2}$, tail suprema within the
@@ -14730,6 +14791,10 @@ remaining residual --- a fully symbolic Sturm-style certification of
 $\sup_{[\varepsilon,\pi]}g_A<1$ on the $\le5\times5$ quotient over
 $\mathbb Q(p,D)$, exactly as Lemma 7.34e supplied for the asymmetric binary
 $8\times8$ --- is mechanical per $(A,p,D)$ and discharged numerically here.
+(The $A=2$ instance of the floor is now \emph{sharp}: $R_2\ge\tfrac32$ in
+closed form --- the upgraded replica theorem of Remark 7.34b; the general-$A$
+sharp-floor campaign, including its regional scope map, is Remarks
+7.34m$''''$/7.34m$'''''$.)
 \emph{Validated} in \texttt{scripts/verify/probe\_7\_34l\_aary\_replica.py}
 (V0 dual identity; V1 operator$=$brute; V2 $\sup g_A<1$ on the Gray region;
 V3 curvature$=$variance; V4 $s=\pi$ binding; V5 off-Gray control;
@@ -14903,7 +14968,12 @@ machinery actually consumes (Lemma 7.34l(iii)). Thus the A-ary residual is the
 \emph{same shape} as the binary one: a single endpoint convexity, with the
 endpoint value now a degree-$4$ algebraic number and $g_A(\pi)<1$ cone-certified
 (numerically here; the explicit uniform-in-$A$ witness, as in Lemma 7.34e,
-open). \emph{Validated} in
+open).
+(Scope note, post hoc: the interior convexity --- and with it the $s=\pi$
+binding --- turns out to be \emph{regional}, failing for $A\ge16$ within $1\%$
+of the uniform corner $p=\tfrac{A-1}A$ while the floor target itself survives
+there by a wide direct margin; Remark 7.34m$'''''$.)
+\emph{Validated} in
 \texttt{scripts/verify/probe\_7\_34m\_endpoint\_pi.py} (M1 the closed forms and
 $A=2$ binary reduction; M2 the linear$\times$irreducible-quartic split; M3 the
 positive dominant root and $g_A(\pi)=|C_\pi/C_0|^2\rho$; M4 the $\approx\tfrac32$
@@ -15052,8 +15122,10 @@ closure must also capture that extra cancellation --- a genuine
 several-step analyticity task, not a one-shot. It
 degrades only as $p\to\tfrac{A-1}{A}$ (the near-uniform edge, where $D_c$ is
 largest and the geometric decay slows), where the crude endpoint bound
-$T_k''(1)$ over-counts and a sharper interior estimate is needed --- though the
-true $G''(u)$ stays positive there (the alternating $a_k$ cancel). Since the
+$T_k''(1)$ over-counts and a sharper interior estimate is needed --- though for moderate alphabets ($A\le12$) the true $G''(u)$ stays positive
+there (the alternating $a_k$ cancel); for $A\ge16$ deep in the near-uniform
+pocket the convexity itself fails, and the target is held by direct margin
+instead (Remark 7.34m$'''''$). Since the
 near-uniform point is the memoryless limit ($V_{\mathrm{lossless}}\to0$), the
 all-$D$ closure already covers the entire memory regime of interest.
 
@@ -15217,11 +15289,25 @@ to $D_c$ &
 \texttt{lemma\_7\_34m\_ak\_bound\_A2} (C1--C6), \texttt{probe\_7\_34m\_boundary\_affineness} (A1--A4), \texttt{bug\_009\_ak\_decay\_convexity} (B1--B5)\\
 \hline
 \emph{Achievability (a4)} --- near-uniform / memoryless edge $p\to\tfrac{A-1}A$
-& \textbf{OPEN} & Rem 7.34m$''$ (status paragraph) & \emph{obstacle:} the crude
-endpoint bound $T_k''(1)$ over-counts where the geometric decay slows; true
-$G''(u)>0$ via the alternating-$a_k$ cancellation (a sharper interior estimate
-needed). Outside the memory regime: this is the $V_{\mathrm{lossless}}\to0$
-limit & \texttt{probe\_7\_34m\_convexity\_endpoint} (E8 degradation report)\\
+& \textbf{OPEN} & Rem 7.34m$''$ (status paragraph); Rem 7.34m$'''''$ (the
+pocket) & \emph{obstacle:} the crude endpoint bound $T_k''(1)$ over-counts
+where the geometric decay slows; and deep in the pocket ($p\gtrsim0.98\,
+\tfrac{A-1}A$, $A\ge16$) the convexity itself fails --- there the target holds
+by direct margin $R_A\ge1.74$. Outside the memory regime: this is the
+$V_{\mathrm{lossless}}\to0$ limit & \texttt{probe\_7\_34m\_convexity\_endpoint}
+(E8), \texttt{probe\_7\_34\_corner\_pocket\_refutation} (H1--H4)\\
+\hline
+\emph{Sharp replica floor} $R_A\ge\tfrac32$ (strengthens the consumed
+$\tfrac{11}{16}$; not a hypothesis of any row above) & \textbf{CLOSED} ($A=2$,
+sharp, closed form) / \textbf{regional certificates} ($A\ge3$) & upgraded
+Rem 7.34b theorem (steps (v)--(vi)); Rem 7.34m$''''$/7.34m$'''''$ & $A=2$: the
+monotone discriminant $4C-B^2=8am(1-(3+\kappa^2)a)$ $+$ the endpoint
+$P(a,p)\ge0$ via $f$-monotonicity. $A\ge3$: effective endpoint theorem
+($A=3..6$, all $p\le p_0$) $+$ the universal coefficient ladder; Schur
+certificate to $p\le0.40$--$0.45\,\tfrac{A-1}A$ (discrete $p$); pocket direct
+margin. \emph{obstacle:} the mid-band certification program (real-rootedness
+lemma $+$ five sign certificates) &
+\texttt{probe\_7\_34m\_monotone\_a2\_proof}, \texttt{probe\_7\_34m\_endpoint\_sharp\_a2}, \texttt{lemma\_7\_34\_endpoint\_effective\_bound}, \texttt{lemma\_7\_34\_schur\_smallp\_certificate}, \texttt{probe\_7\_34\_midband\_charpoly\_route}\\
 \hline
 \emph{Exact $V_{\mathrm{op}}$, beyond Gray} $D>D_c$ & \textbf{OPEN} & Rem 7.34o &
 \emph{obstacle:} needs the optimal non-SLB-tight, memory-aware test channel
@@ -15242,6 +15328,291 @@ beyond-Gray exact $V_{\mathrm{op}}(D)$. The $a_k$-decay order itself (the
 $O(D^{k+1})$ scaling, alternating signs, geometric ratio $\approx0.9D$) is
 \emph{observed and reproducible} (\texttt{bug\_009\_ak\_decay\_convexity}); what
 stays open is the rigorous \emph{bound}, not the measured decay.
+In parallel, the sharp-constant campaign of Remarks 7.34m$''''$/7.34m$'''''$
+upgrades the \emph{binary} replica floor to its sharp $\tfrac32$ in closed form
+and assembles regional certificates of $R_A\ge\tfrac32$ for $A\ge3$ (corner:
+effective theorem; small/moderate $p$: Schur, discrete $p$; near-uniform
+pocket: direct margin --- where the monotonicity conjectures themselves
+regionally fail), leaving the mid-band certification program as the named
+residual on that axis. No row above \emph{consumes} the sharp constant --- the
+achievability machinery runs on the $\tfrac{11}{16}$ floor --- so the campaign
+strengthens constants and scope-corrects conjectures without touching the
+ledger's hypotheses.
+
+\textbf{Remark 7.34m$''''$ (the sharp-floor campaign I: the monotone-reduction,
+order-by-order $s$-monotonicity, and the universal endpoint coefficient
+ladder).} The sharp $A=2$ constant (the upgraded replica theorem of Remark
+7.34b: $R_2(s)\ge\tfrac32$, all $s$, all $D\le D_c$, closed form) makes the
+general-$A$ target precise:
+\[
+  R_A(s;D)\;\ge\;\tfrac32\qquad\text{on the Gray region, for every }A
+\]
+--- the sharp form of the $\approx\tfrac32$ binding-corner limit of Lemma
+7.34l(iii), strictly stronger than the conservative $\tfrac{11}{16}$ the
+achievability machinery consumes. The route that closed $A=2$ is a
+\emph{monotone-reduction}: split the target into (M) $R_A(\cdot\,;D)$
+non-increasing in $s$, and (E) the single endpoint $R_A(\pi)\ge\tfrac32$ ---
+no convexity of the Perron branch, no joint $(s,D)$ bound. At $A=2$ both
+halves are proven in closed form (steps (v)--(vi) of the theorem). For
+$A\ge3$ the two halves stand as follows.
+
+\emph{(M) at its leading orders --- proven for every alphabet.} Expanding
+$1-g_A(s;D)=e_1(t,p)\,D+e_2(t,p)\,D^2+e_3(t,p)\,D^3+O(D^4)$, $t=1-\cos s$:
+\emph{exactly} $e_1=2t$ and $e_2=t\,q_A(p)$ for every $A$ (symbolic;
+$q_A(p)=-2(A-1)/p^2+(8A-12)/p+O(1)$ at small $p$), so
+\[
+  R_A(s;D)=2+\bigl[2+q_A(p)\bigr]D+O(D^2)
+\]
+is \emph{exactly flat in $s$ through $O(D)$} --- an honest flatness lemma: at
+this order the whole-interval inequality carries no information beyond the
+endpoint (any single $s$ determines the $O(D)$ level), and genuine
+$s$-dependence starts at $O(D^2)$. There the $t$-ladder continues,
+$e_3=\alpha_A(p)\,t+\beta_A(p)\,t^2$ exactly, whence
+$dR_A/dt=\beta_A(p)\,D^2/(1-D)+O(D^3)$, and the sign is settled
+\emph{universally}:
+\[
+  \beta(A,p)=-\frac{4\,\bigl(1-A(1-p)\bigr)^2\,P_3(A,p)}{p^2\,(A-1)^5\,(1-p)^2}
+  \;\le\;0,
+\]
+with $P_3(A,p)=2A^4(1-p)^4-A^3(4p^4-20p^3+39p^2-32p+9)-A^2(8p^3-33p^2+40p-15)
+-A(6p^2-16p+11)+3$ (at $A=2$, $P_3\equiv1$, recovering the manifestly
+nonpositive $\beta_2=-4(1-2p)^2/(p^2(1-p)^2)$). ($\beta$'s closed form: a symbolic-$A$ series-ring derivation, machine-anchored
+exactly at $A=2,\dots,6$ including the out-of-sample $A=6$.) The positivity $P_3\ge0$ on
+$\{A\ge2,\ 0<p<\tfrac{A-1}A\}$ is \emph{proven} by a two-region P\'olya-shift
+certificate: on $p\in(0,\tfrac12]$ every coefficient of $P_3(2+B,p)$ as a
+polynomial in $B\ge0$ is Sturm-root-free and positive on the interval; on
+$p\in[\tfrac12,1)$ likewise for $(1-p)^4P_3(1/(1-p)+B,p)$, with the
+domain-boundary value $2p^3(1-p)^2\ge0$. Hence $R_A$ is monotone
+non-increasing in $s$ at its first nontrivial order $O(D^2)$, for \emph{every}
+alphabet. (All-orders-in-$D$ monotonicity is \emph{regional}, not global ---
+the corner pocket of Remark 7.34m$'''''$.)
+
+\emph{(E) the universal endpoint coefficient ladder.} At the binding corner
+$D=D_c^{(A)}(p)$ the threshold and the endpoint margin expand with exact
+rational coefficients,
+\[
+  D_c^{(A)}=\frac{p^2}{4(A-1)}\Bigl(1+2p+\delta_2p^2+\delta_3p^3+\delta_4p^4
+  +O(p^5)\Bigr),\qquad
+  R_A(\pi)\Big|_{D_c}-\tfrac32=c_1p+c_2p^2+c_3p^3+c_4p^4+O(p^5),
+\]
+\[
+  \delta_2=\frac{12A^2-28A+21}{4(A-1)^2},\quad
+  \delta_3=\frac{8A^3-32A^2+53A-32}{2(A-1)^3},\quad
+  \delta_4=\frac{40A^4-240A^3+652A^2-848A+429}{8(A-1)^4},
+\]
+\[
+  c_1=\frac{A-2}{A-1},\quad
+  c_2=-\frac{4A^2+24A-65}{8(A-1)^2},\quad
+  c_3=-\frac{18A^2-153A+232}{8(A-1)^3},\quad
+  c_4=-\frac{60A^3-890A^2+3171A-3272}{32(A-1)^4}
+\]
+($A=2$ anchors from the closed forms: $\delta_2=\tfrac{13}4$, $\delta_3=5$,
+$\delta_4=\tfrac{61}8$; $c_1=0$, $c_2=\tfrac18$, $c_3=\tfrac14$,
+$c_4=\tfrac5{16}$ --- every coefficient on-family). The mechanisms: the
+$\delta_k$ come from the discriminant of the $3\times3$ symmetry-reduced
+alternating-word cubic ($D_c$ is where its class-$0/1$ eigenvalue pair turns
+complex --- the collision mechanism, Remark 7.34o$'$), the ansatz
+$D=Wp^2(1+d_1p+\cdots)$ series-expanded in exact arithmetic; the $c_k$ from a
+rank-one Rayleigh--Schr\"odinger ladder at the degenerate $D=0$ quotient
+($Q(0)=c\,e_0^T$ has $\lambda=1$ simple, so perturbation theory collapses to
+pure matrix algebra --- no determinants, no root-solving of the dead $A\ge3$
+endpoint quartic), composed with the exact $\eta_\pi(D)$, $|C_\pi/C_0|^2(D)$
+of Remark 7.34m$'$ and the $D_c$ series; the even-graded poles
+$\lambda_k\sim p^{-2\lfloor k/2\rfloor}$ put ladder term $k$ into the margin at
+order $p^{2\lceil k/2\rceil-2}$, so $c_2,c_3$ are carried entirely by
+$k\le4$. The leading coefficient splits as $c_1=-(\varepsilon_1+\delta_1)/2$:
+$\delta_1=2$ (the threshold's relative $p$-slope, from the discriminant's
+$p^{12}/p^{13}$ coefficients) and $\varepsilon_1=-2-2(A-2)/(A-1)$ (the
+endpoint's $D$-slope, $R_A(\pi;D)=2-E_A(p)D+O(D^2)$,
+$E_A=[2(A-1)/p^2](1+\varepsilon_1p+\cdots)$).
+
+\emph{Evidence grading (per coefficient, honest).} $\delta_1$,
+$\varepsilon_1$ (hence $c_1$), $\delta_2$, and $c_2$ are theorems for
+\emph{every} $A$ --- derived with $A$ a symbolic parameter (exact arithmetic
+throughout). $c_3$'s assembly is likewise symbolic-$A$, but it consumes the
+$\delta_3$ input, and $\delta_3$ is exact per-alphabet ($A=2,\dots,10$: nine
+exact rational points overdetermining the stated degree-$3$ numerator) with no
+symbolic-$A$ derivation claimed --- so the third order is
+exact-at-listed-alphabets. $\delta_4$ and $c_4$ are exact at $A=2,\dots,7$
+($c_4$'s numerator overdetermined already by $A\le6$; $\delta_4$'s determined
+by $A\le6$ --- both confirmed \emph{out of sample} at $A=7$); symbolic-$A$ likewise not claimed. Consequences: $c_1>0$
+for every $A\ge3$ (the corner margin opens \emph{linearly}; the $A=2$ corner,
+where $c_1=0$ and the margin is $\tfrac18p^2$, is the hardest); the two-term
+margin stays positive to $p^*=c_1/|c_2|$ ($\approx0.37$ at $A=3$ rising to
+$\approx0.72$ at $A=6$); and $c_3>0$ for $A\le6$, $c_4>0$ for $A\le10$ ---
+the higher orders \emph{help} at small alphabets.
+
+\emph{(E) made effective --- a non-asymptotic theorem at $A=3,\dots,6$.} For
+each $A\in\{3,4,5,6\}$ there are explicit rational constants $(p_0,\mu,K_4)$
+--- $p_0=\tfrac1{16}$ at $A=3$, $p_0=\tfrac1{12}$ at $A=4,5,6$;
+$K_4\approx598.5,\ 128.8,\ 108.8,\ 109.7$ --- such that for \emph{all}
+$p\in(0,p_0]$: (a) the reduced-cubic discriminant provably changes sign across
+the bracket $B(p)=[\hat D(p)-\mu p^6,\ \hat D(p)+\mu p^6]$,
+$\hat D=[p^2/(4(A-1))](1+2p+\delta_2p^2+\delta_3p^3)$ (Sturm at the bracket
+ends); \emph{and} --- the no-root-below-bracket lemma, closing the one gap an
+adversarial review found in the bracket argument --- the discriminant
+numerator factors as $D^4\,C(D,p)$ and $C((1-v)D_{\mathrm{lo}}(p),p)$, as a
+polynomial in $v$, has all coefficients positive and $p$-root-free on
+$(0,p_0]$ ($A=3,4$; at $A=5,6$ all but one, with the paired sum of the $v^4$/$v^5$
+coefficients root-free positive, whence their combined contribution stays
+$\ge0$ on $[0,1]$) --- so the discriminant is positive on $(0,D_{\mathrm{lo}}(p)]$ and
+the bracketed crossing \emph{is} the first crossing $D_c$; (b) for all $D\in
+B(p)$, $|R_A(\pi)-\tfrac32-c_1p-c_2p^2-c_3p^3|\le K_4p^4$ (and
+$|R_A(\pi)-\tfrac32-c_1p-c_2p^2|\le K_{\mathrm{eff}}p^3$,
+$K_{\mathrm{eff}}\approx38.4,\ 11.2,\ 9.2,\ 9.2$), whence
+$R_A(\pi)>\tfrac32$ for \emph{all} $p\in(0,p_0]$. The proof is exact rational
+arithmetic end to end: Sturm bracket capture; the exact perturbation ladder to
+$k\le11$ with bivariate coefficient bounds and remainder $p$-valuation $4$;
+and the $k\ge12$ tail by a diagonally-rescaled resolvent (Kato) bound --- for
+$|\eta|\le\gamma p$ the four non-branch eigenvalues stay in $|z|\le\tfrac25$
+and the branch in $|z-1|\le\tfrac25$, so the branch \emph{is} the spectral
+radius --- plus a Cauchy geometric tail. This is the corner program's first
+fully certified non-asymptotic statement: the sharp endpoint (E) holds at the corner
+bracket (the $D$-interval containing $D_c$) for all $p\in(0,p_0]$ at
+$A=3,\dots,6$, not merely as $p\to0$. ($A=2$ needs no
+effective theorem: the sharp endpoint is proven in closed form.)
+
+\emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34\_monotone\_s\_leading\_D.py} (W1--W4 the
+flatness lemma, exact symbolic),
+\texttt{lemma\_7\_34\_e3\_beta\_sign.py} (X1--X8; X8 the two-region
+P\'olya-shift positivity, exact --- the $O(D^2)$ monotonicity theorem for
+every alphabet),
+\texttt{lemma\_7\_34\_dc\_smallp\_delta1.py} (Y1--Y5; Y5 symbolic-$A$),
+\texttt{lemma\_7\_34\_eps1\_slope\_coefficient.py} (Z1--Z6; Z6 symbolic-$A$
+rank-one perturbation),
+\texttt{lemma\_7\_34\_endpoint\_c2\_exact.py} (E1--E4; E4 symbolic-$A$),
+\texttt{lemma\_7\_34\_endpoint\_c3\_exact.py} (Y1--Y4),
+\texttt{lemma\_7\_34\_endpoint\_c4\_exact.py} (W1--W3; W3 the out-of-sample
+$A=7$), and
+\texttt{lemma\_7\_34\_endpoint\_effective\_bound.py} (C1/C1b/C2/C3, exact
+rational) --- all PASS.
+
+\textbf{Remark 7.34m$'''''$ (the sharp-floor campaign II: regional scope ---
+the corner pocket, the Schur certificate, the threshold upper bound, and the
+mid-band instrument).} The campaign's honest map of where each mechanism
+works, and where it provably does not.
+
+\emph{The corner pocket (a scope correction).} The two monotonicity statements
+that organize the campaign are \emph{false as global conjectures}; they fail
+in a bounded pocket at the near-uniform corner, found by a hostile stress
+sweep ($\sim2\times10^4$ points, $A\le32$, $p$ up to
+$(1-10^{-6})\tfrac{A-1}A$, $D$ up to $0.99999\,D_c$, $50$--$100$ dps) and
+independently reproduced by a separate implementation to $9$ significant
+figures. Endpoint $D$-monotonicity ($dR_A(\pi;D)/dD\le0$ on $(0,D_c]$) fails
+for \emph{every} $A\ge3$ with $p$ close enough to $\tfrac{A-1}A$ --- onset
+$p\big/\tfrac{A-1}A\approx0.9999,\ 0.999,\ 0.997,\ 0.995,\ 0.99,\ 0.98$ at
+$A=3,4,5,6,8,{\ge}12$, all clean at $\le0.97$; witness $A=16$,
+$p=0.99\cdot\tfrac{15}{16}$: $R(\pi;0.8D_c)=1.9088\ldots<R(\pi;0.9D_c)
+=1.9320\ldots$. The $s$-monotonicity (M) fails for large alphabets in the same
+pocket ($A=16,24$ from $0.995$, $A=32$ from $0.99$; $A\le12$ clean to
+$0.9999$), the $s$-argmin flipping to $s\to0^+$ (the anchor
+$R_A(0^+)=2\bar v_A/[D(1-D)]$ of Remark 7.34m$'$) --- so deep in the pocket
+the interior convexity of Remarks 7.34m$'$/7.34m$''$ itself fails, not merely
+its proof. What survives --- the point of the sweep --- is the \emph{target}:
+$R_A(s;D)\ge\tfrac32$ holds at every sweep point, with global minimum
+$1.50000999\ldots$ at the usual tight corner and \emph{pocket} minimum
+$1.7404$ (at $A=32$) --- an absolute margin $+0.2404$, four orders of
+magnitude above the $\sim10^{-5}$ tight-corner margin. The
+monotone-reduction is therefore \emph{regional}: on the clean region
+$p\le0.97\,\tfrac{A-1}A$ (where every committed order-by-order theorem lives)
+it is monotone $+$ endpoint; in the pocket the target holds by direct margin.
+(Evidence level: hostile-sweep numeric, independently reproduced.)
+
+\emph{The Schur small/moderate-$p$ certificate (whole Gray region, per
+$(A,p)$).} A twice-peeled Schur fixed-point localization of the replica Perron
+branch certifies $R_A(s;D)\ge\tfrac32$ for all $0<D\le D_c$ and all $s$ at
+once, per $(A,p)$: the structural identities (the perturbation blocks have
+zero all-equal column, so the coupling column is exact; $q_{00}=1$;
+$P_1=(A-1)(\eta+\bar\eta)+a_{11}\eta\bar\eta$) reduce the branch to
+\[
+  \lambda=1+\frac{P_1}{\lambda}+\frac{P_2}{\lambda^2}
+  +\frac{w^TQ_{rr}(\lambda-Q_{rr})^{-1}Q_{rr}\,c_r}{\lambda^2},
+\]
+with explicit weighted norms giving a self-consistent polydisc radius $r$ and
+sup-bound $|\lambda-1|\le\rho(r)$; Cauchy bounds $|m_{jk}|\le\rho\,r^{-(j+k)}$
+then dominate the two-variable perturbation tail geometrically, the exact part
+being the two-variable ladder to total degree $K\le26$. Certified coverage
+(margins at $K=26$): $p\big/\tfrac{A-1}A\in\{0.35,0.40\}$ at $A=3,4$ and
+$\{0.35,0.40,0.45\}$ at $A=5,6$ (margins $+0.056$ to $+0.149$), and the
+smaller $p\big/\tfrac{A-1}A\in\{0.05,0.10,0.20,0.30\}$ certified \emph{per
+$p$} (margins $+0.016$ to $+0.114$ at $A=3,5$; an a-fortiori inheritance from
+larger $p$ is \emph{not} claimed --- adversarial-review note). Honest grading:
+the $p$-coverage is \emph{discrete} (certified at the listed $p$; the
+continuum between them, and the $(D,s)$ evaluation inside each certificate,
+are grid evidence pending interval reasoning --- mechanical but unfinished);
+and the frontier is mapped, not hidden: $p\big/\tfrac{A-1}A\ge0.45$--$0.50$
+fails at $K=26$ (would need $K\approx50$), while $\ge0.55$ admits \emph{no}
+norm-certifiable polydisc radius at all --- the branch moves $\approx0.6$ from
+$1$, genuinely non-perturbative.
+
+\emph{An elementary threshold upper bound (proven at $A=3,\dots,8$; equality
+at $A=2$).} On the whole parameter range,
+\[
+  D_c(A,p)\;<\;\bar D(A,p):=\frac{2(A-1)}A
+  \Bigl[\tfrac12-\frac{\sqrt{1-q}}{2-q}\Bigr],\qquad
+  q=\frac{pA}{A-1},\qquad p\in\bigl(0,\tfrac{A-1}A\bigr),
+\]
+proven per-$A$ by one-variable Sturm certificates after the
+radical-eliminating substitution $s=\sqrt{1-q}$: the reduced-cubic
+discriminant is positive as $D\to0^+$ (its numerator $D^4\,C(D,p)$ with
+$C(0,p)$ root-free positive), negative at $\bar D(p)$ (the substituted
+numerator root-free in $s$ on $(0,1)$ with negative sign), and its first sign
+change is $D_c$ (the collision mechanism, Remark 7.34o$'$); at $A=2$, $\bar D$
+\emph{equals} the exact closed-form $D_c$ identically. An explicit elementary
+domain bound for the mid-band program and a two-sided companion to the
+small-$p$ ladder.
+
+\emph{The mid-band instrument (an instrument and a program --- not a finished
+certificate).} Between the Schur frontier and the pocket lies the mid-band
+$p\big/\tfrac{A-1}A\in(0.45,0.98)$, where no perturbation-about-$1$
+architecture can work (the mapped obstruction above). The instrument: on the
+Gray locus the $5\times5$ pattern-quotient spectrum appears \emph{exactly
+real} --- worst $|\mathrm{Im}\,\lambda|\sim10^{-41}$ at $40$ dps across a
+$288$-point band grid ($A\in\{3,4,6\}$, six values of $p\big/\tfrac{A-1}A$
+spanning $0.5$--$0.95$, $D/D_c\in\{0.3,0.6,0.9,0.99\}$,
+$s\in\{30^\circ,90^\circ,150^\circ,180^\circ\}$) --- and for a real-rooted
+monic quintic $\chi(\lambda)=\det(\lambda I-Q)$ the target localizes with
+\emph{no eigenvalue extraction}: with
+$\Lambda:=L(s)/|C_s/C_0|^2$, $L(s)=1-\tfrac32D(1-D)(1-\cos s)$,
+\[
+  \chi^{(k)}(\Lambda)>0,\ k=0,\dots,4
+  \quad\Longleftrightarrow\quad\text{all roots}<\Lambda
+  \quad\Longleftrightarrow\quad\rho(Q)<\Lambda
+  \quad\Longleftrightarrow\quad R_A(s;D)>\tfrac32,
+\]
+and all five derivative signs hold at \emph{every} grid point (verified
+numeric). The structural lead behind the realness: the $\eta$-grading of the
+quotient is column-determined, $Q=M\cdot\mathrm{diag}(1,\bar\eta,\eta,
+|\eta|^2,|\eta|^2)$ with $M$ real and $\eta$-free (exact symbolic). The
+program --- stated, not claimed: a structural real-rootedness lemma for this
+column grading, plus Sturm/P\'olya sign-certification of the five rational
+functions $\chi^{(k)}(\Lambda)$ of $(A,p,D,s)$ over the band --- the same
+certification class discharged repeatedly in this arc.
+
+\emph{The assembled map.} The sharp floor $R_A\ge\tfrac32$ now stands: proven
+in closed form at $A=2$ (all $s$, all $D\le D_c$); and at $A\ge3$ --- tight
+corner proven effective ($A=3,\dots,6$, all $p\le p_0$; Remark 7.34m$''''$),
+small/moderate $p$ Schur-certified at the listed $(A,p)$ over the whole
+$(D,s)$-range, pocket held by direct margin ($\ge1.74$), mid-band held at grid
+level by the instrument with its certification program stated. What the
+achievability machinery consumes remains the softer
+$\tfrac{11}{16}$-plus-curvature package of Lemma 7.34l --- the campaign
+strengthens the constant and \emph{localizes} what remains open on this axis
+(the mid-band certification; the $p$-continuum interpolation), adding no
+hypothesis anywhere.
+
+\emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34\_corner\_pocket\_refutation.py} (H1 the
+$D$-monotonicity witness; H4 the $s$-monotonicity witness; H2 the pocket floor
+$\ge1.74$; H3 the clean-region boundary),
+\texttt{lemma\_7\_34\_schur\_smallp\_certificate.py} (G1 the $K=26$ coverage
+with margins; G2 the honest frontier),
+\texttt{lemma\_7\_34\_dbar\_upper\_bound.py} (V1 the $A=2$ equality, symbolic;
+V2/V2b the two Sturm legs, $A=3..8$; V3 slack sanity), and
+\texttt{probe\_7\_34\_midband\_charpoly\_route.py} (S1 the $288$-point
+real-spectrum $+$ derivative-certificate scout, numeric; S2 the column-grading
+factorization, exact symbolic) --- all PASS.
 
 \textbf{Theorem 7.34n (the general A-ary \emph{asymmetric} Gray-region
 rate--distortion dispersion --- the grid capstone).} \emph{Let $X$ be a
@@ -15419,6 +15790,67 @@ $V_{\mathrm{op}}$ --- all PASS) and \texttt{probe\_7\_34\_offgray\_rho.py} (the
 off-Gray $\rho(D)$: $n$-stable, $\rho=1$ at $D_c$, $\to0$ as $D\to\tfrac12$, no
 elementary closed form, the Green--Kubo $\chi''(0)$ characterization with the
 growing-Markov-order obstruction).
+
+\textbf{Remark 7.34o$'$ (beyond-Gray structure: the collision mechanism, the
+$1/n^2$ finite-$n$ law, and the essential-singularity conjecture).} Three
+structural facts sharpen the beyond-Gray map of Remark 7.34o.
+
+\emph{The threshold is an eigenvalue collision (proven, symbolic).} For the
+BSMS$(p)$ deconvolution the period-$2$ alternating transfer product $C=B_0B_1$
+($B_y[a,b]=K^{-1}[y,a]\,T[a,b]$, as in Theorem 7.34n) has
+\[
+  \mathrm{disc}(C)=\frac{p^2\bigl[p^2-4D(1-D)(1-p)^2\bigr]}{(1-2D)^2},
+\]
+vanishing \emph{exactly} at the Gray threshold ($p^2=4D(1-D)(1-p)^2$ is
+precisely $D_c=\tfrac12-\sqrt{1-2p}/(2(1-p))$): $D_c$ \emph{is} the point
+where the binding word's eigenvalue pair collides and turns complex --- the
+mechanism behind the whole Gray family (its general-$A$ form is the $3\times3$
+reduced-cubic discriminant driving the coefficient ladder and the $\bar D$
+bound of Remarks 7.34m$''''$/7.34m$'''''$; for non-symmetric $T$ the collision
+and negativity onsets split, Theorem 7.34n).
+
+\emph{The finite-$n$ law (verified numeric, closed-form constant).} The
+per-$n$ thresholds of Remark 7.34o approach $D_c$ at a universal $1/n^2$ rate:
+\[
+  D_c^{(n)}-D_c=\frac{K(p)^2}{n^2}\,\bigl(1+o(1)\bigr),\qquad
+  K(p)=\frac{2\pi}{c(p)}=\frac{\pi\,p\,(1-2p)^{1/4}}{2\,(1-p)^{3/2}},
+\]
+where $c(p)=4(1-p)^{3/2}/\bigl(p(1-2p)^{1/4}\bigr)$ is the collision-phase
+slope: past the collision the eigenpair rotates with phase
+$\phi_2(D)\approx c(p)\sqrt{D-D_c}$ per period, and the $n$-block
+deconvolution first goes negative when the accumulated phase completes a
+cycle, $n\,\phi_2\approx2\pi$ --- whence the law. At $p=0.2$: $K^2=0.1493$
+against measured $0.1485$--$0.1535$ ($n\le16$, $80$-bit control). So the
+finite-$n$ Gray region of Remark 7.34o extends strictly beyond $D_c$ by an
+explicitly quantified $\Theta(1/n^2)$ margin.
+
+\emph{Beyond $D_c$ (each item at its stated evidence level).} The optimal
+reverse channel remains \emph{exactly} product BSC$(D)$ throughout the
+per-$n$ region $D\le D_c^{(n)}$ (solver evidence: total correlation and KL to
+the product both $0$ within tolerance) --- the product structure survives
+beyond $D_c$; the converse ratio $\rho(D)$ crosses $D_c$ continuously, with no
+jump (Richardson, $n\le16$ --- consistent with Remark 7.34o's continuity
+claim); and the support collapse beyond threshold cascades word family by word
+family, each even-period defected-alternating family at its own exact
+threshold from the same $2\times2$ discriminant mechanism. Finally, a
+\emph{conjecture, labeled as such}: beyond Gray the rate gap closes with an
+essential singularity,
+\[
+  R(D)-R_{\mathrm{SLB}}(D)
+  =\exp\Bigl(-\,\frac{b_R(p)\,\bigl(1+o(1)\bigr)}{\sqrt{D-D_c}}\Bigr)
+  \qquad(D\downarrow D_c)\qquad\text{(conjecture)},
+\]
+supported over $\approx8$ decades of residual, with no closed form for
+$b_R(p)$ (the naive rare-alternating-run candidates are excluded); if true, it
+explains why the plateau's end is invisible at every polynomial order --- the
+two regimes are $C^\infty$-tangent at $D_c$. \emph{Validated} in
+\texttt{scripts/verify/probe\_7\_34\_beyond\_gray\_structure.py} (B1 the
+discriminant identity and its root at $D_c$, symbolic exact; B2 the $1/n^2$
+law, drift $<15\%$ to $n=14$ with $80$-bit control at $n=16$; B3 the
+WHT/XOR-convolution $O(N\log N)$ exact block-RD solver against the dense
+reference --- all PASS; the product-channel survival, the $\rho$-continuity,
+the cascade, and the singularity conjecture at the artifact evidence levels
+stated above).
 
 \textbf{Remark 7.34p (the lossy deviation hierarchy on the Gray region: §7.34
 $\otimes$ §7.31--7.36).} The all-order identity $j_m=i_m-mc$ of Remark 7.34n$'$

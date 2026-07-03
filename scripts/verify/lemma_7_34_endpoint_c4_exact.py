@@ -8,7 +8,7 @@ BUG-009-D / Route B: the endpoint ladder at FOURTH order --
 extending the corner expansion to
     R_A(pi)|_{D_c} - 3/2 = c_1 p + c_2 p^2 + c_3 p^3 + c_4 p^4 + O(p^5),
     D_c = [p^2/(4(A-1))] (1 + 2p + delta_2 p^2 + delta_3 p^3 + delta_4 p^4 + ...).
-(c_4 > 0 for A <= 12; c_4(2) = 5/16, on-family like every previous coefficient.)
+(c_4 > 0 for A <= 10 (c_4(11) < 0); c_4(2) = 5/16, on-family like every previous coefficient.)
 
 EVIDENCE STATUS (honest): the universal forms are OVERDETERMINED, not merely
 fitted -- delta_4's degree-4 numerator (5 coefficients) is determined by the five
