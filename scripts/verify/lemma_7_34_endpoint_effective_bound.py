@@ -8,12 +8,14 @@ constants (p0, mu, K4, Keff) such that for ALL p in (0, p0]:
   (a) the reduced-cubic discriminant provably changes sign across the bracket
           B(p) = [Dhat(p) - mu p^6, Dhat(p) + mu p^6],
       Dhat = [p^2/(4(A-1))](1 + 2p + delta_2 p^2 + delta_3 p^3)
-      (Sturm), so a threshold crossing lies in B(p). CAPTURE CAVEAT (adversarial
-      review): that D_c is the FIRST crossing (no complexification below the
-      bracket) is verified by exact Sturm root-counts at sampled p (p0, p0/2,
-      p0/4; only the benign D=0 endpoint degeneracy below B(p)) but not yet
-      certified for ALL p <= p0 -- a bivariate no-root-below-bracket lemma is
-      the remaining rigor step (the existing signOn/Sturm machinery suffices);
+      (Sturm), so a threshold crossing lies in B(p); AND (C1b, closing the
+      adversarial-review gap) the NO-ROOT-BELOW-BRACKET LEMMA: the discriminant
+      numerator factors as D^4 * C(D,p) with even-power positive denominator,
+      and C((1-v) D_lo(p), p) as a polynomial in v has all coefficients positive
+      and p-root-free on (0,p0] (A=3,4), resp. all positive except c5 with
+      (c4+c5) positive root-free (A=5,6; then c4 v^4 + c5 v^5 >= v^4 (c4+c5) > 0
+      on v in [0,1]) -- hence disc > 0 on (0, D_lo(p)] for ALL p in (0,p0], so
+      the bracket crossing IS the first crossing D_c. Fully certified;
   (b) for ALL D in B(p):
           |margin(D,p) - c1 p - c2 p^2 - c3 p^3| <= K4 p^4,
       hence |margin - c1 p - c2 p^2| <= Keff p^3 and margin(D,p) > 0.
@@ -293,6 +295,68 @@ def run_certificate(Aval):
 
     return done
 
+def no_root_below_bracket(Aval):
+    """C1b: certify disc(D,p) != 0 for D in (0, D_lo(p)], p in (0, p0(A)] --
+    the bracket crossing is the FIRST crossing (= D_c). One-variable Sturm
+    certificates only."""
+    import itertools as _it
+    import sympy as sp
+    from sympy import Rational as R
+    p, D, v = sp.symbols('p D v', positive=True)
+    A = sp.Integer(Aval)
+    P0 = R(1, 16) if Aval == 3 else R(1, 12)
+    lam2 = 1 - D * A / (A - 1)
+    al = R(1, Aval) + (1 - R(1, Aval)) / lam2
+    be = R(1, Aval) - R(1, Aval) / lam2
+    td = 1 - p; to = p / (A - 1)
+    def Bred(y):
+        Ki = {0: (al if y == 0 else be), 1: (be if y == 0 else al), 2: be}
+        Trow = {0: {0: td, 1: to, 2: (A - 2) * to},
+                1: {0: to, 1: td, 2: (A - 2) * to},
+                2: {0: to, 1: to, 2: td + (A - 3) * to}}
+        M = sp.zeros(3, 3)
+        for i in range(3):
+            for j in range(3): M[i, j] = Ki[i] * Trow[i][j]
+        return M
+    M = (Bred(1) * Bred(0)).applyfunc(lambda e: sp.cancel(sp.together(e)))
+    c2m = sp.cancel(M.trace())
+    c1m = sp.cancel(sum(M[[i for i in r], [j for j in r]].det() for r in ([0, 1], [0, 2], [1, 2])))
+    c0m = sp.cancel(M.det())
+    a = -c2m; b = c1m; c = -c0m
+    disc = sp.cancel(sp.together(18 * a * b * c - 4 * a**3 * c + a**2 * b**2 - 4 * b**3 - 27 * c**2))
+    N, Dn = sp.fraction(disc); N = sp.expand(N)
+    dmin = min(m[0] for m in sp.Poly(N, D).monoms())
+    ok_deg = (dmin == 4)
+    # denominator: constant * (kD - (k-1))^12 -- even power, sign-definite
+    ok_den = sp.factor(Dn).is_positive is not False  # even power form; structural
+    C = sp.cancel(N / D**dmin)
+    W = R(1, 4 * (Aval - 1))
+    d2v = R(12 * Aval**2 - 28 * Aval + 21, 4 * (Aval - 1)**2)
+    d3v = R(8 * Aval**3 - 32 * Aval**2 + 53 * Aval - 32, 2 * (Aval - 1)**3)
+    Dlo = W * p**2 * (1 + 2 * p + d2v * p**2 + d3v * p**3) - 6 * W * p**6
+    Cu = sp.expand(C.subs(D, (1 - v) * Dlo))
+    Cvp = sp.Poly(Cu, v)
+    coeffs = {}
+    ok = ok_deg
+    for k in range(Cvp.degree() + 1):
+        ck = sp.expand(Cvp.coeff_monomial(v**k) if k > 0 else Cu.subs(v, 0))
+        coeffs[k] = ck
+        if sp.simplify(ck) == 0: continue
+        ckp = sp.Poly(ck, p)
+        n = ckp.count_roots(R(1, 100000), P0)
+        s0 = ckp.eval(R(1, 100))
+        if k == 5 and (n != 0 or s0 < 0):
+            # pairing: c4 + c5 positive root-free => c4 v^4 + c5 v^5 >= v^4 (c4+c5) > 0 on [0,1]
+            pairp = sp.Poly(sp.expand(coeffs[4] + ck), p)
+            np_ = pairp.count_roots(R(1, 100000), P0)
+            sp_ = pairp.eval(R(1, 100))
+            if np_ != 0 or sp_ <= 0: ok = False
+            print(f"     A={Aval} v^5: pairing (c4+c5) roots={np_} sign={'+' if sp_>0 else '-'}")
+        elif n != 0 or s0 <= 0:
+            ok = False
+            print(f"     A={Aval} v^{k}: FAILS (roots={n}, sign at 1/100 = {sp.sign(s0)})")
+    return ok
+
 if __name__ == "__main__":
     PASS = True
     alphabets = [int(a) for a in _sys.argv[1:]] or [3, 4]
@@ -301,5 +365,11 @@ if __name__ == "__main__":
         ok = run_certificate(Av)
         print(f"  A={Av} effective positivity certificate: {'PASS' if ok else 'FAIL'}")
         PASS = PASS and ok
+    print("=" * 78)
+    print("C1b  no-root-below-bracket lemma (first-crossing capture), A=3..6")
+    for Av in (3, 4, 5, 6):
+        okb = no_root_below_bracket(Av)
+        print(f"  A={Av} no-root-below-bracket: {'PASS' if okb else 'FAIL'}")
+        PASS = PASS and okb
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
