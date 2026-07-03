@@ -34,11 +34,24 @@ this column grading (candidate mechanisms: phase-similarity removing the
 conjugate pair, or a hidden self-adjointness in a weighted inner product) --
 the structural proof is the flagged next step, NOT claimed here.
 
+REAL-COEFFICIENTS LEMMA (S3, proven): the replica-swap permutation P (classes
+1 <-> 2) gives the exact similarity P Q(eta, etb) P = Q(etb, eta), hence the
+characteristic polynomial is SYMMETRIC under eta <-> etb; its coefficients are
+real polynomials in (eta, etb), so by the symmetric-function theorem they are
+real polynomials in e1 = eta+etb and e2 = eta etb -- and on the conjugate locus
+etb = conj(eta) (e1 = 2 Re eta, e2 = |eta|^2, both real) the quintic has REAL
+COEFFICIENTS. This is half of the real-rootedness mechanism; what remains open
+is root-REALNESS (discriminant/subresultant positivity of a real quintic over
+the band -- the same sign-certification class as the derivative program).
+
 CHECKS:
   S1  mid-band scout: real spectrum AND derivative certificate at all points of
       the (A, pfrac, D, s) grid above (labels: VERIFIED NUMERIC).
   S2  column-grading factorization Q = M . diag(1, etb, eta, |eta|^2, |eta|^2)
       with M real and eta-free (symbolic, exact).
+  S3  swap-similarity P Q(eta,etb) P = Q(etb,eta) and charpoly eta<->etb
+      symmetry (symbolic, exact, A=3,4,5) => real quintic coefficients on the
+      conjugate locus (symmetric-function argument; numeric spot confirmation).
 
 Deps: mpmath, numpy, sympy.  Python: /Users/para/.venvs/rnr/bin/python.  ~2-4 min.
 """
@@ -160,11 +173,44 @@ def S2():
         print(f"     A={Aval}: all columns factor with eta-free real M: {here}")
     return rep("S2 column-grading factorization exact (the realness-lead structure)", ok)
 
+def S3():
+    print("-" * 78); print("S3  swap-similarity + symmetric charpoly => real coefficients")
+    import sympy as sp
+    eta, etb, lam = sp.symbols('eta etab lambda')
+    p = sp.symbols('p', positive=True)
+    ok = True
+    for Aval in (3, 4):
+        A = sp.Integer(Aval)
+        T = [[(1 - p) if i == j else p / (A - 1) for j in range(Aval)] for i in range(Aval)]
+        st = list(itertools.product(range(Aval), repeat=3)); reps = [None] * 5
+        for k, tr in enumerate(st):
+            if reps[_pat(tr)] is None: reps[_pat(tr)] = k
+        Q = sp.zeros(5, 5)
+        for a_ in range(5):
+            x, xp, xq = st[reps[a_]]
+            for (y, yp, yq) in st:
+                term = sp.nsimplify(T[xp][yp] * T[xq][yq] / T[x][y])
+                if yp != y: term *= eta
+                if yq != y: term *= etb
+                Q[a_, _pat((y, yp, yq))] += term
+        Pm = sp.eye(5); Pm[1, 1] = 0; Pm[2, 2] = 0; Pm[1, 2] = 1; Pm[2, 1] = 1
+        ok_swap = sp.simplify(Pm * Q * Pm - Q.xreplace({eta: etb, etb: eta})) == sp.zeros(5, 5)
+        cp = Q.charpoly(lam).as_expr()
+        ok_sym = sp.simplify(sp.expand(cp - cp.xreplace({eta: etb, etb: eta}))) == 0
+        # EXACT spot confirmation of real coefficients on the conjugate locus
+        zx = sp.Rational(3, 100); zy = sp.Rational(1, 50)
+        val = sp.expand(cp.coeff(lam, 2)).xreplace(
+            {eta: zx + sp.I * zy, etb: zx - sp.I * zy, p: sp.Rational(1, 5)})
+        ok_real = sp.simplify(sp.im(sp.expand(val))) == 0   # exact rational arithmetic
+        ok = ok and ok_swap and ok_sym and ok_real
+        print(f"     A={Aval}: swap-similarity {ok_swap}; charpoly symmetric {ok_sym}; spot-real {ok_real}")
+    return rep("S3 real quintic coefficients on the conjugate locus (proven)", ok)
+
 if __name__ == "__main__":
     print("=" * 78)
     print("Mid-band instrument: real-rooted quintic + charpoly-derivative certificate")
     print("=" * 78)
-    S1(); S2()
+    S1(); S2(); S3()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("Mid-band program reduces to: (a) structural real-rootedness lemma (column")
