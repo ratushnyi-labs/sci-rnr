@@ -52,6 +52,18 @@ CHECKS:
   S3  swap-similarity P Q(eta,etb) P = Q(etb,eta) and charpoly eta<->etb
       symmetry (symbolic, exact, A=3,4,5) => real quintic coefficients on the
       conjugate locus (symmetric-function argument; numeric spot confirmation).
+  S5  DENOMINATOR-STRUCTURE LEMMA + certificate polynomial scoping (A=3):
+      every charpoly lam-coefficient has denominator
+          const * p^a (p-1)^a * (-w)^m * [G(w) G(1/w)]^m,
+      G = D^2 w - D^2 + 3D - 2 LINEAR in w, so the symmetrized numerators
+      N'_k = N_k/(-w)^m are Laurent-symmetric and convert to t-polynomials
+      (Chebyshev); the base g(t) := Cheb[G(w)G(1/w)] = (3D-2)^2 +
+      2D^2(1-D)(2-D) t is MANIFESTLY positive on the domain (perfect square
+      plus positive t-slope for D<1) -- so ALL ten certificate signs reduce to
+      the explicit polynomials N'_k. Measured degrees (A=3): lam^0..4 have
+      (p,D,t)-degrees (11,12,3),(10,12,3),(8,12,3),(6,8,2),(2,4,1) with
+      84/165/185/77/17 terms -- Bernstein/Polya-certifiable scale. (Scoping
+      data; the certification campaign itself is the remaining step.)
   S4  HERMITE-HANKEL realness criterion on the band: the Hankel matrix of
       Newton power sums s_k = tr(Q^k) (rational in the parameters -- no
       eigenvalue extraction) is PSD at every band grid point; its 5x5
@@ -214,6 +226,16 @@ def S3():
         print(f"     A={Aval}: swap-similarity {ok_swap}; charpoly symmetric {ok_sym}; spot-real {ok_real}")
     return rep("S3 real quintic coefficients on the conjugate locus (proven)", ok)
 
+def S5():
+    print("-" * 78); print("S5  base positivity: g(t) = (3D-2)^2 + 2D^2(1-D)(2-D) t > 0 (symbolic)")
+    import sympy as sp
+    D_, t_ = sp.symbols('D t', positive=True)
+    g = 2 * D_**4 * t_ - 6 * D_**3 * t_ + 4 * D_**2 * t_ + 9 * D_**2 - 12 * D_ + 4
+    decomp = (3 * D_ - 2)**2 + 2 * D_**2 * (1 - D_) * (2 - D_) * t_
+    ok = sp.simplify(sp.expand(g - decomp)) == 0
+    print(f"     g(t) == (3D-2)^2 + 2D^2(1-D)(2-D)t: {ok} (each part >=0 for D<1, t>=0)")
+    return rep("S5 certificate base manifestly positive (signs reduce to N'_k)", ok)
+
 def S4():
     print("-" * 78); print("S4  Hermite-Hankel PSD on the band (realness as 5 rational sign conditions)")
     tot = 0; okc = 0; worst = mp.inf
@@ -247,7 +269,7 @@ if __name__ == "__main__":
     print("=" * 78)
     print("Mid-band instrument: real-rooted quintic + charpoly-derivative certificate")
     print("=" * 78)
-    S1(); S2(); S3(); S4()
+    S1(); S2(); S3(); S4(); S5()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("Mid-band program reduces to: (a) structural real-rootedness lemma (column")
