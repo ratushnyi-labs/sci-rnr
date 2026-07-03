@@ -198,6 +198,36 @@ either prove c_A>0 or BYPASS it:
   Gray region, then make the boundary-affineness derivation of "2" and the
   "drop <= 1/2" bound rigorous.
 
+## Status Update 2026-07-03 (Route F campaign + research fan-out; MAJOR PROGRESS)
+The residual has been transformed by the monotone-reduction ("Route F") campaign and
+a 4-agent research fan-out (all verify probes committed and pushed; ~24 commits):
+- **A=2: FULLY CLOSED.** Sharp R_2(s) >= 3/2 for all s and all D <= D_c, proven in
+  closed form (monotone 4C-B^2 certificate + endpoint P(a,p) + f-monotonicity
+  interior closure). Sharper than the committed 11/16.
+- **A>=3 small/moderate p: covered by an interlocking certified system.** (i) Schur
+  twice-peeled certificate: R >= 3/2 on the ENTIRE Gray region (all D, all s) for
+  p <= 0.40-0.45 pmax, margins +0.056..+0.149 (lemma_7_34_schur_smallp_certificate);
+  (ii) EFFECTIVE endpoint theorem, exact constants, margin > 0 for p <= 1/16..1/12
+  (lemma_7_34_endpoint_effective_bound); (iii) universal coefficient ladder to third
+  order (c_1, c_2, c_3, delta_1..3 all exact; lemma_7_34_endpoint_c3_exact);
+  (iv) O(D^2) s-monotonicity theorem for EVERY alphabet (Polya-shift positivity,
+  lemma_7_34_e3_beta_sign).
+- **Honest refutation:** the D- and s-monotonicity conjectures are REGIONAL, not
+  global -- they fail in a bounded pocket p >= ~0.98 pmax where the target instead
+  holds by direct margin >= 1.74 (probe_7_34_corner_pocket_refutation).
+- **The target R_A(s;D) >= 3/2 itself: verified at ~20,000 hostile grid points**
+  (A <= 32, p to (1-1e-6)pmax, D to 0.99999 D_c); global min 1.50001 at the tight
+  corner. No violation anywhere.
+- **Beyond-Gray: mechanism PROVEN** (threshold = eigenvalue collision, exact disc
+  identity); finite-n law n^2(D_c^(n)-D_c) -> K^2; WHT O(N log N) exact block-RD
+  solver validated (probe_7_34_beyond_gray_structure). Sharpest open: b_R(p) in the
+  essential-singularity law R-SLB ~ exp(-b_R/sqrt(D-D_c)) (verified 8 decades).
+REFINED RESIDUALS (all sharply posed): (1) mid-band certificate pfrac in
+(0.45, 0.98) -- non-perturbative, charpoly-derivative/real-rootedness route mapped;
+(2) grid -> interval upgrade of the Schur certificate for paper grade; (3) b_R(p)
+closed form; (4) delta_4/c_4 + Dbar D_c-upper-bound conjecture proofs; (5) the
+owed adversarial re-review of the integrated arc before paper integration.
+
 ## Execution Tracking (§12.11)
 **Estimate (hours, before BUILD):** TBD
 **Start Timestamp:** TBD
