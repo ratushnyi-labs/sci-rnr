@@ -5,10 +5,15 @@ lemma_7_34_endpoint_effective_bound.py
 BUG-009-D / Route B: EFFECTIVE endpoint positivity -- the first non-asymptotic
 theorem of the corner program. For each alphabet A in {3,4,5,6} there are explicit
 constants (p0, mu, K4, Keff) such that for ALL p in (0, p0]:
-  (a) the Gray-threshold root D_c(p) lies in the bracket
+  (a) the reduced-cubic discriminant provably changes sign across the bracket
           B(p) = [Dhat(p) - mu p^6, Dhat(p) + mu p^6],
       Dhat = [p^2/(4(A-1))](1 + 2p + delta_2 p^2 + delta_3 p^3)
-      (reduced-cubic discriminant provably changes sign across B(p): Sturm);
+      (Sturm), so a threshold crossing lies in B(p). CAPTURE CAVEAT (adversarial
+      review): that D_c is the FIRST crossing (no complexification below the
+      bracket) is verified by exact Sturm root-counts at sampled p (p0, p0/2,
+      p0/4; only the benign D=0 endpoint degeneracy below B(p)) but not yet
+      certified for ALL p <= p0 -- a bivariate no-root-below-bracket lemma is
+      the remaining rigor step (the existing signOn/Sturm machinery suffices);
   (b) for ALL D in B(p):
           |margin(D,p) - c1 p - c2 p^2 - c3 p^3| <= K4 p^4,
       hence |margin - c1 p - c2 p^2| <= Keff p^3 and margin(D,p) > 0.

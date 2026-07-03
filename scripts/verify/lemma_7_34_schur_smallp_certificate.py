@@ -22,9 +22,12 @@ CERTIFIED COVERAGE (re-derived by this script's main; margins at K=26):
   A=4: p/pmax in {0.35, 0.40}           margins +0.094, +0.096
   A=5: p/pmax in {0.35, 0.40, 0.45}     margins +0.121, +0.125, +0.123
   A=6: p/pmax in {0.35, 0.40, 0.45}     margins +0.141, +0.147, +0.149
-  (smaller p is covered a fortiori -- the tight corner is handled by the
-  EFFECTIVE endpoint theorem and the order-by-order ladder; the certificate's
-  own x = |eta|max/r shrinks with p.)
+  Smaller p: verified PER-P (not a proven a-fortiori implication -- adversarial
+  review note) at pfrac in {0.05, 0.10, 0.20, 0.30}: margins A=3 +0.016/+0.028/
+  +0.046/+0.055, A=5 +0.029/+0.053/+0.090/+0.114; the tight corner is
+  independently held by the EFFECTIVE endpoint theorem and the ladder. The
+  p-COVERAGE IS DISCRETE (certified at the listed p values; the p-continuum
+  between them is grid evidence, same status as the (D,s) grid).
 HONEST FRONTIER (documented, not hidden): pfrac >= 0.45 (A=3,4) / 0.50 (A=5,6)
 fails at K=26 (would need K~50); pfrac >= 0.55 has NO norm-certifiable polydisc
 radius (the branch moves ~0.6 from 1: genuinely non-perturbative); the corner

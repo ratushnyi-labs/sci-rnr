@@ -11,13 +11,19 @@ FINDINGS PACKAGED AS CHECKS:
   B1 (PROVEN, symbolic): for the BSMS(p) deconvolution the 2-step alternating
      transfer matrix C = B0 B1 has
          disc(C) = p^2 [p^2 - 4 D(1-D)(1-p)^2] / (1-2D)^2,
-     vanishing EXACTLY at the Gray threshold D_c(p) = (1/2)(1 - sqrt(1 - p^2/
-     ((1-p)^2 + ...)))-form root of p^2 = 4D(1-D)(1-p)^2 -- i.e. the eigenvalue
-     collision IS the threshold (the mechanism behind the whole Gray family).
+     vanishing EXACTLY at the Gray threshold (the root of p^2 = 4D(1-D)(1-p)^2,
+     equivalently D_c = 1/2 - sqrt(1-2p)/(2(1-p))) -- the eigenvalue collision
+     IS the threshold (the mechanism behind the whole Gray family).
   B2 (VERIFIED NUMERIC): the finite-n threshold law
-         D_c^(n) - D_c = (2 pi / c(p))^2 / n^2 (1 + o(1)),
-     equivalently n^2 (D_c^(n) - D_c) -> K(p)^2: the per-n Gray region extends
-     STRICTLY beyond D_c with a universal 1/n^2 approach.
+         D_c^(n) - D_c = K(p)^2 / n^2 (1 + o(1)),
+         K(p) = 2 pi / c(p) = pi p (1-2p)^{1/4} / (2 (1-p)^{3/2}),
+     where c(p) = sqrt(-disc'(D_c))/tr(D_c) = 4(1-p)^{3/2}/(p(1-2p)^{1/4}) is the
+     collision-phase slope (phi_2(D) ~ c(p) sqrt(D-D_c); closed form derived
+     independently at adversarial review; K^2(0.2) = 0.149316 vs measured
+     0.1485-0.1535). The per-n Gray region extends STRICTLY beyond D_c with a
+     universal 1/n^2 approach. (Float64 note: the B2 values at n >= 14 carry
+     ~2-3% roundoff bias -- an 80-bit re-measurement gives 0.1485 at n=16; the
+     drift<15% criterion is robust to this.)
   B3 (VALIDATION): the WHT/XOR-convolution O(N log N) exact Blahut-Arimoto
      block-RD solver agrees with a dense O(N^2) reference at small n.
 

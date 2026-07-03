@@ -12,7 +12,7 @@ DISCOVERED by a hostile stress sweep (~20,000 points, A up to 32, p to
 (1-1e-6)(A-1)/A, D to 0.99999 D_c, mpmath 50-100 dps), then INDEPENDENTLY
 REPRODUCED here with a separate implementation (values agree to 9 sig figs).
 
-THE REFUTATIONS (exact witness points, reproduced in this probe):
+THE REFUTATIONS (V3 and V2 witnesses BOTH reproduced in this probe, H1/H4):
   V3 (dR_A(pi;D)/dD <= 0 on (0,D_c]) FAILS for every A >= 3 with p close enough
   to (A-1)/A. Onset p/pmax: A=3: 0.9999, A=4: 0.999, A=5: 0.997, A=6: 0.995,
   A=8: 0.99, A>=12: 0.98 (all CLEAN at p/pmax <= 0.97). Witness (this probe):
@@ -41,6 +41,9 @@ WHAT SURVIVES (the corrected honest map):
 CHECKS:
   H1  V3 witness reproduced: A=16, p=0.99*15/16 -- R(pi;0.8Dc) < R(pi;0.9Dc)
       (strict), both >= 1.9 (target safe).
+  H4  V2 witness reproduced: A=16, p=0.999*15/16, D=0.9Dc -- R(s) strictly
+      INCREASING across a 28-point s-grid (27/27 up-steps; argmin flips to
+      s->0), min R >= 3/2 with wide margin.
   H2  V1 pocket floor: R(pi; f Dc) >= 1.74 at the pocket-worst coordinates
       (A=16, p in {0.98, 0.99, 0.999} pmax, f in {0.5, 0.8, 0.9, 0.99}).
   H3  clean-region spot-check: at p = 0.9 pmax (A=16) D-monotonicity still
@@ -144,12 +147,23 @@ def H3():
     print(f"     R(pi; f Dc), f=0.5..0.99: " + ", ".join(mp.nstr(v, 8) for v in vals) + f"  decreasing: {mono}")
     return rep("H3 clean-region D-monotonicity intact at p=0.9 pmax (pocket is bounded)", mono)
 
+def H4():
+    print("-" * 78); print("H4  V2 witness: A=16, p=0.999*15/16, D=0.9Dc -- R increasing in s")
+    A = 16; p = mp.mpf('0.999') * mp.mpf(15) / 16
+    dc = Dc_of(A, p); D = mp.mpf('0.9') * dc
+    ss = [mp.pi * (k + 1) / 28 for k in range(28)]
+    vals = [R(A, p, D, s) for s in ss]
+    ups = sum(1 for k in range(27) if vals[k + 1] > vals[k])
+    ok = (ups == 27) and (min(vals) >= mp.mpf('1.5'))
+    print(f"     up-steps: {ups}/27  min R = {mp.nstr(min(vals),8)} (>= 3/2)")
+    return rep("H4 V2 REFUTED at the witness point (s-monotonicity fails; argmin->0)", ok)
+
 if __name__ == "__main__":
     print("=" * 78)
     print("Corner-pocket refutation: V2/V3 monotonicity conjectures fail near p=(A-1)/A;")
     print("the Route B target R>=3/2 holds everywhere (pocket floor 1.74)")
     print("=" * 78)
-    H1(); H2(); H3()
+    H1(); H2(); H3(); H4()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("Corrected map: monotone-reduction is REGIONAL (p <= 0.97(A-1)/A); the corner")
