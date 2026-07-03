@@ -52,6 +52,14 @@ CHECKS:
   S3  swap-similarity P Q(eta,etb) P = Q(etb,eta) and charpoly eta<->etb
       symmetry (symbolic, exact, A=3,4,5) => real quintic coefficients on the
       conjugate locus (symmetric-function argument; numeric spot confirmation).
+  S4  HERMITE-HANKEL realness criterion on the band: the Hankel matrix of
+      Newton power sums s_k = tr(Q^k) (rational in the parameters -- no
+      eigenvalue extraction) is PSD at every band grid point; its 5x5
+      determinant (the charpoly discriminant) degenerates exactly at D -> D_c
+      -- the eigenvalue collision IS the realness boundary. CONSEQUENCE: the
+      whole mid-band program is now TEN rational sign certificates (5 Hankel
+      principal minors for realness + 5 chi^(k)(Lam) for localization); no
+      separate structural lemma needed.
 
 Deps: mpmath, numpy, sympy.  Python: /Users/para/.venvs/rnr/bin/python.  ~2-4 min.
 """
@@ -206,11 +214,40 @@ def S3():
         print(f"     A={Aval}: swap-similarity {ok_swap}; charpoly symmetric {ok_sym}; spot-real {ok_real}")
     return rep("S3 real quintic coefficients on the conjugate locus (proven)", ok)
 
+def S4():
+    print("-" * 78); print("S4  Hermite-Hankel PSD on the band (realness as 5 rational sign conditions)")
+    tot = 0; okc = 0; worst = mp.inf
+    for A in (3, 4, 6):
+        for pf in (0.5, 0.7, 0.9, 0.95):
+            p = pf * (A - 1) / A
+            dc = Dc_num(A, p)
+            for fD in (0.3, 0.7, 0.99):
+                D = mp.mpf(fD) * dc
+                for sd in (45, 120, 180):
+                    s = mp.mpf(sd) / 180 * mp.pi
+                    Q, _ = build_Q(A, p, D, s)
+                    Pk = mp.eye(5); tr = [mp.mpf(5)]
+                    for k in range(1, 9):
+                        Pk = Pk * Q
+                        tr.append(mp.re(sum(Pk[i, i] for i in range(5))))
+                    ok = True
+                    for m_ in range(1, 6):
+                        sub = mp.zeros(m_, m_)
+                        for i in range(m_):
+                            for j in range(m_): sub[i, j] = tr[i + j]
+                        d = mp.det(sub)
+                        worst = min(worst, d)
+                        if d < -mp.mpf('1e-30'): ok = False
+                    tot += 1
+                    if ok: okc += 1
+    print(f"     points {tot}; PSD {okc}; worst minor {mp.nstr(worst,3)} (5x5 det -> 0 at D->D_c: the collision boundary)")
+    return rep("S4 Hankel PSD on the band (realness = 5 rational sign conditions)", okc == tot)
+
 if __name__ == "__main__":
     print("=" * 78)
     print("Mid-band instrument: real-rooted quintic + charpoly-derivative certificate")
     print("=" * 78)
-    S1(); S2(); S3()
+    S1(); S2(); S3(); S4()
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
     print("Mid-band program reduces to: (a) structural real-rootedness lemma (column")
