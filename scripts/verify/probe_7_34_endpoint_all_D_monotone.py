@@ -17,11 +17,15 @@ same as E, so the ratio is O(D_c) = O(p^2)). Hence R'(D) = -E (1 + O(p^2)) < 0
 throughout the Gray interval for small p -- monotone decrease, minimum at D_c.
 (At A=2 this is also visible in the exact closed form.)
 
-STATUS. The D-monotonicity is verified numerically across the full grid (V1) and
-justified at leading order via the symbolic ratio (V3); the corner value is a
-THEOREM (universal two-term margin). A fully rigorous all-orders-in-D monotonicity
-proof (all p, not just small) would need remainder control beyond 4 PT orders --
-same class of residual as the O(p^3)/uniformity gap, flagged honestly.
+STATUS. The D-monotonicity is verified numerically across the full grid (V1, p<=0.3)
+and justified at leading order via the symbolic ratio (V3); the corner value is a
+THEOREM (universal two-term margin). SCOPE CORRECTION (hostile sweep, see
+probe_7_34_corner_pocket_refutation.py): D-monotonicity FAILS in a bounded pocket
+near the uniform corner p >= ~0.98 (A-1)/A for every A>=3 -- this probe's mechanism
+is REGIONAL (clean for p <= 0.97 (A-1)/A, which contains this probe's entire grid);
+in the pocket the target R>=3/2 holds by direct margin (>=1.74) instead. A fully
+rigorous all-orders-in-D proof on the clean region needs remainder control beyond
+4 PT orders -- same class as the O(p^3)/uniformity gap, flagged honestly.
 
 CHECKS:
   V1  dR_A(pi;D)/dD < 0 numerically across A=2..6, p in {0.02,0.1,0.3}, D over
