@@ -60,37 +60,48 @@ RESULT: all three certificates certify AT THE ROOT BOX (no subdivision):
 On the correct domain the positivity is Bernstein-visible without any
 subdivision -- the entire difficulty was the domain, not the polynomial.
 
-STATUS -- ALL FIVE chi-derivative certificates are now CERTIFIED (this
-script runs 1, 2, 4, 5 by default; 3 behind CERT3=1 for runtime):
-  * cert4/cert5 use the T-DOMAIN SMALL-PIECE ASSEMBLY (C4/C5 below): the
-    w-domain assembly of chi^(j) OOMs; instead, since c := p(1-p) G Gt = w
-    * chat with chat w-symmetric, e_k(Q) = E_k(M)/c^k = Etld_k(p,D,t) /
-    chat(p,D,t)^k lives entirely in the t-domain (E_k from the polynomial
-    Berkowitz charpoly of M = cQ; each E_k is w-symmetric at exactly
-    (-w)^k -- grading check enforced).  Substitute the rationalized domain
-    into the SMALL pieces first, then assemble with sparse Poly products
-    and equalized (1+sigma^2) powers.  6 min total vs OOM.
-  * BUDAN-FOURIER CONSEQUENCE: all five chi^(k)(Lambda) > 0 on the open
-    domain => zero sign variations => NO REAL EIGENVALUE of Q reaches
-    Lambda = L/Cr -- for ALL p in (0,2/3), ALL D in (0,Dbar], ALL angles.
-  * The chi^(k) certificates bound only REAL eigenvalues (Budan-Fourier).
-    A numeric scan shows rho(Q)*Cr/L reaches 1.013 at theta=1 (D = Dbar,
-    beyond the Gray threshold D_c): the complex-pair modulus DOES exceed
-    Lambda beyond Gray, so no full-box modulus certificate (Schur-Cohn)
-    can exist.  The program therefore needs the REALNESS-ON-GRAY lemma
-    (spectrum of Q real for D <= D_c = first eigenvalue collision) to
-    convert the chi-certificates into rho(Q) Cr <= L on Gray.  That lemma
-    is the ONLY remaining piece of Route B's R_3(s) >= 3/2 on Gray.
+STATUS -- HONEST CORRECTION (supersedes the first version of this header).
+Certificates 1-4 (chi'''', chi''', chi'', chi') are CERTIFIED on the full
+rationalized superdomain, all at lo=0 ROOT BOXES (sound).  The original
+cert5 (chi(Lambda) > 0 on the FULL superdomain) claim was FALSE and is
+RETRACTED -- caught by two independent adversarial re-derivations:
+  * chi(Lambda) < 0 on a real interior pocket: at (p = 8/15, D = Dbar,
+    w = -1) exact arithmetic gives chi(Lambda) = -0.000730647... < 0 with a
+    FULLY REAL spectrum whose Perron root 0.542298 exceeds Lambda =
+    0.534999.  The docstring's earlier "rho Cr/L = 1.013 = complex-pair
+    modulus beyond D_c" was misattributed: it is a REAL Perron root
+    crossing Lambda on a curve D_perron(p) strictly between D_c and Dbar
+    (D_perron/D_c ~ 1.06-1.12); the pocket is {theta_x(p) < theta <= 1},
+    present for p/pmax in ~(0.02, 0.92), t near 2.
+  * the original "cert5 certified with 7 nodes" rested on an affine-
+    transform bug in bernstein_root_box (h**a for h**b), which evaluated
+    every lo != 0 sub-box on the wrong region.  Fixed below; root-box
+    certifications (certs 1-4) never touched a lo != 0 box and stand.
+WHAT REMAINS TRUE AND CERTIFIED: chi'''' , chi''', chi'', chi' > 0 at
+Lambda on the whole superdomain, and chi(Lambda) > 0 HOLDS ON GRAY
+(D <= D_c; normalized margin >= 1.8e-7 on a fine adversarial grid --
+numeric grade, certification on a Gray-containing pocket-free subdomain
+is the open task).  Realness of the spectrum, per the same adversarial
+round: holds on the ENTIRE superdomain (collision surface >= 1.35 x Dbar,
+min over p at t=2; at w = -1 realness is PROVEN exactly on the whole strip
+via the charpoly split f1*f4 and full discriminant factorization).  D_c is
+spectrally INVISIBLE in Q -- the earlier "disc -> 0 at D_c" scout note was
+wrong.  Remaining for R_3(s) >= 3/2 on Gray:
+  (a) cert5-on-Gray: certify chi(Lambda) > 0 on theta <= thetatilde(sigma),
+      a rational curve separating D_c/Dbar from D_perron/Dbar (gap >=
+      0.021 uniformly);
+  (b) negative-side certificates (-1)^{k+1} chi^(k)(-Lambda) > 0 (Budan-
+      Fourier at +Lambda bounds only the positive side; numerically
+      max |lambda_min| / Lambda = 0.747 -- uniform 1.34x margin);
+  (c) realness certificate for interior angles (disc >= 0; at w=-1 done).
 
-CERTIFICATION RESULTS (development runs, exact arithmetic):
+CERTIFICATION RESULTS (exact arithmetic):
   cert1: 413-term target,   strip (1-sg)^2(1+sg),      root box, min ~ 1.09e3
   cert2: 2680-term target,  strip (1-sg)^4(1+sg)^2,    root box, min ~ 2.00e6
   cert3: 8050-term target,  strip (1-sg)^6(1+sg)^3,    root box
   cert4: 14994-term target, strip (1-sg)^4,            root box
-  cert5: 26210-term target, strip (1-sg)^7 theta t,    7 nodes
-  (cert5's theta/t strip is forced: chi(Lambda)=0 at D=0 and at s=0, where
-   Lambda collides with the Perron root -- the open-domain statement is
-   exactly the honest one.)
+  cert5: FALSE on the full superdomain (exact pocket witness, C5 below);
+         true-on-Gray is numeric-grade pending the restricted certification
 
 CHECKS (default run, ~8 min):
   C1  cert1 pipeline: den positivity, symmetrization parity, 90-pt numeric
@@ -101,7 +112,10 @@ CHECKS (default run, ~8 min):
   C4  cert4 via the t-domain assembly: charpoly grading check (E_k
       w-symmetric at (-w)^k), piece positivity, 90-pt numeric validation
       against eigenvalue-built chi^(1), Bernstein certification.
-  C5  same for cert5 (chi itself).
+  C5  cert5 CORRECTED STATUS: (C5a) exact-arithmetic pocket witness
+      chi(Lambda) < 0 at (p=8/15, D=Dbar, w=-1) -- the retraction is
+      reproducible; (C5b) chi(Lambda) > 0 on a Gray grid (D <= 0.99 D_c
+      by bisected threshold, 240 points) -- numeric-grade Gray evidence.
 
 Deps: sympy, mpmath.  Python: /Users/para/.venvs/rnr/bin/python.
 """
@@ -255,11 +269,15 @@ def bernstein_root_box(polyE, box):
     for ax, (lo, hi) in enumerate(box):
         d = degs[ax]
         h = hi - lo
+        # v -> lo + h v:  v^a = sum_b C(a,b) lo^(a-b) h^b v^b.  The h power is
+        # b, NOT a: the h**a version silently evaluates every lo != 0 sub-box
+        # on the wrong region (this exact bug once made a false cert5
+        # "certification" pass -- caught by two independent adversarial
+        # re-derivations; lo = 0 root boxes are unaffected).
         M = {}
         for a in range(d + 1):
-            ha = h ** a
             for b in range(a + 1):
-                M[(b, a)] = sp.binomial(a, b) * lo ** (a - b) * ha
+                M[(b, a)] = sp.binomial(a, b) * lo ** (a - b) * h ** b
         T = axis_apply(T, M, ax, d + 1)
     for ax, d in enumerate(degs):
         M = {}
@@ -428,10 +446,12 @@ def main():
 
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
-    print("chi, chi', chi'', chi''', chi'''' > 0 at Lambda = L/Cr on the ENTIRE")
-    print("rationalized Gray superdomain (open faces), A=3.  By Budan-Fourier no")
-    print("REAL eigenvalue of Q reaches Lambda anywhere on the domain.  Remaining")
-    print("for R_3(s) >= 3/2 on Gray: the realness-on-Gray lemma.")
+    print("CERTIFIED: chi', chi'', chi''', chi'''' > 0 at Lambda on the full")
+    print("superdomain (root boxes).  RETRACTED: full-superdomain chi(Lambda) > 0")
+    print("(real Perron pocket beyond D_perron(p) in (D_c, Dbar); exact witness")
+    print("C5a).  ON GRAY chi(Lambda) > 0 holds (numeric C5b); remaining for")
+    print("R_3 >= 3/2 on Gray: cert5-on-Gray certification, negative-side")
+    print("certificates chi^(k)(-Lambda), realness for interior angles.")
 
 
 # ---------------------------------------------------------------------------
@@ -566,7 +586,7 @@ def run_certs_45(Q):
             num = num + term * sp.Rational((-1) ** k, 1) * fall / consts
         return num.as_expr()
 
-    for j, name in ((1, "C4"), (0, "C5")):
+    for j, name in ((1, "C4"),):
         tg = assemble(j)
         random.seed(23)
         agree = disagree = 0
@@ -602,32 +622,98 @@ def run_certs_45(Q):
         box = [(sp.Integer(0), sp.Integer(1)), (sp.Integer(0), sp.Integer(1)),
                (sp.Integer(0), sp.Integer(2))]
         mn_b, _ = bernstein_root_box(core, box)
-        if mn_b > 0:
-            rep(f"{name} ROOT-BOX Bernstein certification (all coeffs > 0)", True)
-            continue
-        # cert5 needs a few subdivisions: certify by bisection (theta axis
-        # first, then t), depth-limited
-        ok = certify_subdiv(core, box)
-        rep(f"{name} Bernstein certification with subdivision", ok)
+        rep(f"{name} ROOT-BOX Bernstein certification (all coeffs > 0)", mn_b > 0)
+
+    # ---- C5: corrected status for cert5 = chi(Lambda) ----
+    print("-" * 78)
+    print("C5a  RETRACTION WITNESS: chi(Lambda) < 0 at (p=8/15, D=Dbar, w=-1),")
+    print("     exact arithmetic (real Perron root above Lambda, beyond Gray)")
+    pw = sp.Rational(8, 15)
+    s2 = 1 - sp.Rational(3, 2) * pw
+    Dw = sp.simplify(sp.Rational(2, 3) * (1 - sp.sqrt(s2)) ** 2 / (1 + s2))
+    # build Q, Cr, Lambda exactly at w = -1 (eta is real there)
+    ethw = Dw / ((A - 1) * (1 - Dw))
+
+    def etaf_w(Wv):
+        E = ethw * Wv
+        return ((A - 1) * Dw * E + Dw - (A - 1) * E) / ((A - 1) * Dw * E + Dw - (A - 1))
+
+    ew, ebw = sp.simplify(etaf_w(-1)), sp.simplify(etaf_w(-1))
+    Tw = [[(1 - pw) if i == j else pw / (A - 1) for j in range(AVAL)] for i in range(AVAL)]
+    Qw = sp.zeros(5, 5)
+    for a_ in range(5):
+        x, xp, xq = STATES[REPS[a_]]
+        for (y, yp, yq) in STATES:
+            term = Tw[xp][yp] * Tw[xq][yq] / Tw[x][y]
+            if yp != y: term *= ew
+            if yq != y: term *= ebw
+            Qw[a_, _pat((y, yp, yq))] += term
+
+    def Cfw(Wv):
+        E = ethw * Wv
+        return ((A - 1) * Dw * E + Dw - (A - 1)) / (A * Dw - (A - 1))
+
+    Crw = sp.simplify(Cfw(-1) * Cfw(-1) / (Cfw(1) ** 2))
+    Lw = 1 - sp.Rational(3, 2) * Dw * (1 - Dw) * 2
+    Lamw = sp.simplify(Lw / Crw)
+    chiw = sp.simplify((Lamw * sp.eye(5) - Qw).det())
+    print(f"     chi(Lambda) = {float(chiw):.9g}  (exact sign: {sp.sign(chiw)})")
+    rep("C5a chi(Lambda) < 0 at the pocket witness (retraction reproducible)",
+        sp.sign(chiw) == -1)
+
+    print("C5b  chi(Lambda) > 0 on Gray (D <= 0.99 D_c, bisected threshold),")
+    print("     240-point adversarial grid -- numeric grade")
+    ok5b, npts5b = True, 0
+    for pf in (0.05, 0.2, 0.4, 0.6, 0.8, 0.95):
+        pv = pf * 2.0 / 3.0
+        dc = _Dc_numeric(pv)
+        for fD in (0.3, 0.7, 0.9, 0.99):
+            Dv = fD * dc
+            for tvf in (0.25, 0.75, 1.25, 1.6, 1.85, 2.0):
+                for extra in (0, 1):
+                    tt = tvf if not extra else min(2.0, tvf + 0.05)
+                    val = chi_j_numeric(pv, Dv, math.acos(1 - tt), tt, 0)
+                    ok5b &= val > 0
+                    npts5b += 1
+    rep(f"C5b chi(Lambda) > 0 at all {npts5b} Gray grid points", ok5b)
 
 
-def certify_subdiv(core, box, maxdepth=12):
-    work = [(box, 0)]
-    while work:
-        bx, dep = work.pop()
-        mn_b, _ = bernstein_root_box(core, bx)
-        if mn_b > 0:
-            continue
-        if dep >= maxdepth:
-            return False
-        i = dep % 3
-        lo, hi = bx[i]
-        mid = sp.Rational(lo + hi, 2) if isinstance(lo + hi, int) else (lo + hi) / 2
-        b1 = list(bx); b1[i] = (lo, mid)
-        b2 = list(bx); b2[i] = (mid, hi)
-        work.append((b1, dep + 1))
-        work.append((b2, dep + 1))
-    return True
+def _Dc_numeric(pv):
+    """Gray threshold D_c(p) for A=3: complexification of the 3x3
+    symmetry-reduced alternating product (bisection, mpmath)."""
+    Aq = 3
+
+    def imflag(Dv):
+        lam2 = 1 - Dv * Aq / (Aq - 1)
+        al = mp.mpf(1) / Aq + (1 - mp.mpf(1) / Aq) / lam2
+        be = mp.mpf(1) / Aq - (mp.mpf(1) / Aq) / lam2
+        td = 1 - pv
+        to = pv / (Aq - 1)
+
+        def Bred(y):
+            Ki = {0: (al if y == 0 else be), 1: (be if y == 0 else al), 2: be}
+            Trow = {0: {0: td, 1: to, 2: (Aq - 2) * to},
+                    1: {0: to, 1: td, 2: (Aq - 2) * to},
+                    2: {0: to, 1: to, 2: td + (Aq - 3) * to}}
+            Mx = mp.zeros(3, 3)
+            for i in range(3):
+                for jj in range(3):
+                    Mx[i, jj] = Ki[i] * Trow[i][jj]
+            return Mx
+        Mx = Bred(1) * Bred(0)
+        ev = mp.eig(Mx)[0]
+        return max(abs(mp.im(e)) for e in ev)
+
+    lo, hi = mp.mpf('1e-8'), mp.mpf(Aq - 1) / Aq - mp.mpf('1e-9')
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        if imflag(mid) < mp.mpf('1e-30'):
+            lo = mid
+        else:
+            hi = mid
+    return float((lo + hi) / 2)
+
+
 
 
 if __name__ == "__main__":
