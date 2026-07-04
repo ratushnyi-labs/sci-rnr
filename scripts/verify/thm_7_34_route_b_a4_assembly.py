@@ -51,10 +51,13 @@ DEDUCTION (verified step-by-step below):
   (iii) Same on the negative side, full domain: psi^(k)(Lam) > 0 all k
         => psi > 0 on [Lam, oo) => chi has no real root in (-oo, -Lam].
                                                                 [A3]
-  (iv)  Realness [L4]+[L5]: ALL eigenvalues are real on the superdomain
-        => rho(Q) = max_i |lambda_i| < Lam on {th <= thetatilde}. [A4]
-  (v)   Gray inclusion [L2(B)] + [L6]: for sg in (0, 25/32],
-        D <= D_c(p) => th = D/Dbar <= D_c/Dbar < thetatilde(sg).  [A5]
+  (iv)  Realness [L4]+[L5]: ALL eigenvalues are real on the CURVE
+        domain {th <= thetatilde4} (full-strip realness is FALSE at
+        A=4 -- island witnesses in [L4]/[L5]); combined with (ii)+(iii)
+        there: rho(Q) = max_i |lambda_i| < Lam on {th <= thetatilde4}.
+                                                                 [A4]
+  (v)   Gray inclusion [L2(B)] + [L6]: for sg in (0, 1),
+        D <= D_c(p) => th = D/Dbar <= D_c/Dbar < thetatilde4(sg). [A5]
   (vi)  rho(Q) < Lam  <=>  g_4 = Cr rho < L  <=>  1 - g_4 >
         (3/2) D(1-D) t  <=>  R_4(s;D) > 3/2  (dividing by
         D(1-D)(1-cos s) > 0, t = 1 - cos s).                     [A6]
@@ -67,9 +70,9 @@ CHECKS:
       instance with a root pushed just below x0).
   A5  domain inclusion re-verified EXACTLY (the load-bearing arithmetic
       of the assembly): Sturm re-run of [L2(B)]'s composition -- the
-      ternary quartic at D = thetatilde(sg) Dbar(sg) has numerator
-      sg^3 * R17(sg) with R17 root-free and negative on [0, 25/32],
-      against Qq(0,p) = 16 p^2 (p^2+1) > 0.
+      A=4 reduced-cubic-discriminant numerator at D = thetatilde4*Dbar
+      factors as sg^13 (1-sg)^13 (1+sg)^2 R28 with R28 root-free and
+      negative on [0, 1] (disc > 0 as D -> 0+ per the committed P11).
   A7  END-TO-END numeric validation (mpmath dps 30; consistency guard,
       not load-bearing): 600 points across the claimed region
       (p down to 1e-4, D <= 0.999 D_c bisected, 12 angles):
