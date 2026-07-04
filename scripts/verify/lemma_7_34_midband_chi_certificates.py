@@ -60,10 +60,19 @@ RESULT: all three certificates certify AT THE ROOT BOX (no subdivision):
 On the correct domain the positivity is Bernstein-visible without any
 subdivision -- the entire difficulty was the domain, not the polynomial.
 
-STATUS in the ten-certificate program (this script = certificates 1-3):
-  * cert4 (chi'), cert5 (chi) -- same pipeline via the polynomial charpoly
-    of M = p(1-p) G(w) Gt(w) Q (all-polynomial Berkowitz; the S5 denominator
-    lemma gives (1-D)(a w + b) = G exactly), run in progress.
+STATUS -- ALL FIVE chi-derivative certificates are now CERTIFIED (this
+script runs 1, 2, 4, 5 by default; 3 behind CERT3=1 for runtime):
+  * cert4/cert5 use the T-DOMAIN SMALL-PIECE ASSEMBLY (C4/C5 below): the
+    w-domain assembly of chi^(j) OOMs; instead, since c := p(1-p) G Gt = w
+    * chat with chat w-symmetric, e_k(Q) = E_k(M)/c^k = Etld_k(p,D,t) /
+    chat(p,D,t)^k lives entirely in the t-domain (E_k from the polynomial
+    Berkowitz charpoly of M = cQ; each E_k is w-symmetric at exactly
+    (-w)^k -- grading check enforced).  Substitute the rationalized domain
+    into the SMALL pieces first, then assemble with sparse Poly products
+    and equalized (1+sigma^2) powers.  6 min total vs OOM.
+  * BUDAN-FOURIER CONSEQUENCE: all five chi^(k)(Lambda) > 0 on the open
+    domain => zero sign variations => NO REAL EIGENVALUE of Q reaches
+    Lambda = L/Cr -- for ALL p in (0,2/3), ALL D in (0,Dbar], ALL angles.
   * The chi^(k) certificates bound only REAL eigenvalues (Budan-Fourier).
     A numeric scan shows rho(Q)*Cr/L reaches 1.013 at theta=1 (D = Dbar,
     beyond the Gray threshold D_c): the complex-pair modulus DOES exceed
@@ -71,14 +80,28 @@ STATUS in the ten-certificate program (this script = certificates 1-3):
     can exist.  The program therefore needs the REALNESS-ON-GRAY lemma
     (spectrum of Q real for D <= D_c = first eigenvalue collision) to
     convert the chi-certificates into rho(Q) Cr <= L on Gray.  That lemma
-    is the remaining structural piece (disc_5x5 first-zero identification).
+    is the ONLY remaining piece of Route B's R_3(s) >= 3/2 on Gray.
 
-CHECKS (default run, ~1-2 min):
+CERTIFICATION RESULTS (development runs, exact arithmetic):
+  cert1: 413-term target,   strip (1-sg)^2(1+sg),      root box, min ~ 1.09e3
+  cert2: 2680-term target,  strip (1-sg)^4(1+sg)^2,    root box, min ~ 2.00e6
+  cert3: 8050-term target,  strip (1-sg)^6(1+sg)^3,    root box
+  cert4: 14994-term target, strip (1-sg)^4,            root box
+  cert5: 26210-term target, strip (1-sg)^7 theta t,    7 nodes
+  (cert5's theta/t strip is forced: chi(Lambda)=0 at D=0 and at s=0, where
+   Lambda collides with the Perron root -- the open-domain statement is
+   exactly the honest one.)
+
+CHECKS (default run, ~8 min):
   C1  cert1 pipeline: den positivity, symmetrization parity, 90-pt numeric
       sign validation, root-box Bernstein certification.
   C2  same for cert2.
   C3  (env CERT3=1; ~1h)  same for cert3.  Verified in development twice:
       via the direct rational path AND the polynomial-charpoly fast path.
+  C4  cert4 via the t-domain assembly: charpoly grading check (E_k
+      w-symmetric at (-w)^k), piece positivity, 90-pt numeric validation
+      against eigenvalue-built chi^(1), Bernstein certification.
+  C5  same for cert5 (chi itself).
 
 Deps: sympy, mpmath.  Python: /Users/para/.venvs/rnr/bin/python.
 """
@@ -401,11 +424,210 @@ def main():
         print("C3  skipped (set CERT3=1 to run, ~1h; certified in development via")
         print("    both the direct rational path and the polynomial-charpoly path)")
 
+    run_certs_45(Q)
+
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
-    print("chi'''', chi''', (chi'') > 0 at Lambda = L/Cr on the ENTIRE rationalized")
-    print("Gray superdomain, A=3.  Remaining: cert4-5 (chi', chi), and the")
-    print("realness-on-Gray lemma to convert Budan-Fourier into rho(Q) Cr <= L.")
+    print("chi, chi', chi'', chi''', chi'''' > 0 at Lambda = L/Cr on the ENTIRE")
+    print("rationalized Gray superdomain (open faces), A=3.  By Budan-Fourier no")
+    print("REAL eigenvalue of Q reaches Lambda anywhere on the domain.  Remaining")
+    print("for R_3(s) >= 3/2 on Gray: the realness-on-Gray lemma.")
+
+
+# ---------------------------------------------------------------------------
+# C4/C5: t-domain small-piece assembly (chi', chi)
+# ---------------------------------------------------------------------------
+X = sp.symbols('x')
+
+
+def sym_to_t_mid(expr, K=60):
+    """Laurent in w -> (t-polynomial, central power m of (-w)); None if the
+    central power is half-integer or the Laurent part is asymmetric."""
+    ex = sp.expand(expr)
+    poly = sp.Poly(sp.expand(ex * w ** K), w)
+    degs = [md - K for (md,), cc in poly.terms()]
+    mid = sp.Rational(min(degs) + max(degs), 2)
+    if int(mid) != mid:
+        return None, None
+    r = laurent_sym_to_t(sp.cancel(ex / (-w) ** int(mid)), K)
+    return r, (int(mid) if r is not None else None)
+
+
+def dom_piece(ex):
+    """Substitute the rationalized domain; return (Poly, (1+sg^2)-exponent,
+    numeric constant) with denominator exactly const*(1+sg^2)^k, else None."""
+    n_, d_ = sp.fraction(sp.cancel(sp.together(ex.subs({p: PSUB, D: DSUB}))))
+    f = sp.factor_list(d_)
+    const, expo = f[0], 0
+    for b, e in f[1]:
+        if sp.simplify(b - (1 + sg ** 2)) == 0:
+            expo += e
+        elif b.is_number:
+            const *= b ** e
+        else:
+            return None
+    return sp.Poly(sp.expand(n_), *VS), expo, const
+
+
+def chi_j_numeric(pv, Dv, sv, tvf, j):
+    """chi^(j)(Lambda) from the numeric eigenvalues of Q."""
+    Qn, Crn = Q_numeric(pv, Dv, sv)
+    ev = mp.eig(Qn)[0]
+    Lm = (1 - 1.5 * Dv * (1 - Dv) * tvf) / Crn
+    cs = [mp.mpc(1)]
+    for lam in ev:
+        ns = [mp.mpc(0)] * (len(cs) + 1)
+        for k, cc in enumerate(cs):
+            ns[k] += cc
+            ns[k + 1] -= cc * lam
+        cs = ns
+    for _ in range(j):
+        n = len(cs) - 1
+        cs = [cs[k] * (n - k) for k in range(n)]
+    val = mp.mpc(0)
+    for cc in cs:
+        val = val * Lm + cc
+    return float(mp.re(val))
+
+
+def run_certs_45(Q):
+    print("-" * 78)
+    print("C4/C5  cert4 = chi'(Lambda) > 0 and cert5 = chi(Lambda) > 0 via the")
+    print("       t-domain small-piece assembly (~6 min)")
+    Cr = build_Cr()
+    CrN, CrD = sp.fraction(Cr)
+    L = 1 - sp.Rational(3, 2) * D * (1 - D) * t
+    G = D ** 2 * w + (D - 2) * (1 - D)
+    Gt = D ** 2 + (D - 2) * (1 - D) * w
+    c = sp.expand(p * (1 - p) * G * Gt)
+    M = sp.zeros(5, 5)
+    for i in range(5):
+        for j in range(5):
+            n_, d_ = sp.fraction(sp.cancel(c * Q[i, j]))
+            M[i, j] = sp.expand(n_ / d_)
+    E = [sp.expand(co * (-1) ** k)
+         for k, co in enumerate(M.charpoly(X).all_coeffs())]
+    Etld, mks = [sp.Integer(1)], [0]
+    for k in range(1, 6):
+        ek, mk = sym_to_t_mid(E[k])
+        Etld.append(ek)
+        mks.append(mk)
+    chat, mc = sym_to_t_mid(c)
+    CrNt, mN = sym_to_t_mid(CrN)
+    CrDt, mD = sym_to_t_mid(CrD)
+    grading_ok = (None not in mks and mc == 1 and mN == mD
+                  and all(mks[k] == k * mc for k in range(6)))
+    rep("C4/C5 charpoly grading: E_k symmetric at (-w)^k, chat at (-w)^1",
+        grading_ok)
+    if not grading_ok:
+        return
+    PC = {'L': dom_piece(L), 'CrN': dom_piece(CrNt), 'CrD': dom_piece(CrDt),
+          'chat': dom_piece(chat)}
+    for k in range(1, 6):
+        PC[f'E{k}'] = dom_piece(Etld[k])
+    rep("C4/C5 all pieces have const*(1+sigma^2)^k denominators",
+        all(v is not None for v in PC.values()))
+    if not all(v is not None for v in PC.values()):
+        return
+
+    def assemble(j):
+        """LD^{5-j} chat^{5-j} chi^(j)(Lambda) as a (sigma,theta,t) Poly."""
+        terms = []
+        for k in range(0, 6):
+            if 5 - k - j < 0:
+                continue
+            fall = sp.Integer(1)
+            for q_ in range(j):
+                fall *= (5 - k - q_)
+            pw_ch, pw_LCrD, pw_CrN = 5 - j - k, 5 - k - j, k
+            Pk = PC[f'E{k}'][0] if k >= 1 else sp.Poly(sp.Integer(1), *VS)
+            dE = PC[f'E{k}'][1] if k >= 1 else 0
+            cE = PC[f'E{k}'][2] if k >= 1 else sp.Integer(1)
+            dens = (dE + pw_ch * PC['chat'][1]
+                    + pw_LCrD * (PC['L'][1] + PC['CrD'][1])
+                    + pw_CrN * PC['CrN'][1])
+            consts = (cE * PC['chat'][2] ** pw_ch
+                      * (PC['L'][2] * PC['CrD'][2]) ** pw_LCrD
+                      * PC['CrN'][2] ** pw_CrN)
+            terms.append((k, fall, Pk, pw_ch, pw_LCrD, pw_CrN, dens, consts))
+        maxden = max(tt[6] for tt in terms)
+        onep = sp.Poly(1 + sg ** 2, *VS)
+        num = sp.Poly(sp.Integer(0), *VS)
+        for (k, fall, Pk, pw_ch, pw_LCrD, pw_CrN, dens, consts) in terms:
+            term = Pk
+            for _ in range(pw_ch):
+                term = term * PC['chat'][0]
+            for _ in range(pw_LCrD):
+                term = term * PC['L'][0] * PC['CrD'][0]
+            for _ in range(pw_CrN):
+                term = term * PC['CrN'][0]
+            for _ in range(maxden - dens):
+                term = term * onep
+            num = num + term * sp.Rational((-1) ** k, 1) * fall / consts
+        return num.as_expr()
+
+    for j, name in ((1, "C4"), (0, "C5")):
+        tg = assemble(j)
+        random.seed(23)
+        agree = disagree = 0
+        for _ in range(90):
+            sv = sp.Rational(random.randint(1, 31), 32)
+            tv = sp.Rational(random.randint(1, 32), 16)
+            thv = sp.Rational(random.randint(1, 16), 16)
+            pv = float(PSUB.subs(sg, sv))
+            Dv = float(DSUB.subs({sg: sv, th: thv}))
+            if Dv <= 1e-9 or Dv >= 0.666:
+                continue
+            tvf = float(tv)
+            cn = chi_j_numeric(pv, Dv, math.acos(1 - tvf), tvf, j)
+            tgv = float(tg.subs({sg: sv, th: thv, t: tv}))
+            if tgv == 0:
+                continue
+            if (cn > 0) == (tgv > 0):
+                agree += 1
+            else:
+                disagree += 1
+        rep(f"{name} numeric sign chain uniform ({agree} agree, {disagree} flip)",
+            agree == 0 or disagree == 0)
+        if disagree and not agree:
+            tg = sp.expand(-tg)
+        elif disagree:
+            return
+        core, stripped = strip_trivial(tg)
+        strip_ok = all(f in CANDS for f in stripped)
+        print(f"     target {len(sp.Poly(tg, *VS).terms())} terms -> core "
+              f"{len(sp.Poly(core, *VS).terms())} terms; stripped "
+              f"{[(str(kk), v) for kk, v in stripped.items()]}")
+        rep(f"{name} zero-face strip uses box-nonnegative factors only", strip_ok)
+        box = [(sp.Integer(0), sp.Integer(1)), (sp.Integer(0), sp.Integer(1)),
+               (sp.Integer(0), sp.Integer(2))]
+        mn_b, _ = bernstein_root_box(core, box)
+        if mn_b > 0:
+            rep(f"{name} ROOT-BOX Bernstein certification (all coeffs > 0)", True)
+            continue
+        # cert5 needs a few subdivisions: certify by bisection (theta axis
+        # first, then t), depth-limited
+        ok = certify_subdiv(core, box)
+        rep(f"{name} Bernstein certification with subdivision", ok)
+
+
+def certify_subdiv(core, box, maxdepth=12):
+    work = [(box, 0)]
+    while work:
+        bx, dep = work.pop()
+        mn_b, _ = bernstein_root_box(core, bx)
+        if mn_b > 0:
+            continue
+        if dep >= maxdepth:
+            return False
+        i = dep % 3
+        lo, hi = bx[i]
+        mid = sp.Rational(lo + hi, 2) if isinstance(lo + hi, int) else (lo + hi) / 2
+        b1 = list(bx); b1[i] = (lo, mid)
+        b2 = list(bx); b2[i] = (mid, hi)
+        work.append((b1, dep + 1))
+        work.append((b2, dep + 1))
+    return True
 
 
 if __name__ == "__main__":
