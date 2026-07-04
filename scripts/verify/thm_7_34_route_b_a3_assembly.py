@@ -5,19 +5,18 @@ thm_7_34_route_b_a3_assembly.py
 BUG-009-D / Route B, A=3: ASSEMBLY of the mid-band certificate chain into
 the sharp replica spectral inequality on the Gray region.
 
-THEOREM (A = 3; continuum-certified scope).  For all
-    p in [133/512, 2/3),   0 < D <= D_c(p)   (the ternary Gray threshold),
+THEOREM (A = 3; continuum-certified on the WHOLE Gray family).  For all
+    p in (0, 2/3),   0 < D <= D_c(p)   (the ternary Gray threshold),
     s in (0, pi],
 the Route B replica ratio satisfies
     R_3(s; D) = (1 - g_3(s)) / (D(1-D)(1 - cos s))  >  3/2,
 where g_3 = Cr * rho(Q) with Q the 5x5 pattern-quotient replica matrix.
-(For p < 133/512 the same statement holds at discrete-p/grid grade via the
-committed Schur certificate; continuum closure there awaits its
-grid-to-interval upgrade.  The small-p corner is where the inequality is
-asymptotically sharp -- margin (A-2)/(A-1) p + O(p^2) -- so the discrete
-evidence there is consistent with, and bounded away from, equality.)
+(The small-p corner p -> 0 is the excluded open limit of the Gray family,
+where the inequality is asymptotically sharp -- margin (A-2)/(A-1) p
++ O(p^2) = p/2 + O(p^2); every certificate margin necessarily vanishes
+linearly there.)
 
-PROOF = WIRING OF SIX COMMITTED LEMMAS (each with its own exact
+PROOF = WIRING OF SEVEN COMMITTED LEMMAS (each with its own exact
 certificate script in this directory; nothing heavy is re-run here --
 this script re-verifies the LOGIC and the DOMAIN INCLUSIONS exactly, and
 end-validates the assembled claim numerically):
@@ -29,6 +28,10 @@ end-validates the assembled claim numerically):
   [L2] lemma_7_34_midband_cert5_on_gray.py      (checks A and B)
        chi(Lam) > 0 for sg in (0, 25/32], th <= thetatilde(sg)
        = 1 - (5/16) sg^2;  and  D_c(p) < thetatilde(sg) * Dbar(p) there.
+  [L2'] lemma_7_34_midband_cert5_smallp.py      (checks A2 and B2)
+       same for sg in [25/32, 1) with thetatilde2 = 2/3 + (11/32)(1-sg^2);
+       exact nested splice at sg = 25/32 => chi(Lam) > 0 on a
+       Gray-containing region for ALL p in (0, 2/3).
   [L3] lemma_7_34_midband_negside_certificates.py   (N0..N4)
        psi^(k)(Lam) > 0, k = 0..4, psi(x) = -chi(-x), FULL superdomain.
   [L4] lemma_7_34_realness_pi_w_closure.py
@@ -60,7 +63,7 @@ DEDUCTION (verified step-by-step below):
         D(1-D)(1-cos s) > 0, t = 1 - cos s).                     [A6]
 
 CHECKS:
-  A0  the six dependency scripts exist in this directory.
+  A0  the dependency scripts exist in this directory.
   A1  L >= 1/4 on the superdomain: exact (1-var maximization of D(1-D)).
   A2  Taylor-positivity logic sanity: a quintic with all derivatives
       positive at x0 has no root >= x0 (exercised on a random exact
@@ -72,7 +75,7 @@ CHECKS:
       against Qq(0,p) = 16 p^2 (p^2+1) > 0.
   A7  END-TO-END numeric validation (mpmath dps 30; consistency guard,
       not load-bearing): 600 points across the claimed region
-      (p in [133/512, 2/3), D <= 0.999 D_c bisected, 12 angles):
+      (p down to 1e-4, D <= 0.999 D_c bisected, 12 angles):
       R_3(s; D) > 3/2 at every point; worst margin printed.  Plus 60
       points at D = D_c exactly and s = pi (the binding corner).
 
@@ -102,6 +105,7 @@ def A0():
     print("A0  dependency lemmas present")
     deps = ["lemma_7_34_midband_chi_certificates.py",
             "lemma_7_34_midband_cert5_on_gray.py",
+            "lemma_7_34_midband_cert5_smallp.py",
             "lemma_7_34_midband_negside_certificates.py",
             "lemma_7_34_realness_pi_w_closure.py",
             "lemma_7_34_realness_interior.py",
@@ -114,7 +118,7 @@ def A0():
         ok &= present
         if not present:
             print(f"     MISSING: {d}")
-    return rep("A0 all six lemma scripts + Schur + quartic source present", ok)
+    return rep("A0 all lemma scripts + Schur + quartic source present", ok)
 
 
 def A1():
@@ -250,7 +254,7 @@ def A7():
     worst = mp.inf
     npts = 0
     ok = True
-    pmin = 133.0 / 512.0
+    pmin = 1e-4
     for i in range(50):
         pv = pmin + (2.0 / 3.0 - 1e-6 - pmin) * random.random()
         dc = Dc_of(pv)
@@ -275,8 +279,8 @@ def A7():
 
 if __name__ == "__main__":
     print("=" * 78)
-    print("ASSEMBLY THEOREM (A=3): R_3(s;D) > 3/2 on the Gray region for")
-    print("p in [133/512, 2/3), all angles s in (0,pi] -- wiring of the six")
+    print("ASSEMBLY THEOREM (A=3): R_3(s;D) > 3/2 on the WHOLE Gray region,")
+    print("p in (0, 2/3), all angles s in (0,pi] -- wiring of the seven")
     print("committed exact lemmas (chain re-verified; inclusions exact)")
     print("=" * 78)
     A0()
@@ -290,5 +294,5 @@ if __name__ == "__main__":
     print("positivity of chi at Lambda (certs 1-4 full domain + cert5 below")
     print("thetatilde) => no eigenvalue >= Lambda on Gray; negative side")
     print("(psi certs, full domain) => none <= -Lambda; hence rho < Lambda,")
-    print("g_3 < L, R_3 > 3/2.  Scope: continuum for p >= 133/512;")
-    print("discrete-p/grid grade below (committed Schur certificate).")
+    print("g_3 < L, R_3 > 3/2.  Scope: CONTINUUM for all p in (0, 2/3) --")
+    print("the two cert5 curves splice exactly at sg = 25/32.")
