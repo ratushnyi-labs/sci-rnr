@@ -798,8 +798,7 @@ This article makes the following contributions.
   non-asymptotic Berry--Esseen CLT for $L^{\mathrm{rep}}$ under
   exp-mixing, yielding two-sided confidence intervals at Kolmogorov
   rate $O(N^{-1/2}(\log N)^2)$. The full framework has been adversarially cross-
-  validated across three independent model families (Claude / Gemini
-  Pro 3.1 / OpenAI gpt-5.5) with all surviving statements verified
+  validated across three independent adversarial review passes with all surviving statements verified
   numerically in \texttt{scripts/verify/thm\_7\_*}.
 \item
   A concrete attack-vector roadmap for the remaining open problems
@@ -6330,7 +6329,7 @@ unrestricted SGP problem inherits Charikar's $\gamma_{\mathrm{SGP}} =
 Lemma 6.8b. This shifts the residual difficulty of OP2(a) to a
 \emph{specific artifact of the integer-bit objective}: the
 ceiling-jump discontinuity at power-of-two boundaries of $|\Sigma| + K$
-identified by the multi-LLM adversarial review for Conjecture 6.8d.
+identified by the adversarial review for Conjecture 6.8d.
 The continuous objective is the natural target for arithmetic coding
 (the Shannon-McMillan-achievable fractional-bit rate), while the
 integer/ceiling objective corresponds to a prefix-code worst-case
@@ -6338,7 +6337,7 @@ encoding rarely used in modern compression.
 
 \emph{Comparison with Conjecture 6.8d.} Conjecture 6.8d posits some
 $\varepsilon_{\mathrm{bit}} > 0$ for the ceiling-bit-cost objective ---
-the weak form remaining after the Gemini ceiling-discontinuity attack
+the weak form remaining after the ceiling-discontinuity attack
 on the strong $\gamma_{\mathrm{SGP}} - \delta$ form. Lemma 6.8e gives
 the strong $\gamma_{\mathrm{SGP}} - \varepsilon$ form for the
 continuous-bit-cost objective unconditionally, modulo $\mathrm{P} \neq
@@ -8176,14 +8175,13 @@ point to the relevant theorems.
   class) and T7.28 (non-asymptotic Berry--Esseen CLT for
   $L^{\mathrm{rep}}$ at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$).
   The §7.24 history
-  (LRU version retracted under codex disproof, rewritten under
+  (LRU version retracted under an adversarial disproof, rewritten under
   restricted hypotheses, survived round 2) illustrates the
   validation discipline applied throughout.
   All 27 theorems (plus the 7.6$'$/7.27$'$ refinements and the
   7.11/7.27c/7.27e/7.27f corollaries) verified numerically in
   \texttt{scripts/verify/thm\_7\_*} and adversarially
-  cross-validated by three independent model families
-  (Claude / Gemini Pro 3.1 / OpenAI gpt-5.5).
+  cross-validated by three independent adversarial review passes.
 \end{itemize}
 
 \textbf{13.2 Remaining mathematical open problems}
@@ -8365,7 +8363,7 @@ individual entries below give the full detail.
   $O(1/(|V|\log|V|))$ correction. This shifts the residual difficulty
   of OP2(a) to a \emph{specific artifact of the integer-bit objective}
   --- the ceiling discontinuity at power-of-two boundaries identified
-  by the multi-LLM adversarial review for Conjecture 6.8d. The
+  by the adversarial review for Conjecture 6.8d. The
   continuous variant is also the natural object for compression theory
   (Shannon-McMillan-achievable fractional-bit rates), while the
   integer/ceiling objective is the prefix-code worst case rarely
@@ -8464,7 +8462,7 @@ individual entries below give the full detail.
   $|V|$ with $\log |V| < 8568$, this ceiling-drop fraction can
   exceed the $\gamma_{\mathrm{SGP}} = 1 + 1/8568$ gap, so the
   unrestricted bit-cost APX-hardness ratio may be strictly less
-  than $\gamma_{\mathrm{SGP}}$. (Two independent LLM-based
+  than $\gamma_{\mathrm{SGP}}$. (Two independent
   adversarial reviewers split on this point: one accepted the
   stronger ``$\gamma_{\mathrm{SGP}} - \delta$'' form, the other
   flagged the ceiling-discontinuity attack as a structural concern.
@@ -8750,7 +8748,7 @@ individual entries below give the full detail.
   This is a strictly more careful analysis than the optimistic
   earlier ``padding-bit absorbs packing noise'' framing: the absorption
   is \emph{additive but not multiplicative} under row-stochastic $F$.
-  The multi-LLM brainstorm's original Angle 1 missed the dilution; a
+  The brainstorm's original Angle 1 missed the dilution; a
   follow-up adversarial review (independent fresh-context agent with
   web-search 2020--2025 literature) identified the fix via good
   binary codes on value bits, with the explicit parameter constraint
@@ -8771,8 +8769,7 @@ individual entries below give the full detail.
   --- without it, assigning all vertices to the same codeword gives
   objective $0$ trivially; injectivity (a one-to-one map of $n$
   vertices to distinct $\{0,1\}^m$ codewords) is what makes the
-  problem combinatorially non-trivial. An early multi-LLM
-  brainstorming session proposed two candidate structural obstacles ---
+  problem combinatorially non-trivial. An early brainstorming session proposed two candidate structural obstacles ---
   (i) row-stochastic normalization of $F$ blocking ``isolated
   massive-weight gadget bottleneck'' constructions, and (ii) the
   injective-labeling ``packing noise'' / ``gadget leakage'' background
@@ -8855,7 +8852,7 @@ individual entries below give the full detail.
   $\gamma_{\rm LRU}$; only the multiplicative constant is at stake.
   The non-IRM (workload-dependent) case --- where LRU concentration
   may genuinely fail, as shown by the $A, B, A, B, \ldots$
-  counterexample of codex 2026-05 against $C=1$ --- remains
+  counterexample (2026-05) against $C=1$ --- remains
   out-of-scope of this paper's IRM hypothesis and may require
   workload-specific concentration analysis.
 \item
@@ -9044,8 +9041,7 @@ see what additional work is required for a deployable system.
 
 We list specific approaches for each genuinely open problem after the
 present version's contributions. Where standard reductions have
-demonstrably failed (multi-LLM adversarial validation 2026-05; codex
-counterexamples and Gemini structural critiques), we explicitly
+demonstrably failed (adversarial validation 2026-05: counterexamples and structural critiques), we explicitly
 identify the failed pattern and propose alternative attack vectors
 that have not been tried. The intent is to prevent re-attempts on
 known-failed paths and to direct effort toward genuinely promising
@@ -9273,7 +9269,7 @@ reach $K \leq K_{\rm YES}/2$ inflates $L_{\rm sym}$ by only
 $\Theta(N) \cdot O(1) = O(N)$ symbols --- a constant-\emph{factor}
 increase, not a super-constant blowup. This reproduces and rigorously
 confirms the prior finding $L_{\rm sym}(K = N/2) = O(N)$ and the
-Codex ``Pareto-frontier-flat'' analysis (the achievable $L_{\rm
+``Pareto-frontier-flat'' analysis (the achievable $L_{\rm
 sym}(K)$ frontier has slope $O(1)$ in the partial-cover region): no
 exponential or super-linear budget exists. The required theorem
 ``$L_{\rm sym}(G) \geq (1 + \Omega(1)) L^*_{\rm sym}(G_{\rm NO})$
@@ -9331,7 +9327,7 @@ $\gamma_{\rm SGP} - 1 = 1/8568 < 1/\log_2 N$ for \emph{all} $N <
 the NO optimum crossing a power-of-two boundary of $|\Sigma| + K$
 below the YES optimum --- erases the entire $\gamma_{\rm SGP}$ gap at
 those instance sizes, and the reduction is not gap-preserving across
-all $N$. This is exactly the Gemini-flagged ceiling-discontinuity
+all $N$. This is exactly the flagged ceiling-discontinuity
 blocker behind the weak form of Conjecture 6.8d. \emph{Net:} the
 $K$-escape budget does not dominate (reasons (a),(b)); the
 alphabet-floor refinement closes the \emph{continuous} case (already
@@ -10032,8 +10028,7 @@ instance is poly$(n)$-compressible by $M^*$, so the reduction is
 not gap-preserving for $L_{\mathrm{amort}}$ and the grammar-size /
 cover-size hardness of $\Pi$ is not directly inherited.}
 
-\emph{What this does \emph{not} establish (corrected after codex
-adversarial review, 2026-06).} The upper bound alone does
+\emph{What this does \emph{not} establish (corrected after adversarial review, 2026-06).} The upper bound alone does
 \emph{not} imply the amortised YES/NO optimum ratio is $1 + o(1)$,
 nor that $L_{\mathrm{amort}}$ is APX-easy. ``Both YES and NO admit
 the \emph{same} poly$(n)$ witness $M^*$'' bounds both optima
@@ -10137,7 +10132,7 @@ algorithm in items~1--2, predictor bypass of the MSGP solver via
 family reproduction in item~3) are unified by Lemma~13.4.2a, which
 shows the $\Pi$-objective gap is \emph{absorbed} into $L(M^*)$ ---
 i.e.\ these routes do not gap-preservingly transfer. As corrected
-after codex adversarial review (see Lemma~13.4.2a), this is an
+after adversarial review (see Lemma~13.4.2a), this is an
 \emph{upper-bound} obstacle, not a proof that $L_{\mathrm{amort}}$
 is APX-easy: a residual gap from differential family
 compressibility is not excluded, and the PRG construction
@@ -11625,8 +11620,7 @@ hardness via Liu-Pass-style indirect connections, or (c) a positive
 algorithmic result (PTAS or polynomial-time exact algorithm)
 contradicting the current intuition. We list these as the natural
 next research directions, and explicitly retract any premature
-claims of closure that did not survive adversarial multi-LLM
-validation (notably: K-restricted ``closures'' that excluded the
+claims of closure that did not survive adversarial validation (notably: K-restricted ``closures'' that excluded the
 obstacle by fiat, and constant-substitution ``closures'' that
 conflated different complexity-theoretic quantities).
 
