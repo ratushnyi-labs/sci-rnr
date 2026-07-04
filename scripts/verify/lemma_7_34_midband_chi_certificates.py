@@ -245,9 +245,9 @@ def strip_trivial(polyE):
     return P.as_expr(), stripped
 
 
-def to_tensor(polyE):
-    P = sp.Poly(polyE, *VS)
-    degs = [P.degree(v) for v in VS]
+def to_tensor(polyE, vs=VS):
+    P = sp.Poly(polyE, *vs)
+    degs = [P.degree(v) for v in vs]
     return {mon: c for mon, c in zip(P.monoms(), P.coeffs())}, degs
 
 
@@ -263,9 +263,18 @@ def axis_apply(T, M, axis, newdim):
     return {k: v for k, v in out.items() if v != 0}
 
 
-def bernstein_root_box(polyE, box):
-    """Exact Bernstein coefficients of polyE on box; returns (min, max)."""
-    T, degs = to_tensor(polyE)
+def bernstein_root_box(polyE, box, vs=VS):
+    """Exact Bernstein coefficients of polyE on box; returns (min, max,
+    nzeros).  nzeros counts EXACT-ZERO coefficients (dropped from the sparse
+    dict by axis_apply -- recovered from the dense count).  min>0 AND
+    nzeros==0 certifies CLOSED-box strict positivity; min>0 with nzeros>0
+    certifies f>0 on the OPEN box and f>=0 on its closure only (a zero
+    vertex coefficient equals a zero of f at that box corner -- this
+    distinction once masked a boundary zero in a subdivided run)."""
+    T, degs = to_tensor(polyE, vs)
+    total = 1
+    for d in degs:
+        total *= (d + 1)
     for ax, (lo, hi) in enumerate(box):
         d = degs[ax]
         h = hi - lo
@@ -285,8 +294,54 @@ def bernstein_root_box(polyE, box):
             for a in range(b + 1):
                 M[(b, a)] = sp.Rational(comb(b, a), comb(d, a))
         T = axis_apply(T, M, ax, d + 1)
+    nzeros = total - len(T)
     vals = list(T.values())
-    return (min(vals), max(vals)) if vals else (sp.Integer(0), sp.Integer(0))
+    if not vals:
+        return sp.Integer(0), sp.Integer(0), nzeros
+    return min(vals), max(vals), nzeros
+
+
+def strip_1d(e, var):
+    """Strip var^k and (1-var)^k factors from a univariate polynomial."""
+    P = sp.Poly(sp.expand(e), var)
+    for f in (var, 1 - var):
+        fP = sp.Poly(f, var)
+        while True:
+            q_, r_ = sp.div(P, fP, var)
+            if r_ == 0 and not q_.is_zero:
+                P = sp.Poly(q_, var)
+            else:
+                break
+    return P
+
+
+def face_closure(core, name, repfn):
+    """The 3-var no-negative-coefficients certificate gives f > 0 only on the
+    OPEN box.  The claimed domain also includes the closed faces theta=1
+    (D = Dbar) and t=2 (s = pi).  Certify those:
+      * face restriction, 2-var Bernstein: no negative coefficients and not
+        identically zero  =>  f > 0 on the OPEN face;
+      * shared edge (theta=1, t=2), 1-var: exact Sturm after stripping the
+        sigma / (1-sigma) endpoint factors  =>  f > 0 on sigma in (0,1).
+    Union: open box + open faces + open edge = {sigma in (0,1)} x
+    {theta in (0,1]} x {t in (0,2]} -- exactly the claimed domain."""
+    ok = True
+    f1 = sp.expand(core.subs(th, 1))
+    mn1, mx1, _ = bernstein_root_box(
+        f1, [(sp.Integer(0), sp.Integer(1)), (sp.Integer(0), sp.Integer(2))],
+        vs=(sg, t))
+    ok &= repfn(f"{name} face theta=1: no negative coeffs, face nonzero",
+                mn1 >= 0 and mx1 > 0)
+    f2 = sp.expand(core.subs(t, 2))
+    mn2, mx2, _ = bernstein_root_box(
+        f2, [(sp.Integer(0), sp.Integer(1)), (sp.Integer(0), sp.Integer(1))],
+        vs=(sg, th))
+    ok &= repfn(f"{name} face t=2: no negative coeffs, face nonzero",
+                mn2 >= 0 and mx2 > 0)
+    e = strip_1d(core.subs({th: 1, t: 2}), sg)
+    ok &= repfn(f"{name} edge theta=1,t=2: Sturm 0 roots in [0,1], positive",
+                e.count_roots(0, 1) == 0 and e.eval(sp.Rational(1, 2)) > 0)
+    return ok
 
 
 def Q_numeric(pv, Dv, sv):
@@ -372,11 +427,13 @@ def run_certificate(cert_expr, numfun, name):
 
     box = [(sp.Integer(0), sp.Integer(1)), (sp.Integer(0), sp.Integer(1)),
            (sp.Integer(0), sp.Integer(2))]
-    mn_b, mx_b = bernstein_root_box(core, box)
-    print(f"     root-box Bernstein coefficient min ~ {float(mn_b):.6g} "
-          f"(exact rational; > 0 certifies)")
-    return rep(f"{name} (vi) ROOT-BOX Bernstein certification (all coeffs > 0)",
-               mn_b > 0)
+    mn_b, mx_b, nz_b = bernstein_root_box(core, box)
+    print(f"     root-box Bernstein: min-nonzero ~ {float(mn_b):.6g}, "
+          f"exact zeros: {nz_b}")
+    ok_open = rep(f"{name} (vi) no negative Bernstein coeffs (OPEN-box f > 0)",
+                  mn_b > 0)
+    ok_face = face_closure(core, name, rep)
+    return ok_open and ok_face
 
 
 def main():
@@ -621,8 +678,10 @@ def run_certs_45(Q):
         rep(f"{name} zero-face strip uses box-nonnegative factors only", strip_ok)
         box = [(sp.Integer(0), sp.Integer(1)), (sp.Integer(0), sp.Integer(1)),
                (sp.Integer(0), sp.Integer(2))]
-        mn_b, _ = bernstein_root_box(core, box)
-        rep(f"{name} ROOT-BOX Bernstein certification (all coeffs > 0)", mn_b > 0)
+        mn_b, _, nz_b = bernstein_root_box(core, box)
+        print(f"     min-nonzero ~ {float(mn_b):.6g}, exact zeros: {nz_b}")
+        rep(f"{name} no negative Bernstein coeffs (OPEN-box f > 0)", mn_b > 0)
+        face_closure(core, name, rep)
 
     # ---- C5: corrected status for cert5 = chi(Lambda) ----
     print("-" * 78)

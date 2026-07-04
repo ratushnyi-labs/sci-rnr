@@ -68,7 +68,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lemma_7_34_midband_chi_certificates import (   # noqa: E402
     A, AVAL, D, PSUB, DSUB, VS, CANDS, REPS, STATES, _pat, p, sg, t, th, w, X,
     build_Q, build_Cr, bernstein_root_box, dom_piece, strip_trivial,
-    sym_to_t_mid, Q_numeric)
+    sym_to_t_mid, Q_numeric, face_closure)
 
 mp.mp.dps = 30
 PASS = True
@@ -214,8 +214,10 @@ def main():
               f"{len(sp.Poly(core, *VS).terms())} terms; stripped "
               f"{[(str(kk), v) for kk, v in stripped.items()]}")
         rep(f"N{j} zero-face strip uses box-nonnegative factors only", strip_ok)
-        mn_b, _ = bernstein_root_box(core, box)
-        rep(f"N{j} ROOT-BOX Bernstein certification (all coeffs > 0)", mn_b > 0)
+        mn_b, _, nz_b = bernstein_root_box(core, box)
+        print(f"     min-nonzero ~ {float(mn_b):.6g}, exact zeros: {nz_b}")
+        rep(f"N{j} no negative Bernstein coeffs (OPEN-box f > 0)", mn_b > 0)
+        face_closure(core, f"N{j}", rep)
 
     print("=" * 78)
     print(f"OVERALL -> {'PASS' if PASS else 'FAIL'}")
