@@ -92,7 +92,8 @@ wrong.  Remaining for R_3(s) >= 3/2 on Gray:
       0.021 uniformly);
   (b) negative-side certificates (-1)^{k+1} chi^(k)(-Lambda) > 0 (Budan-
       Fourier at +Lambda bounds only the positive side; numerically
-      max |lambda_min| / Lambda = 0.747 -- uniform 1.34x margin);
+      max |lambda_min| / Lambda ~ 0.834, ~1.20x margin -- an earlier
+      0.747/1.34x figure understated the worst case);
   (c) realness certificate for interior angles (disc >= 0; at w=-1 done).
 
 CERTIFICATION RESULTS (exact arithmetic):

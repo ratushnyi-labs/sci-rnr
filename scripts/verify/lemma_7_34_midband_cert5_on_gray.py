@@ -25,13 +25,16 @@ Separating curve (rational, degree 2):
       p in [0.2598, 2/3) lies strictly inside the region where (A) certifies
       chi(Lambda) > 0.
 
-SCOPE SPLIT (explicit).  (A)+(B) cover sg in (0, 25/32], i.e.
-p/pmax >= 1 - (25/32)^2 = 399/1024 ~ 0.3896.  The committed Schur
-small/moderate-p certificate covers p/pmax <= 0.40 whole-Gray (A=3 margin
-+0.0558), i.e. sg >= sqrt(3/5) ~ 0.7746.  Since sqrt(3/5) < 25/32 (exactly:
-3/5 < 625/1024, check P14), the two certificates OVERLAP on
-sg in [sqrt(3/5), 25/32] and together cover the ENTIRE Gray family p in
-(0, 2/3).
+SCOPE SPLIT (explicit, honest grades).  (A)+(B) cover sg in (0, 25/32],
+i.e. p in [133/512, 2/3) (p/pmax >= 399/1024 ~ 0.3896), at FULL CONTINUUM
+grade -- this is the certified region of this lemma.  Below that the
+committed Schur small/moderate-p certificate reaches p/pmax <= 0.40, i.e.
+sg >= sqrt(3/5) ~ 0.7746, and the interval arithmetic overlaps (exactly:
+3/5 < 625/1024, check P14) -- BUT the Schur lemma is by its own header
+DISCRETE in p (grid p/pmax in {0.05,...,0.40}) and grid-grade in (D,s),
+so coverage of p < 133/512 is discrete-p/grid-grade evidence, NOT a
+continuum certificate.  Whole-Gray continuum coverage below p = 133/512
+awaits the Schur grid-to-interval upgrade (known residual).
 
 SIGN LINKAGE (exact, no numerics needed).  With the committed t-domain
 assembly (lemma_7_34_midband_chi_certificates.py, run_certs_45):

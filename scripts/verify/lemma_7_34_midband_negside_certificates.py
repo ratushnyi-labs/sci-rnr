@@ -17,8 +17,10 @@ factors dropped.
 WHY THESE ARE NEEDED: Budan-Fourier at +Lambda (certs 1-4 of the chi
 script) bounds only real eigenvalues ABOVE +Lambda.  The spectral radius
 also needs no real eigenvalue BELOW -Lambda; numerically
-max |lambda_min| / Lambda = 0.747 over the whole superdomain (1.34x
-margin).  These five certificates close that side: zero sign variations
+max |lambda_min| / Lambda ~ 0.834 over the whole superdomain (~1.20x
+margin; exact Sturm witness sg=4/25, th=1, w=-1 gives a real eigenvalue
+below -(3/4)Lambda -- an earlier 0.747/1.34x figure understated the
+worst case; the certified inequalities are unaffected).  These five certificates close that side: zero sign variations
 of (psi(Lambda), ..., psi''''(Lambda), 1) => psi has no real root in
 [Lambda, inf) => Q has no real eigenvalue in (-inf, -Lambda].
 
