@@ -1,0 +1,10 @@
+# LaTeX build products
+*.pdf
+*.aux
+*.log
+*.xdv
+*.fls
+*.fdb_latexmk
+*.out
+*.toc
+build.log

@@ -57,7 +57,8 @@
 
 \begin{document}
 
-\textbf{Ratushnyi Neural Repair Coding}
+\textbf{Ratushnyi Neural Repair Coding, Part I: Framework, Constructions,
+and Complexity}
 
 \emph{A Framework for Lossless Neural Compression via Side‑Information
 Repair: Stream, Positional, and Tensor Entropy‑Field Coding}
@@ -151,15 +152,8 @@ and Ohsaka; \textsc{Partial}, the gap surviving the manifold
 covariance restriction at high SNR), whereas with the predictor free
 and amortised the same objective is in $\mathrm{P}$ via a
 sample-covariance maximum-likelihood plug-in (Remark 6.9a), the
-crossover budget being characterised in Remark 6.9c. Its discrete, deployed
-counterpart (a transformer's autoregressive field; Remarks 7.15a--7.15e)
-inherits a \#P-hard value oracle with no Gaussian analogue, yet keeps causal
-coding and random access exactly polynomial (the hardness confined to the
-optional non-contiguous lever); the residual bounded-order exact problem ---
-exact finite-block hidden-Markov entropy --- is bracketed in
-$[\,\text{poly},\mathrm{FP}^{\#P}\,]$ (poly-$\varepsilon$-approximable under
-filter stability, integer-R\'enyi-exact, min-entropy NP-hard) with both natural
-attacks obstructed. Worked numerical examples are
+crossover budget being characterised in Remark 6.9c.
+Worked numerical examples are
 given for Type-I, Type-II, and Type-III-B; III-A and III-C are
 illustrated through their composition and dictionary-construction
 sections respectively. Two structural results identify the
@@ -174,84 +168,8 @@ lower bound Theorem 6.2) and an absolute-rate converse
 $\mathbb{E}[L_{\mathrm{IIIA}}]\ge H(X\mid Y)$ whose slack is the
 per-tile context deficit --- at most the inter-tile total correlation
 $\mathrm{TC}(X_1,\ldots,X_T\mid Y)$ (the block-independent worst case),
-and zero under causal-context modes (Theorem 6.2b). A 27-theorem
-byte-granular random-access
-framework (§7) establishes Shannon-rate achievability with
-$K = \Theta(\sqrt{N})$ optimal sub-block sizing (Theorems 7.2--7.5),
-matched by a tight space-time product converse $C(K) \cdot S(K) =
-\Theta(N \log N \cdot \mathrm{cost}(M))$ for sub-block-based
-decoders (Theorem 7.27),
-extends to universal (with a tight $d/2$ minimax-regret constant,
-Theorem 7.6$'$), Slepian--Wolf, lossy, successive-refinement,
-and functional RNR variants (Theorems 7.6--7.12), proves
-concentration bounds for archive-size deviation via a sequence of
-sharpening estimates spanning the central-limit and large-deviation
-scales --- Azuma's martingale inequality
-(Theorem 7.14), a variance-aware Bernstein refinement (Theorem 7.25,
-replacing the worst-case Lipschitz $B$ by the per-position-cost std
-$\sigma_\ell$ for an approximate $500\times$ tightening on enwik9),
-a non-asymptotic Berry--Esseen CLT giving two-sided confidence
-intervals at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$ (Theorem 7.28),
-a second-order (dispersion) coding rate
-$Nh+(N/K)\delta_\infty+\sqrt{NV}\,Q^{-1}(\varepsilon)$ (Theorem 7.29),
-and a large-deviations reliability function giving the exact
-archive-overflow exponent with a matching lower bound --- the Legendre
-dual of the source R\'enyi spectrum (Theorem 7.31) --- and an
-extreme-value law pinning the worst-case per-query read buffer to
-$Kh+\sqrt{2KV\ln(N/K)}$ (Theorem 7.35), and a functional CLT fixing the
-streaming-encoder write-buffer high-water-mark at the varentropy scale
-$\sqrt{NV}$ (Theorem 7.36); it then
-synthesises an end-to-end prediction for Chinchilla-class neural
-LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb; Theorem 7.15, with
-an explicit model-overhead caveat noting that the compression
-ratio excludes the $\approx$140\,GB model and turns net-positive
-once the amortized archive volume exceeds the break-even
-$V^*\!\approx\!152$\,GB).
-Practical extensions cover parallel encoding with linear speedup,
-streaming, cache-aware decoding under Zipf workloads, fail-safe
-store mode, per-sub-block integrity via PRF-based MAC, and
-LRU+IRM finite-batch concentration via Lezaud's Markov-chain
-Chernoff bound (Theorems 7.16--7.26). The framework's deployment-relevant feature is random-access decoding
-with cost
-$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
-$W$-bounded predictors, per-position sequential coding modes, and
-uniform sync-point spacing (Theorem 10.3), where $|X|$ is the
-uncompressed source length (non-uniform spacing replaces the
-direct-lookup term with binary search costing
-$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits;
-whole-block Type-II/III-B partition-rank modes get only
-sub-block-granular access at separate $O(K \cdot \mathrm{unrank}(K))$
-per requested sub-block, Remark 10.3a) --- polylogarithmic in
-archive size $|X|$ once the sync-point spacing $K$, read window
-$k$, predictor cost $\mathrm{cost}(M)$, and $\log L(R)$ are treated
-as fixed (or polylogarithmic in $|X|$) parameters. Here
-$\mathrm{cost}(M)$ is one per-position neural-predictor evaluation: it
-is non-universal (architecture- and context-dependent, e.g.\
-$\Theta(W)$ for a windowed transformer of context $W$; Lemma 5.1b)
-and it is the dominant term of the per-query cost in any realistic
-regime, so ``polylogarithmic in $|X|$'' bounds the dependence on
-archive size with $\mathrm{cost}(M)$ held fixed, not the per-query
-cost in absolute (wall-clock) terms. Under an additional probability-floor assumption
-on the predictor (Section 10.7), the sync-point compression overhead
-per sync point is bounded by $S \cdot W \cdot \log_2(1/\eta)$ where
-$\eta$ is the floor and $S$ is the number of floored entropy-coder
-symbols the coding mode emits per source byte ($S = 1$ for Type-I
-and direct byte arithmetic, $S = 2$ for per-byte sequential
-Type-III-B); a sharper bound subtracts a warm-context rate term
-under an additional uniform-warm-rate assumption (the rung-2 and
-exact-Markov rung-3 ceilings are consolidated in Corollary 10.2a).
-We conjecture (heuristically, not as a theorem; this rests on the
-warm-rate assumption of Corollary 10.2a, not the bare floor)
-that the actual overhead is on the order of one percent for natural
-data at typical parameters, but neither a tight upper bound in
-general nor a measured value on a specific corpus is provided here;
-this conjecture is the falsifiable subject of Hypothesis H10(c) in
-the experimental-design companion (cross-linked from §11 of this paper),
-whose pre-registered
-test (sync-point ratio overhead below 2 percent at $K = 64$\,KiB)
-would confirm or refute it. The
-ratio comparison against existing dictionary-based seekable formats
-is an empirical conjecture (Section 11), not a theorem. Bit-exact cross-platform reproduction is
+and zero under causal-context modes (Theorem 6.2b).
+Bit-exact cross-platform reproduction is
 reduced to a precision-and-determinism specification (Theorem 10.1);
 published integer-arithmetic methods (integer SGD, signSGD, integer
 quantized inference) provide candidate components that an implementer
@@ -265,7 +183,21 @@ repair, verification, and metadata cost, and only in the
 model-amortization regime that makes the model-description cost
 payable (§10.2). The qualifying data-class precondition is assembled
 as one explicit inequality in §10.2.1; which real corpora satisfy it
-is an open empirical question (§11).
+is an open empirical question (§11). Companion parts develop the random-access and deviation theory ([RNR-II]) and the operational rate--distortion dispersion ([RNR-III]).
+
+
+\emph{Numbering follows the unified RNR series; this Part contains
+Sections 1--6, the composition and mode-selection lead of Section 7
+(Theorems 7.1/7.1b--7.1d and the runtime-parameter text of §7.2),
+Sections 8--9, the practical core §§10.1--10.6, and Sections 11--13.
+Results proved in a companion Part are cited as [RNR-II]/[RNR-III]
+(Parts II/III): Part II develops the random-access and deviation theory
+(Theorems 7.2--7.33, 7.35, 7.36; §§10.7--10.8), and Part III the
+operational rate--distortion dispersion (the §7.34 family). Section and
+theorem numbers are preserved across the series, so a companion Part is
+referenced by its original number (e.g.\ Theorem 7.15 of [RNR-II]); the
+§7.2 runtime-parameter subsection of this Part and Theorem 7.2 of [RNR-II]
+are distinct objects that share a number by this convention.}
 
 \textbf{Keywords:} lossless compression, neural compression, side
 information, Slepian--Wolf coding, syndrome coding, positional coding,
@@ -596,31 +528,11 @@ This article makes the following contributions.
   the operational consequence: an additive-regret Gaussian-on-manifold
   RNR encoder synthesised from Lemma 5.6j and Lemma 6.9.
 \item
-  The \emph{discrete}, deployed counterpart of the above for the neural-LM
-  field of Theorem 7.15 --- a nine-part arc (Remarks 7.15a--7.15i). The
-  §6.9 Gaussian maximum-entropy-sampling support selection transfers to a
-  transformer's discrete autoregressive field with \emph{unconditional}
-  submodularity (the noise-floor calibration disappears; Remark 7.15a), but
-  with a \#P-hard value-oracle obstacle that has no Gaussian analogue. That
-  hardness is \emph{orthogonal} to the deployed encoder: causal coding and
-  byte-granular random access are exactly polynomial (one forward pass per
-  symbol; Remark 7.15b), the \#P-hardness living only in the \emph{optional}
-  non-contiguous support-selection lever. The bounded-order exact-oracle
-  restriction --- exact finite-block hidden-Markov Shannon entropy --- is now
-  \emph{resolved}: poly-time-$\varepsilon$-approximable under filter stability
-  (Remark 7.15c) and exactly polynomial for finite finite-prefix belief (Remark
-  7.15f, strictly beyond finite-order Markov); every integer-order R\'enyi
-  entropy exactly polynomial via a product-chain agreement identity, with the
-  min-entropy NP-hard (HMM consensus) and the collision entropy $H_2$ a free
-  poly lower bound (Remark 7.15d); yet the \emph{exact} value (the coefficient
-  query) is \#P-hard --- $\mathrm{FP}^{\#P}$-complete --- by a \#SAT reduction
-  (Remark 7.15g) that sidesteps the \emph{both} natural attacks 7.15e flagged
-  (the read-once / $\#\mathrm L\subseteq\mathrm{FP}$ barrier, evaded through the
-  entropy's group-by-output-and-$\log$ structure; the non-collapsing Blackwell
-  measure). Thus the open middle is pinned --- exact \#P-hard yet
-  $\varepsilon$-approximable under filter stability --- and the
-  support-selection complexity is \emph{resolved for the operative high-order
-  predictor} and now also for the bounded-order residual.
+  The discrete, deployed counterpart of the continuous Type-III-C
+  support-selection characterization above --- its instantiation for a
+  transformer's discrete autoregressive field, together with the
+  associated exact finite-block entropy complexity arc --- is developed
+  in the companion Part [RNR-II] (the Remark 7.15a--7.15i sequence).
 \item
   Additive rule-cost results for the discrete Type-III-C
   smallest-grammar problem (§13.4.1): the additive rule-size SGP
@@ -743,63 +655,13 @@ This article makes the following contributions.
   overhead $O(\log K_{\text{params}})$ for transmitting the chosen
   parameter values.
 \item
-  A 27-theorem RNR-with-random-access framework (Section 7.1--7.28)
-  that bridges the abstract framework to a practical neural-LM-based
-  compression pipeline. Theorems 7.2--7.5 establish the basic
-  byte-granular random-access architecture; Theorems 7.6--7.10 cover
-  source-coding extensions (universal online with KT-style regret ---
-  sharpened to the tight $d/2$ minimax-regret constant via the
-  Shtarkov--Rissanen pointwise-redundancy form in Theorem 7.6$'$ ---
-  successive refinement, functional compression via Orlitsky--Roche
-  characteristic-graph entropy, Shannon rate--distortion lossy mode,
-  Slepian--Wolf / Wyner--Ziv side-information composition); Corollary
-  7.11 records the standard observation that lossy compression with
-  an outer error-correcting code recovers losslessness up to the
-  ECC rate gap; Theorems 7.12--7.13 cover multi-source joint coding
-  via Lauritzen--Spiegelhalter junction-tree entropy decomposition
-  and tree-MRF adaptive sub-block sizing; Theorem 7.14 establishes
-  Azuma--Hoeffding concentration of the repair-stream length
-  $L^{\mathrm{rep}}$ around its expectation, with deviation factor
-  $(W_N+1+\rho/(1-\rho)) \cdot \log_2(1/\eta)$ tracking
-  predictor-context plus source-mixing-tail contributions; Theorem 7.15
-  is the explicit end-to-end synthesis with the
-  Chinchilla-class numerical prediction $\approx 79\,\mathrm{MB}$ on
-  enwik9 (12.0$\times$ bitstream rate, matching Delétang et al.\
-  2024 Table 1); Theorem 7.16 gives adaptive per-region $K_r$ for
-  piecewise-stationary sources; Theorem 7.17 covers content-defined
-  chunking for insertion/deletion robustness; Theorems 7.18--7.19 cover
-  parallelizable encoding and $O(K)$-memory streaming encoder;
-  Theorem 7.20 quantifies cache-aware decoder amortization under
-  workload locality with explicit Zipf static-top-cache hit-rate
-  asymptotics; Theorem 7.21 establishes the predictor-archive
-  size trade-off via the Hoffmann 2022 scaling law $\alpha \approx 0.34$
-  giving sub-linear optimal $L^*(N) = \Theta(N^{1/(1+\alpha)})$;
-  Theorem 7.22 is the fail-safe-with-store-mode worst-case bound
-  $L^{\mathrm{rep}} \leq N \log_2|\Sigma|$ under any source and
-  predictor; Theorem 7.23 adds per-sub-block authenticated-encryption
-  integrity via PRF-based MAC at $O(\tau \cdot m)$ overhead with
-  cryptographic forgery resistance; and Theorem 7.24 (revised after
-  retraction of an earlier LRU-based version) gives a minimal honest
-  Hoeffding tail bound on total decode latency under the restricted
-  hypotheses of IRM workload, static Perfect-LFU cache, and bounded
-  per-miss cost. Theorem 7.25 sharpens the Theorem 7.14 concentration
-  to a variance-aware Bernstein bound (per-position-cost std
-  $\sigma_\ell$ replacing the worst-case Lipschitz $B$, an approximate
-  $500\times$ tightening on enwik9); Theorem 7.26 closes the LRU+IRM
-  finite-batch concentration question left open by Theorem 7.24, via
-  Lezaud's Markov-chain Chernoff bound on the LRU stack-distance
-  chain; Theorem 7.27 establishes a tight space-time product converse
-  $C(K)\cdot S(K)=\Theta(N\log N\cdot\mathrm{cost}(M))$ for the
-  sub-block random-access class, matching the Theorem 7.5
-  achievability (with Theorem 7.27$'$ refuting the general-scheme
-  analogue via a Ferragina--Venturini $O(1)$-access escape for
-  finite-order-Markov sources, and Corollary 7.27c recovering the
-  product on the predictor-faithful class); and Theorem 7.28 gives a
-  non-asymptotic Berry--Esseen CLT for $L^{\mathrm{rep}}$ under
-  exp-mixing, yielding two-sided confidence intervals at Kolmogorov
-  rate $O(N^{-1/2}(\log N)^2)$. The full framework has been adversarially cross-
-  validated across three independent adversarial review passes with all surviving statements verified
-  numerically in \texttt{scripts/verify/thm\_7\_*}.
+  The random-access and deviation-theory development of Section 7
+  (Theorems 7.2--7.33, 7.35, 7.36), which bridges the abstract framework
+  to a practical neural-LM compression pipeline with byte-granular random
+  access, source-coding extensions, and the concentration/deviation
+  hierarchy for archive-size fluctuations, is the subject of the companion
+  Part [RNR-II]; the operational rate--distortion dispersion (the §7.34
+  family) is developed in Part [RNR-III].
 \item
   A concrete attack-vector roadmap for the remaining open problems
   (§13.4), recording for each open question both the positive
@@ -844,55 +706,7 @@ and the three Type-III subtypes. Worked numerical examples are given
 in §4.7 (Type-I), §5.7 (Type-II), and §6.4 (Type-III-B); Type-III-A
 and Type-III-C are illustrated through the composition discussion in
 §7 and the dictionary-construction discussion in §6.5 respectively
-rather than through standalone worked examples. Section 7 covers
-composition, mode selection, runtime parameter selection (§§7.1--7.2),
-and the 27-theorem RNR-with-random-access framework
-(§§7.1--7.28, organized as: §§7.2--7.5 basic byte-granular
-random-access architecture; §§7.6--7.11 source-coding extensions
-including the tight $d/2$ minimax-regret refinement (Theorem 7.6$'$)
-and the lossy + ECC = lossless corollary; §§7.12--7.15
-multi-source, concentration, and end-to-end Chinchilla-class
-numerical synthesis; §§7.16--7.26 practical extensions covering
-adaptive sub-block sizing, content-defined chunking, parallel and
-streaming encoders, cache-aware decoder, predictor-archive scaling,
-fail-safe store-mode fallback, cryptographic integrity, IRM-restricted
-decoder-latency tail bound, and LRU+IRM Markov-chain Chernoff
-concentration; §7.27 sub-block space-time product converse matching
-the T7.5 achievability, with Theorem 7.27$'$ \emph{refuting} the
-general-scheme converse for finite-order-Markov sources (Ferragina
---Venturini $O(1)$-access escape) and Corollary 7.27c recovering the
-$\mathrm{cost}(M)$ product on the predictor-faithful class, which
-covers state-snapshot schemes; §7.28 a non-asymptotic
-Berry--Esseen CLT for the repair length; §7.29 a second-order
-(dispersion) coding rate; and §7.31 a large-deviations reliability
-function (the exact archive-overflow exponent with a matching lower
-bound, the R\'enyi-spectrum dual), extending the deviation hierarchy
-§§7.14/7.25/7.28/7.29/7.33/7.31 from the sub-Gaussian body through the
-central-limit and moderate-deviation scales to the exponential-rate tail, with
-§7.35 the extreme-value (worst-case per-query read-buffer) axis and §7.36 a
-functional CLT for the repair process (the streaming-encoder write-buffer
-high-water-mark)); and §7.34 the operational \emph{rate-distortion} (lossy)
-dispersion for a discrete memory source --- the binary symmetric Markov chain
-attains $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ throughout its Gray region
-$0<D\le D_c(p)$ (the first discrete memory source with a proven operational
-RD-dispersion), consolidated for the \emph{asymmetric} chain in
-Theorem 7.34i and lifted to \emph{every finite alphabet} in Theorem 7.34m,
-where the A-ary symmetric chain attains
-$V_{\mathrm{op}}=V_{\mathrm{lossless}}^{(A)}=p(1-p)\log_2^2\tfrac{(1-p)(A-1)}p$
-on its Gray region $0<D\le D_c^{(A)}(p)$. Here the \emph{converse}
-$V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ is unconditional and fully general
-(all source types, all balanced / group-difference distortions on each
-distortion's own Gray region; the source-agnostic principle of Remark 7.34d,
-extended in Remarks 7.34n/q), while the matching \emph{achievability} is fully
-proven for the binary symmetric chain on its whole Gray region (Remark 7.34b)
-and, for every finite alphabet, holds at leading order in the distortion $D$ and
-all-$D$ on the memory bulk via the A-ary replica spectral inequality of
-Lemma 7.34l --- whose $S_A$ pattern-quotient makes it an alphabet-independent
-$\le5$-dimensional problem --- with a single 2nd-order residual (a rigorous
-Chebyshev-coefficient $a_k$ bound) and the beyond-Gray ($D>D_c$) exact value
-left open (the residual ledger in Remark 7.34m$'''$; the sharp replica
-constant $\tfrac32$ is proven at $A=2$ and regionally certified for $A\ge3$,
-Remarks 7.34m$''''$/7.34m$'''''$). Section 8 states the
+rather than through standalone worked examples. Section 7 opens with composition and mode selection: the composition-correctness and hierarchy-limit theorems (Theorems 7.1/7.1b/7.1c and Remark 7.1d) and the runtime parameter-selection framework (§7.2), which subsumes input-dependent design choices under the same mode-selection machinery. The remainder of Section 7 --- the byte-granular random-access architecture, the source-coding extensions, the concentration and deviation hierarchy (Theorems 7.2--7.33, 7.35, 7.36), and the operational rate--distortion dispersion (the §7.34 family) --- is developed in the companion Parts [RNR-II] (random access and deviation theory, together with §§10.7--10.8) and [RNR-III] (rate--distortion dispersion). Section 8 states the
 no‑universal‑dominance result. Section 9 covers verification and error
 containment. Section 10 addresses practical reproducibility and proves a
 sufficient condition for bit-exact decoder reproduction. Section 11
@@ -909,11 +723,7 @@ characterization (Lemma 6.9 fixed-field APX-hardness, Remark 6.9a
 free-field membership in $\mathrm{P}$, Remarks 6.9c/6.9d and
 Corollary 6.9b; §13.4.4), the additive rule-cost SGP results
 (Lemmas 6.8k, 6.8k-approx; §13.4.1), and the constructive
-unambiguous-CFL enumerative encoder (Lemma 13.4.3a; §13.4.3). The
-questions exposed by the §7 expansion --- LRU+IRM finite-batch
-concentration and tightened concentration under slow mixing --- are
-themselves now resolved within §7 (Theorems 7.26 and 7.25/7.28
-respectively).
+unambiguous-CFL enumerative encoder (Lemma 13.4.3a; §13.4.3). The questions exposed by the §7 expansion are addressed within the companion Part [RNR-II].
 
 \textbf{2. Preliminaries and notation}
 
@@ -7112,7 +6922,7 @@ applications where $m$ is large, $L(M)$ effectively vanishes. The
 three regimes have different optimal model sizes and warrant separate
 evaluation. For a fixed shared frontier predictor, the regimes
 collapse to a single break-even volume: the headline
-$\approx 79\,\mathrm{MB}$ / $12.0\times$ figure of Theorem 7.15 is a
+$\approx 79\,\mathrm{MB}$ / $12.0\times$ figure of Theorem 7.15 of [RNR-II] is a
 bitstream-only rate, and charging the $\approx 140\,\mathrm{GB}$
 predictor leaves a net saving only once the combined amortized volume
 exceeds $V^*\approx 152\,\mathrm{GB}$ (the ``Side-information framing
@@ -7182,7 +6992,8 @@ $N$-optimal size $L^*(N)$ (T7.21), or amortize a fixed shared
 predictor across enough archives that the combined volume exceeds the
 break-even $V^*\approx 152\,\mathrm{GB}$. No quantity in this table is
 new; each is cross-referenced to its source (Theorem 7.15, Theorem
-7.21, or the per-regime discussion above).
+7.21 --- both of the companion Part [RNR-II] --- or the per-regime
+discussion above).
 
 \textbf{10.2.1 The qualifying data-class precondition (accounting form)}
 
@@ -7563,7 +7374,7 @@ an empirical conjecture pending the measurement specified there; the
 seekable-format random-access baselines (bgzip, zstd seekable) and the
 deployed-format ratio baseline (squashfs+zstd) are named in Hypotheses
 H10--H11 and H12 of the companion, respectively. (\S11.7 is the lone
-exception: it derives from Theorem 7.15 and is verified against a cited
+exception: it derives from Theorem 7.15 of [RNR-II] and is verified against a cited
 measurement, not conjectured.)
 
 \textbf{11.1 Type-I, Code12 on text and source code}
@@ -7645,9 +7456,9 @@ residual entropy is high and the model cost is wasted. This conjecture
 is pre-registered as Hypothesis H16 (confirming, store-mode fallback
 upper bound on adversarial inputs) of the experimental-design companion.
 
-\textbf{11.7 Large-scale neural predictors (Theorem 7.15 instantiation)}
+\textbf{11.7 Large-scale neural predictors (Theorem 7.15 of [RNR-II] instantiation)}
 
-The end-to-end synthesis Theorem 7.15 gives an \emph{explicit
+The end-to-end synthesis Theorem 7.15 of [RNR-II] gives an \emph{explicit
 numerical prediction}, not a conjecture: with a Chinchilla-70B-class
 transformer ($H_{M'} \approx 0.664$ bpb measured by Delétang et al.\
 2024 on enwik9, Table 1) and the balanced regime $K = \Theta(\sqrt{N})$,
@@ -7752,7 +7563,7 @@ neural network.
 
 \textbf{12.8 Foundations used by the §7 extensions}
 
-The 27-theorem §7 framework draws on several established lines outside
+The 27-theorem §7 framework of the companion Part [RNR-II] draws on several established lines outside
 the immediate compression literature, listed here for completeness.
 
 \emph{Concentration of measure and martingales.} Theorem 7.14's
@@ -8865,7 +8676,7 @@ individual entries below give the full detail.
   (\emph{Theorem 7.27 sub-block restriction}) --- \textbf{resolved
   negatively for finite-order-Markov sources; partially open for neural
   predictors} (Theorem 7.27$'$, Remark 7.27d, Corollary 7.27c).
-  Theorem 7.27 establishes a tight product bound $C(K) \cdot S(K) \geq
+  Theorem 7.27 of [RNR-II] establishes a tight product bound $C(K) \cdot S(K) \geq
   (1 - o(1)) N \cdot \mathrm{cost}(M) \cdot \log N$ for any
   sub-block-based random-access scheme satisfying Definition 10.3. The
   question whether this product holds for the \emph{general}
@@ -11476,7 +11287,7 @@ scale).
 \emph{Discrete-deployment refinement and a new open problem (Remarks
 7.15a--7.15b).} The §6.9 picture above is for the Gaussian (bits-back-limit)
 field. Remarks 7.15a--7.15b port it to the \emph{discrete} autoregressive
-neural-LM field of Theorem 7.15 and record two effects with no Gaussian
+neural-LM field of Theorem 7.15 of [RNR-II] and record two effects with no Gaussian
 analogue. First, the submodularity is \emph{unconditional}: discrete entropy
 $H(X_T)$ is a polymatroid rank function for every law (Fujishige 1978), so the
 Remark 6.9d calibration is not needed --- the discrete result is strictly
@@ -12174,5 +11985,14 @@ Problems of Information Transmission, 20(3), 173-177.
 \textbf{{[}135{]}} Willems, F. M. J., Shtarkov, Y. M., and Tjalkens,
 T. J. (1995). The Context-Tree Weighting Method: Basic Properties.
 IEEE Transactions on Information Theory, 41(3), 653-664.
+
+
+\textbf{{[}RNR-II{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair
+Coding, Part II: Random Access and Deviation Theory. Companion paper (RNR
+series, Part II).
+
+\textbf{{[}RNR-III{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair
+Coding, Part III: Operational Rate--Distortion Dispersion. Companion paper
+(RNR series, Part III).
 
 \end{document}

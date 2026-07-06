@@ -57,637 +57,181 @@
 
 \begin{document}
 
-\textbf{Ratushnyi Neural Repair Coding}
+\textbf{Ratushnyi Neural Repair Coding, Part III:}
 
-\emph{A Framework for Lossless Neural Compression via Side‑Information
-Repair: Stream, Positional, and Tensor Entropy‑Field Coding}
+\textbf{Operational Rate--Distortion Dispersion, the Gray Region, and the
+Replica Spectral Inequality}
 
 Pavlo Ratushnyi
 
-\emph{Independent Research --- Draft v0.8, May 2026}
+\emph{Independent Research --- Draft v0.8, 2026}
+
+\emph{Part III of the unified series ``Ratushnyi Neural Repair Coding''.}
 
 \textbf{Abstract}
 
-We introduce Ratushnyi Neural Repair Coding (RNR Coding), a framework
-for lossless compression in which a deterministic,
-decoder-reproducible neural or hybrid model produces side information
-about a source block, and a short repair description reconstructs the
-exact original from that side information. The framework is organized
-along the dimensionality and target of prediction. Type-I performs
-one-dimensional stream repair; Type-II performs two-dimensional
-positional symbol coding over a partition of positions among symbol
-classes; Type-III performs multi-dimensional tensor entropy-field
-coding, divided into III-A (entropy-field meta-prediction), III-B
-(byte-tensor coding of joint nibble structure), and III-C
-(token-tensor coding over a learned hierarchically indexed
-dictionary). For Types I, II, III-A, and III-B we give concrete
-constructions and achievability bounds; for Type-III-C we give a
-greedy marginal-MDL admission criterion (Theorem 6.5), a
-bits-back rate analysis (Theorem 6.6), and a standalone
-achievability bound for the learned hierarchical
-dictionary/token-cover construction (Theorem 6.6b): when the
-dictionary is built by a universal grammar transform (an LZ78
-incremental parser or an irreducible-grammar transform in the sense of
-Kieffer--Yang 2000), the construction attains $N \cdot h(X) + o(N)$ for
-stationary ergodic sources, the hierarchical index being rate-neutral
-(Lemma 6.6a) and the $K = O(N/\log N)$ dictionary entries adding only
-$o(N)$ overhead; whether the specific greedy marginal-MDL builder of
-Theorem 6.5 is itself a universal transform is partially resolved: it is
-universal once its literals are entropy-coded under a universal predictor
-and a one-bit baseline guard is added (Lemma 6.6d), leaving only the bare
-flat-$8\ell$ literal rule open (Remarks 6.6b, 6.6e).
-Matching converses are given for Type-I (Theorem 4.2), Type-II
-(Theorem 5.3b), and Type-III-B (Theorem 6.3b, the byte coder cannot beat
-the joint conditional entropy $H(H,L\mid C)$, so the $I(H;L\mid C)$
-advantage of Theorem 6.3 is exactly tight). For Type-II the base bound
-$\mathbb{E}[L] \geq H(X \mid Y)$ holds for every code and is the operative
-converse, met (up to coder redundancy) by ideal joint coding of the
-partition and also by the count-plus-rank construction of
-Theorems 5.2--5.3 once its enumerative index is entropy-coded; the
-flat-enumerative candidate-set cost (the multinomial baseline when no
-support is used) is a converse only for the uniform-index scheme,
-equalling $H(X \mid Y)$ exactly when the conditional law is uniform on the
-decoder-available candidate set (so Theorem 5.3 is entropy-optimal there)
-and otherwise exceeding it by the recoverable within-candidate-set
-uniform deficit, a KL divergence that is the price of uniform indexing
-rather than of the partition representation. Type-III-C is
-\emph{asymptotically rate-optimal} under a universal dictionary builder:
-the achievability bound (Theorem 6.6b) is matched by the entropy-rate
-converse (Theorem 6.6c), so $\tfrac{1}{N}\mathbb{E}[L_{\mathrm{IIIC}}]
-\to h(X)$ whenever the dictionary is built universally (the bare
-greedy-MDL builder's own universality being the one residual sub-question,
-Remark 6.6b, partially resolved in augmented form by Lemma 6.6d). Type-III-A has both a \emph{relative} converse --- the
-$2\varepsilon$ approximate-oracle gap is tight (Theorem 6.2) --- and an
-\emph{absolute-rate} converse (Theorem 6.2b): $\mathbb{E}[L_{\mathrm{IIIA}}]
-\ge H(X\mid Y)$, attained within $2\sum_t\varepsilon_t$ iff the modes are
-per-tile-expressive \emph{and} causally context-sufficient (each tile
-coded from its full decoder-reproducible past), the slack otherwise being
-the context deficit --- maximal, and equal to the inter-tile total
-correlation $\mathrm{TC}(X_1,\ldots,X_T\mid Y)$, for the block-independent
-variant, but removable by autoregressive mode conditioning. Complexity
-results include
-NP-hardness of the
-varying-parameter learned-code labeling problem (Theorem 4.3), a
-polynomial-time vs.\ NP-hard dichotomy in semi-non-factorized
-Type-II support selection (Lemma 5.7a polynomial-time for
-permutation-like joint laws; Lemma 5.7c NP-hard for general joint
-laws via CLIQUE reduction), and NP-hardness of a restricted
-normal-form dictionary-only case of Type-III-C (Theorem 6.7), plus
-an APX-hardness transfer for the same restricted case under the
-unbounded-alphabet variant with explicit inapproximability constant
-$\gamma_{\mathrm{SGP}} = 8569/8568$ inherited from Charikar et al.\
-(2005, Theorem 1) via the symbol-count bijection (Theorem 6.8); the
-fixed-byte-alphabet case ($|\Sigma| = 256$ as in canonical RNR)
-requires a separate gap-preserving construction and is open.
-Hardness of the unrestricted joint (model, dictionary, repair)
-problem and the analogous inapproximability for $E_{12}$ are also
-open. For the continuous (Gaussian-field) Type-III-C limit the
-support-selection problem is characterised completely by complexity
-regime: with the field model fixed the per-block residual is a
-Schur-complement log-determinant whose minimisation is the
-maximum-entropy-sampling problem, hence APX-hard with constant $5/4$
-under $\mathrm{P} \neq \mathrm{NP}$ (Lemma 6.9, via Ko--Lee--Queyranne
-and Ohsaka; \textsc{Partial}, the gap surviving the manifold
-covariance restriction at high SNR), whereas with the predictor free
-and amortised the same objective is in $\mathrm{P}$ via a
-sample-covariance maximum-likelihood plug-in (Remark 6.9a), the
-crossover budget being characterised in Remark 6.9c. Its discrete, deployed
-counterpart (a transformer's autoregressive field; Remarks 7.15a--7.15e)
-inherits a \#P-hard value oracle with no Gaussian analogue, yet keeps causal
-coding and random access exactly polynomial (the hardness confined to the
-optional non-contiguous lever); the residual bounded-order exact problem ---
-exact finite-block hidden-Markov entropy --- is bracketed in
-$[\,\text{poly},\mathrm{FP}^{\#P}\,]$ (poly-$\varepsilon$-approximable under
-filter stability, integer-R\'enyi-exact, min-entropy NP-hard) with both natural
-attacks obstructed. Worked numerical examples are
-given for Type-I, Type-II, and Type-III-B; III-A and III-C are
-illustrated through their composition and dictionary-construction
-sections respectively. Two structural results identify the
-information-theoretic quantity governing factorized-vs-joint
-separation: a $\Theta(N)$ amortized separation for a specific
-linear-code family in semi-non-factorized Type-II (Theorem 5.4), and
-the identity that for an arbitrary source $D_N$ the gap equals
-multi-information $\mathrm{TC}(D_N)$ (Theorem 5.5, where the gap may
-vanish on sources without joint structure). Type-III-A admits a tight
-$2\varepsilon$ approximate-oracle bound (Theorem 6.1, with matching
-lower bound Theorem 6.2) and an absolute-rate converse
-$\mathbb{E}[L_{\mathrm{IIIA}}]\ge H(X\mid Y)$ whose slack is the
-per-tile context deficit --- at most the inter-tile total correlation
-$\mathrm{TC}(X_1,\ldots,X_T\mid Y)$ (the block-independent worst case),
-and zero under causal-context modes (Theorem 6.2b). A 27-theorem
-byte-granular random-access
-framework (§7) establishes Shannon-rate achievability with
-$K = \Theta(\sqrt{N})$ optimal sub-block sizing (Theorems 7.2--7.5),
-matched by a tight space-time product converse $C(K) \cdot S(K) =
-\Theta(N \log N \cdot \mathrm{cost}(M))$ for sub-block-based
-decoders (Theorem 7.27),
-extends to universal (with a tight $d/2$ minimax-regret constant,
-Theorem 7.6$'$), Slepian--Wolf, lossy, successive-refinement,
-and functional RNR variants (Theorems 7.6--7.12), proves
-concentration bounds for archive-size deviation via a sequence of
-sharpening estimates spanning the central-limit and large-deviation
-scales --- Azuma's martingale inequality
-(Theorem 7.14), a variance-aware Bernstein refinement (Theorem 7.25,
-replacing the worst-case Lipschitz $B$ by the per-position-cost std
-$\sigma_\ell$ for an approximate $500\times$ tightening on enwik9),
-a non-asymptotic Berry--Esseen CLT giving two-sided confidence
-intervals at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$ (Theorem 7.28),
-a second-order (dispersion) coding rate
-$Nh+(N/K)\delta_\infty+\sqrt{NV}\,Q^{-1}(\varepsilon)$ (Theorem 7.29),
-and a large-deviations reliability function giving the exact
-archive-overflow exponent with a matching lower bound --- the Legendre
-dual of the source R\'enyi spectrum (Theorem 7.31) --- and an
-extreme-value law pinning the worst-case per-query read buffer to
-$Kh+\sqrt{2KV\ln(N/K)}$ (Theorem 7.35), and a functional CLT fixing the
-streaming-encoder write-buffer high-water-mark at the varentropy scale
-$\sqrt{NV}$ (Theorem 7.36); it then
-synthesises an end-to-end prediction for Chinchilla-class neural
-LMs ($\approx$79\,MB on enwik9 at 0.664\,bpb; Theorem 7.15, with
-an explicit model-overhead caveat noting that the compression
-ratio excludes the $\approx$140\,GB model and turns net-positive
-once the amortized archive volume exceeds the break-even
-$V^*\!\approx\!152$\,GB).
-Practical extensions cover parallel encoding with linear speedup,
-streaming, cache-aware decoding under Zipf workloads, fail-safe
-store mode, per-sub-block integrity via PRF-based MAC, and
-LRU+IRM finite-batch concentration via Lezaud's Markov-chain
-Chernoff bound (Theorems 7.16--7.26). The framework's deployment-relevant feature is random-access decoding
-with cost
-$O(\log L(R) + (K + k) \cdot \mathrm{cost}(M))$ for
-$W$-bounded predictors, per-position sequential coding modes, and
-uniform sync-point spacing (Theorem 10.3), where $|X|$ is the
-uncompressed source length (non-uniform spacing replaces the
-direct-lookup term with binary search costing
-$O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits;
-whole-block Type-II/III-B partition-rank modes get only
-sub-block-granular access at separate $O(K \cdot \mathrm{unrank}(K))$
-per requested sub-block, Remark 10.3a) --- polylogarithmic in
-archive size $|X|$ once the sync-point spacing $K$, read window
-$k$, predictor cost $\mathrm{cost}(M)$, and $\log L(R)$ are treated
-as fixed (or polylogarithmic in $|X|$) parameters. Here
-$\mathrm{cost}(M)$ is one per-position neural-predictor evaluation: it
-is non-universal (architecture- and context-dependent, e.g.\
-$\Theta(W)$ for a windowed transformer of context $W$; Lemma 5.1b)
-and it is the dominant term of the per-query cost in any realistic
-regime, so ``polylogarithmic in $|X|$'' bounds the dependence on
-archive size with $\mathrm{cost}(M)$ held fixed, not the per-query
-cost in absolute (wall-clock) terms. Under an additional probability-floor assumption
-on the predictor (Section 10.7), the sync-point compression overhead
-per sync point is bounded by $S \cdot W \cdot \log_2(1/\eta)$ where
-$\eta$ is the floor and $S$ is the number of floored entropy-coder
-symbols the coding mode emits per source byte ($S = 1$ for Type-I
-and direct byte arithmetic, $S = 2$ for per-byte sequential
-Type-III-B); a sharper bound subtracts a warm-context rate term
-under an additional uniform-warm-rate assumption (the rung-2 and
-exact-Markov rung-3 ceilings are consolidated in Corollary 10.2a).
-We conjecture (heuristically, not as a theorem; this rests on the
-warm-rate assumption of Corollary 10.2a, not the bare floor)
-that the actual overhead is on the order of one percent for natural
-data at typical parameters, but neither a tight upper bound in
-general nor a measured value on a specific corpus is provided here;
-this conjecture is the falsifiable subject of Hypothesis H10(c) in
-the experimental-design companion (cross-linked from §11 of this paper),
-whose pre-registered
-test (sync-point ratio overhead below 2 percent at $K = 64$\,KiB)
-would confirm or refute it. The
-ratio comparison against existing dictionary-based seekable formats
-is an empirical conjecture (Section 11), not a theorem. Bit-exact cross-platform reproduction is
-reduced to a precision-and-determinism specification (Theorem 10.1);
-published integer-arithmetic methods (integer SGD, signSGD, integer
-quantized inference) provide candidate components that an implementer
-must verify against the full specification on a chosen target. We do not claim universal
-dominance --- no lossless code can map every input of length $n$ to a
-strictly shorter one (Theorem 8.1) --- and the framework is evaluated
-conditionally, in the precise sense of the conditionally-advantageous
-predicate of Definition 2.1: on data classes for which side
-information reduces residual uncertainty by more than the model,
-repair, verification, and metadata cost, and only in the
-model-amortization regime that makes the model-description cost
-payable (§10.2). The qualifying data-class precondition is assembled
-as one explicit inequality in §10.2.1; which real corpora satisfy it
-is an open empirical question (§11).
+This Part develops the second-order (dispersion) theory of \emph{lossy}
+Ratushnyi Neural Repair (RNR) coding. Working under Hamming distortion $D$
+and the $d$-tilted information $\jmath_X(x;D)$, we first isolate what
+transfers from the lossless second-order rate and what does not: for a
+memoryless source the i.i.d.\ rate-distortion dispersion $V(D)=
+\mathrm{Var}(\jmath_X(X;D))$ concentrates the repair stream at
+$NR(D)+\sqrt{NV(D)}\,Q^{-1}(\varepsilon)$, whereas the \emph{cold-context}
+random-access interplay of the lossless companion result does not survive
+into the memoryless regime --- an obstruction we record honestly rather than
+force. We then treat sources \emph{with memory}. The central object is the
+\emph{Gray region}: the range of distortion, source, and Fourier-angle
+parameters on which the operational lossy dispersion equals the lossless
+varentropy, $V_{\mathrm{op}}=V_{\mathrm{lossless}}$. We prove a
+source-agnostic converse through a dual spectral identity
+$K_\nu K^{-1}=\gamma I$ (the tilted transfer operator is a scalar multiple
+of the identity on the optimal reproduction law), giving
+$V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ unconditionally on the region.
+Around this we assemble the dispersion constant, the convexity wall that
+forces strict positivity of the leading second-order coefficient, the
+third-order $\tfrac12\log n$ refinement on the Gray grid via the operational
+recentring $j_n=i_n-nc$, the beyond-Gray landscape, and a lossy deviation
+hierarchy transferring the large-deviation, moderate-deviation,
+extreme-value, and functional-CLT endpoints of the companion Part. Finally
+we prove the replica spectral inequality $R_A(s;D)>3/2$ underlying the
+convexity wall --- closed form at $A=2$, with exact certificates at
+$A=3,4,5$.
 
-\textbf{Keywords:} lossless compression, neural compression, side
-information, Slepian--Wolf coding, syndrome coding, positional coding,
-enumerative coding, entropy‑field coding, tensor coding, Minimum
-Description Length, bits‑back coding, RNR Coding.
-\textbf{2. Preliminaries and notation}
+\textbf{Keywords:} lossy source coding; rate-distortion dispersion;
+$d$-tilted information; operational second-order rate; finite blocklength;
+Gray region; varentropy; transfer operator; spectral radius convexity;
+replica spectral inequality; neural repair coding.
 
-\textbf{2.1 The lossless compression problem}
+\textbf{0. Numbering, companion parts, and how to read this document}
 
-A lossless compressor is an injective map
-$\mathsf{Enc}$ from a source alphabet (here, finite-length binary
-strings or byte sequences of a fixed block length $N$) to binary
-codewords, together with a decoder $\mathsf{Dec}$ such that
-$\mathsf{Dec}(\mathsf{Enc}(X)) = X$ for every $X$. Injectivity is
-necessary; for the multi-stream concatenations used later (model,
-repair, verification, metadata), each stream must in addition be
-prefix-free or carry an explicit length so that the decoder can
-partition the codeword.
+\emph{Numbering follows the unified RNR series; this Part contains
+Section~7.34 (Remark 7.34 through Remark 7.34q) together with the
+prerequisites restated in Section~7.3 below. Section, theorem, lemma, and
+remark numbers are those of the unified series and are \textbf{not}
+renumbered here. Results proved in a companion Part are cited as
+[RNR-I]/[RNR-II] (Parts~I/II): [RNR-I] is Part~I (framework, type taxonomy,
+achievability--converse matrix, and hardness); [RNR-II] is Part~II (random
+access and deviation theory). A first mention of a companion result carries
+the tag ``of [RNR-II]'' (or ``[RNR-II, \S7.15]''); subsequent mentions keep
+the bare number, which is unambiguous because the numbering is shared across
+the series. The one internal cross-reference label of the whole series
+(\texttt{eq:G1chain}) lives in this Part.}
 
-Throughout the paper, we fix the block length $N$ and treat $X$ as a
-random variable over the finite alphabet $\{0,1\}^{8N}$ (byte block)
-under a distribution $D$ on that finite set. We write $L(\cdot)$ for
-the bit length of a binary description, and adopt the convention
-that $0 \cdot \log 0 = 0$. For a random variable $X$ over a finite
-alphabet, $H(X)$ denotes the Shannon entropy of $X$ in bits. Given
-a side-information variable $Y$, $H(X \mid Y)$ denotes the
-conditional entropy.
+\textbf{7.3 Prerequisites (restated from the companion Parts)}
 
-\textbf{Definition 2.1 (Conditionally advantageous on a data class).}
-For a source $X \sim D$ and a baseline compressor $B$, an RNR coder
-$\mathsf{Enc}$ is \emph{conditionally advantageous} on $D$ if
+This section collects, statement-only and with provenance tags, the results
+this Part builds on. Proofs are in the cited companion Part.
+
+\emph{RNR recap ([RNR-I]).} The RNR \emph{repair principle} codes a source
+stream $X=(X_1,\dots,X_N)$ not by a monolithic entropy coder but by a
+predictor-driven \emph{repair stream}: a side-information model $\Theta$
+(shared, source-independent) proposes each symbol and the repair stream
+carries only the residual information $-\log_2 Q_i(X_i\mid\mathrm{ctx}_i)$
+needed to correct it. The stream is partitioned into $m=N/K$ contiguous
+\emph{sub-blocks} of spacing $K$, each decodable from its own payload plus a
+short \emph{sync} record; this is the architecture that makes byte-granular
+random access possible (a query landing in sub-block $i$ reads only that
+block's repair bits). The \emph{repair length}
+$L^{\mathrm{rep}}(X)=\sum_i -\log_2 Q_i(X_i\mid\mathrm{ctx}_i)$ (plus $O(1)$
+per sub-block for sync/flush) is the quantity whose mean, tail, and
+distribution the deviation theory analyses; its first-order value is $Nh+o(N)$
+for a source of entropy rate $h$ under an ideal predictor. The lossy variant
+([RNR-I], and Theorem 7.7 below) replaces the per-sub-block lossless coder by
+a Shannon-optimal rate-distortion encoder at rate $R(D)$.
+
+\emph{The lossy operational model (Theorem 7.7 of [RNR-I]/[RNR-II]).} Let
+$X=(X_n)_{n\ge1}$ be stationary, exp-mixing, finite-alphabet, with sub-block
+spacing $K=\mathrm{polylog}(N)$, and let $d_H:\Sigma\times\Sigma\to\{0,1\}$ be
+Hamming distortion. For a per-position budget $D\in[0,1-1/|\Sigma|]$ let
+$R(D):=\lim_n\tfrac1n\min_{P_{\hat X^n\mid X^n}:\,\mathbb E[d_H(X^n,\hat X^n)/n]\le D}
+I(X^n;\hat X^n)$ be the Shannon rate-distortion function. RNR with lossy
+per-sub-block rate-distortion coding achieves expected repair-stream length
+$\mathbb E[L^{\mathrm{rep}}_{\mathrm{RNR},D\text{-lossy}}(X^N)]\le
+N\,R(D)+m\,\delta_\infty^D+O(1)+\varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
+with per-position distortion $\mathbb E[d_H(X^N,\hat X^N)/N]\le D$, where
+$\delta_\infty^D$ is the $D$-distortion analogue of the Crutchfield--Feldman
+excess (finite under exp-mixing). Limit cases: $D\to0$ recovers the lossless
+bound; $D\to1-1/|\Sigma|$ gives $R(D)\to0$. This is the first-order object
+whose \emph{second-order} refinement is the subject of this Part.
+
+\textbf{Theorem 7.28 ([RNR-II, Thm 7.28]; Non-asymptotic CLT for
+$L^{\mathrm{rep}}$: Berry--Esseen rate under exp-mixing).} \emph{Let
+$X=(X_1,\ldots,X_N)$ be stationary $\alpha$-mixing with
+$\alpha_X(k)\leq C_\alpha e^{-c k}$; per-position cost
+$\ell_i:=-\log_2 Q_i(X_i\mid\mathrm{ctx}_i)$ bounded,
+$0\leq\ell_i\leq B=\log_2(1/\eta)$, depending on a window of $W_N$ coordinates
+of $X$; with marginal variance $\sigma_\ell^2:=\mathrm{Var}(\ell_1)$ and
+long-run variance $v^2:=\sigma_\ell^2+2\sum_{k\geq1}\mathrm{Cov}(\ell_0,\ell_k)$,
+finite and strictly positive. Let $\Phi$ be the standard normal CDF and
+$\kappa:=m_3/(B\,v^2)$ with $m_3:=\mathbb E|\ell_1-\mathbb E\ell_1|^3$. Then
+there is a constant $C_{\mathrm{BE}}$, depending only on $(c,C_\alpha)$ and on
+$\kappa$, such that for all $N\geq2$,}
 \[
-\mathbb{E}[L(\mathsf{Enc}(X))] < \mathbb{E}[L(B(X))], \quad X \sim D.
-\tag{2.1}
+  \sup_{x\in\mathbb R}
+  \left|
+    \Pr\!\left(
+      \frac{L^{\mathrm{rep}}(X)-\mathbb E[L^{\mathrm{rep}}(X)]}{\sqrt{N\,v^2}}
+      \leq x
+    \right)-\Phi(x)
+  \right|
+  \;\leq\;
+  C_{\mathrm{BE}}\cdot\frac{B\,(\log N)^2}{v\,\sqrt N}.
 \]
-\emph{Notation note.} The symbol $C$ in later sections denotes
-\emph{public context} (the input to the predictor $M$, so
-$Y = M(C)$), not the compressor; the symbol $D$ in later sections
-denotes the source distribution, not the decoder. The
-encoder/decoder pair is referred to as $\mathsf{Enc}/\mathsf{Dec}$
-throughout to avoid this collision.
+\emph{Equivalently, the Kolmogorov distance between the law of the normalised
+repair length and the standard Gaussian is $O(N^{-1/2}(\log N)^2)$. (The
+$(\log N)^2$ factor is genuine for strongly mixing summands --- Tikhomirov
+1980 --- and cannot be removed in the Kolmogorov metric.)}
 
-\textbf{2.2 Side-information coding}
+\textbf{Theorem 7.29 ([RNR-II, Thm 7.29]; Second-order coding rate of RNR;
+the random-access / dispersion interplay).} \emph{Adopt the hypotheses of
+Theorem 7.28 with the ideal predictor $Q_i=P(\cdot\mid X_{i-W_N:i-1})$ on a
+context window $W_N=\Theta(\log N)$, so $\ell_i\to-\log_2 P(X_i\mid X_{<i})$
+and the long-run variance $v^2$ equals the source \emph{varentropy}
+$V:=\lim_N\mathrm{Var}(-\log_2 P(X^N))/N$ (finite, positive). Let the sub-block
+spacing be $K$ and let $\delta_\infty>0$ be the per-sync-point excess overhead
+(Crutchfield--Feldman), so the sync cost is $m\,\delta_\infty=(N/K)\delta_\infty$.
+Write $Q^{-1}(\varepsilon):=\Phi^{-1}(1-\varepsilon)$ for the Gaussian
+tail-quantile. Then:}
+\begin{enumerate}
+\item \emph{(Achievability.) For every $\varepsilon\in(0,1)$, with probability
+at least $1-\varepsilon$,
+$L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N)\le
+Nh+\tfrac NK\delta_\infty+\sqrt{NV}\,Q^{-1}(\varepsilon)+o(\sqrt N)$,}
+\emph{the $\sqrt{NV}\,Q^{-1}(\varepsilon)$ term coming from the uniform
+Berry--Esseen CLT of Theorem 7.28 and the mean from the first-order rate.}
+\item \emph{(Dispersion floor --- converse.) For a memoryless or finite-state
+irreducible aperiodic Markov source the varentropy $V$ is the source
+dispersion: under the excess-length criterion the optimal fixed-to-variable
+codelength obeys $L^\star(N,\varepsilon)\ge Nh+\sqrt{NV}\,Q^{-1}(\varepsilon)
+-o(\sqrt N)$ (Kontoyiannis--Verd\'u 2014), so $\sqrt{NV}\,Q^{-1}(\varepsilon)$
+cannot be removed.}
+\item \emph{(The interplay.) At the balanced spacing $K=c\sqrt N$ the
+random-access overhead and the dispersion are both $\Theta(\sqrt N)$,
+$L^{\mathrm{rep}}_{\mathrm{RNR}}=Nh+\sqrt N[\tfrac{\delta_\infty}{c}
++\sqrt V\,Q^{-1}(\varepsilon)]+o(\sqrt N)$, with their ratio independent of
+$N$.}
+\end{enumerate}
+\emph{The per-sync-point constant $\delta_\infty$ (the \emph{cold-context}
+excess $I(\text{past};\text{future})$ paid at each block boundary because a
+random-access decoder starts each sub-block without the preceding context) is
+the quantity whose lossy analogue $\delta_\infty^D$ organises this Part: it
+vanishes for a memoryless source and is the obstruction of Remark 7.34.}
 
-Slepian and Wolf's distributed-source-coding theorem (Slepian and
-Wolf 1973) characterizes the rate region for encoding jointly
-distributed sources $X$ and $Y$ with separate encoders and a joint
-decoder, with constraints $R_X \geq H(X \mid Y)$,
-$R_Y \geq H(Y \mid X)$, and $R_X + R_Y \geq H(X, Y)$ in the
-finite-alphabet memoryless setting. The corner of this region we use
-is the asymmetric case in which $Y$ is already available to the
-decoder, so only $X$ needs to be coded at rate
-$\geq H(X \mid Y)$. The motivating intuition --- that decoder-side
-information drives down the rate to a conditional entropy --- is
-Slepian-Wolf's; the achievability in our setting, however, reduces
-to ordinary \emph{conditional source coding} (Cover and Thomas 2006,
-Theorem 5.4.1) and does not require the binning constructions that
-Slepian-Wolf invokes when the encoder lacks $Y$.
+\emph{Deviation-hierarchy pointers ([RNR-II]).} Beyond the second order, the
+companion Part establishes the large-deviation overflow exponent (Theorem 7.31
+of [RNR-II]; Markov endpoint $=$ max cycle mean), the moderate-deviation
+random-access fade (Theorem 7.33 of [RNR-II]; the RA penalty is one
+standardized shift $\beta$ that fades), the extreme-value law for the
+worst-case random-access query (Theorem 7.35 of [RNR-II]; read-buffer margin
+$Kh+\sqrt{2KV\ln m}$), and the functional CLT for the streaming buffer
+(Theorem 7.36 of [RNR-II]; the repair process converges to Brownian motion).
+Remarks 7.34p--q below transfer these four endpoints to the lossy regime.
 
-Our setting differs from the classical distributed Slepian-Wolf
-setting in three ways. First, we consider a single sender, not two
-correlated sources at different physical locations. Second, the side
-information $Y$ is not a separately observed correlated random
-variable but the deterministic output of a public model $M$ applied
-to a public context $C$: $Y = M(C)$. Third, this side information is
-available to both encoder and decoder, so the encoder can exploit it
-directly; the relevant achievability is conditional source coding,
-and Slepian-Wolf binning is not needed.
-
-We use the term ``side information'' in this broader sense
-throughout: any deterministic, decoder-reproducible function of
-public state that constrains the conditional distribution of $X$.
-
-\textbf{2.3 Entropy coding}
-
-We assume the availability of an entropy coder --- arithmetic coding
-(Witten, Neal, Cleary 1987; Rissanen and Langdon 1979) or asymmetric
-numeral systems (Duda 2009) --- that, given an explicit probability
-model $Q$ with $Q(x) > 0$ on the support of the source and finite-
-precision arithmetic of $b$ bits per state, encodes a sequence $x$ of
-length $n$ in $\lceil -\log_2 Q(x) \rceil + \varepsilon_n$ bits,
-where the redundancy $\varepsilon_n$ accounts for end-of-stream and
-finite-precision rounding (under-2-bit total overhead for the
-classical Witten-Neal-Cleary integer arithmetic coder; ANS adds an
-$O(\log b)$ state-initialization overhead amortized over the stream).
-Taking expectation under the true source $X \sim D$ gives expected
-length $\mathbb{E}_D[-\log_2 Q(X)] + \varepsilon_n$, i.e.,
-cross-entropy plus redundancy. We assume $\varepsilon_n / n \to 0$
-as the block length $n$ grows.
-
-\textbf{2.4 Enumerative coding}
-
-Cover's enumerative source coding (Cover 1973) describes an element
-of a \emph{known} finite class by its rank among the elements of that
-class. The information-theoretic cost is the binary logarithm of the
-class size; a self-delimiting binary rank requires
-$\lceil \log_2 |\mathcal{C}| \rceil$ bits (or
-$\log_2 |\mathcal{C}| + O(1)$ via arithmetic coding driven by the
-uniform rank distribution). Whenever we write the cost as
-$\log_2 |\mathcal{C}|$ below we mean the information-theoretic rate;
-the integer-representation overhead is absorbed into the
-$\varepsilon_n$ entropy-coder redundancy of §2.3. Crucially, the
-class itself must be decoder-reproducible: when its description
-depends on data-dependent parameters (e.g., the cardinality vector
-of a partition), those parameters must be transmitted separately.
-Two enumerative formulas are used repeatedly in this paper.
-
-The number of subsets of size $k$ drawn from $\{1, \ldots, N\}$ is
-$\binom{N}{k}$, so a subset is described in
-$\log_2 \binom{N}{k}$ bits relative to the class
-$\binom{[N]}{k}$ \emph{given $k$}. When $k$ is data-dependent it is
-transmitted in $O(\log N)$ bits before the rank.
-
-The number of partitions of $\{1, \ldots, N\}$ into 16 disjoint sets
-$M_0, \ldots, M_{15}$ with cardinalities $k_0, \ldots, k_{15}$ is the
-multinomial coefficient
-\[
-M(N; k_0, \ldots, k_{15}) = \frac{N!}{k_0!\, k_1! \cdots k_{15}!},
-\tag{2.2}
-\]
-so such a partition is described in
-$\log_2 M(N; k_0, \ldots, k_{15})$ bits given the count vector
-$(k_0, \ldots, k_{15})$. The count vector itself lies in a set of
-size at most $(N + 1)^{16}$ and is transmitted in
-$16 \log_2(N + 1) = O(\log N)$ bits by direct enumeration. The
-multinomial baseline is strictly tighter than
-$\sum_v \log_2 \binom{N}{k_v}$, which corresponds to encoding 16
-independent subsets without enforcing disjointness, and therefore
-overcounts.
-
-\textbf{2.5 Minimum Description Length}
-
-Rissanen's Minimum Description Length principle (Rissanen 1978)
-selects the model that minimizes the total description length: model
-structure, real-valued parameters, and data given the model. There
-are several technical formulations --- crude two-part MDL,
-prequential MDL, universal coding, normalized maximum likelihood
-(NML) --- with different optimality criteria. RNR uses MDL only
-heuristically, in its simplest two-part admission form: a candidate
-model or token is included if its description cost plus the resulting
-conditional code length beats the alternative without it. The
-admission rule
-\[
-L(M) + L(X \mid M) < L_{\text{base}}(X)
-\]
-is a two-part-MDL comparison heuristic, not a theorem of optimality;
-we invoke it as a design criterion at every level (Type-I model
-admission, Type-III-C token admission) but do not claim that any RNR
-construction is the MDL optimum under a stronger criterion such as
-NML.
-
-\textbf{2.6 Bits-back coding}
-
-Bits-back coding is a technique for losslessly compressing data under
-a latent-variable model. The encoder uses an auxiliary bit string to
-sample a latent $z$ from a variational posterior $q(z \mid x)$,
-encodes $(z, x)$ jointly via prior $P(z)$ and conditional
-$P(x \mid z)$, and the decoder recovers $z$ and $x$ and extracts the
-auxiliary bits. The expected net length under the data distribution
-$X \sim D$ and the variational sampler $z \sim q(\cdot \mid X)$ is
-the \emph{negative ELBO}:
-\[
-\mathbb{E}_{X \sim D,\, z \sim q(\cdot \mid X)} \!\left[-\log P(X, z) + \log q(z \mid X)\right]
-= \mathbb{E}_{X \sim D}\!\left[-\log P_X(X)\right]
-+ \mathbb{E}_{X \sim D}\!\left[\mathrm{KL}(q(\cdot \mid X) \Vert P(\cdot \mid X))\right].
-\]
-This equals the source entropy $H_D(X)$ only when the model marginal
-matches the data ($P_X = D$) and $q$ equals the true posterior; in
-general it is cross-entropy under the model marginal plus the
-variational gap. Theorem 6.6 makes this accounting explicit for the
-RNR Type-III-C decomposition. The lineage is: Hinton and van Camp
-(1993) introduced the bits-back argument for noisy-weight
-communication in a Bayesian-network MDL setting; Frey (1997, 1998)
-extended it to one-to-many stochastic source codes with discrete
-latents in graphical models; Townsend, Bird and Barber (2019) gave
-the practical BB-ANS construction that handles continuous latents via
-ANS coding (Bit-Swap and HiLLoC are subsequent extensions). We use
-the term ``bits-back'' for the general principle and BB-ANS for the
-specific continuous-latent realization; see Section 6.5.
-
-\textbf{2.7 Notation summary}
-
-We adopt the following notation throughout.
-\begin{description}
-\item[$N$] block length (number of bytes per source block, fixed throughout)
-\item[$n$] generic symbol-sequence length (e.g., positional, when distinct from $N$)
-\item[$X$] original source block (sequence of bytes, nibbles, or symbols)
-\item[$D$] source distribution on $\{0,1\}^{8N}$; $X \sim D$
-\item[$Y$] decoder-reproducible side information: $Y = M(C)$
-\item[$M$] deterministic predictor; $M_I, M_{\text{pos}}$ for type-specific predictors
-\item[$C$] public context (seed, verified previous subblock, metadata), distinct from the §2.1 compressor symbol
-\item[$Q$] predicted probability field (vector, matrix, or tensor); used as the entropy-coder model in §2.3
-\item[$U_m(t)$] predicted code-length / mode-cost field for tile $t$ under mode $m$ (Type-III-A)
-\item[$T$] invertible representation transform; $Z = T(X)$
-\item[$R$] repair / residual / rank / selector stream
-\item[$V$] verification overhead (hash, checksum); $H_v(X)$ stored as $v$
-\item[$\Theta$] metadata overhead (sizes, mode flags, quantization tables)
-\item[$B$] baseline compressor (LZMA, zstd, NNCP, $\ldots$); $L_{\text{base}}$ is its description length
-\item[$\mathsf{Enc}, \mathsf{Dec}$] encoder/decoder pair (compressor); see §2.1
-\item[$\varepsilon_n$] entropy-coder redundancy over $n$ symbols (positivity + finite-precision overhead per §2.3)
-\item[$\Pi(X) = (M_0, \ldots, M_{15})$] positional partition of $X$ into symbol-class position sets
-\item[$k_v$] cardinality of $M_v$, i.e., count of symbol $v$ in the block
-\item[$H(\cdot), H(\cdot \mid \cdot)$] Shannon entropy / conditional entropy in bits
-\item[$I(\cdot\,;\cdot \mid \cdot)$] conditional mutual information
-\end{description}
-
-\textbf{7. Composition and mode selection}
-
-RNR types compose by hierarchical mode selection. The top-level
-scheduler is a Type-III-A coder whose mode set $M$ contains the
-available lower-level coders, including all Type-I, Type-II, and
-Type-III-B/C constructions. For each tile, the scheduler predicts a
-per-mode cost vector $U_*(t)$, selects the argmin mode, and delegates
-encoding to that mode.
-
-\textbf{Theorem 7.1 (Composition correctness, with explicit framing).}
-\emph{Let $M$ be a finite set of RNR mode coders, each producing a
-uniquely decodable repair stream conditional on its mode flag.
-Assume the per-tile repair streams are \emph{framed} --- either each
-carries an explicit byte-length prefix in the metadata $L(\Theta)$,
-or the per-tile encoding is itself prefix-free as a binary string
---- so that the decoder, after parsing the mode flag, can isolate
-the bits belonging to tile $t$'s repair stream before applying the
-mode-specific decoder. Fix a mechanism by which the decoder
-recovers the mode of tile $t$:}
-\begin{itemize}
-\item[\textbf{(F)}] \emph{(\emph{Explicit flag}) The mode of every tile
-is stored as a uniquely decodable flag in metadata; the decoder
-reads the flag and decodes the tile under that mode.}
-\item[\textbf{(A)}] \emph{(\emph{Argmin reproduction}) The cost field
-$U_*(t)$ is decoder-reproducible (computable from public state and
-the verified prefix of $X$), and the encoder commits to
-$\hat{m}(t) = \operatorname*{arg\,min}_m U_m(t)$ with fixed
-lexicographic tie-breaking from Definition 3.3; the decoder
-reproduces $U_*(t)$ and recomputes the same argmin. Stored mode
-flags are then required only on tiles where the encoder departs
-from the predicted argmin (override flags).}
-\end{itemize}
-\emph{Under framing and either (F) or (A), the Type-III-A composition
-produces a uniquely decodable codeword for $X$.}
-
-\emph{\textbf{Proof.}} The decoder reads the metadata (including the
-per-tile length prefixes, if present, that fix the bit boundaries
-between successive tiles). It recovers $\hat{m}(t)$ either from the
-stored flag (mechanism F) or by reproducing $U_*(t)$ from public
-state and recomputing the deterministic argmin (mechanism A,
-together with the override flag when the encoder departed from the
-predicted argmin). It then isolates the repair-stream bits
-belonging to tile $t$ using the framing information, and applies
-the decoder of mode $\hat{m}(t)$ to recover the tile. Each step is uniquely determined; the concatenation is
-therefore an injection from $X$ to codewords. \emph{Caveat:} without
-the framing assumption, per-mode unique decodability alone is
-insufficient: e.g., mode-A codewords $\{0, 01\}$ and mode-B
-codewords $\{10, 0\}$ are each uniquely decodable, but the
-concatenation $010$ over a mode-A then mode-B tile parses as
-$0 \mid 10$ or $01 \mid 0$, ambiguously. The framing assumption
-removes this ambiguity by fixing tile boundaries explicitly.
-\hfill$\blacksquare$
-
-Composition implies an approximate-oracle bound (not a strict
-no-regret guarantee): by Theorem 6.1, including every coder in $M$
-makes the Type-III-A composition's total cost at worst within
-$2 \sum_t \varepsilon_t$ of the per-tile oracle (which picks the
-true argmin mode per tile). This is also at worst within
-$2 \sum_t \varepsilon_t$ of any fixed single coder $m^\star$ on the
-same data, since the per-tile oracle dominates any fixed single
-coder pointwise. When the per-tile best mode varies non-trivially across tiles
-(i.e., no single coder is among the per-tile argmin set on every
-tile), the per-tile oracle is strictly better than any fixed single
-coder; under ties (some tile has multiple argmin modes including
-$m^\star$) the oracle and $m^\star$ may agree on cost. The
-composition inherits a strict improvement only insofar as
-$2 \sum_t \varepsilon_t$ remains below that gap, which is itself an
-empirical property of the prediction calibration and is not
-guaranteed in general.
-
-The per-type results of §§4--6 bound each coder in isolation. The next
-two theorems lift the analysis to the \emph{composed} hierarchy and
-delimit its fundamental rate: the composition is asymptotically optimal
-exactly when its mode set reaches unbounded effective context, and the
-price of any bounded-context restriction is a concrete information
-quantity. Throughout we take $Y$ empty (pure source coding); the
-conditional versions follow by conditioning every entropy on $Y$.
-
-\textbf{Theorem 7.1b (Hierarchical universality of the RNR composition).}
-\emph{Let $X$ be a stationary ergodic source over a finite alphabet with
-entropy rate $h(X)$. Suppose the mode set $M$ contains the Type-III-C
-universal dictionary coder (Theorem 6.6b), and the predictor is
-\emph{calibrated}: $\tfrac1N \sum_t \varepsilon_t \to 0$ and the
-override-flag overhead vanishes in rate, $\tfrac1N \, (\#\{t : \hat m(t)
-\ne m^\star(t)\}) \log|M| \to 0$. Then the composition is asymptotically
-rate-optimal,}
-\[
-\frac1N \, \mathbb{E}\bigl[L_{\mathrm{RNR}}(X^N)\bigr]
-\;\longrightarrow\; h(X),
-\]
-\emph{and the convergence holds almost surely if the Type-III-C builder
-is almost-surely universal (Kieffer--Yang 2000).}
-
-\emph{\textbf{Proof.}} \emph{Achievability.} By the approximate-oracle
-bound above, the realized cost obeys $\sum_t L_{\hat m(t)}(t) \le
-\sum_t L_{m^\star(t)}(t) + 2\sum_t \varepsilon_t \le
-L_{\mathrm{IIIC}}(X^N) + 2\sum_t \varepsilon_t$, the last step because
-the per-tile oracle dominates the fixed single coder that selects
-Type-III-C on every tile (whose summed per-tile lengths are exactly the
-Type-III-C total). Adding the override-flag overhead and taking
-expectations, $\mathbb{E}[L_{\mathrm{RNR}}] \le \mathbb{E}[L_{\mathrm{IIIC}}]
-+ 2\,\mathbb{E}[\sum_t \varepsilon_t] + (\text{flag overhead})$. By
-Theorem 6.6b, $\tfrac1N \mathbb{E}[L_{\mathrm{IIIC}}] \to h(X)$; by
-calibration the two remaining terms are $o(N)$. \emph{Converse.} The RNR
-codeword is uniquely decodable for $X$, so McMillan and the entropy
-bound give $\mathbb{E}[L_{\mathrm{RNR}}] \ge H(X^N)$, and the
-entropy-rate floor (Theorem 6.6c) gives $H(X^N) \ge N h(X)$ (the floor
-$H(X^N)$ is a benchmark, not a computable encoder target --- its exact
-value is $\mathrm{FP}^{\#P}$-complete, Remark 7.15g, and only
-$\varepsilon$-approximable in poly time under filter stability, Remark
-7.15c; the achievability above attains the realized scheme, not the exact
-optimum). Hence
-$h(X) \le \tfrac1N \mathbb{E}[L_{\mathrm{RNR}}] \le \tfrac1N
-\mathbb{E}[L_{\mathrm{IIIC}}] + o(1) \to h(X)$. The almost-sure statement
-replaces Theorem 6.6b's expectation convergence with the a.s.\
-universality of the builder. \hfill$\blacksquare$
-
-\textbf{Theorem 7.1c (Necessity of the unbounded-context mode: a
-bounded-context separation).} \emph{Let $X$ be stationary over a finite
-alphabet, and restrict the composition to a mode set $M_K$ in which every
-symbol $X_t$ is assigned a uniquely-decodable codeword conditional on a
-decoder-reproducible context that is a function of at most the $K$
-immediately preceding symbols $X_{t-K},\ldots,X_{t-1}$ (bounded effective
-context order $K$; for order-$k$ modes on tiles of size $s$ this gives
-$K = k + s - 1$, since a symbol late in a tile may also condition on the
-tile's earlier symbols). The conditional-codeword structure --- equivalently
-an order-$\le\!K$ coding model, the same per-tile-UD hypothesis as in
-Theorem 6.2b, and automatic for the bounded-context modes
-Type-I/II/III-B --- is what makes the per-context lengths add. Then}
-\[
-\liminf_{N\to\infty} \frac1N \, \mathbb{E}\bigl[L_{\mathrm{RNR}\mid M_K}(X^N)\bigr]
-\;\ge\; h_K := H(X_0 \mid X_{-1},\ldots,X_{-K}) \;=\; h(X) + e_K,
-\]
-\emph{where $e_K := h_K - h(X) \ge 0$ is the order-$K$ excess entropy. For
-any source with $e_K > 0$ for every finite $K$ --- equivalently, a source
-that is not $K$-th-order Markov for any $K$ (e.g.\ a hidden Markov source
-with a full-support, non-degenerate kernel) --- the bounded-context
-composition is bounded away from the entropy rate, no finite $K$ closes
-the gap, and the unbounded-context Type-III-C mode (whose effective order
-grows without bound in the block length) is necessary to attain $h(X)$
-and recover Theorem 7.1b.}
-
-\emph{\textbf{Proof.}} By the conditional-codeword hypothesis the total
-length is the sum of per-symbol (equivalently per-tile, via the
-chain rule) codeword lengths $L = \sum_t \ell_t(X_t \mid C_t)$, each
-codeword uniquely decodable given its context $C_t$, a function of
-$X_{t-K},\ldots,X_{t-1}$. By Kraft and the conditional-entropy bound,
-$\mathbb{E}[\ell_t \mid C_t] \ge H(X_t \mid C_t) \ge H(X_t \mid X_{t-K},
-\ldots,X_{t-1})$, the last step because conditioning on the finer
-$X_{t-K..t-1}$ cannot increase entropy. Summing and using stationarity,
-$\tfrac1N \mathbb{E}[L] = \tfrac1N \sum_t \mathbb{E}[\ell_t] \ge
-\tfrac1N \sum_t H(X_t \mid X_{t-K..t-1}) \to
-H(X_0 \mid X_{-K..-1}) = h_K$ (the boundary terms $t \le K$ number $O(K)$
-and contribute $O(K \log|A| / N) \to 0$). The identity $h_K = h(X) + e_K$
-with $e_K \ge 0$ and the monotone limit $h_K \downarrow h(X)$ is the
-standard behaviour of conditional entropies for a stationary source
-(Cover \& Thomas 2006, Theorem 4.2.1), with $e_K = 0$ iff $X$ is
-$K$-th-order Markov. \hfill$\blacksquare$
-
-\emph{Remark 7.1d (what each mode buys).} Theorems 7.1b--7.1c together
-delimit the hierarchy: the composition is universal iff its mode set
-reaches unbounded effective context, and the price of any bounded-context
-restriction is exactly the source's order-$K$ excess entropy $e_K$. This
-isolates the role of the Type-III-C dictionary --- it is not one
-optimization among several but the single mode responsible for asymptotic
-optimality on infinite-memory sources; the bounded-context modes
-(Type-I/II/III-B) contribute constant-factor and finite-order gains that
-saturate at $h_K$ and cannot, by themselves, reach $h(X)$ when
-$e_K > 0$ for all $K$. The dichotomy mirrors the classical gap between
-fixed-order Markov coders and universal dictionary methods (Lempel--Ziv),
-here made internal to the RNR mode taxonomy.
-
-\textbf{7.2 Runtime parameter selection}
-
-Several parameters in the framework are input-dependent: the codeword
-rate $k$ in Type-I (Code-$k$), the alphabet size $K$ in Type-II, the
-support threshold $\tau_v$ for the Type-II support sets (optimal
-exact selection is NP-hard for general joint laws by Lemma 5.7c and
-polynomial-time for permutation-like laws by Lemma 5.7a), the tile size in
-Type-III-A, the dictionary size in Type-III-C, and others. No single
-setting is optimal across all inputs; the right approach is input
-probing at encode time, where the encoder scans the block, estimates
-the relevant structural parameter, and selects the parameter
-accordingly. The parameter choice is recorded in the metadata stream
-$L(\Theta)$ so the decoder can reproduce the selection.
-
-Parameter selection is structurally identical to mode selection: each
-parameter value defines a distinct coder, and the Type-III-A scheduler
-chooses among them by predicted cost. The composition theorem
-(Theorem 7.1) and the approximate-oracle bound (Theorem 6.1) both
-extend to parameterized modes without change, with the per-mode
-prediction error $\varepsilon_t$ now defined over the cross product of
-(mode, parameter) pairs. The cost is the metadata overhead of encoding
-the parameter choice, typically $O(\log K_{\text{params}})$ bits per
-tile or per block, which is negligible against the per-mode repair
-stream.
-
-Two practical patterns are standard. First, batch probing: scan a
-small prefix of the block (e.g., the first 1 KiB), estimate key
-statistics (entropy rate, marginal sparsity, expected Hamming weight
-of Code-$k$ errors), select parameters once, and encode the rest of
-the block with the chosen parameters. Second, tiled probing: at each
-tile boundary in Type-III-A, re-estimate parameters from the most
-recently verified subblocks and adjust. Both patterns fit the
-existing framework: the parameter-selection function is itself part
-of $M$ (deterministic, decoder-reproducible from public state), and
-the parameter values are part of $L(\Theta)$.
-
-This framing resolves the input-dependent design questions that would
-otherwise appear as open problems: there is no single optimal
-Code-$k$ or optimal alphabet size, only an optimal
-parameter-selection function for a given data distribution, and the
-latter is part of $M$ just like any other learned component.
+\emph{End of prerequisites. The remainder of this document is the Section~7.34
+family, verbatim from the unified series.}
 
 \emph{Remark 7.34 (Lossy RNR at second order: the i.i.d.\ dispersion transfers, but the
-\emph{cold-context} random-access interplay of Theorem 7.29 does not --- an honest
+\emph{cold-context} random-access interplay of Theorem 7.29 of [RNR-II] does not --- an honest
 obstruction).} For a
 \emph{memoryless} source coded at Hamming distortion $D$, the per-symbol lossy codelength
 is the $d$-tilted information $\jmath_X(x;D)=-\lambda^\ast D-\log_2\mathbb E_{Y^\ast}[2^{-
@@ -722,7 +266,7 @@ sits at the same $\sqrt N$ scale as the dispersion $\sqrt{N V(D)}\,Q^{-1}(\varep
 But once the source has memory, $V(D)$ is no
 longer the single-letter $\mathrm{Var}(\jmath_X)$: it becomes the variance of the
 \emph{process} $d$-tilted information --- the rate-distortion dispersion of a source with
-memory --- which (unlike the lossless long-run varentropy that Theorem 7.28 supplies
+memory --- which (unlike the lossless long-run varentropy that Theorem 7.28 of [RNR-II] supplies
 cleanly via the exp-mixing CLT) is delicate and not settled here. So the clean lossy
 analogue of the Theorem 7.29 interplay is \emph{open}; we record the obstruction rather
 than force a single-letter $V(D)$ into a memory setting where it fails. The missing
@@ -1867,7 +1411,7 @@ $\sqrt n$-typical shell. In the Gray region $Y^*$ has \emph{Hankel rank exactly 
 observable-operator model; verified by the in-Gray Walsh deconvolution) yet is genuinely
 infinite-order with \emph{no finite positive (HMM) realization} (its observable operators carry
 irremovable negative entries), so its natural Markov state is the continuous \emph{forward filter},
-geometrically ergodic under filter stability (the §7.15c/7.30a tool). Steps (i)--(iii), (iv-a), and (iv-c) are
+geometrically ergodic under filter stability (the [RNR-II, §7.15]/7.30a tool). Steps (i)--(iii), (iv-a), and (iv-c) are
 constructed: the filter realization with a spectral gap (the gap \emph{substituting} for ellipticity,
 the atomic filter kernel lacking a density floor); the tilted operator $L_\alpha^{(c)}$ with analytic
 spectral gap (Keller--Liverani/Herv\'e--P\`ene); the single-schedule lattice Bahadur--Rao via the
@@ -4031,16 +3575,16 @@ Consequently the \emph{entire} second- and higher-order deviation hierarchy of �
 verbatim to the lossy rate--distortion setting on the Gray region under
 $i_m\mapsto j_m=i_m-mc$:
 \begin{itemize}
-\item \emph{Functional CLT / streaming buffer (Theorem 7.36).} The centred
+\item \emph{Functional CLT / streaming buffer (Theorem 7.36 of [RNR-II]).} The centred
 process is pathwise identical, so the lossy repair/write-buffer process converges
 to the \emph{same} Brownian motion with the \emph{same} $V=V_{\mathrm{lossless}}$;
 the half-normal high-water-mark and Lindley draw-up laws carry over unchanged.
-\item \emph{Large-deviation overflow exponent (Theorem 7.31).}
+\item \emph{Large-deviation overflow exponent (Theorem 7.31 of [RNR-II]).}
 $E^{\mathrm{lossy}}(R)=E^{\mathrm{lossless}}(R+c)$: the lossy archive-overflow
 exponent is the lossless one evaluated at the rate shifted by $c$.
-\item \emph{Moderate deviations / RA fade (Theorem 7.33).} The standardized
+\item \emph{Moderate deviations / RA fade (Theorem 7.33 of [RNR-II]).} The standardized
 moderate-deviation law transfers (same $V$, mean shifted by $c$ per symbol).
-\item \emph{Extreme-value worst-case query (Theorem 7.35).} The maximal block
+\item \emph{Extreme-value worst-case query (Theorem 7.35 of [RNR-II]).} The maximal block
 $d$-tilted information equals the maximal block surprisal minus $Kc$, so the
 Gumbel law and the read-buffer provisioning $M_m=KR(D)+\sqrt{2KV\ln(N/K)}+\cdots$
 follow with $h\mapsto R(D)$.
@@ -4652,5 +4196,112 @@ Problems of Information Transmission, 20(3), 173-177.
 \textbf{{[}135{]}} Willems, F. M. J., Shtarkov, Y. M., and Tjalkens,
 T. J. (1995). The Context-Tree Weighting Method: Basic Properties.
 IEEE Transactions on Information Theory, 41(3), 653-664.
+
+\textbf{{[}136{]}} Kostina, V., and Verd\'u, S. (2012). Fixed-Length
+Lossy Compression in the Finite Blocklength Regime. IEEE Transactions on
+Information Theory, 58(6), 3309-3338.
+
+\textbf{{[}137{]}} Kostina, V. (2017). Data Compression with Low
+Distortion and Finite Blocklength. IEEE Transactions on Information
+Theory, 63(7), 4268-4285.
+
+\textbf{{[}138{]}} Kontoyiannis, I., and Verd\'u, S. (2014). Optimal
+Lossless Data Compression: Non-Asymptotics and Asymptotics. IEEE
+Transactions on Information Theory, 60(2), 777-795.
+
+\textbf{{[}139{]}} Tian, C., and Kostina, V. (2019). The Dispersion of
+the Gauss--Markov Source. IEEE Transactions on Information Theory,
+65(10), 6355-6384.
+
+\textbf{{[}140{]}} Kostina, V., and Tian, C. (2020). Nonasymptotic and
+Second-Order Achievability Bounds for Coding With Side Information.
+IEEE Transactions on Information Theory (Gauss--Markov rate-distortion
+dispersion, achievability side).
+
+\textbf{{[}141{]}} Zhu, J., and Alajaji, F. Rate-distortion analysis of
+the binary memoryless source under the Hamming distortion measure
+(second-order / dispersion characterisation).
+
+\textbf{{[}142{]}} Hafouta, Y. (2020). Explicit Berry--Esseen and
+Edgeworth expansions for inhomogeneous Markov chains and
+locally-dependent random variables. Nonlinearity, 33; arXiv:1903.04018.
+
+\textbf{{[}143{]}} Hafouta, Y. (2025). Sharper sequential Berry--Esseen
+and Edgeworth expansions for uniformly elliptic inhomogeneous Markov
+chains. Preprint, arXiv:2511.06414.
+
+\textbf{{[}144{]}} Dolgopyat, D., and Sarig, O. (2023). Local Limit
+Theorems for Inhomogeneous Markov Chains. Lecture Notes in Mathematics,
+vol.\ 2331, Springer.
+
+\textbf{{[}145{]}} Dolgopyat, D., and Hafouta, Y. (2022). Edgeworth
+expansions for independent bounded integer valued random variables.
+Stochastic Processes and their Applications, 152, 486-532.
+
+\textbf{{[}146{]}} Krishnamachari, R. T. (2026). Second-order and
+dispersion analysis of finite-state Markov sources; the closed-form
+long-run varentropy of the binary Markov chain. Preprint.
+
+\textbf{{[}147{]}} Tasci, M. C., and Kostina, V. (2026). On the lossy
+dispersion of sources with memory. Preprint.
+
+\textbf{{[}148{]}} Eswaran, K., and Gastpar, M. (2022). Remote Source
+Coding under Gaussian Noise: Dueling Roles of Power and Distortion (and
+the growing-Markov-order requirement for universal coding of sources
+with memory). IEEE Transactions on Information Theory.
+
+\textbf{{[}149{]}} Elshafiy, A., and Rose, K. (2022). Fundamental limits
+and achievability for order-$k$ Markov codebooks in lossy source coding.
+IEEE International Symposium on Information Theory (ISIT).
+
+\textbf{{[}150{]}} Diaconis, P., and Saloff-Coste, L. (1996). Logarithmic
+Sobolev Inequalities for Finite Markov Chains. Annals of Applied
+Probability, 6(3), 695-750.
+
+\textbf{{[}151{]}} Kingman, J. F. C. (1961). A Convexity Property of
+Positive Matrices. Quarterly Journal of Mathematics, 12(1), 283-284.
+
+\textbf{{[}152{]}} Nussbaum, R. D. (1986). Convexity and log convexity
+for the spectral radius. Linear Algebra and its Applications, 73,
+59-122.
+
+\textbf{{[}153{]}} Hennion, H. (1997). Limit theorems for products of
+positive random matrices. Annals of Probability, 25(4), 1545-1587.
+
+\textbf{{[}154{]}} Lalley, S. P. (1989). Renewal theorems in symbolic
+dynamics, with applications to geodesic flows, non-Euclidean tessellations
+and their fractal limits. Acta Mathematica, 163, 1-55.
+
+\textbf{{[}155{]}} G\"otze, F., and Hipp, C. (1983). Asymptotic
+Expansions for Sums of Weakly Dependent Random Vectors. Zeitschrift f\"ur
+Wahrscheinlichkeitstheorie und verwandte Gebiete, 64(2), 211-239.
+
+\textbf{{[}156{]}} Lahiri, S. N. (1993). Refinements in asymptotic
+expansions for sums of weakly dependent random vectors. Annals of
+Probability, 21(2), 791-799.
+
+\textbf{{[}157{]}} Avram, F., and Berger, T. (1985). On critical
+distortion for Markov sources and the rate-distortion function. IEEE
+Transactions on Information Theory.
+
+\textbf{{[}158{]}} Aaronson, J., and Denker, M. (2001). Local limit
+theorems for partial sums of stationary sequences generated by
+Gibbs--Markov maps. Stochastics and Dynamics, 1(2), 193-237.
+
+\textbf{{[}159{]}} Cohen, J. E. (1981). Convexity of the dominant
+eigenvalue of an essentially nonnegative matrix. Proceedings of the
+American Mathematical Society, 81(4), 657-658.
+
+\textbf{{[}160{]}} Kato, T. (1982). Superconvexity of the spectral radius,
+and convexity of the spectral bound and the type. Mathematische
+Zeitschrift, 180(3), 265-273.
+
+\textbf{{[}RNR-I{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
+Part I: Framework, Type Taxonomy, Achievability--Converse Matrix, and
+Hardness. Companion paper (RNR series, Part I).
+
+\textbf{{[}RNR-II{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
+Part II: Random Access and Deviation Theory for RNR Archives. Companion
+paper (RNR series, Part II).
 
 \end{document}
