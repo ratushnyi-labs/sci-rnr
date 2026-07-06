@@ -30,13 +30,25 @@ are cited `[RNR-I]` / `[RNR-II]` / `[RNR-III]`.
 Build products (`*.pdf`, `*.aux`, `*.log`, …) are git-ignored (`.gitignore`).
 Rebuild any paper with `cd <folder> && tectonic -X compile <file>.tex`.
 
-## Remaining polish (optional, non-blocking)
+## Polish applied
 
-- Part III's reference list adds ~25 information-theory / probability works cited by
-  name in §7.34 that were absent from the master list; a few venues are rendered
-  best-known without invented page numbers — verify against the primary sources.
-- The full master reference list is carried in each paper (over-inclusion is harmless);
-  prune to each paper's cited subset if desired.
+- Reference lists pruned to drop entries with no author or title footprint in the body,
+  then renumbered contiguously: Part I 135→134, Part II 135→132, Part III 160→137.
+  The prune is deliberately conservative (a false drop of a cited work is worse than an
+  untidy list): it removes only clearly off-topic entries (grammar-compression,
+  bits-back neural coders, PCP-hardness, crypto, graphical-model works) that a
+  dispersion / random-access paper never cites, and keeps every entry whose author is
+  named in the text — including classics cited without a year (Shannon, Blahut, Marton).
+- All three recompile clean after the prune.
+
+## Remaining polish (optional editorial judgment)
+
+- A *lean* bibliography for Part III (down to the ~40 works it actually cites) would
+  require per-entry review of ~100 borderline master-list entries whose common author
+  surnames (Chen, Gray, White, …) appear coincidentally — separating those from genuine
+  classic-work citations needs reading, not automation, so it is left as a judgment call.
+- Part III's ~25 added references render a few venues best-known without invented page
+  numbers — verify against the primary sources.
 - `scripts/verify/` partitions ~1:1 by filename; retarget the document-invariant probes
   (`bug_001`, `bug_010`, `bug_003`, `crossref_integrity`) to the three files.
 - The companion docs (`rnr_summary`, `rnr_engineering_spec`, `rnr_experimental_design`)
