@@ -142,6 +142,11 @@ def run(tier: str, types: list, coder_names: list, out_dir: Path,
     cap_s = cap_min * 60.0
 
     journal = load_journal(journal_path)
+    absent = [t for t in types if not corpora.available(tier, t)]
+    if absent:
+        print(f"[campaign] tier={tier}: skipping undefined cells for types "
+              f"{absent} (data/big manifest: text is capped at 1000 MB)")
+        types = [t for t in types if t not in absent]
     cells = plan_cells(tier, types, coder_names, nruns)
     todo = [(c, k, r) for (c, k, r) in cells
             if cell_id(tier, c, k, r) not in journal

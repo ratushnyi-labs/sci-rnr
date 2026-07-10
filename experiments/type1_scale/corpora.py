@@ -46,6 +46,13 @@ REPO = HERE.parent.parent
 DATA = REPO / "data" / "payloads"
 CORPORA_DIR = HERE / "corpora"
 
+# Real tiers (500/1500/5000 MB) are byte-prefixes of the pinned data/big
+# masters (real video/images/text corpora; data/big/MANIFEST-BIG.json).
+# The synthetic generators below serve ONLY the smoke tiers.
+BIG_DIR = REPO / "data" / "big"
+BIG_MANIFEST = BIG_DIR / "MANIFEST-BIG.json"
+REAL_TIERS = ("500", "1500", "5000")
+
 sys.path.insert(0, str(REPO / "bench"))
 import metrics as _metrics  # noqa: E402  (derive_seed; frozen seed schedule)
 
@@ -302,12 +309,96 @@ def corpus_path(tier: str, ctype: str) -> Path:
     return CORPORA_DIR / tier / f"{ctype}.bin"
 
 
+def _big_entries() -> dict:
+    with open(BIG_MANIFEST) as f:
+        return json.load(f)["entries"]
+
+
+def available(tier: str, ctype: str) -> bool:
+    """Is this (tier, ctype) cell defined?  Real tiers follow the data/big
+    manifest (text is capped at 1000 MB, so text@1500/5000 do not exist by
+    design); smoke tiers always exist."""
+    if ctype not in CONTENT_TYPES:
+        return False
+    if tier not in REAL_TIERS:
+        return True
+    try:
+        ent = _big_entries()[ctype]
+    except (FileNotFoundError, KeyError):
+        return False
+    return int(tier) in ent.get("tiers_mb", [])
+
+
+def _materialize_from_big(tier: str, ctype: str, log=print) -> dict:
+    """Real tiers: stream the exact byte-prefix of the pinned data/big
+    master into the corpus file and verify it against the manifest's
+    per-tier sha256."""
+    ent = _big_entries()[ctype]
+    tier_mb = int(tier)
+    tinfo = next(t for t in ent["tiers"] if t["mb"] == tier_mb)
+    nbytes = tinfo["bytes"]
+    master = BIG_DIR / ent["file"]
+    if not master.exists():
+        raise RuntimeError(
+            f"data/big master missing for {ctype}: {master} -- run "
+            f"data/big/fetch_big.py first")
+    path = corpus_path(tier, ctype)
+    manifest = _load_manifest(tier)
+    entry = manifest["entries"].get(ctype)
+    if entry and path.exists() and path.stat().st_size == entry["bytes"]:
+        return entry
+    path.parent.mkdir(parents=True, exist_ok=True)
+    log(f"[corpora] slicing {tier}/{ctype} = first {nbytes} bytes of "
+        f"{master.name} ...")
+    t0 = time.perf_counter()
+    tmp = path.with_suffix(".building")
+    h = hashlib.sha256()
+    left = nbytes
+    with open(master, "rb") as src, open(tmp, "wb") as out:
+        while left > 0:
+            chunk = src.read(min(_CHUNK, left))
+            if not chunk:
+                raise RuntimeError(f"{master} shorter than {nbytes} bytes")
+            out.write(chunk)
+            h.update(chunk)
+            left -= len(chunk)
+    live = h.hexdigest()
+    if live != tinfo["sha256"]:
+        tmp.unlink(missing_ok=True)
+        raise RuntimeError(
+            f"{tier}/{ctype}: prefix sha256 {live[:16]} != manifest "
+            f"{tinfo['sha256'][:16]} -- data/big master corrupted?")
+    tmp.replace(path)
+    entry = {
+        "type": ctype,
+        "tier": tier,
+        "file": path.name,
+        "bytes": nbytes,
+        "sha256": live,
+        "source": "data/big prefix",
+        "master_file": ent["file"],
+        "master_sha256": ent["sha256"],
+        "provenance": ent.get("recipe", ""),
+        "built_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "build_s": round(time.perf_counter() - t0, 3),
+    }
+    manifest["entries"][ctype] = entry
+    _save_manifest(tier, manifest)
+    return entry
+
+
 def materialize(tier: str, ctype: str, log=print) -> dict:
     """Ensure the (tier, ctype) corpus exists; return its manifest entry."""
     if tier not in TIER_BYTES:
         raise ValueError(f"unknown tier {tier!r}; known {sorted(TIER_BYTES)}")
     if ctype not in _GENERATORS:
         raise ValueError(f"unknown type {ctype!r}; known {CONTENT_TYPES}")
+    if not available(tier, ctype):
+        raise ValueError(
+            f"cell {tier}/{ctype} does not exist (see data/big manifest: "
+            f"text is capped at 1000 MB)")
+    if tier in REAL_TIERS:
+        return _materialize_from_big(tier, ctype, log=log)
     nbytes = TIER_BYTES[tier]
     path = corpus_path(tier, ctype)
     manifest = _load_manifest(tier)

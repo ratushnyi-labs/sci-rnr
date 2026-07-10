@@ -1,0 +1,15 @@
+{
+  "comment": "Coder lanes exposed to experiments/type1_scale/coders.py (protocol 4.1). argv[0] resolves inside impl_fast/; .py entries run under the venv python. {in}/{out} are placeholders.",
+  "coders": {
+    "rnr1-fast": {
+      "pack":   ["rnr1fast.py", "pack", "{in}", "{out}", "--W", "3", "--K", "65536", "--threads", "1"],
+      "unpack": ["rnr1fast.py", "unpack", "{in}", "{out}", "--threads", "1"],
+      "config": {"W": 3, "K": 65536, "threads": 1, "impl": "c-fast", "bit_identical_to": "impl/rnr1.py"}
+    },
+    "rnr1-fast-mt8": {
+      "pack":   ["rnr1fast.py", "pack", "{in}", "{out}", "--W", "3", "--K", "65536", "--threads", "8"],
+      "unpack": ["rnr1fast.py", "unpack", "{in}", "{out}", "--threads", "8"],
+      "config": {"W": 3, "K": 65536, "threads": 8, "impl": "c-fast", "bit_identical_to": "impl/rnr1.py", "note": "output verified byte-identical to threads=1"}
+    }
+  }
+}
