@@ -133,8 +133,12 @@ REGISTRY: dict = {
     },
     "gzip-9": {
         "family": "gzip",
-        "config": {"level": 9},
-        **_stdout_coder(lambda i: [GZIP, "-9", "-c", i],
+        # -n omits the input name+mtime from the header: without it gzip
+        # embeds the source file's timestamp and archives are NOT
+        # repeatable across regenerated inputs (caught by the
+        # compressed_sha256 determinism witness).
+        "config": {"level": 9, "no_name": True},
+        **_stdout_coder(lambda i: [GZIP, "-9", "-n", "-c", i],
                         lambda e: [GZIP, "-d", "-c", e]),
         "version": [GZIP, "--version"],
         "tiers": None,
