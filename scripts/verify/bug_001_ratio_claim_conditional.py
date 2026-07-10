@@ -9,7 +9,7 @@ cross-link) establish, so that a future edit that silently removes a
 qualifier or breaks the mapping turns the CI job red.
 
   inv1 (conditional scoping): in the Abstract, section 1.1, and the section 11
-       region of tex/rnr_coding.tex, every occurrence of the absolute-ratio /
+       region of the checked document, every occurrence of the absolute-ratio /
        beats-seekable-format claim co-occurs -- within a bounded character
        neighborhood -- with at least one conditional/falsifiable marker from
        {conditional, pending, conjecture, "Section 11"/"section 11"/"S11",
@@ -28,6 +28,24 @@ qualifier or breaks the mapping turns the CI job red.
        section 11.1-11.7 or in the section 1.1 cross-link enumeration). No
        dangling H-reference on either side.
 
+DOCUMENTS CHECKED (post three-paper split; the invariant must hold in every
+document it appears in):
+
+  * tex/rnr_coding.tex (monolith, still the source of truth): inv1 + inv2 +
+    self-test, unchanged semantics.
+  * tex/papers/core/rnr_core.tex (Part I): carries the Abstract, section 1.1,
+    and section 11 (11.1-11.7 all stayed in Part I), so the full inv1 + inv2 +
+    self-test battery runs on it identically (the companion
+    tex/rnr_experimental_design.tex is shared, not split).
+  * tex/papers/random_access/rnr_random_access.tex (Part II): the monolith
+    Abstract's sync-overhead / ratio-comparison passage ("The ratio comparison
+    against ... bgzip and zstd seekable ... is empirical") moved into Part II's
+    section 10.7 comparison block (SPLIT-PLAN section 5.4: "Abstract lines
+    230-252 -> moves to P2"). The probe follows the moved TEXT: it checks
+    Part II's own Abstract plus the enclosing paragraph of the moved
+    ratio-comparison claim for inv1 conditional scoping. inv2 does not apply
+    (the section 1.1 <-> section 11 <-> companion mapping lives in Part I).
+
 A negative self-test (--selftest, also run automatically) MUTATES the parsed
 text -- strips a qualifier; injects a non-existent H-number -- and asserts the
 checks then FAIL, proving the guard is not vacuous.
@@ -43,6 +61,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 MAIN = os.path.join(REPO, "tex", "rnr_coding.tex")
+CORE = os.path.join(REPO, "tex", "papers", "core", "rnr_core.tex")
+RA = os.path.join(REPO, "tex", "papers", "random_access", "rnr_random_access.tex")
 COMPANION = os.path.join(REPO, "tex", "rnr_experimental_design.tex")
 
 # Neighborhood (characters) within which a ratio-claim keyword must see a
@@ -175,6 +195,33 @@ def extract_regions(text):
         "Abstract": text[abs_start:abs_end],
         "section 1.1": text[s11_mot:s11_end],
         "section 11 (intro + 11.1-11.6)": text[sec11_start:sec11_7],
+    }
+
+
+def extract_regions_ra(text):
+    """In-scope regions of Part II (random access) as {name: substring}.
+
+    The monolith Abstract's sync-overhead / ratio-comparison passage moved
+    into Part II's section 10.7 comparison block (SPLIT-PLAN section 5.4), so
+    the invariant follows the moved TEXT: (a) Part II's own Abstract must
+    never assert the ratio claim unconditionally, and (b) the enclosing
+    paragraph of the moved ratio-comparison claim must keep its conditional
+    markers.
+    """
+    abs_start = find_marker(text, "\\textbf{Abstract}")
+    abs_end = find_marker(text, "\\textbf{Keywords:}", abs_start)
+
+    s107 = find_marker(text, "\\textbf{10.7 Random access}")
+    anchor = find_marker(text, "The ratio comparison", s107)
+    para_lo = text.rfind("\n\n", 0, anchor)
+    para_lo = 0 if para_lo < 0 else para_lo + 2
+    para_hi = text.find("\n\n", anchor)
+    para_hi = len(text) if para_hi < 0 else para_hi
+
+    return {
+        "Abstract (Part II)": text[abs_start:abs_end],
+        "section 10.7 moved sync-overhead/ratio-comparison paragraph":
+            text[para_lo:para_hi],
     }
 
 
@@ -356,22 +403,31 @@ def check_inv2(main_text, companion_text, verbose=True, ratio_relevant=RATIO_REL
 # --------------------------------------------------------------------------
 # Non-vacuity self-test: mutate the inputs, assert the checks FAIL.
 # --------------------------------------------------------------------------
-def selftest(main_text, companion_text):
-    print("\nself-test (non-vacuity): mutated inputs MUST fail the checks")
-    ok = True
-
-    # (1) inv1 must fail if we strip conditional markers from a region.
-    regions = extract_regions(main_text)
+def _strip_markers(regions):
+    """Regions with every conditional marker replaced by 'XXX' (mutation)."""
     mutated = {}
     for name, region in regions.items():
         m = region
         for marker in CONDITIONAL_MARKERS:
             m = re.sub(re.escape(marker), "XXX", m, flags=re.IGNORECASE)
         mutated[name] = m
-    inv1_on_mutated = check_inv1(mutated, verbose=False)
-    ok &= line(not inv1_on_mutated, "inv1 detects a stripped qualifier",
-               "mutated (markers removed) text correctly FAILS inv1"
-               if not inv1_on_mutated else "MUTATION NOT DETECTED -- inv1 is vacuous!")
+    return mutated
+
+
+def selftest_marker_strip(regions):
+    """inv1 must FAIL on marker-stripped regions (non-vacuity of inv1)."""
+    inv1_on_mutated = check_inv1(_strip_markers(regions), verbose=False)
+    return line(not inv1_on_mutated, "inv1 detects a stripped qualifier",
+                "mutated (markers removed) text correctly FAILS inv1"
+                if not inv1_on_mutated else "MUTATION NOT DETECTED -- inv1 is vacuous!")
+
+
+def selftest(main_text, companion_text):
+    print("\nself-test (non-vacuity): mutated inputs MUST fail the checks")
+    ok = True
+
+    # (1) inv1 must fail if we strip conditional markers from a region.
+    ok &= selftest_marker_strip(extract_regions(main_text))
 
     # (2) inv2 must fail if the main paper cites a non-existent hypothesis.
     injected = main_text.replace(
@@ -396,23 +452,57 @@ def selftest(main_text, companion_text):
     return ok
 
 
+def check_full_document(label, text, companion_text):
+    """Full battery (inv1 + inv2 + self-test) for a document that carries the
+    Abstract / section 1.1 / section 11 regions (monolith and Part I)."""
+    print("\n" + "-" * 70)
+    print(f"Document: {label}")
+    regions = extract_regions(text)
+    return {
+        f"[{label}] inv1 conditional scoping (Abstract/1.1/11)": check_inv1(regions),
+        f"[{label}] inv2 no-orphan mapping (11 <-> companion)":
+            check_inv2(text, companion_text),
+        f"[{label}] self-test non-vacuity": selftest(text, companion_text),
+    }
+
+
+def check_ra_document(label, text):
+    """Part II battery: inv1 on the regions the split moved there (its own
+    Abstract + the migrated section 10.7 ratio-comparison paragraph), plus the
+    marker-strip non-vacuity self-test on those regions. inv2 does not apply:
+    the section 1.1/11 <-> companion mapping lives in Part I."""
+    print("\n" + "-" * 70)
+    print(f"Document: {label}")
+    regions = extract_regions_ra(text)
+    inv1_ok = check_inv1(regions)
+    print("\nself-test (non-vacuity): mutated inputs MUST fail the checks")
+    strip_ok = selftest_marker_strip(regions)
+    return {
+        f"[{label}] inv1 conditional scoping (Abstract + moved 10.7 passage)": inv1_ok,
+        f"[{label}] self-test non-vacuity": strip_ok,
+    }
+
+
 def main():
     print("Verification: BUG-001 conditional-ratio-claim + mapping invariants")
     print("=" * 70)
     print("DOCUMENT-INVARIANT GUARD -- asserts the paper never makes the")
     print("absolute-ratio/beats-seekable claim unconditionally, and that the")
     print("section 11 <-> companion-hypothesis mapping has no orphan.")
+    print("Checked in every document the invariant appears in after the split:")
+    print("monolith (source of truth), Part I (core), and Part II (the moved")
+    print("Abstract sync-overhead/ratio-comparison passage, now in its 10.7).")
     print("Does NOT measure any compression ratio (that is BUG-001-D, external).")
 
-    main_text = read(MAIN)
     companion_text = read(COMPANION)
 
-    regions = extract_regions(main_text)
-    results = {
-        "inv1 conditional scoping (Abstract/1.1/11)": check_inv1(regions),
-        "inv2 no-orphan mapping (11 <-> companion)": check_inv2(main_text, companion_text),
-        "self-test non-vacuity": selftest(main_text, companion_text),
-    }
+    results = {}
+    results.update(check_full_document(
+        "monolith tex/rnr_coding.tex", read(MAIN), companion_text))
+    results.update(check_full_document(
+        "Part I tex/papers/core/rnr_core.tex", read(CORE), companion_text))
+    results.update(check_ra_document(
+        "Part II tex/papers/random_access/rnr_random_access.tex", read(RA)))
 
     print("\n" + "=" * 70)
     print("Summary:")

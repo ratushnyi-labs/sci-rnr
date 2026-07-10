@@ -10,7 +10,7 @@ silently strengthens the claim, drops a cross-reference, or removes a cost term
 turns the CI job red.
 
   inv1 (conditional scoping with cross-references): in the Abstract and section
-       1.1 of tex/rnr_coding.tex, the central no-universal-dominance / data-class
+       1.1 of the checked document, the central no-universal-dominance / data-class
        precondition claim is CONDITIONAL and carries an explicit forward pointer
        to all three formal anchors -- Definition 2.1 (the conditionally-
        advantageous predicate), Theorem 8.1 (no universal dominance), and section
@@ -49,6 +49,24 @@ fixtures: a FABRICATED affirmative-universal sentence the checker MUST REJECT,
 and a real-style DISCLAIMER sentence it MUST ACCEPT; plus mutations of the parsed
 text (strip a cross-reference; delete a cost term) that the checks MUST then fail.
 
+DOCUMENTS CHECKED (post three-paper split; the invariant must hold in every
+document it appears in):
+
+  * tex/rnr_coding.tex (monolith, still the source of truth): inv1-inv4 +
+    self-test, unchanged semantics.
+  * tex/papers/core/rnr_core.tex (Part I): carries the Abstract, section 1.1,
+    section 10.2.1, Definition 2.1, and Theorem 8.1 (per SPLIT-PLAN section 2
+    all of sections 1, 8, 10.1-10.5 stayed in Part I), so the full inv1-inv4 +
+    self-test battery runs on it identically.
+  * tex/papers/random_access/rnr_random_access.tex (Part II) and
+    tex/papers/dispersion/rnr_dispersion.tex (Part III): inv1/inv3/inv4's
+    anchors (Definition 2.1, Theorem 8.1, section 10.2.1) live in Part I, but
+    inv2 is a WHOLE-PAPER scan and large blocks of the monolith's body
+    (sections 7.2-7.36 and 10.7-10.8 -> Part II; the section 7.34 family ->
+    Part III) moved into these documents, so the no-affirmative-universal-
+    dominance scan follows the moved text: inv2 + its injection self-test run
+    on each companion part.
+
 Stdlib only. Prints PASS/FAIL per check and "OVERALL -> PASS" on success.
 Run locally:  /Users/para/.venvs/rnr/bin/python scripts/verify/bug_010_precondition_invariant.py
 """
@@ -60,6 +78,9 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 MAIN = os.path.join(REPO, "tex", "rnr_coding.tex")
+CORE = os.path.join(REPO, "tex", "papers", "core", "rnr_core.tex")
+RA = os.path.join(REPO, "tex", "papers", "random_access", "rnr_random_access.tex")
+DISP = os.path.join(REPO, "tex", "papers", "dispersion", "rnr_dispersion.tex")
 
 
 def read(path):
@@ -287,6 +308,15 @@ def check_inv4(text, verbose=True):
 # --------------------------------------------------------------------------
 # Non-vacuity self-test: inline fixtures + mutations
 # --------------------------------------------------------------------------
+def selftest_inv2_injection(text):
+    """inv2 must FAIL when an affirmative-universal sentence is injected."""
+    injected = text + "\n\nRNR outperforms every baseline universally and always wins.\n"
+    inv2_inj = check_inv2(injected, verbose=False)
+    return line(not inv2_inj, "inv2 detects an injected affirmative-universal sentence",
+                "injected affirmative-universal correctly FAILS inv2"
+                if not inv2_inj else "INJECTION NOT DETECTED -- inv2 is vacuous!")
+
+
 def selftest(text):
     print("\nself-test (non-vacuity): inline fixtures + mutated inputs")
     ok = True
@@ -337,11 +367,7 @@ def selftest(text):
                if not inv3_mut else "MUTATION NOT DETECTED -- inv3 is vacuous!")
 
     # (E) inv2 must fire if a real affirmative-universal sentence is injected.
-    injected = text + "\n\nRNR outperforms every baseline universally and always wins.\n"
-    inv2_inj = check_inv2(injected, verbose=False)
-    ok &= line(not inv2_inj, "inv2 detects an injected affirmative-universal sentence",
-               "injected affirmative-universal correctly FAILS inv2"
-               if not inv2_inj else "INJECTION NOT DETECTED -- inv2 is vacuous!")
+    ok &= selftest_inv2_injection(text)
 
     # (F) inv4 must fail if a cross-referenced header is fabricated (removed).
     no_def = text.replace("\\textbf{Definition 2.1", "\\textbf{XXX 2.1", 1)
@@ -353,6 +379,42 @@ def selftest(text):
     return ok
 
 
+def check_full_document(label, text):
+    """Full battery (inv1-inv4 + self-test) for a document that carries the
+    Abstract / section 1.1 / section 10.2.1 regions and the Definition 2.1 /
+    Theorem 8.1 headers (monolith and Part I)."""
+    print("\n" + "-" * 74)
+    print(f"Document: {label}")
+    regions = extract_regions(text)
+    return {
+        f"[{label}] inv1 conditional scoping + cross-refs (Abstract/1.1)":
+            check_inv1(regions),
+        f"[{label}] inv2 no affirmative universal-dominance sentence":
+            check_inv2(text),
+        f"[{label}] inv3 precondition-inequality term-completeness (10.2.1)":
+            check_inv3(regions),
+        f"[{label}] inv4 named cross-references resolve to headers":
+            check_inv4(text),
+        f"[{label}] self-test non-vacuity": selftest(text),
+    }
+
+
+def check_companion_part(label, text):
+    """Companion-part battery (Parts II/III): the whole-paper inv2 scan follows
+    the body text that moved out of the monolith, plus its injection
+    self-test. inv1/inv3/inv4 anchors (Def 2.1, Thm 8.1, section 10.2.1)
+    stayed in Part I and do not apply here."""
+    print("\n" + "-" * 74)
+    print(f"Document: {label}")
+    inv2_ok = check_inv2(text)
+    print("\nself-test (non-vacuity): injected affirmative-universal MUST fail")
+    inj_ok = selftest_inv2_injection(text)
+    return {
+        f"[{label}] inv2 no affirmative universal-dominance sentence": inv2_ok,
+        f"[{label}] self-test non-vacuity": inj_ok,
+    }
+
+
 def main():
     print("Verification: BUG-010 conditional-scope / no-universal-dominance invariants")
     print("=" * 74)
@@ -360,17 +422,20 @@ def main():
     print("carries its Def 2.1 + Thm 8.1 + section 10.2 cross-references, makes NO")
     print("affirmative universal-dominance claim, and that the section 10.2.1")
     print("precondition inequality lists every cost term with a section anchor.")
+    print("Checked in every document the invariant appears in after the split:")
+    print("monolith (source of truth) and Part I carry all four invariants; the")
+    print("whole-paper inv2 scan follows the moved body text into Parts II/III.")
     print("Does NOT measure any compression ratio (that is BUG-010-D, external).")
 
-    text = read(MAIN)
-    regions = extract_regions(text)
-    results = {
-        "inv1 conditional scoping + cross-refs (Abstract/1.1)": check_inv1(regions),
-        "inv2 no affirmative universal-dominance sentence":     check_inv2(text),
-        "inv3 precondition-inequality term-completeness (10.2.1)": check_inv3(regions),
-        "inv4 named cross-references resolve to headers":       check_inv4(text),
-        "self-test non-vacuity":                                selftest(text),
-    }
+    results = {}
+    results.update(check_full_document(
+        "monolith tex/rnr_coding.tex", read(MAIN)))
+    results.update(check_full_document(
+        "Part I tex/papers/core/rnr_core.tex", read(CORE)))
+    results.update(check_companion_part(
+        "Part II tex/papers/random_access/rnr_random_access.tex", read(RA)))
+    results.update(check_companion_part(
+        "Part III tex/papers/dispersion/rnr_dispersion.tex", read(DISP)))
 
     print("\n" + "=" * 74)
     print("Summary:")
