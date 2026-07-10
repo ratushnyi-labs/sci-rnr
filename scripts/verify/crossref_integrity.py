@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
 r"""
-Cross-reference integrity guard for the four RNR manuscripts (rnr_coding.tex and
-the three companion docs rnr_summary / rnr_engineering_spec / rnr_experimental_design).
-A reference in any document resolves against the UNION of every document's defined
-blocks, because the companions legitimately cite the main paper's results.
+Cross-reference integrity guard for the RNR manuscripts, in two groups.
+
+GROUP A -- the monolith rnr_coding.tex and the three companion docs (rnr_summary /
+rnr_engineering_spec / rnr_experimental_design). A reference in any of these four
+resolves against the UNION of every Group-A document's defined blocks, because the
+companions legitimately cite the main paper's results.
+
+GROUP B -- the three-paper split (tex/papers/core/rnr_core.tex,
+tex/papers/random_access/rnr_random_access.tex,
+tex/papers/dispersion/rnr_dispersion.tex). Each split paper is checked as an
+INDEPENDENT document: a reference must resolve to a block defined IN THE SAME FILE
+(prerequisite restatements count -- they are real \textbf{...} headers), OR be a
+companion citation, i.e. carry an [RNR-I]/[RNR-II]/[RNR-III] tag within +/-2 lines
+of the reference (the split's convention for results proved in a companion Part).
+A bare cross-Part reference with neither is a phantom for THAT paper -- exactly the
+defect class the 2026-07-07 split audit found (AUDIT-SPLIT-2026-07-07.md items
+1, 10-13, 18-22).
 
 The paper numbers its structure MANUALLY -- named blocks are
 \textbf{Definition N.M (...)} / \textbf{Theorem N.M (...)} / \textbf{Lemma ...} /
@@ -40,10 +53,12 @@ header) and many §-refs are external (Wyner--Ziv 1976 §3.5), which would make 
 §-gate untrustworthy. The two real defects this guard targets were both named-
 block references.
 
-Stdlib only. Prints PASS/FAIL and "OVERALL -> PASS" on success.
+Stdlib only. Prints one PASS/FAIL line per document and "OVERALL -> PASS" on
+success; exits nonzero if ANY document fails.
 Run:  /Users/para/.venvs/rnr/bin/python scripts/verify/crossref_integrity.py
 """
 
+import bisect
 import os
 import re
 import sys
@@ -51,16 +66,32 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 TEX = os.path.join(REPO, "tex")
-# All four manuscripts. A reference in any one resolves against the UNION of every
-# document's defined blocks, because the companion docs legitimately cross-
-# reference the main paper (e.g. rnr_experimental_design.tex cites "Theorem 7.15"
-# of rnr_coding.tex). A number that resolves in no document is a phantom.
+# Group A: monolith + companions. A reference in any one resolves against the
+# UNION of every Group-A document's defined blocks, because the companion docs
+# legitimately cross-reference the main paper (e.g. rnr_experimental_design.tex
+# cites "Theorem 7.15" of rnr_coding.tex). A number that resolves in no Group-A
+# document is a phantom.
 DOCS = [
     os.path.join(TEX, "rnr_coding.tex"),
     os.path.join(TEX, "rnr_summary.tex"),
     os.path.join(TEX, "rnr_engineering_spec.tex"),
     os.path.join(TEX, "rnr_experimental_design.tex"),
 ]
+
+# Group B: the three-paper split. Each is INDEPENDENT -- own defined blocks only,
+# plus the [RNR-x] companion-citation convention (tag within +/-2 lines).
+PAPERS = os.path.join(TEX, "papers")
+SPLIT_DOCS = [
+    os.path.join(PAPERS, "core", "rnr_core.tex"),
+    os.path.join(PAPERS, "random_access", "rnr_random_access.tex"),
+    os.path.join(PAPERS, "dispersion", "rnr_dispersion.tex"),
+]
+
+# Companion-citation tag: [RNR-I] / [RNR-II] / [RNR-III], inline or in the
+# LaTeX-escaped reference-list form {[}RNR-II{]}. Case-sensitive so that prose
+# like "RNR-independent" / "RNR-specific" does not match.
+COMPANION_TAG = re.compile(r"RNR-I{1,3}(?![A-Za-z])")
+COMPANION_WINDOW = 2  # lines on each side
 
 KINDS = ["Definition", "Theorem", "Lemma", "Proposition", "Corollary", "Remark",
          "Conjecture", "Observation"]
@@ -111,7 +142,22 @@ def defined_block_nums(text):
     return {norm(m.group(1)) for m in DEF_BLOCK.finditer(text)}
 
 
-def phantom_block_refs(text, block_nums):
+def phantom_block_refs(text, block_nums, companion_aware=False):
+    """Distinct unresolved (kind, number) references in `text`.
+
+    companion_aware=True enables the split-paper convention: a reference is
+    satisfied when an [RNR-x] companion tag sits within COMPANION_WINDOW lines.
+    """
+    newlines = [i for i, ch in enumerate(text) if ch == "\n"]
+
+    def line_of(pos):
+        return bisect.bisect_right(newlines, pos)
+
+    tag_lines = set()
+    if companion_aware:
+        for m in COMPANION_TAG.finditer(text):
+            tag_lines.add(line_of(m.start()))
+
     out = {}
     for m in REF_BLOCK.finditer(text):
         num = norm(m.group(2))
@@ -119,46 +165,97 @@ def phantom_block_refs(text, block_nums):
             continue
         if EXTERNAL_CUE.search(text[max(0, m.start() - PRECEDING):m.start()]):
             continue
+        if companion_aware:
+            ln = line_of(m.start())
+            if any(t in tag_lines
+                   for t in range(ln - COMPANION_WINDOW, ln + COMPANION_WINDOW + 1)):
+                continue
         ctx = text[max(0, m.start() - 22):m.start() + 46].replace("\n", " ")
         out.setdefault((m.group(1), num), ctx)
     return sorted(out.items())
 
 
+def report_doc(name, dangling):
+    print(f"\n-- {name}: phantom named-block references --")
+    if dangling:
+        for (kind, num), ctx in dangling:
+            print(f"  [PHANTOM] {kind} {num}   ...{ctx.strip()}...")
+    else:
+        print("  (none -- every block reference resolves)")
+
+
 def main():
     print("Cross-reference integrity: prose Definition/Theorem/Lemma/Proposition/")
-    print("Corollary/Remark pointers resolve to a numbered block (kind-agnostic),")
-    print("across all four RNR manuscripts (refs resolve against the union).")
+    print("Corollary/Remark pointers resolve to a numbered block (kind-agnostic).")
+    print("Group A (monolith + companions): refs resolve against the union.")
+    print("Group B (three-paper split): each paper INDEPENDENT -- own blocks or")
+    print("an [RNR-x] companion tag within +/-%d lines." % COMPANION_WINDOW)
     print("=" * 74)
 
-    texts = {os.path.basename(p): strip_comments(read(p)) for p in DOCS}
-    block_nums = set()
-    for t in texts.values():
-        block_nums |= defined_block_nums(t)
-    print(f"  defined: {len(block_nums)} distinct block numbers "
-          f"(union of {len(texts)} docs)")
+    verdicts = []  # (doc name, phantom count)
+
+    # -- Group A: union resolution ------------------------------------------
+    texts_a = {os.path.basename(p): strip_comments(read(p)) for p in DOCS}
+    union_nums = set()
+    for t in texts_a.values():
+        union_nums |= defined_block_nums(t)
+    print(f"  Group A defined: {len(union_nums)} distinct block numbers "
+          f"(union of {len(texts_a)} docs)")
     print(f"  allowlisted (external/retracted, documented): "
           f"{sorted(ALLOWLIST_BLOCK_NUM)}")
 
-    any_phantom = False
-    for name, text in texts.items():
-        dangling = phantom_block_refs(text, block_nums)
-        print(f"\n-- {name}: phantom named-block references --")
-        if dangling:
-            any_phantom = True
-            for (kind, num), ctx in dangling:
-                print(f"  [PHANTOM] {kind} {num}   ...{ctx.strip()}...")
-        else:
-            print("  (none -- every block reference resolves)")
+    for name, text in texts_a.items():
+        dangling = phantom_block_refs(text, union_nums)
+        report_doc(name, dangling)
+        verdicts.append((name, len(dangling)))
 
-    # Non-vacuity: a fabricated reference to a guaranteed-absent block must be caught.
-    probe = next(iter(texts.values())) + "\n\nCites nonexistent Theorem 99.99 here.\n"
-    caught = any(num == "99.99" for (_, num), _ in phantom_block_refs(probe, block_nums))
-    print("\n-- self-test (non-vacuity) --")
-    print(f"  [{'PASS' if caught else 'FAIL'}] fabricated 'Theorem 99.99' is "
-          f"{'flagged' if caught else 'NOT flagged -- guard is vacuous!'}")
+    # -- Group B: each split paper independent ------------------------------
+    texts_b = {os.path.basename(p): strip_comments(read(p)) for p in SPLIT_DOCS}
+    for name, text in texts_b.items():
+        own_nums = defined_block_nums(text)
+        dangling = phantom_block_refs(text, own_nums, companion_aware=True)
+        print(f"\n  {name}: {len(own_nums)} own block numbers")
+        report_doc(name, dangling)
+        verdicts.append((name, len(dangling)))
 
-    ok = (not any_phantom) and caught
+    # -- Self-tests (non-vacuity) -------------------------------------------
+    # (a) Union mode: a fabricated reference to an absent block must be caught.
+    probe_a = next(iter(texts_a.values())) + "\n\nCites nonexistent Theorem 99.99 here.\n"
+    caught_a = any(num == "99.99"
+                   for (_, num), _ in phantom_block_refs(probe_a, union_nums))
+    # (b) Split mode: a fabricated BARE reference must be caught ...
+    split_text = texts_b[os.path.basename(SPLIT_DOCS[-1])]
+    split_nums = defined_block_nums(split_text)
+    probe_b = split_text + "\n\nCites nonexistent Theorem 99.99 here.\n"
+    caught_b = any(num == "99.99"
+                   for (_, num), _ in phantom_block_refs(probe_b, split_nums,
+                                                         companion_aware=True))
+    # (c) ... while the same reference WITH an adjacent companion tag is satisfied.
+    probe_c = split_text + "\n\nUses companion Theorem 99.98 of [RNR-II] here.\n"
+    tag_ok = not any(num == "99.98"
+                     for (_, num), _ in phantom_block_refs(probe_c, split_nums,
+                                                           companion_aware=True))
+    print("\n-- self-tests (non-vacuity) --")
+    print(f"  [{'PASS' if caught_a else 'FAIL'}] union mode: fabricated bare "
+          f"'Theorem 99.99' is {'flagged' if caught_a else 'NOT flagged -- vacuous!'}")
+    print(f"  [{'PASS' if caught_b else 'FAIL'}] split mode: fabricated bare "
+          f"'Theorem 99.99' is {'flagged' if caught_b else 'NOT flagged -- vacuous!'}")
+    print(f"  [{'PASS' if tag_ok else 'FAIL'}] split mode: fabricated "
+          f"'Theorem 99.98 of [RNR-II]' is "
+          f"{'accepted as companion-cited' if tag_ok else 'wrongly flagged!'}")
+
+    # -- Per-document verdicts ----------------------------------------------
+    self_ok = caught_a and caught_b and tag_ok
     print("\n" + "=" * 74)
+    print("Per-document verdicts:")
+    for name, n in verdicts:
+        status = "PASS" if n == 0 else "FAIL"
+        detail = "" if n == 0 else f" -- {n} phantom reference{'s' if n != 1 else ''}"
+        print(f"  [{status}] {name}{detail}")
+    print(f"  [{'PASS' if self_ok else 'FAIL'}] self-tests")
+
+    ok = self_ok and all(n == 0 for _, n in verdicts)
+    print("=" * 74)
     if ok:
         print("OVERALL -> PASS")
         return 0

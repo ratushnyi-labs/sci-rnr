@@ -93,9 +93,12 @@ third-order $\tfrac12\log n$ refinement on the Gray grid via the operational
 recentring $j_n=i_n-nc$, the beyond-Gray landscape, and a lossy deviation
 hierarchy transferring the large-deviation, moderate-deviation,
 extreme-value, and functional-CLT endpoints of the companion Part. Finally
-we prove the replica spectral inequality $R_A(s;D)>3/2$ underlying the
-convexity wall --- closed form at $A=2$, with exact certificates at
-$A=3,4,5$.
+we treat the sharp replica spectral floor $R_A(s;D)\ge\tfrac32$ underlying
+the convexity wall: proven in closed form at $A=2$ (all $s$, all
+$D\le D_c$), and for $A\ge3$ established regionally --- an effective
+tight-corner theorem at $A=3,\dots,6$, Schur certificates at small and
+moderate $p$, a direct margin in the near-uniform pocket --- with the
+mid-band certification program stated as the named residual.
 
 \textbf{Keywords:} lossy source coding; rate-distortion dispersion;
 $d$-tilted information; operational second-order rate; finite blocklength;
@@ -106,7 +109,7 @@ replica spectral inequality; neural repair coding.
 
 \emph{Numbering follows the unified RNR series; this Part contains
 Section~7.34 (Remark 7.34 through Remark 7.34q) together with the
-prerequisites restated in Section~7.3 below. Section, theorem, lemma, and
+prerequisites restated in Section~P below. Section, theorem, lemma, and
 remark numbers are those of the unified series and are \textbf{not}
 renumbered here. Results proved in a companion Part are cited as
 [RNR-I]/[RNR-II] (Parts~I/II): [RNR-I] is Part~I (framework, type taxonomy,
@@ -117,7 +120,7 @@ the bare number, which is unambiguous because the numbering is shared across
 the series. The one internal cross-reference label of the whole series
 (\texttt{eq:G1chain}) lives in this Part.}
 
-\textbf{7.3 Prerequisites (restated from the companion Parts)}
+\textbf{P. Prerequisites (restated from the companion Parts)}
 
 This section collects, statement-only and with provenance tags, the results
 this Part builds on. Proofs are in the cited companion Part.
@@ -139,7 +142,7 @@ for a source of entropy rate $h$ under an ideal predictor. The lossy variant
 ([RNR-I], and Theorem 7.7 below) replaces the per-sub-block lossless coder by
 a Shannon-optimal rate-distortion encoder at rate $R(D)$.
 
-\emph{The lossy operational model (Theorem 7.7 of [RNR-I]/[RNR-II]).} Let
+\emph{The lossy operational model (Theorem 7.7 of [RNR-II]).} Let
 $X=(X_n)_{n\ge1}$ be stationary, exp-mixing, finite-alphabet, with sub-block
 spacing $K=\mathrm{polylog}(N)$, and let $d_H:\Sigma\times\Sigma\to\{0,1\}$ be
 Hamming distortion. For a per-position budget $D\in[0,1-1/|\Sigma|]$ let
@@ -4024,7 +4027,7 @@ IEEE Transactions on Information Theory (Gauss--Markov rate-distortion
 dispersion, achievability side).
 \textbf{{[}118{]}} Zhu, J., and Alajaji, F. Rate-distortion analysis of
 the binary memoryless source under the Hamming distortion measure
-(second-order / dispersion characterisation).
+(second-order / dispersion characterisation). Preprint.
 \textbf{{[}119{]}} Hafouta, Y. (2020). Explicit Berry--Esseen and
 Edgeworth expansions for inhomogeneous Markov chains and
 locally-dependent random variables. Nonlinearity, 33; arXiv:1903.04018.
@@ -4082,11 +4085,11 @@ and convexity of the spectral bound and the type. Mathematische
 Zeitschrift, 180(3), 265-273.
 
 \textbf{{[}RNR-I{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
-Part I: Framework, Type Taxonomy, Achievability--Converse Matrix, and
-Hardness. Companion paper (RNR series, Part I).
+Part I: Framework, Constructions, and Complexity. Companion paper (RNR
+series, Part I).
 
 \textbf{{[}RNR-II{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
-Part II: Random Access and Deviation Theory for RNR Archives. Companion
-paper (RNR series, Part II).
+Part II: Random Access, Finite-Block Surprisal, and the Deviation
+Hierarchy. Companion paper (RNR series, Part II).
 
 \end{document}

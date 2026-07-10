@@ -189,7 +189,7 @@ is an open empirical question (§11). Companion parts develop the random-access 
 \emph{Numbering follows the unified RNR series; this Part contains
 Sections 1--6, the composition and mode-selection lead of Section 7
 (Theorems 7.1/7.1b--7.1d and the runtime-parameter text of §7.2),
-Sections 8--9, the practical core §§10.1--10.6, and Sections 11--13.
+Sections 8--9, the practical core §§10.1--10.5, and Sections 11--13.
 Results proved in a companion Part are cited as [RNR-II]/[RNR-III]
 (Parts II/III): Part II develops the random-access and deviation theory
 (Theorems 7.2--7.33, 7.35, 7.36; §§10.7--10.8), and Part III the
@@ -197,12 +197,72 @@ operational rate--distortion dispersion (the §7.34 family). Section and
 theorem numbers are preserved across the series, so a companion Part is
 referenced by its original number (e.g.\ Theorem 7.15 of [RNR-II]); the
 §7.2 runtime-parameter subsection of this Part and Theorem 7.2 of [RNR-II]
-are distinct objects that share a number by this convention.}
+are distinct objects that share a number by this convention. Likewise,
+Definitions 10.2/10.3, Theorems 10.3--10.6 and Remark 10.3a are blocks of
+[RNR-II] (§§10.7--10.8), restated statement-only in the Prerequisites
+below, and are distinct from this Part's own §10.3--§10.4 subsections.}
 
 \textbf{Keywords:} lossless compression, neural compression, side
 information, Slepian--Wolf coding, syndrome coding, positional coding,
 enumerative coding, entropy‑field coding, tensor coding, Minimum
 Description Length, bits‑back coding, RNR Coding.
+
+\textbf{P. Prerequisites (restated from Part II)}
+
+This Part is self-contained except for the random-access architecture
+blocks of §§10.7--10.8, which are stated and proved in [RNR-II] and
+restated here statement-only, and two complexity remarks of the §7.15
+arc. \emph{Caution on numbering:} this Part's own §10.3 and §10.4 are
+\emph{sections}; the blocks below carry their original [RNR-II] numbers
+per the series convention.
+
+\emph{Definition 10.2 of [RNR-II] ($W$-bounded predictor; statement
+only).} A predictor $M$ is $W$-bounded if its output $Y_i = M(C_i)$ at
+position $i$ depends only on the previous $W$ bytes of public context,
+$Y_i = M(X_{i-W}, \ldots, X_{i-1})$, when the context is built
+incrementally from decoded sub-blocks; $W$ is a structural property of
+$M$'s architecture, not an inference-time parameter. Fixed-window
+transformers, order-$W$ $n$-gram and finite-state predictors, and
+bounded receptive-field feedforward networks are $W$-bounded;
+RNN/LSTM/state-space models are not in general --- Theorem 10.4 of
+[RNR-II] covers those.
+
+\emph{Definition 10.3 of [RNR-II] (sync point; statement only).} A sync
+point at source position $P$ (a)~resets the predictor context to a
+known initial state independent of bytes $[0, P)$, and (b)~flushes the
+entropy coder at the encoder and resets it at the decoder, so decoding
+can begin at the sync point's bit offset in the repair stream $R$ with
+no prior bits of $R$. Under the default uniform spacing, sync points
+sit at byte positions $jK$ (offsets implicit) and a seek index of at
+most $\lceil |X|/K \rceil \cdot \lceil \log_2 L(R) \rceil$ bits maps
+sync identifiers to bit offsets; [RNR-II] also defines a non-uniform
+variant with explicitly stored offsets.
+
+\emph{Theorem 10.3 of [RNR-II] (byte-granular random access; statement
+only).} For any per-position sequential RNR coding mode (Type-I, the
+per-byte sequential Type-III-B strategy (iii) of §6.3, or Type-III-A
+composition with sync points aligned to tile boundaries --- whole-block
+Type-II partition-rank coding is excluded and retains only sub-block
+granularity, Remark 10.3a of [RNR-II]), with $M$ a $W$-bounded
+predictor satisfying Theorem 10.1 of this Part, uniform sync spacing
+$K$, and a predictor probability floor $\eta > 0$: reading $k$
+consecutive bytes from any position costs one seek-index probe of
+$O(\log L(R))$ bits plus at most $K + k$ decoded positions (of which at
+most $K$ are discarded warm-up), i.e.\ $O(\log L(R) + (K + k) \cdot
+\mathrm{cost}(M))$ total work.
+
+\emph{Theorem 10.4 of [RNR-II] (non-$W$-bounded predictors; pointer).}
+For RNN/LSTM/state-space predictors, a predictor state snapshot stored
+at each sync point restores the Theorem 10.3 access pattern at the cost
+of the snapshot storage. Theorems 10.5 and 10.6 of [RNR-II] give the
+block-device interface and hardware-conformance corollaries.
+
+\emph{Remarks 7.15c and 7.15g of [RNR-II] (pointers).} For a
+hidden-state (HMM or neural) predictor, the exact finite-block coded
+length is $\varepsilon$-approximable in polynomial time under filter
+stability (Remark 7.15c of [RNR-II]) and $\mathrm{FP}^{\#P}$-complete to compute
+exactly (Remark 7.15g of [RNR-II]); these are used by Remark 6.6c and in the proof
+of Theorem 7.1b.
 
 \textbf{1. Introduction}
 
@@ -568,17 +628,17 @@ This article makes the following contributions.
   $O(\log(|X|/K) \cdot (\log |X| + \log L(R)))$ bits;
   whole-block Type-II/III-B partition-rank modes get only
   sub-block-granular access with a separate
-  $O(K \cdot \mathrm{unrank}(K))$ per sub-block, Remark 10.3a)
+  $O(K \cdot \mathrm{unrank}(K))$ per sub-block, Remark 10.3a of [RNR-II])
   --- polylogarithmic in archive size $|X|$ once sync-point spacing
   $K$, read window $k$, predictor cost $\mathrm{cost}(M)$, and
-  $\log L(R)$ are held fixed (or polylog in $|X|$) --- via Theorem 10.3
+  $\log L(R)$ are held fixed (or polylog in $|X|$) --- via Theorem 10.3 of [RNR-II]
   with Definitions 10.2, 10.3 of $W$-bounded predictors and sync points.
   The factor $\mathrm{cost}(M)$ is a single per-position neural-predictor
   evaluation: non-universal (architecture-dependent; characterized below
   via Lemma 5.1b) and the dominant term of the per-query cost, so the
   ``polylog in $|X|$'' headline bounds the dependence on archive size
   with $\mathrm{cost}(M)$ fixed, not the per-query cost in absolute terms.
-  Theorem 10.4 covers non-$W$-bounded predictors via state snapshots.
+  Theorem 10.4 of [RNR-II] covers non-$W$-bounded predictors via state snapshots.
   Lemma 5.1b strengthens this under exponentially decaying
   conditional mutual information of the form
   $I(X_n; X_{1:n-W-1} \mid X_{n-W:n-1}) \leq C \rho^W$ (eq.\ 5.8;
@@ -625,13 +685,13 @@ This article makes the following contributions.
   capability or ratio is empirical and is the subject of §11.
 \item
   Block-device and read-only filesystem deployment as direct
-  corollaries (Theorems 10.5 and 10.6 in §10.8): an OS-level driver
+  corollaries (Theorems 10.5 and 10.6 in §10.8 of [RNR-II]): an OS-level driver
   can serve LBA-indexed read requests with \emph{per-query} cost
   polylogarithmic in archive size $|X|$ in the parameter regime
   where the sync-point spacing $K$, read window $k$, predictor cost
   $\mathrm{cost}(M)$, and seek-index entry width $\log L(R)$ are
   fixed or grow at most polylogarithmically in $|X|$, and
-  additionally $L(R) = \mathrm{poly}(|X|)$ (Theorem 10.5). Note
+  additionally $L(R) = \mathrm{poly}(|X|)$ (Theorem 10.5 of [RNR-II]). Note
   that the driver's resident memory still includes the seek index
   itself, which is $\Theta(|X|/K)$ entries for any fixed $K$ ---
   linear in $|X|$, not polylogarithmic; for $|X| = 1$ GiB and
@@ -640,7 +700,7 @@ This article makes the following contributions.
   predictor can
   be required to
   run bit-exactly on any hardware target satisfying the conformance
-  specification of Theorem 10.1 (Theorem 10.6). Specific target
+  specification of Theorem 10.1 (Theorem 10.6 of [RNR-II]). Specific target
   classes named in the spec (CPU scalar, CPU SIMD including
   AVX-512, GPU integer Tensor Cores, integer NPUs) are engineering
   assertions about what targets satisfy the spec, not theorems;
@@ -656,7 +716,7 @@ This article makes the following contributions.
   parameter values.
 \item
   The random-access and deviation-theory development of Section 7
-  (Theorems 7.2--7.33, 7.35, 7.36), which bridges the abstract framework
+  (Theorems 7.2--7.33, 7.35, 7.36 of [RNR-II]), which bridges the abstract framework
   to a practical neural-LM compression pipeline with byte-granular random
   access, source-coding extensions, and the concentration/deviation
   hierarchy for archive-size fluctuations, is the subject of the companion
@@ -995,7 +1055,7 @@ $L(M)$). For decoder reproducibility under finite-precision
 arithmetic, the $U_m(t)$ values must be computed in the same
 deterministic representation on encoder and decoder (e.g., as the
 bit-exact integer outputs of the same conforming inference engine
-per Theorem 10.6); two encoders that produce $U_m(t)$ in
+per Theorem 10.6 of [RNR-II]); two encoders that produce $U_m(t)$ in
 floating-point and round differently would tie-break differently
 and break decoder reproducibility. The selection is then
 deterministic and decoder-reproducible. The archive stores the
@@ -1725,7 +1785,7 @@ $\varepsilon_N$. \hfill$\blacksquare$
 $W$-Markov rate plus sync overhead, with byte-granular random
 access).} \emph{Let $X \sim D_N$ be a block of $N$ symbols over a
 $\sigma$-symbol alphabet, and let $M$ be a $W$-bounded predictor
-(Definition 10.2) that at each position $i$ outputs the order-$W$
+(Definition 10.2 of [RNR-II], restated in the Prerequisites) that at each position $i$ outputs the order-$W$
 Markov chain-rule conditional distribution
 $P(x_i \mid x_{i-W}, \dots, x_{i-1}, C)$ (necessarily depending on
 at most the last $W$ bytes, by Definition 10.2). Without sync
@@ -1736,17 +1796,17 @@ H_W(D_N) \;:=\; \sum_{i=1}^N H(X_i \mid X_{\max(1, i-W)}, \dots, X_{i-1}, C)
 \;\;\leq\;\; N \log_2 \sigma,
 \]
 \emph{plus $\varepsilon_N \cdot N$ entropy-coder redundancy. With
-sync points at spacing $K$ (Definition 10.3) inserted to enable
+sync points at spacing $K$ (Definition 10.3 of [RNR-II]) inserted to enable
 byte-granular random access, the coding additionally pays a
 sync-overhead term $\Delta_{\mathrm{sync, total}} \leq m \cdot S
 \cdot W \cdot \log_2(1/\eta)$ bits (the per-sync-point cold-context
-excess analyzed in §10.7, with $S$ symbols per source byte for the
+excess analyzed in §10.7 of [RNR-II], with $S$ symbols per source byte for the
 mode, $\eta$ the probability floor, and $m$ the sync-point count
 as in Definition 10.3). The total expected length is therefore
 $H_W(D_N) + \Delta_{\mathrm{sync, total}} + \varepsilon_N \cdot N$.
 In general $H_W(D_N) \geq H(D_N)$ with equality iff $D_N$ is
 order-$W$ Markov given $C$. Combined with sync points, this coding
-admits byte-granular random access via Theorem 10.3 at
+admits byte-granular random access via Theorem 10.3 of [RNR-II] at
 $O(\log L(R) + (K+k) \cdot \mathrm{cost}(M))$ per query.}
 
 \emph{\textbf{Proof.}} Without sync points, the order-$W$ Markov
@@ -1779,7 +1839,7 @@ per-query cost. \hfill$\blacksquare$
 amortized separation between factorized (marginal-only) and joint
 coding of the linear-code family was stated using whole-block
 partition-rank coding, which gives only sub-block-granular random
-access (Remark 10.3a). Lemma 5.1a shows that per-position sequential
+access (Remark 10.3a of [RNR-II]). Lemma 5.1a shows that per-position sequential
 coding under an order-$W$ Markov predictor achieves rate
 $H_W(D_N)$, which is intermediate between the factorized rate
 $\sum_i H_{\mathrm{marg}}(X_i)$ (Markov order 0) and the full joint
@@ -1802,7 +1862,7 @@ this gap (at the cost of higher per-position predictor evaluation
 cost). The Theorem 5.4 linear-code family is generally not order-$W$
 Markov for small $W$; recovering its full $\Theta(N)$ separation with
 byte-granular access requires either $W \geq \Theta(N)$ (eliminating
-the polylog advantage) or sub-block restructuring (Remark 10.3a).
+the polylog advantage) or sub-block restructuring (Remark 10.3a of [RNR-II]).
 
 \textbf{Lemma 5.1b (Logarithmic $W$ suffices under exponential
 conditional-MI decay).} \emph{Let $X = (X_n)_{n \geq 1}$ be a
@@ -1844,7 +1904,7 @@ overhead is $\Theta(N \log N \log_2(1/\eta))$, linear in $N$ with
 a log factor.
 The per-position rate gap $H_{W_N}(D_N) - H(D_N) \leq 1$ from the
 truncated window is itself $O(1)$ in $N$, independent of $K$.
-The byte-granular random-access cost from Theorem 10.3 becomes
+The byte-granular random-access cost from Theorem 10.3 of [RNR-II] becomes
 $O(\log L(R) + (K + k) \cdot \mathrm{cost}(M_{W_N}))$ per query. The per-position
 predictor-evaluation cost $\mathrm{cost}(M_{W_N})$ depends on the
 architecture: a transformer with context $W_N$ requires
@@ -1916,10 +1976,10 @@ Lemma 5.1b only requires (5.8).
 \textbf{Lemma 5.1c (Tight cold-context excess for order-$W'$ Markov
 with $W' \leq W$).} \emph{Let $X = (X_n)_{n \geq 1}$ be a strictly
 stationary order-$W'$ Markov process on a finite alphabet, and let
-$M$ be a $W$-bounded predictor (Definition 10.2) with $W \geq W'$
+$M$ be a $W$-bounded predictor (Definition 10.2 of [RNR-II]) with $W \geq W'$
 that outputs the true conditional $P(X_i \mid X_{i-W:i-1})$ at each
 position. In the per-position sequential coding scheme of Lemma 5.1a
-on sub-blocks of size $K$ starting at sync points (Definition 10.3),
+on sub-blocks of size $K$ starting at sync points (Definition 10.3 of [RNR-II]),
 the expected cold-context excess per sync point equals exactly}
 \[
 \Delta_{\mathrm{sync, per-pt}}
@@ -2135,7 +2195,7 @@ random-access scheme on the same sub-block partition can do strictly
 better. The $(m-1) \cdot \delta_{W'}$ excess is the unavoidable
 ``cost of byte-granular random access'' for order-$W'$ Markov sources
 under the sub-block partition. Schemes that relax sub-block
-independence (e.g., share state across sync points via Theorem 10.4
+independence (e.g., share state across sync points via Theorem 10.4 of [RNR-II]
 state snapshots) operate outside this framework and are not bounded
 by this lemma.
 
@@ -4797,7 +4857,7 @@ nibble under $Q^{L \mid H}(\cdot \mid i, h_i, C)$ via per-position
 arithmetic coding. Strategies (i) and (ii) achieve the
 multi-information rate of Theorem 5.5 in the limit but use
 whole-block combinatorial-rank encodings; strategy (iii) is a
-per-position sequential stream that admits Theorem 10.3's
+per-position sequential stream that admits the byte-granular access of Theorem 10.3 of [RNR-II], i.e.\ that theorem's
 byte-granular random access.
 
 \textbf{Theorem 6.3 (Type-III-B mutual-information advantage).}
@@ -5576,8 +5636,8 @@ Type-III-B converse Theorem 6.3b, is not new machinery but the
 \emph{tightness} it certifies). The floor $H(X^N)$ is an
 information-theoretic \emph{benchmark}, not an efficiently computable
 encoder target: its exact value is $\#P$-hard --- $\mathrm{FP}^{\#P}$-complete
---- to compute (Remark 7.15g), $\varepsilon$-approximable in polynomial time
-only under filter stability (Remark 7.15c); the bound's \emph{validity} is
+--- to compute (Remark 7.15g of [RNR-II]), $\varepsilon$-approximable in polynomial time
+only under filter stability (Remark 7.15c of [RNR-II]); the bound's \emph{validity} is
 of course independent of its computational cost, and the operative object the
 code attains is the achievable scheme (the realized container, one forward
 pass per symbol), not the exact optimum. The matching \emph{achievability}
@@ -5723,7 +5783,7 @@ then doing structural and computational work (random access, parse
 locality, a smaller working model), not rate work --- the same separation
 between a rate-bearing entropy stage and an access- or structure-bearing
 layout that recurs in the random-access architecture of \S10
-(Theorem 10.3). In particular the
+(Theorem 10.3 of [RNR-II]). In particular the
 Charikar et al.\ (2005) constant-factor grammar-size lower bounds do not
 bear on the rate here: a grammar a constant factor larger than the
 smallest grammar still occupies only $o(N)$ header bits, and \textsc{Lz78}
@@ -6672,9 +6732,9 @@ codeword is uniquely decodable for $X$, so McMillan and the entropy
 bound give $\mathbb{E}[L_{\mathrm{RNR}}] \ge H(X^N)$, and the
 entropy-rate floor (Theorem 6.6c) gives $H(X^N) \ge N h(X)$ (the floor
 $H(X^N)$ is a benchmark, not a computable encoder target --- its exact
-value is $\mathrm{FP}^{\#P}$-complete, Remark 7.15g, and only
-$\varepsilon$-approximable in poly time under filter stability, Remark
-7.15c; the achievability above attains the realized scheme, not the exact
+value is $\mathrm{FP}^{\#P}$-complete (Remark 7.15g of [RNR-II]), and only
+$\varepsilon$-approximable in poly time under filter stability (Remark
+7.15c of [RNR-II]); the achievability above attains the realized scheme, not the exact
 optimum). Hence
 $h(X) \le \tfrac1N \mathbb{E}[L_{\mathrm{RNR}}] \le \tfrac1N
 \mathbb{E}[L_{\mathrm{IIIC}}] + o(1) \to h(X)$. The almost-sure statement
@@ -6926,7 +6986,7 @@ $\approx 79\,\mathrm{MB}$ / $12.0\times$ figure of Theorem 7.15 of [RNR-II] is a
 bitstream-only rate, and charging the $\approx 140\,\mathrm{GB}$
 predictor leaves a net saving only once the combined amortized volume
 exceeds $V^*\approx 152\,\mathrm{GB}$ (the ``Side-information framing
-and model overhead'' caveat in Theorem 7.15 derives $V^*$; the table
+and model overhead'' caveat in Theorem 7.15 of [RNR-II] derives $V^*$; the table
 below collates all four regimes).
 
 \emph{Consolidated model-inclusive vs.\ amortized accounting (collation
@@ -7068,7 +7128,7 @@ are, with their paper-side definition or bound:
   4\,KiB subblocks plus $\approx0.1\%$ offsets).
 \item[(e)] $\mu$, the metadata --- mode-flag stream and fallback
   headers (§10.4) and, when seekable random access is used, the seek
-  index of §10.7. By Theorem 8.1 a fallback path is mandatory, so
+  index of §10.7 [RNR-II]. By Theorem 8.1 a fallback path is mandatory, so
   $\mu>0$ always; §10.4/§10.7 bound it.
 \end{itemize}
 \emph{Consistency with the existing accounting.} Inequality (10.1) does
@@ -7470,7 +7530,7 @@ is hopelessly loose; see T7.15 worked-example dual-band discussion).
 This is a $12.0\times$ \emph{bitstream-rate}
 compression (matching Delétang et al.\ Table 1), \emph{exclusive} of
 the predictor itself; see the ``Side-information framing and model
-overhead'' caveat in §7 for the amortization framing. Under
+overhead'' caveat of Theorem 7.15 [RNR-II] for the amortization framing. Under
 amortization across $V \gtrsim 152\,\mathrm{GB}$ of compressible text
 (per the break-even computation in T7.15's caveat), the per-archive
 self-contained compression remains net-positive. This prediction
@@ -7485,7 +7545,7 @@ byte-level transformers) refer to the small-model regime; T7.15's
 two are quantitatively consistent: rate decreases monotonically with
 model size, following the Hoffmann et al.\ 2022 (Chinchilla-paper)
 scaling law $L(N_{\mathrm{params}}) \sim N_{\mathrm{params}}^{-\alpha}$
-with $\alpha \approx 0.34$ (cited and used in Theorem 7.21).
+with $\alpha \approx 0.34$ (cited and used in Theorem 7.21 of [RNR-II]).
 
 \textbf{12. Related work}
 
@@ -7566,7 +7626,7 @@ neural network.
 The 27-theorem §7 framework of the companion Part [RNR-II] draws on several established lines outside
 the immediate compression literature, listed here for completeness.
 
-\emph{Concentration of measure and martingales.} Theorem 7.14's
+\emph{Concentration of measure and martingales.} Theorem 7.14's ([RNR-II])
 Doob-martingale tail bound uses Azuma (1967) \emph{T\^ohoku Math.\
 J.} 19(3):357 and Hoeffding (1963) \emph{J.\ Amer.\ Stat.\ Assoc.}
 58(301):13 as base, with McDiarmid (1989) \emph{Surveys in
@@ -7577,7 +7637,7 @@ bounds under polynomially-slow mixing would use Rio (2000)
 \emph{Th\'eorie asymptotique des processus al\'eatoires faiblement
 d\'ependants} or Samson (2000) \emph{Ann.\ Probab.} 28(1):416.
 
-\emph{Cache analysis.} Theorem 7.20's cache-aware decoder uses the
+\emph{Cache analysis.} Theorem 7.20's ([RNR-II]) cache-aware decoder uses the
 classical LRU competitive ratio $C/(C-h+1)$ of Sleator and Tarjan
 (1985) \emph{Comm.\ ACM} 28(2):202--208 ``Amortized efficiency of
 list update and paging rules''. The static-top-popularity hit rate
@@ -7586,7 +7646,7 @@ INFOCOM} ``Web caching and Zipf-like distributions'' result with
 the correct asymptotics $\rho_C \sim (C/m)^{1-\alpha}$
 (divergent-normalizer $0<\alpha<1$) and
 $\rho_C \to 1 - C^{1-\alpha}/((\alpha-1)\zeta(\alpha))$
-(convergent-normalizer $\alpha>1$). Theorem 7.24's IRM hypothesis
+(convergent-normalizer $\alpha>1$). Theorem 7.24's ([RNR-II]) IRM hypothesis
 follows the Independent Reference Model of Fagin (1977)
 \emph{J.\ Comput.\ Sys.\ Sci.} 14(2):222--250 ``Asymptotic miss
 ratios over independent references''; foundational LRU+IRM analysis
@@ -7597,11 +7657,11 @@ Paganini (2018) \emph{Queueing Systems} 88(3):207--241 (online 2017)
 give modern timer-based-cache hit-rate analysis under general arrival
 processes.
 
-\emph{Scaling laws for neural predictors.} Theorem 7.15's numerical
+\emph{Scaling laws for neural predictors.} Theorem 7.15's ([RNR-II]) numerical
 prediction uses the empirical bits-per-byte rate of Delétang et al.\
 (2024) ``Language Modeling Is Compression'', arXiv:2309.10668,
 ICLR 2024 (Table 1: Chinchilla-70B on enwik9 at $\approx 0.664$ bpb,
-$12.0\times$ raw compression). Theorem 7.21's predictor-archive size
+$12.0\times$ raw compression). Theorem 7.21's ([RNR-II]) predictor-archive size
 trade-off uses the Hoffmann et al.\ (2022)
 \emph{Training Compute-Optimal Large Language Models}
 (``Chinchilla paper'', NeurIPS 2022) scaling law with $\alpha
@@ -7618,7 +7678,7 @@ unadjusted-LM-as-compressor metrics cite Zhang et al.\ (2024)
 \emph{L3TC: Leveraging RWKV for Learned Lossless Low-Complexity
 Text Compression}, arXiv:2412.16642.
 
-\emph{Authenticated encryption.} Theorem 7.23's per-sub-block MAC
+\emph{Authenticated encryption.} Theorem 7.23's ([RNR-II]) per-sub-block MAC
 uses the Bellare--Namprempre (2000)
 \emph{Authenticated Encryption: Relations among Notions and
 Analysis of the Generic Composition Paradigm}, ASIACRYPT 2000,
@@ -7629,22 +7689,22 @@ Krawczyk (1996) \emph{CRYPTO}; Poly1305 in Bernstein (2005)
 Neves, and Wilcox-O'Hearn (2020) ``BLAKE3: one function, fast
 everywhere'' (specification and reference implementation).
 
-\emph{Content-defined chunking.} Theorem 7.17's insertion/deletion
+\emph{Content-defined chunking.} Theorem 7.17's ([RNR-II]) insertion/deletion
 robustness uses the content-defined chunking of Rabin (1981)
 ``Fingerprinting by random polynomials'', Harvard Tech.\ Report
 TR-15-81, as deployed in LBFS (Muthitacharoen, Chen, and Mazi\`eres
 2001) \emph{Proc.\ SOSP} for distributed file systems.
 
-\emph{Functional and multi-source coding.} Theorem 7.8 (functional
+\emph{Functional and multi-source coding.} Theorem 7.12 of [RNR-II] (functional
 compression) uses the characteristic-graph entropy of Orlitsky and
-Roche (2001) \emph{IEEE Trans.\ Inf.\ Theory} 47(3):903; Theorem 7.7
+Roche (2001) \emph{IEEE Trans.\ Inf.\ Theory} 47(3):903; Theorem 7.9 of [RNR-II]
 (successive refinement) uses Equitz and Cover (1991) \emph{IEEE
-Trans.\ Inf.\ Theory} 37(2):269; Theorem 7.12 (multi-source joint
-coding) uses Lauritzen and Spiegelhalter (1988) \emph{J.\ Royal
+Trans.\ Inf.\ Theory} 37(2):269; Lemma 5.6h (graphical-model total
+correlation) uses Lauritzen and Spiegelhalter (1988) \emph{J.\ Royal
 Stat.\ Soc.\ B} 50(2):157 for the junction-tree entropy
 decomposition.
 
-\emph{Universal online compression.} Theorem 7.6 uses
+\emph{Universal online compression.} Theorem 7.6 of [RNR-II] uses
 Krichevsky--Trofimov estimator regret bounds (Krichevsky and
 Trofimov 1981 \emph{IEEE Trans.\ Inf.\ Theory} 27(2):199), which
 form the foundation for universal-coding regret analysis.
@@ -7838,7 +7898,7 @@ point to the relevant theorems.
   sequential Type-III-B, or Type-III-A composition over
   per-position sequential per-tile modes) --- resolved by
   Definitions 10.2 ($W$-bounded predictor) and 10.3 (sync point,
-  including entropy-coder flush) and Theorem 10.3. The achievable
+  including entropy-coder flush) and Theorem 10.3 of [RNR-II]. The achievable
   rate for byte-granular random access is the $W$-truncated
   conditional rate $H_W(D_N)$ (Lemma 5.1a), strengthened by
   Lemma 5.1b for exponentially conditional-MI-decaying stationary
@@ -7874,7 +7934,7 @@ point to the relevant theorems.
   Type-III-B direct or hierarchical partition strategies) is
   excluded from Theorem 10.3 and gives only sub-block-granular
   random access at $O(K \cdot \mathrm{unrank}(K))$ per requested
-  sub-block (Remark 10.3a). Non-$W$-bounded
+  sub-block (Remark 10.3a of [RNR-II]). Non-$W$-bounded
   predictors (LSTM, state-space) are covered by Theorem 10.4 via an
   augmented state snapshot of size $L(\text{state})$ per sync
   point; the corresponding cost adds $L(\text{state})$ to the
@@ -7901,14 +7961,14 @@ point to the relevant theorems.
   their block-coupled latent/ANS state.
 \item
   Block-device and read-only filesystem deployment with
-  hardware-target portability --- resolved by Theorem 10.5
+  hardware-target portability --- resolved by Theorem 10.5 of [RNR-II]
   (block-device interface: an OS-level driver serves LBA-indexed
   read requests with the same output-sensitive cost as Theorem 10.3,
   polylogarithmic in $|X|$ only in the same fixed/polylog $K$, $k$,
-  $\mathrm{cost}(M)$, $\log L(R)$ parameter regime) and Theorem 10.6 (hardware-target
+  $\mathrm{cost}(M)$, $\log L(R)$ parameter regime) and Theorem 10.6 of [RNR-II] (hardware-target
   portability: bit-exact predictor execution is guaranteed across
   any pair of targets each satisfying the (a)--(g) conformance
-  conditions of Theorem 10.6; whether specific named target classes
+  conditions of Theorem 10.6 of [RNR-II]; whether specific named target classes
   --- CPU scalar, CPU SIMD, GPU integer Tensor Cores, integer NPUs
   --- actually conform is an engineering claim per target, not a
   corollary of the theorem). The copy-on-write
@@ -7918,18 +7978,18 @@ point to the relevant theorems.
   Byte-granular RA architecture with neural predictor and concrete
   numerical end-to-end synthesis --- resolved by the §7.2--7.28
   framework (26 theorems plus corollaries):
-  \emph{architecture}: Theorem 7.2 establishes the basic sub-block
+  \emph{architecture}: Theorem 7.2 of [RNR-II] establishes the basic sub-block
   byte-granular RA construction with cost
   $O(\log L(R) + K \cdot \mathrm{cost}(M'))$ per query and total
-  $N H_{M'} + m \delta_\infty + O(m \cdot p)$, with Theorem 7.5
+  $N H_{M'} + m \delta_\infty + O(m \cdot p)$, with Theorem 7.5 of [RNR-II]
   giving optimal $K^* = \Theta(\sqrt{N})$ for balanced workloads.
   \emph{Source-coding extensions} are theorems: T7.6 (universal
   online with Krichevsky--Trofimov regret), T7.7 (successive
   refinement), T7.8 (functional compression via Orlitsky--Roche
   characteristic-graph entropy), T7.9 (lossy RNR with distortion
   budget $D$ via Shannon $R(D)$), T7.10 (Slepian--Wolf/Wyner--Ziv
-  side-information composition), and the user-originated lossy+ECC
-  Corollary 7.11. \emph{Multi-source and structural} are theorems:
+  side-information composition), and the lossy+ECC
+  Corollary 7.11 of [RNR-II]. \emph{Multi-source and structural} are theorems:
   T7.12 (junction-tree entropy decomposition for multi-source
   joint), T7.13 (per-sub-block ECC for noisy-storage RA with
   Shannon-optimal expansion $1/(1 - h(\varepsilon))$). \emph{Concentration
@@ -7982,7 +8042,7 @@ point to the relevant theorems.
   distributional refinements}: T7.27 (tight space-time product
   converse $C(K)\cdot S(K)=\Theta(N\log N\cdot\mathrm{cost}(M))$ for
   the sub-block class, with T7.27$'$ refuting the general-scheme
-  analogue and Corollary 7.27c recovering it on the predictor-faithful
+  analogue and Corollary 7.27c of [RNR-II] recovering it on the predictor-faithful
   class) and T7.28 (non-asymptotic Berry--Esseen CLT for
   $L^{\mathrm{rep}}$ at Kolmogorov rate $O(N^{-1/2}(\log N)^2)$).
   The §7.24 history
@@ -8487,7 +8547,7 @@ individual entries below give the full detail.
   the $E_{12}$ problem and remain research-scale open.
 
   \emph{PIH-under-ETH reduction with refined analysis (new direction,
-  2026).} A multi-agent brainstorm during the present manuscript
+  2026).} A brainstorming session during the present manuscript
   revision proposed reducing from the constant-gap parameterized
   CSP of Guruswami--Lin--Ren--Sun--Wu (arXiv:2311.16587, ``PIH under
   ETH'', 2023), which gives ETH-hardness with absolute soundness gap
@@ -8560,8 +8620,8 @@ individual entries below give the full detail.
   earlier ``padding-bit absorbs packing noise'' framing: the absorption
   is \emph{additive but not multiplicative} under row-stochastic $F$.
   The brainstorm's original Angle 1 missed the dilution; a
-  follow-up adversarial review (independent fresh-context agent with
-  web-search 2020--2025 literature) identified the fix via good
+  follow-up independent adversarial review (against the 2020--2025
+  literature) identified the fix via good
   binary codes on value bits, with the explicit parameter constraint
   $\ell \geq n^{1/3}$ to balance identifier and value contributions.
   Full formalisation requires technical work on constraint-aware
@@ -8652,13 +8712,13 @@ individual entries below give the full detail.
   with a convergence guarantee matching the floating-point
   baseline, on standard problems, is open.
 \item
-  Sharpening the constant $\gamma_{\rm LRU}$ in Theorem 7.26's
+  Sharpening the constant $\gamma_{\rm LRU}$ in Theorem 7.26's ([RNR-II])
   Lezaud Chernoff bound. The crude Dobrushin-coupling lower bound
   $\gamma_{\rm LRU} \geq \pi_{\rm min}$ gives a positive but
   conservative spectral gap; tighter explicit bounds via the
   Knudsen-Tsitsiklis 1990 stack-distance representation, or via
   Aldous-Diaconis 1987 coupling for permutation-like Markov chains
-  on LRU stack states, would tighten the constant. Theorem 7.26's
+  on LRU stack states, would tighten the constant. Theorem 7.26's ([RNR-II])
   qualitative $\sqrt{Q}$-Hoeffding scaling holds for any positive
   $\gamma_{\rm LRU}$; only the multiplicative constant is at stake.
   The non-IRM (workload-dependent) case --- where LRU concentration
@@ -8682,7 +8742,7 @@ individual entries below give the full detail.
   question whether this product holds for the \emph{general}
   random-access class --- arbitrary decoders that need not partition the
   archive into sub-blocks --- is now settled in three honest pieces.
-  \emph{(1) Refutation for Markov-expressible sources (Theorem 7.27$'$,
+  \emph{(1) Refutation for Markov-expressible sources (Theorem 7.27$'$ of [RNR-II],
   proved).} The universal product is \emph{false}: for stationary
   order-$k$ Markov sources, the Ferragina--Venturini (SODA 2007;
   \emph{Theoret.\ Comput.\ Sci.}\ 372(1):115) entropy-bounded storage
@@ -8693,10 +8753,10 @@ individual entries below give the full detail.
   sub-block restriction of Theorem 7.27 is thus essential, not a
   technical artefact: the product is a property of the
   predictor-sequential decode architecture. \emph{(2) Positive maximal
-  class (Corollary 7.27c, proved).} The $\mathrm{cost}(M)$-bearing
+  class (Corollary 7.27c of [RNR-II], proved).} The $\mathrm{cost}(M)$-bearing
   product $C_{\mathrm{work}} \cdot S \geq (1-\epsilon)(1-o(1)) N \cdot
   \mathrm{cost}(M) \cdot \log N$ holds exactly on the
-  \emph{predictor-faithful} class (Definition 7.27b: dense predictor
+  \emph{predictor-faithful} class (Definition 7.27b of [RNR-II]: dense predictor
   recomputation is forced, the decoder storing $M$-outputs/states at no
   more than an $\epsilon$ fraction of any decode window). This class
   \emph{strictly contains} both Definition 10.3 sub-block schemes
@@ -8704,11 +8764,11 @@ individual entries below give the full detail.
   O(1/K)$, the natural non-sub-block witness), and \emph{excludes} the
   Ferragina--Venturini escape ($\epsilon = 1$). \emph{(3) The residual
   open problem (genuinely open, now correctly delimited by Corollary
-  7.27e).} The refutation in piece (1) was stated for finite-order Markov
-  sources. Corollary 7.27e computes the Ferragina--Venturini
+  7.27e of [RNR-II]).} The refutation in piece (1) was stated for finite-order Markov
+  sources. Corollary 7.27e of [RNR-II] computes the Ferragina--Venturini
   redundancy-vs-order crossover $k_{\mathrm{cross}}(N) = \Theta(\log_2 N /
   \log_2^2\sigma)$ and thereby \emph{corrects} the over-broad reading of
-  Remark 7.27d(ii): for \emph{every fixed} stationary source --- including
+  Remark 7.27d of [RNR-II](ii): for \emph{every fixed} stationary source --- including
   genuinely neural ones with infinite Markov order, and even divergent
   Crutchfield--Feldman excess entropy --- the FV escape \emph{does not}
   close (the optimal build order $k^\star(N) = o(k_{\mathrm{cross}}(N))$
@@ -8718,16 +8778,16 @@ individual entries below give the full detail.
   escape closes \emph{only} for triangular-array sources whose effective
   Markov horizon $k_\epsilon(N)$ outruns the crossover, i.e.\
   $k_\epsilon(N) = \omega(\log_2 N / \log_2^2\sigma)$ for some $\epsilon
-  > 0$ (Corollary 7.27e(b)); at deployment scale on byte data the escape
+  > 0$ (Corollary 7.27e of [RNR-II](b)); at deployment scale on byte data the escape
   is moreover practically closed, since $\rho_1(N) > 1$ bit/symbol for all
-  $N \lesssim 2^{188} \approx 10^{57}$ (Corollary 7.27e(c)). The residual
+  $N \lesssim 2^{188} \approx 10^{57}$ (Corollary 7.27e of [RNR-II](c)). The residual
   genuinely-open
   question is thus pinned to this growing-horizon regime: for an
   escape-\emph{closed} source (horizon $\omega(\log_2 N)$, e.g.\ a model
   whose context window grows with the corpus), is there \emph{some other}
   (non-FV) model-free succinct random-access structure attaining the
-  Theorem 7.2 Shannon-near rate with $o(\sqrt{N})$ query time, or does a
-  converse force $\Omega(\sqrt N)$ query there? Corollary 7.27f advances
+  Theorem 7.2 of [RNR-II] Shannon-near rate with $o(\sqrt{N})$ query time, or does a
+  converse force $\Omega(\sqrt N)$ query there? Corollary 7.27f of [RNR-II] advances
   this on both sides without closing it. \emph{Positively (conditional),}
   it extends the converse from Ferragina--Venturini alone to the
   \textbf{entire known block-context-table family} of $O(1)$-access
@@ -8748,8 +8808,8 @@ individual entries below give the full detail.
   constant-factor-compressible RNR regime. The irreducible open core is
   therefore: \emph{does a \textbf{non-block-context-table} model-free
   succinct structure attain Shannon-near rate with $o(\sqrt N)$ access on
-  growing-horizon sources?} Corollary 7.27e removed the false premise
-  (``neural $\Rightarrow$ FV closes''); Corollary 7.27f delimits the
+  growing-horizon sources?} Corollary 7.27e of [RNR-II] removed the false premise
+  (``neural $\Rightarrow$ FV closes''); Corollary 7.27f of [RNR-II] delimits the
   residual to a single architectural question and shows the $\sqrt N$
   form cannot be forced unconditionally.
 \end{itemize}
@@ -8765,8 +8825,8 @@ see what additional work is required for a deployable system.
 \item
   Reference implementation conformance. Theorems 10.1 and 10.2 specify
   sufficient conditions for bit-exact reproduction under fixed and
-  adaptive predictors; Theorem 10.6 lifts Theorem 10.1 to explicit
-  per-target conformance conditions (a)--(g); Theorems 7.16--7.18
+  adaptive predictors; Theorem 10.6 of [RNR-II] lifts Theorem 10.1 to explicit
+  per-target conformance conditions (a)--(g); Theorems 7.16--7.18 of [RNR-II]
   additionally require that sub-block-parallel encoding produce
   bit-identical archives regardless of thread count or scheduling order.
   A reference implementation meeting all of these, plus a conformance
@@ -8778,7 +8838,7 @@ see what additional work is required for a deployable system.
   Specification}), whose §3 (universal inference requirements R-3.1
   through R-3.8) and §5 (integer-arithmetic specification) encode
   Theorem 10.1's conditions (i)--(iv), §4 the per-target conformance of
-  Theorem 10.6, §7 the adaptive-optimizer conformance of Theorem 10.2,
+  Theorem 10.6 of [RNR-II], §7 the adaptive-optimizer conformance of Theorem 10.2,
   and §12 the conformance test suite (cross-target byte-identity
   acceptance criteria R-12.2.1, R-12.2.3, R-12.2.5); its §14 gives the
   full theorem-to-requirement traceability matrix. The end-to-end
@@ -8818,7 +8878,7 @@ see what additional work is required for a deployable system.
   specification, and an empirical privacy audit. This is a security and
   policy question, not a theorem; out of scope for this paper.
 \item
-  Cache architecture and workload characterisation. Theorems 7.20 and
+  Cache architecture and workload characterisation. Theorems 7.20 of [RNR-II] and
   7.24 provide formulas for cache hit rates and decoder-latency tail
   bounds under Zipf and IRM workloads, respectively. Selecting an
   appropriate cache size~$C$, eviction policy, and per-workload
@@ -8828,7 +8888,7 @@ see what additional work is required for a deployable system.
   this paper; the natural artifact is a workload-aware cache
   configuration guide accompanying a reference decoder.
 \item
-  Per-sub-block MAC key management. Theorem 7.23 guarantees tamper
+  Per-sub-block MAC key management. Theorem 7.23 of [RNR-II] guarantees tamper
   detection given a PRF-based MAC with a secret key. The key
   lifecycle---generation, storage, rotation, revocation, and
   multi-archive key hierarchy---requires a threat model and a
@@ -8837,10 +8897,10 @@ see what additional work is required for a deployable system.
   Out of scope for this paper; the natural artifact is a key-management
   policy document.
 \item
-  Parallel and quantised encoder deployment. Theorems 7.16--7.18
-  establish sub-block-parallel encoding with linear speedup, and
-  Theorems 7.10--7.12 bound the coding-efficiency loss from INT8 and
-  mixed-precision quantisation. Achieving the theoretical speedups on
+  Parallel and quantised encoder deployment. Theorems 7.16--7.18 of [RNR-II]
+  establish sub-block-parallel encoding with linear speedup; the
+  coding-efficiency loss from INT8 and mixed-precision predictor
+  quantisation is not analysed here. Achieving the theoretical speedups on
   specific hardware (GPU warp scheduling, NUMA-aware memory allocation,
   quantisation-aware training pipelines) requires systems-level
   optimisation and benchmarking. This is performance engineering work,
@@ -11190,7 +11250,7 @@ post-pass drives the achieved factor to $\approx1$ on tractable $K$, an honest
 caveat that the worst-case hardness is asymptotic, not generic at small sizes.
 
 \emph{RNR mapping (the decisive item).} In the Type-III-C encoder the
-selection acts inside a sub-block of size $K=\Theta(\sqrt N)$ (Theorem 7.5),
+selection acts inside a sub-block of size $K=\Theta(\sqrt N)$ (Theorem 7.5 of [RNR-II]),
 on a covariance $\Sigma=U\Lambda U^T+\sigma^2 I$ (Lemma 5.6j) whose informative
 spectrum has effective rank $d_{\mathrm{eff}}\ll K$ in the high-SNR regime
 where the Lemma~6.9 gap lives. The principal-submatrix selection admits no
@@ -11285,7 +11345,7 @@ is shift-invariant and bounded by $\tfrac1e g(T^\star)$ on the calibrated
 scale).
 
 \emph{Discrete-deployment refinement and a new open problem (Remarks
-7.15a--7.15b).} The §6.9 picture above is for the Gaussian (bits-back-limit)
+7.15a--7.15b of [RNR-II]).} The §6.9 picture above is for the Gaussian (bits-back-limit)
 field. Remarks 7.15a--7.15b port it to the \emph{discrete} autoregressive
 neural-LM field of Theorem 7.15 of [RNR-II] and record two effects with no Gaussian
 analogue. First, the submodularity is \emph{unconditional}: discrete entropy
@@ -11306,10 +11366,10 @@ entropy \emph{rate} with no closed form, Blackwell 1957; most-likely string
 NP-hardness, Lyng\o{}--Pedersen 2002; automata relative-entropy
 PSPACE-completeness, Cortes--Mohri--Rastogi--Riley 2008 --- do not settle exact
 finite-block Shannon entropy, which is moreover tractable for unambiguous PFA).
-Remark 7.15b then shows this hardness is \emph{orthogonal} to the deployed
+Remark 7.15b of [RNR-II] then shows this hardness is \emph{orthogonal} to the deployed
 encoder: causal coding and byte-granular random access condition only on the
 realised prefix (one forward pass), and the \#P-hard marginal arises solely in
-the optional non-contiguous selection lever. Remark 7.15c makes \emph{partial
+the optional non-contiguous selection lever. Remark 7.15c of [RNR-II] makes \emph{partial
 progress} on the open exact problem: under a filter-stability hypothesis (FS:
 geometric ergodicity of the order-$w$ hidden chain with positive Doeblin
 emissions, the discrete analogue of Lemma 5.6e's GE\,+\,EP), the induced HMM's
@@ -11320,7 +11380,7 @@ approximates the block entropy with error $O(r\rho^d)$ and the oracle is
 $(1-\tfrac1e)-O(\varepsilon)$. So the \#P-hardness is an artifact of
 \emph{exact} computation --- it is suspected to persist even under mixing, but
 the operative approximate oracle is tractable on filter-stable sources. Remark
-7.15d then maps the complexity \emph{landscape} via the R\'enyi spectrum: every
+7.15d of [RNR-II] then maps the complexity \emph{landscape} via the R\'enyi spectrum: every
 \emph{integer}-order R\'enyi entropy $H_\alpha$ ($\alpha\ge2$) is \emph{exactly}
 poly --- unconditionally --- because $\sum_y P(y)^\alpha$ is the agreement
 probability of $\alpha$ independent copies, a product-chain forward computation;
@@ -11328,10 +11388,10 @@ the min-entropy ($\alpha=\infty$) is NP-hard (HMM consensus, Lyng\o{}--Pedersen
 2002); and the operative Shannon point ($\alpha=1$) is not reached by either,
 though $H_2$ furnishes a free exact poly \emph{lower bound}. The exact Shannon
 complexity remains the open problem (now bracketed: poly $H_2$ below, FS
-approximation, NP-hard min-entropy above). Remark 7.15e then \emph{maps} this wall:
+approximation, NP-hard min-entropy above). Remark 7.15e of [RNR-II] then \emph{maps} this wall:
 the exact oracle lies in $\mathrm{FP}^{\#P}$ (a weighted exponential sum of
 poly-computable terms), and both natural attacks are provably obstructed --- the
-predicate-encoding \#P-hardness route (Remark 7.15a/V5) is self-defeating for
+predicate-encoding \#P-hardness route (Remark 7.15a of [RNR-II]/V5) is self-defeating for
 bounded-order chains (they encode only read-once predicates, whose model-counting is
 in $\mathrm P$, and the gap-marginalisation adds only $\#\mathrm L\subseteq\mathrm{FP}$
 walk-counting), and the obvious filtering algorithm is blocked by the non-collapsing
@@ -11439,414 +11499,563 @@ conflated different complexity-theoretic quantities).
 
 \textbf{{[}1{]}} Banner, R., Hubara, I., Hoffer, E., and Soudry, D.
 (2018). Scalable Methods for 8-bit Training of Neural Networks. NeurIPS.
+
 \textbf{{[}2{]}} Bellard, F. (2019). Lossless Data Compression with
 Neural Networks. Technical report and software,
 https://bellard.org/nncp/.
+
 \textbf{{[}3{]}} Bernstein, J., Wang, Y.-X., Azizzadenesheli, K., and
 Anandkumar, A. (2018). signSGD: Compressed Optimisation for Non-Convex
 Problems. ICML.
+
 \textbf{{[}4{]}} Burrows, M., and Wheeler, D. J. (1994). A Block-Sorting
 Lossless Data Compression Algorithm. SRC Research Report 124, Digital
 Equipment Corporation.
+
 \textbf{{[}5{]}} Carlsson, G. (2009). Topology and Data. Bulletin of the
 American Mathematical Society, 46(2), 255-308.
+
 \textbf{{[}6{]}} Carlsson, G., Ishkhanov, T., de Silva, V., and
 Zomorodian, A. (2008). On the Local Behavior of Spaces of Natural
 Images. International Journal of Computer Vision, 76(1), 1-12.
+
 \textbf{{[}7{]}} Chen, X., Mishra, N., Rohaninejad, M., and Abbeel, P.
 (2018). PixelSNAIL: An Improved Autoregressive Generative Model.
 International Conference on Machine Learning.
+
 \textbf{{[}8{]}} Charikar, M., Lehman, E., Liu, D., Panigrahy, R.,
 Prabhakaran, M., Sahai, A., and Shelat, A. (2005). The Smallest Grammar
 Problem. IEEE Transactions on Information Theory, 51(7), 2554-2576.
 
-\textbf{{[}8a{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B., and
+\textbf{{[}9{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B., and
 Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
 over Fixed Alphabets. Theory of Computing Systems, 65(1), 158-203.
 
-\textbf{{[}8b{]}} Ga\'nczorz, M. (2018). Entropy bounds for grammar
+\textbf{{[}10{]}} Ga\'nczorz, M. (2018). Entropy bounds for grammar
 compression. arXiv:1804.08547 (also presented at DCC 2018/2020).
 
-\textbf{{[}8c{]}} Kozma, L., and Voderholzer, J. (2024). The
+\textbf{{[}11{]}} Gallager, R. G. (1962). Low-Density Parity-Check Codes. IRE
+Transactions on Information Theory, 8(1), 21-28.
+
+\textbf{{[}12{]}} Ko, C.-W., Lee, J., and Queyranne, M. (1995). An Exact Algorithm for
+Maximum Entropy Sampling. Operations Research, 43(4), 684-691.
+
+\textbf{{[}13{]}} Kozma, L., and Voderholzer, J. (2024). The
 Computational Complexity of Tokenisation. arXiv:2411.08671.
 
-\textbf{{[}8d{]}} Je\.z, A. (2015). A really simple approximation of
+\textbf{{[}14{]}} Je\.z, A. (2015). A really simple approximation of
 smallest grammar. Theoretical Computer Science, 616, 141-150.
 
-\textbf{{[}8e{]}} Karzanov, A. V. (1998). Minimum 0-Extensions of Graph
+\textbf{{[}15{]}} Karzanov, A. V. (1998). Minimum 0-Extensions of Graph
 Metrics. European Journal of Combinatorics, 19(1), 71-101.
 
-\textbf{{[}8f{]}} Schwartz, R., and Tur, S. (2023). Improved hardness
+\textbf{{[}16{]}} Nemhauser, G. L., Wolsey, L. A., and Fisher, M. L. (1978). An Analysis
+of Approximations for Maximizing Submodular Set Functions --- I.
+Mathematical Programming, 14(1), 265-294.
+
+\textbf{{[}17{]}} Ohsaka, N. (2022). Some Inapproximability Results of MAP Inference
+and Exponentiated Determinantal Point Processes. Journal of Artificial
+Intelligence Research, 73, 709-735.
+
+\textbf{{[}18{]}} Schwartz, R., and Tur, S. (2023). Improved hardness
 of approximation for graph problems via Boolean PCPs.
 arXiv:2104.11670 (also conference version, ICALP 2023).
-\textbf{{[}9{]}} Cover, T. M. (1973). Enumerative Source Encoding. IEEE
+
+\textbf{{[}19{]}} Cover, T. M. (1973). Enumerative Source Encoding. IEEE
 Transactions on Information Theory, 19(1), 73-77.
-\textbf{{[}10{]}} Cover, T. M., and Thomas, J. A. (2006). Elements of
+
+\textbf{{[}20{]}} Cover, T. M., and Thomas, J. A. (2006). Elements of
 Information Theory, 2nd edition. Wiley.
-\textbf{{[}11{]}} Donoho, D. L. (2000). High-Dimensional Data Analysis:
+
+\textbf{{[}21{]}} Donoho, D. L. (2000). High-Dimensional Data Analysis:
 The Curses and Blessings of Dimensionality. AMS Math Challenges Lecture.
-\textbf{{[}12{]}} Duda, J. (2009). Asymmetric Numeral Systems.
+
+\textbf{{[}22{]}} Duda, J. (2009). Asymmetric Numeral Systems.
 arXiv:0902.0271.
-\textbf{{[}13{]}} Frey, B. J. (1997). Bayesian Networks for Pattern
+
+\textbf{{[}23{]}} Frey, B. J. (1997). Bayesian Networks for Pattern
 Classification, Data Compression, and Channel Coding. Ph.D. thesis,
 University of Toronto.
-\textbf{{[}14{]}} Frey, B. J. (1998). Graphical Models for Machine
+
+\textbf{{[}24{]}} Frey, B. J. (1998). Graphical Models for Machine
 Learning and Digital Communication. MIT Press.
-\textbf{{[}15{]}} Hinton, G. E., and van Camp, D. (1993). Keeping Neural
+
+\textbf{{[}25{]}} Hinton, G. E., and van Camp, D. (1993). Keeping Neural
 Networks Simple by Minimizing the Description Length of the Weights.
 Conference on Learning Theory.
-\textbf{{[}16{]}} Hoogeboom, E., Peters, J. W. T., van den Berg, R., and
+
+\textbf{{[}26{]}} Hoogeboom, E., Peters, J. W. T., van den Berg, R., and
 Welling, M. (2019). Integer Discrete Flows and Lossless Compression.
 NeurIPS.
-\textbf{{[}17{]}} Huffman, D. A. (1952). A Method for the Construction
+
+\textbf{{[}27{]}} Huffman, D. A. (1952). A Method for the Construction
 of Minimum-Redundancy Codes. Proceedings of the IRE, 40(9), 1098-1101.
-\textbf{{[}18{]}} Kingma, F. H., Abbeel, P., and Ho, J. (2019).
+
+\textbf{{[}28{]}} Kingma, F. H., Abbeel, P., and Ho, J. (2019).
 Bit-Swap: Recursive Bits-Back Coding for Lossless Compression with
 Hierarchical Latent Variables. ICML.
-\textbf{{[}19{]}} Knoll, B. (ongoing). Cmix: a lossless data compression
+
+\textbf{{[}29{]}} Knoll, B. (ongoing). Cmix: a lossless data compression
 program. https://www.byronknoll.com/cmix.html.
-\textbf{{[}20{]}} Levina, E., and Bickel, P. J. (2004). Maximum
+
+\textbf{{[}30{]}} Levina, E., and Bickel, P. J. (2004). Maximum
 Likelihood Estimation of Intrinsic Dimension. NIPS.
-\textbf{{[}21{]}} Liveris, A. D., Xiong, Z., and Georghiades, C. N.
+
+\textbf{{[}31{]}} Liveris, A. D., Xiong, Z., and Georghiades, C. N.
 (2002). Compression of Binary Sources with Side Information at the
 Decoder Using LDPC Codes. IEEE Communications Letters, 6(10), 440-442.
-\textbf{{[}22{]}} Mahoney, M. (ongoing). Data Compression Programs and
+
+\textbf{{[}32{]}} Mahoney, M. (ongoing). Data Compression Programs and
 the PAQ family. http://mattmahoney.net/dc/.
-\textbf{{[}23{]}} Mentzer, F., Agustsson, E., Tschannen, M., Timofte,
+
+\textbf{{[}33{]}} Mentzer, F., Agustsson, E., Tschannen, M., Timofte,
 R., and Van Gool, L. (2019). Practical Full Resolution Learned Lossless
 Image Compression. CVPR.
-\textbf{{[}24{]}} Pradhan, S. S., and Ramchandran, K. (2003).
+
+\textbf{{[}34{]}} Pradhan, S. S., and Ramchandran, K. (2003).
 Distributed Source Coding Using Syndromes (DISCUS): Design and
 Construction. IEEE Transactions on Information Theory, 49(3), 626-643.
-\textbf{{[}25{]}} Reed, I. S., and Solomon, G. (1960). Polynomial Codes
+
+\textbf{{[}35{]}} Reed, I. S., and Solomon, G. (1960). Polynomial Codes
 over Certain Finite Fields. Journal of SIAM, 8(2), 300-304.
-\textbf{{[}26{]}} Rissanen, J. (1978). Modeling by Shortest Data
+
+\textbf{{[}36{]}} Rissanen, J. (1978). Modeling by Shortest Data
 Description. Automatica, 14(5), 465-471.
-\textbf{{[}27{]}} Rissanen, J., and Langdon, G. G. (1979). Arithmetic
+
+\textbf{{[}37{]}} Rissanen, J., and Langdon, G. G. (1979). Arithmetic
 Coding. IBM Journal of Research and Development, 23(2), 149-162.
-\textbf{{[}28{]}} Salimans, T., Karpathy, A., Chen, X., and Kingma, D.
+
+\textbf{{[}38{]}} Salimans, T., Karpathy, A., Chen, X., and Kingma, D.
 P. (2017). PixelCNN++: Improving the PixelCNN with Discretized Logistic
 Mixture Likelihood and Other Modifications. ICLR.
 
-\textbf{{[}29a{]}} Crutchfield, J. P., and Feldman, D. P. (2003).
+\textbf{{[}39{]}} Crutchfield, J. P., and Feldman, D. P. (2003).
 Regularities Unseen, Randomness Observed: Levels of Entropy
 Convergence. Chaos, 13(1), 25-54. DOI: 10.1063/1.1530990.
-\textbf{{[}29{]}} Sahni, S., and Gonzalez, T. (1976). P-Complete
+
+\textbf{{[}40{]}} Sahni, S., and Gonzalez, T. (1976). P-Complete
 Approximation Problems. Journal of the ACM, 23(3), 555-565.
-\textbf{{[}30{]}} Shannon, C. E. (1948). A Mathematical Theory of
+
+\textbf{{[}41{]}} Shannon, C. E. (1948). A Mathematical Theory of
 Communication. Bell System Technical Journal, 27, 379-423 and 623-656.
 
-\textbf{{[}31a{]}} Shannon, C. E. (1951). Prediction and Entropy of
+\textbf{{[}42{]}} Shannon, C. E. (1951). Prediction and Entropy of
 Printed English. Bell System Technical Journal, 30(1), 50-64.
-\textbf{{[}31{]}} Slepian, D., and Wolf, J. K. (1973). Noiseless Coding
+
+\textbf{{[}43{]}} Slepian, D., and Wolf, J. K. (1973). Noiseless Coding
 of Correlated Information Sources. IEEE Transactions on Information
 Theory, 19(4), 471-480.
-\textbf{{[}32{]}} Tenenbaum, J. B., de Silva, V., and Langford, J. C.
+
+\textbf{{[}44{]}} Tenenbaum, J. B., de Silva, V., and Langford, J. C.
 (2000). A Global Geometric Framework for Nonlinear Dimensionality
 Reduction. Science, 290(5500), 2319-2323.
-\textbf{{[}33{]}} Townsend, J., Bird, T., and Barber, D. (2019).
+
+\textbf{{[}45{]}} Townsend, J., Bird, T., and Barber, D. (2019).
 Practical Lossless Compression with Latent Variables Using Bits Back
 Coding. ICLR.
-\textbf{{[}34{]}} Townsend, J., Bird, T., Kunze, J., and Barber, D.
+
+\textbf{{[}46{]}} Townsend, J., Bird, T., Kunze, J., and Barber, D.
 (2020). HiLLoC: Lossless Image Compression with Hierarchical Latent
 Variable Models. ICLR.
-\textbf{{[}35{]}} van den Berg, R., Gritsenko, A. A., Dehghani, M.,
+
+\textbf{{[}47{]}} van den Berg, R., Gritsenko, A. A., Dehghani, M.,
 Sonderby, C. K., and Salimans, T. (2021). IDF++: Analyzing and Improving
 Integer Discrete Flows for Lossless Compression. ICLR.
-\textbf{{[}36{]}} van den Oord, A., Kalchbrenner, N., and Kavukcuoglu,
+
+\textbf{{[}48{]}} van den Oord, A., Kalchbrenner, N., and Kavukcuoglu,
 K. (2016). Pixel Recurrent Neural Networks. ICML.
-\textbf{{[}37{]}} van den Oord, A., Kalchbrenner, N., Vinyals, O.,
+
+\textbf{{[}49{]}} van den Oord, A., Kalchbrenner, N., Vinyals, O.,
 Espeholt, L., Graves, A., and Kavukcuoglu, K. (2016). Conditional Image
 Generation with PixelCNN Decoders. NeurIPS.
-\textbf{{[}38{]}} Rhee, H., Jang, Y. I., Kim, S., and Cho, N. I. (2022).
+
+\textbf{{[}50{]}} Rhee, H., Jang, Y. I., Kim, S., and Cho, N. I. (2022).
 LC-FDNet: Learned Lossless Image Compression with Frequency
 Decomposition Network. CVPR, 6023-6032.
-\textbf{{[}39{]}} Witten, I. H., Neal, R. M., and Cleary, J. G. (1987).
+
+\textbf{{[}51{]}} Wagner, A., and Corneil, D. G. (1990). Embedding Trees in a Hypercube
+is NP-Complete. SIAM Journal on Computing, 19(3), 570-590.
+
+\textbf{{[}52{]}} Witten, I. H., Neal, R. M., and Cleary, J. G. (1987).
 Arithmetic Coding for Data Compression. Communications of the ACM,
 30(6), 520-540.
-\textbf{{[}40{]}} Wu, S., Yan, J., Wang, J., Maxson, A., Xu, K., and He,
+
+\textbf{{[}53{]}} Wu, S., Yan, J., Wang, J., Maxson, A., Xu, K., and He,
 K. (2018). Training and Inference with Integers in Deep Neural Networks.
 ICLR.
-\textbf{{[}41{]}} Wyner, A. D., and Ziv, J. (1976). The Rate-Distortion
+
+\textbf{{[}54{]}} Wyner, A. D., and Ziv, J. (1976). The Rate-Distortion
 Function for Source Coding with Side Information at the Decoder. IEEE
 Transactions on Information Theory, 22(1), 1-10.
-\textbf{{[}42{]}} Ziv, J., and Lempel, A. (1977). A Universal Algorithm
+
+\textbf{{[}55{]}} Ziv, J., and Lempel, A. (1977). A Universal Algorithm
 for Sequential Data Compression. IEEE Transactions on Information
 Theory, 23(3), 337-343.
-\textbf{{[}43{]}} Ziv, J., and Lempel, A. (1978). Compression of
+
+\textbf{{[}56{]}} Ziv, J., and Lempel, A. (1978). Compression of
 Individual Sequences via Variable-Rate Coding. IEEE Transactions on
 Information Theory, 24(5), 530-536.
-\textbf{{[}44{]}} Watanabe, S. (1960). Information Theoretical
+
+\textbf{{[}57{]}} Watanabe, S. (1960). Information Theoretical
 Analysis of Multivariate Correlation. IBM Journal of Research and
 Development, 4(1), 66-82.
-\textbf{{[}45{]}} Studen\'y, M., and Vejnarov\'a, J. (1998). The
+
+\textbf{{[}58{]}} Studen\'y, M., and Vejnarov\'a, J. (1998). The
 Multiinformation Function as a Tool for Measuring Stochastic
 Dependence. In: \emph{Learning in Graphical Models}, Jordan, M. I.
 (ed.), MIT Press, pp. 261-297.
-\textbf{{[}46{]}} Lund, C., and Yannakakis, M. (1994). On the
+
+\textbf{{[}59{]}} Lund, C., and Yannakakis, M. (1994). On the
 Hardness of Approximating Minimization Problems. Journal of the ACM,
 41(5), 960-981.
-\textbf{{[}47{]}} Lehman, E., and Shelat, A. (2002). Approximation
+
+\textbf{{[}60{]}} Lehman, E., and Shelat, A. (2002). Approximation
 Algorithms for Grammar-Based Compression. Proceedings of the
 Thirteenth Annual ACM-SIAM Symposium on Discrete Algorithms (SODA),
 205-212.
-\textbf{{[}48{]}} Berman, P., and Karpinski, M. (1999). On Some
+
+\textbf{{[}61{]}} Berman, P., and Karpinski, M. (1999). On Some
 Tighter Inapproximability Results. Proceedings of the 26th
 International Colloquium on Automata, Languages and Programming
 (ICALP), Lecture Notes in Computer Science 1644, Springer, 200-209.
-\textbf{{[}49{]}} Storer, J. A., and Szymanski, T. G. (1982). Data
+
+\textbf{{[}62{]}} Storer, J. A., and Szymanski, T. G. (1982). Data
 Compression via Textual Substitution. Journal of the ACM, 29(4),
 928-951.
-\textbf{{[}50{]}} Ar{\i}kan, E. (2009). Channel Polarization: A Method
+
+\textbf{{[}63{]}} Ar{\i}kan, E. (2009). Channel Polarization: A Method
 for Constructing Capacity-Achieving Codes for Symmetric Binary-Input
 Memoryless Channels. IEEE Transactions on Information Theory, 55(7),
 3051-3073.
-\textbf{{[}51{]}} Azuma, K. (1967). Weighted Sums of Certain Dependent
+
+\textbf{{[}64{]}} Azuma, K. (1967). Weighted Sums of Certain Dependent
 Random Variables. T\^ohoku Mathematical Journal, 19(3), 357-367.
-\textbf{{[}52{]}} Bellare, M. (2006). New Proofs for NMAC and HMAC:
+
+\textbf{{[}65{]}} Bellare, M. (2006). New Proofs for NMAC and HMAC:
 Security Without Collision-Resistance. In: Advances in Cryptology ---
 CRYPTO 2006, Lecture Notes in Computer Science 4117, Springer, 602-619.
-\textbf{{[}53{]}} Bellare, M., Canetti, R., and Krawczyk, H. (1996).
+
+\textbf{{[}66{]}} Bellare, M., Canetti, R., and Krawczyk, H. (1996).
 Keying Hash Functions for Message Authentication. In: Advances in
 Cryptology --- CRYPTO '96, Lecture Notes in Computer Science 1109,
 Springer, 1-15.
-\textbf{{[}54{]}} Bellare, M., and Namprempre, C. (2000). Authenticated
+
+\textbf{{[}67{]}} Bellare, M., and Namprempre, C. (2000). Authenticated
 Encryption: Relations Among Notions and Analysis of the Generic
 Composition Paradigm. In: Advances in Cryptology --- ASIACRYPT 2000,
 Lecture Notes in Computer Science 1976, Springer, 531-545.
-\textbf{{[}55{]}} Berger, T. (1971). Rate Distortion Theory: A
+
+\textbf{{[}68{]}} Berger, T. (1971). Rate Distortion Theory: A
 Mathematical Basis for Data Compression. Prentice-Hall, Englewood
 Cliffs, NJ.
-\textbf{{[}56{]}} Breslau, L., Cao, P., Fan, L., Phillips, G., and
+
+\textbf{{[}69{]}} Breslau, L., Cao, P., Fan, L., Phillips, G., and
 Shenker, S. (1999). Web Caching and Zipf-like Distributions: Evidence
 and Implications. Proceedings of IEEE INFOCOM, 126-134.
-\textbf{{[}57{]}} Cover, T. M. (1975). A Proof of the Data Compression
+
+\textbf{{[}70{]}} Cover, T. M. (1975). A Proof of the Data Compression
 Theorem of Slepian and Wolf for Ergodic Sources. IEEE Transactions on
 Information Theory, 21(2), 226-228.
-\textbf{{[}58{]}} Cover, T. M., and King, R. C. (1978). A Convergent
+
+\textbf{{[}71{]}} Cover, T. M., and King, R. C. (1978). A Convergent
 Gambling Estimate of the Entropy of English. IEEE Transactions on
 Information Theory, 24(4), 413-421.
-\textbf{{[}59{]}} Csisz\'ar, I., and K\"orner, J. (2011). Information
+
+\textbf{{[}72{]}} Csisz\'ar, I., and K\"orner, J. (2011). Information
 Theory: Coding Theorems for Discrete Memoryless Systems, 2nd edition.
 Cambridge University Press. (First edition: Akad\'emiai Kiad\'o, 1981.)
-\textbf{{[}60{]}} Cybenko, G. (1989). Approximation by Superpositions
+
+\textbf{{[}73{]}} Cybenko, G. (1989). Approximation by Superpositions
 of a Sigmoidal Function. Mathematics of Control, Signals, and Systems,
 2(4), 303-314.
-\textbf{{[}61{]}} Del\'etang, G., Ruoss, A., Duquenne, P.-A., Catt, E.,
+
+\textbf{{[}74{]}} Del\'etang, G., Ruoss, A., Duquenne, P.-A., Catt, E.,
 Genewein, T., Mattern, C., Grau-Moya, J., Wenliang, L. K.,
 Aitchison, M., Orseau, L., Legg, S., and Veness, J. (2024). Language
 Modeling Is Compression. Proceedings of ICLR. arXiv:2309.10668.
-\textbf{{[}62{]}} Doshi, V., Shah, D., and M\'edard, M. (2007). Source
+
+\textbf{{[}75{]}} Doshi, V., Shah, D., and M\'edard, M. (2007). Source
 Coding with Distortion through Graph Coloring. Proceedings of the IEEE
 International Symposium on Information Theory (ISIT), 1501-1505.
-\textbf{{[}63{]}} Doshi, V., Shah, D., M\'edard, M., and Effros, M.
+
+\textbf{{[}76{]}} Doshi, V., Shah, D., M\'edard, M., and Effros, M.
 (2010). Functional Compression through Graph Coloring. IEEE
 Transactions on Information Theory, 56(8), 3901-3917.
-\textbf{{[}64{]}} Equitz, W. H. R., and Cover, T. M. (1991). Successive
+
+\textbf{{[}77{]}} Equitz, W. H. R., and Cover, T. M. (1991). Successive
 Refinement of Information. IEEE Transactions on Information Theory,
 37(2), 269-275.
-\textbf{{[}65{]}} Fagin, R. (1977). Generalized First-Order Spectra and
-Polynomial-Time Recognizable Sets. In: Complexity of Computation,
-SIAM-AMS Proceedings 7, 43-73.
-\textbf{{[}66{]}} Ferragut, A., Rodr{\'\i}guez, I., and Paganini, F.
+
+\textbf{{[}78{]}} Fagin, R. (1977). Asymptotic Miss Ratios over Independent
+References. Journal of Computer and System Sciences, 14(2), 222-250.
+
+\textbf{{[}79{]}} Ferragut, A., Rodr{\'\i}guez, I., and Paganini, F.
 (2018). Optimizing TTL Caches under Heavy-Tailed Demand. Queueing
 Systems, 88(3-4), 207-241.
-\textbf{{[}67{]}} Grossi, R., and Vitter, J. S. (2005). Compressed
+
+\textbf{{[}80{]}} Grossi, R., and Vitter, J. S. (2005). Compressed
 Suffix Arrays and Suffix Trees with Applications to Text Indexing and
 String Matching. SIAM Journal on Computing, 35(2), 378-407.
-\textbf{{[}68{]}} Hinton, G., Vinyals, O., and Dean, J. (2015).
+
+\textbf{{[}81{]}} Hinton, G., Vinyals, O., and Dean, J. (2015).
 Distilling the Knowledge in a Neural Network. arXiv:1503.02531.
-\textbf{{[}69{]}} Hoeffding, W. (1963). Probability Inequalities for
+
+\textbf{{[}82{]}} Hoeffding, W. (1963). Probability Inequalities for
 Sums of Bounded Random Variables. Journal of the American Statistical
 Association, 58(301), 13-30.
-\textbf{{[}70{]}} Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya,
+
+\textbf{{[}83{]}} Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya,
 E., Cai, T., Rutherford, E., et al. (2022). Training Compute-Optimal
 Large Language Models. arXiv:2203.15556.
-\textbf{{[}71{]}} Hornik, K., Stinchcombe, M., and White, H. (1989).
+
+\textbf{{[}84{]}} Hornik, K., Stinchcombe, M., and White, H. (1989).
 Multilayer Feedforward Networks Are Universal Approximators. Neural
 Networks, 2(5), 359-366.
-\textbf{{[}72{]}} Kaplan, J., McCandlish, S., Henighan, T., Brown,
+
+\textbf{{[}85{]}} Kaplan, J., McCandlish, S., Henighan, T., Brown,
 T. B., Chess, B., Child, R., Gray, S., Radford, A., Wu, J., and
 Amodei, D. (2020). Scaling Laws for Neural Language Models.
 arXiv:2001.08361.
-\textbf{{[}73{]}} Korada, S. B., and Urbanke, R. L. (2010). Polar
+
+\textbf{{[}86{]}} Korada, S. B., and Urbanke, R. L. (2010). Polar
 Codes Are Optimal for Lossy Source Coding. IEEE Transactions on
 Information Theory, 56(4), 1751-1768.
-\textbf{{[}74{]}} McDiarmid, C. (1989). On the Method of Bounded
+
+\textbf{{[}87{]}} McDiarmid, C. (1989). On the Method of Bounded
 Differences. In: Surveys in Combinatorics 1989, London Mathematical
 Society Lecture Notes 141, Cambridge University Press, 148-188.
-\textbf{{[}75{]}} McLeish, D. L. (1974). Dependent Central Limit
+
+\textbf{{[}88{]}} McLeish, D. L. (1974). Dependent Central Limit
 Theorems and Invariance Principles. Annals of Probability, 2(4),
 620-628.
-\textbf{{[}76{]}} Muthitacharoen, A., Chen, B., and Mazi\`eres, D.
+
+\textbf{{[}89{]}} Muthitacharoen, A., Chen, B., and Mazi\`eres, D.
 (2001). A Low-Bandwidth Network File System. Proceedings of the 18th
 ACM Symposium on Operating Systems Principles (SOSP), 174-187.
-\textbf{{[}77{]}} Orlitsky, A., and Roche, J. R. (2001). Coding for
+
+\textbf{{[}90{]}} Orlitsky, A., and Roche, J. R. (2001). Coding for
 Computing. IEEE Transactions on Information Theory, 47(3), 903-917.
-\textbf{{[}78{]}} Polyanskiy, Y., Poor, H. V., and Verd\'u, S. (2010).
+
+\textbf{{[}91{]}} Polyanskiy, Y., Poor, H. V., and Verd\'u, S. (2010).
 Channel Coding Rate in the Finite Blocklength Regime. IEEE Transactions
 on Information Theory, 56(5), 2307-2359.
-\textbf{{[}79{]}} Rabin, M. O. (1981). Fingerprinting by Random
+
+\textbf{{[}92{]}} Rabin, M. O. (1981). Fingerprinting by Random
 Polynomials. Technical Report TR-15-81, Center for Research in Computing
 Technology, Harvard University.
-\textbf{{[}80{]}} Richardson, T., and Urbanke, R. (2008). Modern Coding
+
+\textbf{{[}93{]}} Richardson, T., and Urbanke, R. (2008). Modern Coding
 Theory. Cambridge University Press.
-\textbf{{[}81{]}} Rimoldi, B. (1994). Successive Refinement of
+
+\textbf{{[}94{]}} Rimoldi, B. (1994). Successive Refinement of
 Information: Characterization of the Achievable Rates. IEEE Transactions
 on Information Theory, 40(1), 253-259.
-\textbf{{[}82{]}} Rio, E. (2000). Th\'eorie Asymptotique des Processus
+
+\textbf{{[}95{]}} Rio, E. (2000). Th\'eorie Asymptotique des Processus
 Al\'eatoires Faiblement D\'ependants. Math\'ematiques \& Applications 31,
 Springer.
-\textbf{{[}83{]}} Rissanen, J. (1996). Fisher Information and
+
+\textbf{{[}96{]}} Rissanen, J. (1996). Fisher Information and
 Stochastic Complexity. IEEE Transactions on Information Theory, 42(1),
 40-47.
-\textbf{{[}84{]}} Sadakane, K. (2003). New Text Indexing Functionalities
+
+\textbf{{[}97{]}} Sadakane, K. (2003). New Text Indexing Functionalities
 of the Compressed Suffix Arrays. Journal of Algorithms, 48(2), 294-313.
-\textbf{{[}85{]}} Said, A. (2003). Arithmetic Coding for Data
+
+\textbf{{[}98{]}} Said, A. (2003). Arithmetic Coding for Data
 Compression. Technical Report, Hewlett-Packard Laboratories.
-\textbf{{[}86{]}} Samson, P.-M. (2000). Concentration of Measure
+
+\textbf{{[}99{]}} Samson, P.-M. (2000). Concentration of Measure
 Inequalities for Markov Chains and $\Phi$-Mixing Processes. Annals of
 Probability, 28(1), 416-461.
-\textbf{{[}87{]}} Shannon, C. E. (1959). Coding Theorems for a Discrete
+
+\textbf{{[}100{]}} Shannon, C. E. (1959). Coding Theorems for a Discrete
 Source with a Fidelity Criterion. IRE National Convention Record, Part 4,
 142-163.
-\textbf{{[}88{]}} Sleator, D. D., and Tarjan, R. E. (1985). Amortized
+
+\textbf{{[}101{]}} Sleator, D. D., and Tarjan, R. E. (1985). Amortized
 Efficiency of List Update and Paging Rules. Communications of the ACM,
 28(2), 202-208.
-\textbf{{[}89{]}} Steinberg, Y., and Merhav, N. (2004). On Successive
+
+\textbf{{[}102{]}} Steinberg, Y., and Merhav, N. (2004). On Successive
 Refinement for the Wyner-Ziv Problem. IEEE Transactions on Information
 Theory, 50(8), 1636-1654.
-\textbf{{[}90{]}} Witsenhausen, H. S. (1976). The Zero-Error Side
+
+\textbf{{[}103{]}} Witsenhausen, H. S. (1976). The Zero-Error Side
 Information Problem and Chromatic Numbers. IEEE Transactions on
 Information Theory, 22(5), 592-593.
-\textbf{{[}91{]}} Zhang, Y., Huang, Z., Chen, K., Tao, D., et al.
+
+\textbf{{[}104{]}} Zhang, Y., Huang, Z., Chen, K., Tao, D., et al.
 (2024). L3TC: Leveraging RWKV for Learned Lossless Low-Complexity Text
 Compression. arXiv:2412.16642.
-\textbf{{[}92{]}} Krichevsky, R. E., and Trofimov, V. K. (1981). The
+
+\textbf{{[}105{]}} Krichevsky, R. E., and Trofimov, V. K. (1981). The
 Performance of Universal Encoding. IEEE Transactions on Information
 Theory, 27(2), 199-207.
-\textbf{{[}93{]}} Baum, L. E., and Petrie, T. (1966). Statistical
+
+\textbf{{[}106{]}} Baum, L. E., and Petrie, T. (1966). Statistical
 Inference for Probabilistic Functions of Finite State Markov Chains.
 Annals of Mathematical Statistics, 37(6), 1554-1563.
-\textbf{{[}94{]}} Lauritzen, S. L. (1996). Graphical Models. Oxford
+
+\textbf{{[}107{]}} Lauritzen, S. L. (1996). Graphical Models. Oxford
 University Press.
-\textbf{{[}95{]}} Lauritzen, S. L., and Spiegelhalter, D. J. (1988).
+
+\textbf{{[}108{]}} Lauritzen, S. L., and Spiegelhalter, D. J. (1988).
 Local Computations with Probabilities on Graphical Structures and
 Their Application to Expert Systems. Journal of the Royal Statistical
 Society, Series B, 50(2), 157-194.
-\textbf{{[}96{]}} Dinur, I. (2007). The PCP Theorem by Gap
+
+\textbf{{[}109{]}} Dinur, I. (2007). The PCP Theorem by Gap
 Amplification. Journal of the ACM, 54(3), Article 12.
-\textbf{{[}97{]}} Dinur, I., Kindler, G., Raz, R., and Safra, S.
+
+\textbf{{[}110{]}} Dinur, I., Kindler, G., Raz, R., and Safra, S.
 (2003). Approximating CVP to Within Almost-Polynomial Factors is
 NP-Hard. Combinatorica, 23(2), 205-243.
-\textbf{{[}98{]}} Barron, A. R. (1985). The Strong Ergodic Theorem
+
+\textbf{{[}111{]}} Barron, A. R. (1985). The Strong Ergodic Theorem
 for Densities: Generalized Shannon-McMillan-Breiman Theorem. Annals
 of Probability, 13(4), 1292-1303.
-\textbf{{[}99{]}} Gray, R. M. (1990). Entropy and Information
+
+\textbf{{[}112{]}} Gray, R. M. (1990). Entropy and Information
 Theory. Springer.
-\textbf{{[}100{]}} Pradhan, S. S., and Ramchandran, K. (1999).
+
+\textbf{{[}113{]}} Pradhan, S. S., and Ramchandran, K. (1999).
 Distributed Source Coding Using Syndromes (DISCUS): Design and
 Construction. Proceedings of the Data Compression Conference (DCC),
 158-167.
-\textbf{{[}101{]}} Stratonovich, R. L. (1960). Conditional Markov
+
+\textbf{{[}114{]}} Stratonovich, R. L. (1960). Conditional Markov
 Processes. Theory of Probability and Its Applications, 5(2), 156-178.
-\textbf{{[}102{]}} Wainwright, M. J., and Jordan, M. I. (2008).
+
+\textbf{{[}115{]}} Wainwright, M. J., and Jordan, M. I. (2008).
 Graphical Models, Exponential Families, and Variational Inference.
 Foundations and Trends in Machine Learning, 1(1-2), 1-305.
-\textbf{{[}103{]}} Arora, S., Babai, L., Stern, J., and Sweedyk, Z.
+
+\textbf{{[}116{]}} Arora, S., Babai, L., Stern, J., and Sweedyk, Z.
 (1997). The Hardness of Approximate Optima in Lattices, Codes, and
 Systems of Linear Equations. Journal of Computer and System Sciences,
 54(2), 317-331.
-\textbf{{[}104{]}} Birch, B. J. (1962). Approximations for the Entropy
+
+\textbf{{[}117{]}} Birch, B. J. (1962). Approximations for the Entropy
 for Functions of Markov Chains. Annals of Mathematical Statistics,
 33(3), 930-938.
-\textbf{{[}105{]}} Manurangsi, P. (2017). Almost-Polynomial Ratio
+
+\textbf{{[}118{]}} Manurangsi, P. (2017). Almost-Polynomial Ratio
 ETH-Hardness of Approximating Densest $k$-Subgraph. Proceedings of the
 49th Annual ACM Symposium on Theory of Computing (STOC), 19-23.
-\textbf{{[}106{]}} Pakzad, P., and Anantharam, V. (2002). Estimation
+
+\textbf{{[}119{]}} Pakzad, P., and Anantharam, V. (2002). Estimation
 and Marginalization Using Kikuchi Approximation Methods. Neural
 Computation, 17(8), 1836-1873.
-\textbf{{[}107{]}} Kieffer, J. C., and Yang, E.-H. (2000). Grammar-Based
+
+\textbf{{[}120{]}} Kieffer, J. C., and Yang, E.-H. (2000). Grammar-Based
 Codes: A New Class of Universal Lossless Source Codes. IEEE Transactions
 on Information Theory, 46(3), 737-754.
-\textbf{{[}108{]}} Merlev\`ede, F., Peligrad, M., and Rio, E. (2009).
+
+\textbf{{[}121{]}} Merlev\`ede, F., Peligrad, M., and Rio, E. (2009).
 Bernstein Inequality and Moderate Deviations under Strong Mixing
 Conditions. In: High Dimensional Probability V: The Luminy Volume,
 IMS Collections 5, 273-292.
-\textbf{{[}109{]}} Bradley, R. C. (2005). Basic Properties of Strong
+
+\textbf{{[}122{]}} Bradley, R. C. (2005). Basic Properties of Strong
 Mixing Conditions: A Survey and Some Open Questions. Probability
 Surveys, 2, 107-144.
-\textbf{{[}110{]}} Rio, E. (2017). Asymptotic Theory of Weakly
+
+\textbf{{[}123{]}} Rio, E. (2017). Asymptotic Theory of Weakly
 Dependent Random Processes. Probability Theory and Stochastic
 Modelling 80, Springer.
-\textbf{{[}111{]}} Kontorovich, L., and Ramanan, K. (2008).
+
+\textbf{{[}124{]}} Kontorovich, L., and Ramanan, K. (2008).
 Concentration Inequalities for Dependent Random Variables via the
 Martingale Method. Annals of Probability, 36(6), 2126-2158.
-\textbf{{[}112{]}} Davydov, Yu.\ A. (1968). Convergence of
+
+\textbf{{[}125{]}} Davydov, Yu.\ A. (1968). Convergence of
 Distributions Generated by Stationary Stochastic Processes. Theory
 of Probability and Its Applications, 13(4), 691-696.
-\textbf{{[}113{]}} Bradley, R. C. (2007). Introduction to Strong
+
+\textbf{{[}126{]}} Bradley, R. C. (2007). Introduction to Strong
 Mixing Conditions, Volumes 1--3. Kendrick Press.
-\textbf{{[}114{]}} Doukhan, P. (1994). Mixing: Properties and
+
+\textbf{{[}127{]}} Doukhan, P. (1994). Mixing: Properties and
 Examples. Lecture Notes in Statistics 85, Springer.
-\textbf{{[}115{]}} Brown, P. F., Della Pietra, V. J., Mercer,
+
+\textbf{{[}128{]}} Brown, P. F., Della Pietra, V. J., Mercer,
 R. L., Della Pietra, S. A., and Lai, J. C. (1992). An Estimate of
 an Upper Bound for the Entropy of English. Computational Linguistics,
 18(1), 31-40.
-\textbf{{[}116{]}} Lezaud, P. (1998). Chernoff-Type Bound for Finite
+
+\textbf{{[}129{]}} Lezaud, P. (1998). Chernoff-Type Bound for Finite
 Markov Chains. Annals of Applied Probability, 8(3), 849-867.
-\textbf{{[}117{]}} Che, H., Wang, Z., and Tung, Y. (2002). Analysis
+
+\textbf{{[}130{]}} Che, H., Wang, Z., and Tung, Y. (2002). Analysis
 and Design of Hierarchical Web Caching Systems. Proceedings of IEEE
 INFOCOM, 1416-1424.
-\textbf{{[}118{]}} Aldous, D., and Diaconis, P. (1987). Shuffling
+
+\textbf{{[}131{]}} Aldous, D., and Diaconis, P. (1987). Shuffling
 Cards and Stopping Times. American Mathematical Monthly, 93(5),
 333-348.
-\textbf{{[}119{]}} Knudsen, J. B., and Tsitsiklis, J. N. (1990).
+
+\textbf{{[}132{]}} Knudsen, J. B., and Tsitsiklis, J. N. (1990).
 On the Time Required to Drain a Network. Mathematics of Operations
 Research, 15(4), 685-708.
-\textbf{{[}120{]}} Levin, D. A., Peres, Y., and Wilmer, E. L. (2017).
+
+\textbf{{[}133{]}} Levin, D. A., Peres, Y., and Wilmer, E. L. (2017).
 Markov Chains and Mixing Times, 2nd edition. American Mathematical
 Society.
-\textbf{{[}121{]}} Gillman, D. (1998). A Chernoff Bound for Random
+
+\textbf{{[}134{]}} Gillman, D. (1998). A Chernoff Bound for Random
 Walks on Expander Graphs. SIAM Journal on Computing, 27(4),
 1203-1220.
-\textbf{{[}122{]}} Paulin, D. (2015). Concentration Inequalities
+
+\textbf{{[}135{]}} Paulin, D. (2015). Concentration Inequalities
 for Markov Chains by Marton Couplings and Spectral Methods.
 Electronic Journal of Probability, 20(79), 1-32.
-\textbf{{[}123{]}} Aldous, D., and Fill, J. A. (2002).
+
+\textbf{{[}136{]}} Aldous, D., and Fill, J. A. (2002).
 Reversible Markov Chains and Random Walks on Graphs.
 Unfinished monograph, available at
 https://www.stat.berkeley.edu/\textasciitilde aldous/RWG/book.html.
-\textbf{{[}124{]}} Diaconis, P., and Stroock, D. (1991). Geometric
+
+\textbf{{[}137{]}} Diaconis, P., and Stroock, D. (1991). Geometric
 Bounds for Eigenvalues of Markov Chains. Annals of Applied
 Probability, 1(1), 36-61.
-\textbf{{[}125{]}} King, W. F. (1971). Analysis of Demand Paging
+
+\textbf{{[}138{]}} King, W. F. (1971). Analysis of Demand Paging
 Algorithms. Proceedings of the IFIP Congress, 485-490.
-\textbf{{[}126{]}} Kesidis, G., Shan, Y., Fumagalli, A., Gulati,
+
+\textbf{{[}139{]}} Kesidis, G., Shan, Y., Fumagalli, A., Gulati,
 A., and Singh, A. (2017). An Analysis of LRU Replacement Caches
 under Independent Reference Models. arXiv:1704.04849.
-\textbf{{[}127{]}} Niyogi, P., Smale, S., and Weinberger, S. (2008).
+
+\textbf{{[}140{]}} Niyogi, P., Smale, S., and Weinberger, S. (2008).
 Finding the Homology of Submanifolds with High Confidence from
 Random Samples. Discrete and Computational Geometry, 39(1-3),
 419-441. (Introduces the ``reach'' parameter of a sub-manifold and
 gives quantitative manifold-learning sampling bounds.)
-\textbf{{[}128{]}} Muirhead, R. J. (1982). Aspects of Multivariate
+
+\textbf{{[}141{]}} Muirhead, R. J. (1982). Aspects of Multivariate
 Statistical Theory. Wiley.
-\textbf{{[}129{]}} Diaconis, P., and Freedman, D. (1987).
+
+\textbf{{[}142{]}} Diaconis, P., and Freedman, D. (1987).
 A dozen de~Finetti-style results in search of a theory. Annales de
 l'Institut Henri Poincar\'e (B) Probabilities et Statistiques, 23(S2),
 397-423.
-\textbf{{[}130{]}} Gersho, A., and Gray, R. M. (1992). Vector
+
+\textbf{{[}143{]}} Gersho, A., and Gray, R. M. (1992). Vector
 Quantization and Signal Compression. Kluwer Academic Publishers.
 (Bennett high-resolution quantization theory, Chapter 5.)
-\textbf{{[}131{]}} Talagrand, M. (1995). Concentration of Measure
+
+\textbf{{[}144{]}} Talagrand, M. (1995). Concentration of Measure
 and Isoperimetric Inequalities in Product Spaces. Publications
 Math\'ematiques de l'IH\'ES, 81, 73-205.
-\textbf{{[}132{]}} Bennett, W. R. (1948). Spectra of Quantized
+
+\textbf{{[}145{]}} Bennett, W. R. (1948). Spectra of Quantized
 Signals. Bell System Technical Journal, 27(3), 446-472.
-\textbf{{[}133{]}} Ryabko, B. Ya. (1984). Twice-Universal Coding.
+
+\textbf{{[}146{]}} Ryabko, B. Ya. (1984). Twice-Universal Coding.
 Problems of Information Transmission, 20(3), 173-177.
-\textbf{{[}134{]}} Willems, F. M. J., Shtarkov, Y. M., and Tjalkens,
+
+\textbf{{[}147{]}} Willems, F. M. J., Shtarkov, Y. M., and Tjalkens,
 T. J. (1995). The Context-Tree Weighting Method: Basic Properties.
 IEEE Transactions on Information Theory, 41(3), 653-664.
 

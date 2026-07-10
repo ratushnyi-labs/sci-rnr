@@ -16,8 +16,11 @@ Coding)", чотири LaTeX-документи у `tex/`:
 Stealth mode: жодних згадок про AI-автора у git-комітах та коментарях. Дивись
 `~/.agent-rules/skills/stealth-delivery/SKILL.md`.
 
-CI: GitHub Actions у `.github/workflows/build.yml` будує всі PDF через xu-cheng/latex-action.
-Локальна перевірка через Docker `pandoc/latex:latest`.
+CI відсутній: GitHub Actions видалено свідомо (коміт 220aad5) — не відновлювати.
+Уся верифікація локальна: `make` будує PDF (latexmk/lualatex для `tex/*.tex`;
+tectonic для трьох статей split'у у `tex/papers/*/`, target `make papers`), а
+перевірки — скрипти у `scripts/verify/` через `/Users/para/.venvs/rnr/bin/python`.
+За потреби ізольованої збірки — Docker `pandoc/latex:latest`.
 
 ## Перевірка тверджень — ланцюг "гіпотеза → теорія → теорема → доказ"
 
@@ -63,8 +66,9 @@ hand-wave).
 Структура `scripts/verify/`:
 - один файл на теорему: `thm_5_4_linear_code_separation.py`
 - виводити PASS/FAIL у stdout
-- бути включеним у CI як окремий job (зелений CI = усі формальні і виконувані
-  перевірки пройшли)
+- запускатися локально (`/Users/para/.venvs/rnr/bin/python
+  scripts/verify/<script>.py`); усі PASS = усі формальні і виконувані
+  перевірки пройшли
 
 ## Adversarial review з codex
 
@@ -129,7 +133,7 @@ codex repair. Не переходимо до наступної теореми, 
 waterfall:
 
 - Завершити повністю одну теорему (review → діалог → застосування → компіляція
-  → коміт → CI зелений) до переходу до наступної
+  → локальні перевірки зелені → коміт) до переходу до наступної
 - Не паралелити декілька теорем одночасно
 - Не починати наступну, поки попередня не закінчена цілком
 

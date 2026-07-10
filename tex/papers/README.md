@@ -20,9 +20,15 @@ are cited `[RNR-I]` / `[RNR-II]` / `[RNR-III]`.
 - **Compiles clean**: each builds with `tectonic` to a valid PDF — exit 0, zero
   undefined references, zero hard LaTeX errors (Overfull/Underfull hbox warnings are
   inherited verbatim from the monolith's dense displays).
-- **Self-contained**: cross-paper theorem references are repaired to companion
-  citations; each dependent result is restated (statement-only) in the citing paper's
-  prerequisites section.
+- **Dependency policy**: Part I is fundamental except for the §§10.7–10.8
+  random-access blocks, which it restates statement-only in a dedicated
+  "P. Prerequisites (restated from Part II)" section; Part II depends only on
+  Part I; Part III on Parts I/II the same way. Every cross-Part mention carries
+  an [RNR-x] tag within the gate's window: `scripts/verify/crossref_integrity.py`
+  gates each paper independently — Part I and Part III currently PASS; Part II
+  has 13 residual bare references (audit findings 11–13, its prerequisite
+  restatements of Theorem 10.1/10.2 and the Lemma 5.6b–f cluster are the
+  remaining repair, tracked in `docs/backlog/AUDIT-SPLIT-2026-07-07.md`).
 - **Label containment**: the corpus' only `\label` (`eq:G1chain`) lives in §7.34, so
   it is confined to Part III — no cross-file reference resolution needed.
 - **Stealth-clean**: no tool/model/assistant names in any file.
@@ -50,6 +56,7 @@ Rebuild any paper with `cd <folder> && tectonic -X compile <file>.tex`.
 - Part III's ~25 added references render a few venues best-known without invented page
   numbers — verify against the primary sources.
 - `scripts/verify/` partitions ~1:1 by filename; retarget the document-invariant probes
-  (`bug_001`, `bug_010`, `bug_003`, `crossref_integrity`) to the three files.
+  (`bug_001`, `bug_010`, `crossref_integrity`) to the three files (`crossref_integrity`
+  retargeted 2026-07-07; `bug_001`/`bug_010` remain).
 - The companion docs (`rnr_summary`, `rnr_engineering_spec`, `rnr_experimental_design`)
   reference "the main paper" — sweep their pointers to the correct Part.

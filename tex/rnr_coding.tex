@@ -750,14 +750,14 @@ This article makes the following contributions.
   source-coding extensions (universal online with KT-style regret ---
   sharpened to the tight $d/2$ minimax-regret constant via the
   Shtarkov--Rissanen pointwise-redundancy form in Theorem 7.6$'$ ---
-  successive refinement, functional compression via Orlitsky--Roche
-  characteristic-graph entropy, Shannon rate--distortion lossy mode,
-  Slepian--Wolf / Wyner--Ziv side-information composition); Corollary
+  Shannon rate--distortion lossy mode, Slepian--Wolf distributed joint
+  compression, successive refinement, and Wyner--Ziv side-information
+  composition); Corollary
   7.11 records the standard observation that lossy compression with
   an outer error-correcting code recovers losslessness up to the
-  ECC rate gap; Theorems 7.12--7.13 cover multi-source joint coding
-  via Lauritzen--Spiegelhalter junction-tree entropy decomposition
-  and tree-MRF adaptive sub-block sizing; Theorem 7.14 establishes
+  ECC rate gap; Theorem 7.12 is functional compression via
+  Orlitsky--Roche characteristic-graph entropy, and Theorem 7.13
+  covers per-sub-block ECC for noisy-storage random access; Theorem 7.14 establishes
   Azuma--Hoeffding concentration of the repair-stream length
   $L^{\mathrm{rep}}$ around its expectation, with deviation factor
   $(W_N+1+\rho/(1-\rho)) \cdot \log_2(1/\eta)$ tracking
@@ -18120,12 +18120,12 @@ robustness uses the content-defined chunking of Rabin (1981)
 TR-15-81, as deployed in LBFS (Muthitacharoen, Chen, and Mazi\`eres
 2001) \emph{Proc.\ SOSP} for distributed file systems.
 
-\emph{Functional and multi-source coding.} Theorem 7.8 (functional
+\emph{Functional and multi-source coding.} Theorem 7.12 (functional
 compression) uses the characteristic-graph entropy of Orlitsky and
-Roche (2001) \emph{IEEE Trans.\ Inf.\ Theory} 47(3):903; Theorem 7.7
+Roche (2001) \emph{IEEE Trans.\ Inf.\ Theory} 47(3):903; Theorem 7.9
 (successive refinement) uses Equitz and Cover (1991) \emph{IEEE
-Trans.\ Inf.\ Theory} 37(2):269; Theorem 7.12 (multi-source joint
-coding) uses Lauritzen and Spiegelhalter (1988) \emph{J.\ Royal
+Trans.\ Inf.\ Theory} 37(2):269; Lemma 5.6h (graphical-model total
+correlation) uses Lauritzen and Spiegelhalter (1988) \emph{J.\ Royal
 Stat.\ Soc.\ B} 50(2):157 for the junction-tree entropy
 decomposition.
 
@@ -18409,14 +18409,14 @@ point to the relevant theorems.
   $N H_{M'} + m \delta_\infty + O(m \cdot p)$, with Theorem 7.5
   giving optimal $K^* = \Theta(\sqrt{N})$ for balanced workloads.
   \emph{Source-coding extensions} are theorems: T7.6 (universal
-  online with Krichevsky--Trofimov regret), T7.7 (successive
-  refinement), T7.8 (functional compression via Orlitsky--Roche
-  characteristic-graph entropy), T7.9 (lossy RNR with distortion
-  budget $D$ via Shannon $R(D)$), T7.10 (Slepian--Wolf/Wyner--Ziv
-  side-information composition), and the user-originated lossy+ECC
-  Corollary 7.11. \emph{Multi-source and structural} are theorems:
-  T7.12 (junction-tree entropy decomposition for multi-source
-  joint), T7.13 (per-sub-block ECC for noisy-storage RA with
+  online with Krichevsky--Trofimov regret), T7.7 (lossy RNR with
+  distortion budget $D$ via Shannon $R(D)$), T7.9 (successive
+  refinement), T7.10 (Wyner--Ziv side-information composition),
+  the lossy+ECC Corollary 7.11, and T7.12 (functional compression
+  via Orlitsky--Roche characteristic-graph entropy).
+  \emph{Multi-source and structural} are theorems: T7.8
+  (Slepian--Wolf distributed joint compression), T7.13
+  (per-sub-block ECC for noisy-storage RA with
   Shannon-optimal expansion $1/(1 - h(\varepsilon))$). \emph{Concentration
   and end-to-end} are theorems: T7.14 establishes Doob-martingale
   Azuma--Hoeffding concentration with the
@@ -18972,7 +18972,7 @@ individual entries below give the full detail.
   the $E_{12}$ problem and remain research-scale open.
 
   \emph{PIH-under-ETH reduction with refined analysis (new direction,
-  2026).} A multi-agent brainstorm during the present manuscript
+  2026).} A brainstorming session during the present manuscript
   revision proposed reducing from the constant-gap parameterized
   CSP of Guruswami--Lin--Ren--Sun--Wu (arXiv:2311.16587, ``PIH under
   ETH'', 2023), which gives ETH-hardness with absolute soundness gap
@@ -19045,8 +19045,8 @@ individual entries below give the full detail.
   earlier ``padding-bit absorbs packing noise'' framing: the absorption
   is \emph{additive but not multiplicative} under row-stochastic $F$.
   The brainstorm's original Angle 1 missed the dilution; a
-  follow-up adversarial review (independent fresh-context agent with
-  web-search 2020--2025 literature) identified the fix via good
+  follow-up independent adversarial review (against the 2020--2025
+  literature) identified the fix via good
   binary codes on value bits, with the explicit parameter constraint
   $\ell \geq n^{1/3}$ to balance identifier and value contributions.
   Full formalisation requires technical work on constraint-aware
@@ -19323,9 +19323,9 @@ see what additional work is required for a deployable system.
   policy document.
 \item
   Parallel and quantised encoder deployment. Theorems 7.16--7.18
-  establish sub-block-parallel encoding with linear speedup, and
-  Theorems 7.10--7.12 bound the coding-efficiency loss from INT8 and
-  mixed-precision quantisation. Achieving the theoretical speedups on
+  establish sub-block-parallel encoding with linear speedup; the
+  coding-efficiency loss from INT8 and mixed-precision predictor
+  quantisation is not analysed here. Achieving the theoretical speedups on
   specific hardware (GPU warp scheduling, NUMA-aware memory allocation,
   quantisation-aware training pipelines) requires systems-level
   optimisation and benchmarking. This is performance engineering work,
