@@ -1,0 +1,5 @@
+coder,n_runs,bpb,ratio,enc_s,dec_s,enc_MBps,dec_MBps,enc_peak_rss_MB,dec_peak_rss_MB,roundtrip_ok,n_censored,censor_phase,n_failed
+zstd-19,1,2.1636,0.27044,19.899,0.072,2.529,701.66,148.0,13.4,True,0,,0
+xz-6,1,2.1173,0.26467,22.421,0.634,2.245,79.332,99.4,10.2,True,0,,0
+gzip-9,1,2.9188,0.36484,2.345,0.106,21.461,472.708,1.6,1.4,True,0,,0
+bzip2-9,1,2.3197,0.28996,3.009,1.223,16.729,41.148,8.0,5.0,True,0,,0

@@ -1,0 +1,27 @@
+{
+  "entries": {
+    "text": {
+      "build_s": 0.075,
+      "built_utc": "2026-07-10T18:47:03Z",
+      "bytes": 50331648,
+      "file": "text.bin",
+      "numpy": "2.4.6",
+      "seed": 1110465192,
+      "sha256": "c94a15f894f88e35f74d108542a860ac94c78de89f2e842dfd33a6b9f6591df1",
+      "tier": "smoke48",
+      "type": "text"
+    },
+    "white_noise": {
+      "build_s": 0.084,
+      "built_utc": "2026-07-10T18:46:48Z",
+      "bytes": 50331648,
+      "file": "white_noise.bin",
+      "numpy": "2.4.6",
+      "seed": 3286533000,
+      "sha256": "6edb10a9316c68c012c83b8a80f127bc739ad6d47ac172f2234f8564b541f8a7",
+      "tier": "smoke48",
+      "type": "white_noise"
+    }
+  },
+  "tier": "smoke48"
+}

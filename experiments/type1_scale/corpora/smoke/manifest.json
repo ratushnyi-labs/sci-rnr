@@ -1,0 +1,72 @@
+{
+  "entries": {
+    "archive_mix": {
+      "build_s": 0.028,
+      "built_utc": "2026-07-10T18:08:51Z",
+      "bytes": 16777216,
+      "file": "archive_mix.bin",
+      "numpy": "2.4.6",
+      "seed": 1834881061,
+      "sha256": "6ab68adb40a5d96c2b835597c93f34256220e006238ccc28f35a33dab15ffec7",
+      "tier": "smoke",
+      "type": "archive_mix"
+    },
+    "images": {
+      "build_s": 0.019,
+      "built_utc": "2026-07-10T18:08:51Z",
+      "bytes": 16777216,
+      "file": "images.bin",
+      "numpy": "2.4.6",
+      "seed": 3352800071,
+      "sha256": "874846b922ed7725508e5d09da82bb91a8a5e31f3d717239cbe551c6ee3ea8d7",
+      "tier": "smoke",
+      "type": "images"
+    },
+    "precompressed": {
+      "build_s": 0.558,
+      "built_utc": "2026-07-10T18:10:19Z",
+      "bytes": 16777216,
+      "file": "precompressed.bin",
+      "inner_zstd": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***",
+      "numpy": "2.4.6",
+      "seed": 4091667409,
+      "sha256": "edcdf53aefa85510586635134e3fd5357c4f282e4a73543e8b692a4501222ede",
+      "tier": "smoke",
+      "type": "precompressed"
+    },
+    "text": {
+      "build_s": 0.019,
+      "built_utc": "2026-07-10T18:08:50Z",
+      "bytes": 16777216,
+      "file": "text.bin",
+      "numpy": "2.4.6",
+      "seed": 2334017837,
+      "sha256": "e6d287b341ea0dc183fb334ae05e558df4540752bf2be88da9570338fa711585",
+      "tier": "smoke",
+      "type": "text"
+    },
+    "video": {
+      "build_s": 0.637,
+      "built_utc": "2026-07-10T18:08:50Z",
+      "bytes": 16777216,
+      "file": "video.bin",
+      "numpy": "2.4.6",
+      "seed": 928235532,
+      "sha256": "c968dd4176b1d3b3cc342030dd1f954d3515aa301a83e8fc76ef80186cc5c3ad",
+      "tier": "smoke",
+      "type": "video"
+    },
+    "white_noise": {
+      "build_s": 0.029,
+      "built_utc": "2026-07-10T18:08:50Z",
+      "bytes": 16777216,
+      "file": "white_noise.bin",
+      "numpy": "2.4.6",
+      "seed": 416683849,
+      "sha256": "733ac2d73c8989cf08fa90809789ef0d4ec6109d1f1af7533c5ae398b7518708",
+      "tier": "smoke",
+      "type": "white_noise"
+    }
+  },
+  "tier": "smoke"
+}

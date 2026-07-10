@@ -1,0 +1,6 @@
+corpora/*/*.bin
+corpora/*/*.building
+out/*/scratch/
+logs/
+scratch/
+__pycache__/

@@ -1,0 +1,6 @@
+# payloads are git-ignored; scripts + manifest are committed
+downloads/
+masters/
+logs/
+tmp/
+__pycache__/

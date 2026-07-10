@@ -1,0 +1,8 @@
+{"cell": "smoke48/white_noise/zstd-19/r0", "status": "done", "ts": "2026-07-10T18:55:18Z", "wall_s": 9.439}
+{"cell": "smoke48/white_noise/xz-6/r0", "status": "done", "ts": "2026-07-10T18:55:36Z", "wall_s": 17.946}
+{"cell": "smoke48/white_noise/gzip-9/r0", "status": "done", "ts": "2026-07-10T18:55:37Z", "wall_s": 1.209}
+{"cell": "smoke48/white_noise/bzip2-9/r0", "status": "done", "ts": "2026-07-10T18:55:43Z", "wall_s": 5.852}
+{"cell": "smoke48/text/zstd-19/r0", "status": "done", "ts": "2026-07-10T18:56:03Z", "wall_s": 19.972}
+{"cell": "smoke48/text/xz-6/r0", "status": "done", "ts": "2026-07-10T18:56:26Z", "wall_s": 23.058}
+{"cell": "smoke48/text/gzip-9/r0", "status": "done", "ts": "2026-07-10T18:56:28Z", "wall_s": 2.453}
+{"cell": "smoke48/text/bzip2-9/r0", "status": "done", "ts": "2026-07-10T18:56:32Z", "wall_s": 4.235}

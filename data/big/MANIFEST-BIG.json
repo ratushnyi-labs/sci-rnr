@@ -1,0 +1,349 @@
+{
+  "suite": "rnr-big",
+  "version": 1,
+  "size_convention": "decimal MB = 10^6 bytes; tiers 500/1500/5000 MB (text: 500/1000 MB, capped at enwik9)",
+  "prefix_nesting": "each tier is the byte-prefix of the per-type master; tier sha256 = sha256 of that prefix",
+  "seed": 20260710,
+  "generated_utc": "2026-07-10T18:24:45Z",
+  "sources": [
+    {
+      "file": "enwik9.zip",
+      "url": "https://mattmahoney.net/dc/enwik9.zip",
+      "bytes": 322592222,
+      "license": "Wikipedia text (2006-03-03 dump); GFDL/CC-BY-SA",
+      "sha256": "99cdb5ac84392252d3f0912ccedd195bc95bd80cbef3b0cdf2eee4ad9a3b7a51",
+      "fetched": true
+    },
+    {
+      "file": "big_buck_bunny_1080p_h264.mov",
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_h264.mov",
+      "bytes": 725106140,
+      "license": "(c) Blender Foundation 2008, CC-BY 3.0",
+      "sha256": "dc2146a2b1172def56730143ad80cd1825b7fad15f1fc9c23a4e7d01a741ac11",
+      "fetched": true
+    },
+    {
+      "file": "Sintel.2010.1080p.mkv",
+      "url": "https://download.blender.org/durian/movies/Sintel.2010.1080p.mkv",
+      "bytes": 1180090590,
+      "license": "(c) Blender Foundation 2010, CC-BY 3.0",
+      "sha256": "97f1dbc66231df42ad49bd8c29aa174b8f48933058e47e7157d4ba63d93a8efa",
+      "fetched": true
+    },
+    {
+      "file": "tears_of_steel_1080p.mov",
+      "url": "https://download.blender.org/demo/movies/ToS/tears_of_steel_1080p.mov",
+      "bytes": 583774083,
+      "license": "(c) Blender Foundation 2012, CC-BY 3.0",
+      "sha256": "99486359be7e3681168a0fe94e1cbb0284c48b57b2a3ce7df4fa75e185987a15",
+      "fetched": true
+    },
+    {
+      "file": "ED_1024.avi",
+      "url": "https://download.blender.org/ED/ED_1024.avi",
+      "bytes": 445866736,
+      "license": "(c) Blender Foundation 2006, CC-BY 2.5 (Elephants Dream)",
+      "sha256": "c78579287cf33f1bebfceeb566280c396b1eac8ef612e530e17ef96b39d0d1e8",
+      "fetched": true
+    },
+    {
+      "file": "caminandes_gran_dillama.mp4.zip",
+      "url": "https://download.blender.org/demo/movies/caminandes_gran_dillama.mp4.zip",
+      "bytes": 125632282,
+      "license": "(c) Blender Foundation 2013, CC-BY 3.0 (Caminandes: Gran Dillama)",
+      "sha256": "2e54abfb18dcb0a25d41e7b5d97fd51b226cec58d2fbcad101cf6deecea8c48b",
+      "fetched": true,
+      "extracted_member": {
+        "file": "caminandes_gran_dillama.mp4",
+        "bytes": 125974946,
+        "sha256": "468e6743c674689a728726bbe4bb4b2a65bd8702a89f021af26a8bb4d450eebd"
+      }
+    },
+    {
+      "file": "ToS-4k-1920.mov",
+      "url": "https://download.blender.org/demo/movies/ToS/ToS-4k-1920.mov",
+      "bytes": 738876331,
+      "license": "(c) Blender Foundation 2012, CC-BY 3.0 (Tears of Steel, 4K master encode)",
+      "sha256": "bd2b5bc6c16d4085034f47ef7e4b3938afe86b4eec4ac3cf2685367d3b0b23b0",
+      "fetched": true
+    },
+    {
+      "file": "Sintel.2010.720p.mkv",
+      "url": "https://download.blender.org/durian/movies/Sintel.2010.720p.mkv",
+      "bytes": 681285280,
+      "license": "(c) Blender Foundation 2010, CC-BY 3.0 (Sintel, 720p encode)",
+      "sha256": "f12c070e295b38cfc94ebd61ac3357c3bac82d1015985f1e8da93a4c6496c46d",
+      "fetched": true
+    },
+    {
+      "file": "bbb_sunflower_2160p_30fps_normal.mp4.zip",
+      "url": "https://download.blender.org/demo/movies/BBB/bbb_sunflower_2160p_30fps_normal.mp4.zip",
+      "bytes": 632204510,
+      "license": "(c) Blender Foundation 2008/2013, CC-BY 3.0 (BBB sunflower 2160p re-render)",
+      "sha256": "750b255c6d9fee1e2a03a6716d4f358bca56e9115bf3e06a66162fc5272ae151",
+      "fetched": true,
+      "extracted_member": {
+        "file": "bbb_sunflower_2160p_30fps_normal.mp4",
+        "bytes": 633016449,
+        "sha256": "37f0ff251a606c2dcfa26c19fe6bf843234b4e7a8889cfab50bc26f644e55520"
+      }
+    }
+  ],
+  "entries": {
+    "white_noise": {
+      "type": "white_noise",
+      "file": "masters/white_noise.bin",
+      "tiers_mb": [
+        500,
+        1500,
+        5000
+      ],
+      "size_convention": "decimal MB = 10^6 bytes",
+      "prefix_nested": true,
+      "recipe": "Seeded regenerable noise. Chunk i (64 MiB) = SHAKE-256 XOF of 'rnr-big:white_noise:v1:seed=20260710:chunk=i'; concatenated and truncated to 5000 MB. Regenerate with fetch_big.py --build white_noise.",
+      "bytes": 5000000000,
+      "sha256": "79b06eed7cab8ece621c772c48f6a9c964aad4a2b3ecb5075b4c16c7483575ff",
+      "tiers": [
+        {
+          "mb": 500,
+          "bytes": 500000000,
+          "sha256": "1a972bb326b750c695872534998de6de0cd981f61d9df7f26f60c57456e5e1e7",
+          "materialized": true
+        },
+        {
+          "mb": 1500,
+          "bytes": 1500000000,
+          "sha256": "3dd286c5d7991b8544575f6c2e3795718642c0566e9540c2a2e92a83d61a58d6",
+          "materialized": true
+        },
+        {
+          "mb": 5000,
+          "bytes": 5000000000,
+          "sha256": "79b06eed7cab8ece621c772c48f6a9c964aad4a2b3ecb5075b4c16c7483575ff",
+          "materialized": true
+        }
+      ],
+      "status": "complete"
+    },
+    "text": {
+      "type": "text",
+      "file": "masters/text_enwik9.bin",
+      "tiers_mb": [
+        500,
+        1000
+      ],
+      "size_convention": "decimal MB = 10^6 bytes",
+      "prefix_nested": true,
+      "recipe": "enwik9 (first 10^9 bytes of English Wikipedia XML dump 2006-03-03; Hutter-prize corpus). Ladder capped at 1000 MB: text is NOT looped/repeated because repetition corrupts compressibility statistics; 1500/5000 tiers do not exist for this type by design.",
+      "bytes": 1000000000,
+      "sha256": "159b85351e5f76e60cbe32e04c677847a9ecba3adc79addab6f4c6c7aa3744bc",
+      "tiers": [
+        {
+          "mb": 500,
+          "bytes": 500000000,
+          "sha256": "81dfe6fd07b2f575b368e7228f14fef33871e6b99eafca96ee036b3acbfdc836",
+          "materialized": true
+        },
+        {
+          "mb": 1000,
+          "bytes": 1000000000,
+          "sha256": "159b85351e5f76e60cbe32e04c677847a9ecba3adc79addab6f4c6c7aa3744bc",
+          "materialized": true
+        }
+      ],
+      "status": "complete"
+    },
+    "video": {
+      "type": "video",
+      "file": "masters/video_concat.bin",
+      "tiers_mb": [
+        500,
+        1500,
+        5000
+      ],
+      "size_convention": "decimal MB = 10^6 bytes",
+      "prefix_nested": true,
+      "recipe": "Concatenation of distinct open-licensed movie files (Blender open movies), in the recorded order; no file repeated; distinct titles first, additional distinct encodes of already-used titles last; final file truncated at the exact 5000 MB boundary.",
+      "concat_order": [
+        "big_buck_bunny_1080p_h264.mov",
+        "Sintel.2010.1080p.mkv",
+        "tears_of_steel_1080p.mov",
+        "ED_1024.avi",
+        "caminandes_gran_dillama.mp4",
+        "ToS-4k-1920.mov",
+        "Sintel.2010.720p.mkv",
+        "bbb_sunflower_2160p_30fps_normal.mp4"
+      ],
+      "bytes": 5000000000,
+      "sha256": "32c5f91f374d0176db5da821fdfbb41768fb3a7e4c8f8d0ec96e915f37b72bb3",
+      "tiers": [
+        {
+          "mb": 500,
+          "bytes": 500000000,
+          "sha256": "2349a8c2d8862a6fbd42523ce4cecdb34e5c81ccb8a616467eca761b7a5dc5ff",
+          "materialized": true
+        },
+        {
+          "mb": 1500,
+          "bytes": 1500000000,
+          "sha256": "b31c9a6bf09963dd85b5cc3e8f6c2b9eea774d8d05c820cf2ce1d6d2e0785d97",
+          "materialized": true
+        },
+        {
+          "mb": 5000,
+          "bytes": 5000000000,
+          "sha256": "32c5f91f374d0176db5da821fdfbb41768fb3a7e4c8f8d0ec96e915f37b72bb3",
+          "materialized": true
+        }
+      ],
+      "status": "complete"
+    },
+    "images": {
+      "type": "images",
+      "file": "masters/images_jpegstream.bin",
+      "tiers_mb": [
+        500,
+        1500,
+        5000
+      ],
+      "size_convention": "decimal MB = 10^6 bytes",
+      "prefix_nested": true,
+      "recipe": "Video-derived JPEG frames: single concatenated MJPEG (q:v 2) stream extracted from the downloaded open movies with the bundled ffmpeg of the pip package imageio-ffmpeg, per the fixed IMAGES_RECIPE (source order, every-Nth-frame, per-source byte caps). Honest provenance: derived from the video corpus, not an independent photographic corpus.",
+      "extraction_recipe": [
+        {
+          "source": "ToS-4k-1920.mov",
+          "every_nth_frame": 2,
+          "byte_cap": 1200000000
+        },
+        {
+          "source": "bbb_sunflower_2160p_30fps_normal.mp4",
+          "every_nth_frame": 2,
+          "byte_cap": 1200000000
+        },
+        {
+          "source": "Sintel.2010.1080p.mkv",
+          "every_nth_frame": 3,
+          "byte_cap": 900000000
+        },
+        {
+          "source": "big_buck_bunny_1080p_h264.mov",
+          "every_nth_frame": 3,
+          "byte_cap": 900000000
+        },
+        {
+          "source": "tears_of_steel_1080p.mov",
+          "every_nth_frame": 3,
+          "byte_cap": 900000000
+        },
+        {
+          "source": "ED_1024.avi",
+          "every_nth_frame": 2,
+          "byte_cap": 900000000
+        },
+        {
+          "source": "Sintel.2010.720p.mkv",
+          "every_nth_frame": 2,
+          "byte_cap": 900000000
+        }
+      ],
+      "ffmpeg": {
+        "package": "imageio-ffmpeg 0.6.0",
+        "ffmpeg_version": "7.1"
+      },
+      "bytes": 5000000000,
+      "sha256": "911a2fa450b7fb5a9bddf54478cf4ea4e8ade4a58046d40e8f4db6a6597b9290",
+      "tiers": [
+        {
+          "mb": 500,
+          "bytes": 500000000,
+          "sha256": "bc1ab1f07781a949114e226d02c3d9c51a9b87fa2e658817edb42f1a4847be53",
+          "materialized": true
+        },
+        {
+          "mb": 1500,
+          "bytes": 1500000000,
+          "sha256": "9d96e735441dcc3d16b6a9c2115f947d1b6242850853a849a57a982f8ead6341",
+          "materialized": true
+        },
+        {
+          "mb": 5000,
+          "bytes": 5000000000,
+          "sha256": "911a2fa450b7fb5a9bddf54478cf4ea4e8ade4a58046d40e8f4db6a6597b9290",
+          "materialized": true
+        }
+      ],
+      "status": "complete"
+    },
+    "archive_mix": {
+      "type": "archive_mix",
+      "file": "masters/archive_mix.tar",
+      "tiers_mb": [
+        500,
+        1500,
+        5000
+      ],
+      "size_convention": "decimal MB = 10^6 bytes",
+      "prefix_nested": true,
+      "recipe": "Deterministic GNU tar (mtime=0, uid=gid=0): all existing data/payloads/* small corpora plus seeded slices (random.Random(20260710), 32-96 MB each) cycling over the white_noise/text/video/images masters; truncated at exactly 5000 MB.",
+      "bytes": 5000000000,
+      "sha256": "97bd1df96c935600070d487166bb88ad36e7d93f9876b59ad29dd828911940d5",
+      "tiers": [
+        {
+          "mb": 500,
+          "bytes": 500000000,
+          "sha256": "e68907fa7ad93d2f473d5cc6bfdb9e0f5c0b38f77b937fd31b0cd9b133c68b70",
+          "materialized": true
+        },
+        {
+          "mb": 1500,
+          "bytes": 1500000000,
+          "sha256": "3efbc88b7fa7fdb8aae2048756e3de42d97e106de3c95a9616820e8ad43706f8",
+          "materialized": true
+        },
+        {
+          "mb": 5000,
+          "bytes": 5000000000,
+          "sha256": "97bd1df96c935600070d487166bb88ad36e7d93f9876b59ad29dd828911940d5",
+          "materialized": true
+        }
+      ],
+      "status": "complete"
+    },
+    "precompressed": {
+      "type": "precompressed",
+      "file": "masters/precompressed_zstd19.bin",
+      "tiers_mb": [
+        500,
+        1500,
+        5000
+      ],
+      "size_convention": "decimal MB = 10^6 bytes",
+      "prefix_nested": true,
+      "recipe": "zstd -19 -T0 of text master followed by zstd -19 -T0 of video master, concatenated, truncated at exactly 5000 MB; structured incompressible input. zstd version recorded below.",
+      "zstd_version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***",
+      "bytes": 5000000000,
+      "sha256": "2f9378c8030000e3431063c949e8e27ac21171e5471e9225dd342002ee7b6d2a",
+      "tiers": [
+        {
+          "mb": 500,
+          "bytes": 500000000,
+          "sha256": "a9a1333c3449ceeea757714e86ca603364b73985bd0b5c2c69d02d8709e1079b",
+          "materialized": true
+        },
+        {
+          "mb": 1500,
+          "bytes": 1500000000,
+          "sha256": "17c58f007185df6c4013ab56ece68d084f6f79eaa31454d08cf9c58273522502",
+          "materialized": true
+        },
+        {
+          "mb": 5000,
+          "bytes": 5000000000,
+          "sha256": "2f9378c8030000e3431063c949e8e27ac21171e5471e9225dd342002ee7b6d2a",
+          "materialized": true
+        }
+      ],
+      "status": "complete"
+    }
+  }
+}
