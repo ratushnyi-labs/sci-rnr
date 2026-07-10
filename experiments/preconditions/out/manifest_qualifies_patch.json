@@ -1,0 +1,191 @@
+{
+  "apply_rule": "For each entry, replace qualifies_for with 'proposed' after human review; 'remove' lists prior hypotheses whose precondition measurably FAILED, 'add' lists measured qualifiers not previously listed.",
+  "entries": {
+    "calgary": {
+      "add": [],
+      "justification": "H1: marginal (predictive structure qualifies, stationarity fails); H5: qualifies (heterogeneity confirmed: per-third spread 46.7% (scheduler target)); H8: qualifies (byte-identity conformance corpus role is data-agnostic)",
+      "prior": [
+        "H1",
+        "H5",
+        "H8"
+      ],
+      "proposed": [
+        "H1",
+        "H5",
+        "H8"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H1": "marginal",
+        "H5": "qualifies",
+        "H8": "qualifies"
+      }
+    },
+    "canterbury": {
+      "add": [
+        "H6"
+      ],
+      "justification": "H1: marginal (predictive structure qualifies, stationarity fails); H3: qualifies (TC-rate lower bound H0-minCE = 1.53 bpb (TC(D_N) >= 1.53*N bits; H3 needs Theta(N))); H4: screen-pass (intrinsic-dimension estimator not run here; predictive-structure screen qualifies); H6: qualifies (I(H;L|C)=0.590 bpb, predicted band 0.3-0.7 (ASCII), falsification floor 0.1); H8: qualifies (byte-identity conformance corpus role is data-agnostic)",
+      "prior": [
+        "H1",
+        "H3",
+        "H4",
+        "H8"
+      ],
+      "proposed": [
+        "H1",
+        "H3",
+        "H4",
+        "H8",
+        "H6"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H1": "marginal",
+        "H3": "qualifies",
+        "H4": "screen-pass",
+        "H6": "qualifies",
+        "H8": "qualifies"
+      }
+    },
+    "ctrl_base64": {
+      "add": [],
+      "justification": "H1: qualifies (calibration control: measured H0=6.022 vs closed-form ~5.99 bpb (inside [5.9,6.1]))",
+      "prior": [
+        "H1"
+      ],
+      "proposed": [
+        "H1"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H1": "qualifies"
+      }
+    },
+    "ctrl_urandom": {
+      "add": [],
+      "justification": "H16: qualifies (incompressible confirmed: best baseline 8.000 bpb, ladder drop 0.000; RNR store-mode fraction 1.00)",
+      "prior": [
+        "H16"
+      ],
+      "proposed": [
+        "H16"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H16": "qualifies"
+      }
+    },
+    "ctrl_zstd": {
+      "add": [],
+      "justification": "H16: qualifies (incompressible confirmed: best baseline 8.000 bpb, ladder drop 0.000; RNR store-mode fraction 1.00)",
+      "prior": [
+        "H16"
+      ],
+      "proposed": [
+        "H16"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H16": "qualifies"
+      }
+    },
+    "enwik8": {
+      "add": [],
+      "justification": "H1: qualifies (held-out drop 36% and per-third spread 1.0%); H3: qualifies (TC-rate lower bound H0-minCE = 1.84 bpb (TC(D_N) >= 1.84*N bits; H3 needs Theta(N))); H4: screen-pass (intrinsic-dimension estimator not run here; predictive-structure screen qualifies); H6: qualifies (I(H;L|C)=0.940 bpb, predicted band 0.3-0.7 (ASCII), falsification floor 0.1); H8: qualifies (byte-identity conformance corpus role is data-agnostic)",
+      "prior": [
+        "H1",
+        "H3",
+        "H4",
+        "H6",
+        "H8"
+      ],
+      "proposed": [
+        "H1",
+        "H3",
+        "H4",
+        "H6",
+        "H8"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H1": "qualifies",
+        "H3": "qualifies",
+        "H4": "screen-pass",
+        "H6": "qualifies",
+        "H8": "qualifies"
+      }
+    },
+    "scripts_src": {
+      "add": [
+        "H6"
+      ],
+      "justification": "H1: qualifies (held-out drop 37% and per-third spread 1.2%); H3: qualifies (TC-rate lower bound H0-minCE = 1.88 bpb (TC(D_N) >= 1.88*N bits; H3 needs Theta(N))); H4: screen-pass (intrinsic-dimension estimator not run here; predictive-structure screen qualifies); H6: qualifies (I(H;L|C)=0.866 bpb, predicted band 0.3-0.7 (ASCII), falsification floor 0.1)",
+      "prior": [
+        "H1",
+        "H3",
+        "H4"
+      ],
+      "proposed": [
+        "H1",
+        "H3",
+        "H4",
+        "H6"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H1": "qualifies",
+        "H3": "qualifies",
+        "H4": "screen-pass",
+        "H6": "qualifies"
+      }
+    },
+    "sqlite_synth": {
+      "add": [],
+      "justification": "H2: qualifies (positional periodicity at lags [77, 4096, 8192], held-out drop 2.24 bpb); H3: qualifies (TC-rate lower bound H0-minCE = 2.24 bpb (TC(D_N) >= 2.24*N bits; H3 needs Theta(N))); H4: screen-pass (intrinsic-dimension estimator not run here; predictive-structure screen qualifies); H8: qualifies (byte-identity conformance corpus role is data-agnostic)",
+      "prior": [
+        "H2",
+        "H3",
+        "H4",
+        "H8"
+      ],
+      "proposed": [
+        "H2",
+        "H3",
+        "H4",
+        "H8"
+      ],
+      "remove": [],
+      "verdicts": {
+        "H2": "qualifies",
+        "H3": "qualifies",
+        "H4": "screen-pass",
+        "H8": "qualifies"
+      }
+    },
+    "telemetry_grid": {
+      "add": [],
+      "justification": "H4: fails (no low-dimensional predictive structure signal (screen); LB estimator not run here); H6: qualifies (I(H;L|C)=0.261 bpb, predicted band 1.0-2.0 (float32), falsification floor 0.1)",
+      "prior": [
+        "H4",
+        "H6"
+      ],
+      "proposed": [
+        "H6"
+      ],
+      "remove": [
+        "H4"
+      ],
+      "verdicts": {
+        "H4": "fails",
+        "H6": "qualifies"
+      }
+    }
+  },
+  "field": "entries.<name>.qualifies_for",
+  "generated_by": "experiments/preconditions/measure_preconditions.py",
+  "generated_utc": "2026-07-10T15:36:40+00:00",
+  "patch_target": "data/MANIFEST.json",
+  "scale": "full",
+  "scale_caveat": "Dev-slice measurement (coding <= 1 MiB, indicators <= 8 MiB per corpus, front-of-file slices) with the reference order-W counting predictor as the side-information instrument. Verdicts are precondition screens, not full-corpus hypothesis outcomes; BUG-001-D/BUG-002-D full-scale external runs remain open. enwik9 (deferred) not measured."
+}

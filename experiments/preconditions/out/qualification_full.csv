@@ -1,0 +1,10 @@
+corpus,class,P_ADV,adv_diff_bpb,adv_ci,adv_ratio_block,adv_ratio_stream,P_STAT,stat_spread,P_MIX,acf_far_max,periodic_lags,P_PRED,drop_bpb,drop_rel,nibble_cmi,sync_overhead,h_verdicts
+enwik8,3.1-text-source,fails,0.6208,"[0.5768,0.6704]",1.2233,1.5315,qualifies,0.0097,qualifies,0.0174,,qualifies,1.8381,0.3595,0.9397,0.06904,H1:qualifies|H3:qualifies|H4:screen-pass|H6:qualifies|H8:qualifies
+calgary,3.4-heterogeneous-negative,fails,0.2609,"[0.1842,0.3738]",1.0861,1.4068,fails,0.4666,fails,0.3104,77|4096|8192,qualifies,2.4522,0.3677,0.8312,0.10629,H1:marginal|H5:qualifies|H8:qualifies
+canterbury,3.1-text-source,fails,0.8081,"[0.5871,0.9471]",1.5743,2.0784,fails,0.3010,fails,0.3753,77|4096|8192,qualifies,1.5348,0.2994,0.5902,0.10604,H1:marginal|H3:qualifies|H4:screen-pass|H6:qualifies|H8:qualifies
+scripts_src,3.1-text-source,fails,0.8423,"[0.8126,0.8802]",1.3711,1.9808,qualifies,0.0118,marginal,0.1058,77,qualifies,1.8778,0.3687,0.8661,0.06934,H1:qualifies|H3:qualifies|H4:screen-pass|H6:qualifies
+sqlite_synth,3.2-structured-binary,fails,0.5037,"[0.4708,0.6096]",1.1283,1.5813,marginal,0.1218,marginal,0.1494,77|4096|8192,qualifies,2.2391,0.3162,0.7182,0.01442,H2:qualifies|H3:qualifies|H4:screen-pass|H8:qualifies
+telemetry_grid,3.3-image-numeric,fails,0.6073,"[0.5932,0.6206]",1.0827,1.2083,qualifies,0.0023,fails,0.3961,8192,fails,0.0942,0.0128,0.2608,0.00024,H4:fails|H6:qualifies
+ctrl_urandom,3.4-heterogeneous-negative,marginal,-0.0012,"[-0.0012,-0.0012]",1.0004,1.0005,qualifies,0.0000,qualifies,0.0008,,fails,0.0000,0.0000,0.0000,0.00024,H16:qualifies
+ctrl_zstd,3.4-heterogeneous-negative,marginal,-0.0012,"[-0.0012,-0.0012]",1.0004,1.0005,qualifies,0.0000,qualifies,0.0005,,fails,0.0000,0.0000,0.0002,0.00024,H16:qualifies
+ctrl_base64,3.4-heterogeneous-negative,fails,1.9591,"[1.9583,1.9598]",1.3250,1.3278,qualifies,0.0001,qualifies,0.0019,77,fails,0.0000,0.0000,0.4002,0.00024,H1:qualifies
