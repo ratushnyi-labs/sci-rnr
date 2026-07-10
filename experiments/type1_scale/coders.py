@@ -352,6 +352,10 @@ def run_cell(coder: str, corpus_file: Path, corpus_sha256: str,
                 argv, stdout_path=None, stream_hash=False,
                 timeout_s=_left(), phase="encode")
         compressed_size = enc_path.stat().st_size
+        # Repeatability witness: every repetition of a cell must produce a
+        # byte-identical archive (all registered coders are deterministic
+        # single-config invocations).  Hashed OUTSIDE the timed sections.
+        compressed_sha256 = _hash_file(enc_path)
 
         # --- decode + verify ---
         argv, dec_stdout = spec["dec"](enc_path)
@@ -373,6 +377,7 @@ def run_cell(coder: str, corpus_file: Path, corpus_sha256: str,
         return {
             "original_size": original_size,
             "compressed_size": compressed_size,
+            "compressed_sha256": compressed_sha256,
             "bpb": 8.0 * compressed_size / original_size,
             "ratio": compressed_size / original_size,
             "enc_s": enc_s,

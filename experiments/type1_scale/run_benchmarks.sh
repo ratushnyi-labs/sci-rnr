@@ -8,7 +8,11 @@
 #   CODERS=rnr1-fast,zstd-19 ./run_benchmarks.sh 500  # coder filter
 #
 # Each tier run is checkpointed per cell (out/<tier>/cells.journal): rerunning
-# after an interruption resumes where it stopped.  After every tier this
+# after an interruption resumes where it stopped.  RUNS=N adds repetitions
+# (rates are bit-deterministic -- repetitions estimate the timing/RSS
+# distribution; every repetition's archive sha256 is recorded as the
+# determinism witness).  For mass repetition (e.g. 100000 runs) use
+# repeat_stats.py, which batches, resumes, and asserts the witness.  After every tier this
 # script re-exports out/results.csv (the flat table for graphics) and
 # regenerates the figures from the recorded JSONL.
 #
@@ -46,6 +50,7 @@ for TIER in $TIERS; do
     ARGS="--tier $TIER"
     [ -n "$TYPES" ]  && ARGS="$ARGS --types $TYPES"
     [ -n "$CODERS" ] && ARGS="$ARGS --coders $CODERS"
+    [ -n "$RUNS" ]   && ARGS="$ARGS --runs $RUNS"
     $PY -u "$HERE/run_campaign.py" $ARGS
     $PY "$HERE/to_csv.py"
     $PY "$HERE/make_figures.py" || echo "[bench] figures: skipped (partial data ok)"
