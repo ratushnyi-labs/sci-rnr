@@ -1,0 +1,7 @@
+__pycache__/
+# Corpus payloads stay local; only code, docs, and manifests are tracked.
+*
+!.gitignore
+!*.md
+!*.py
+!*.json
