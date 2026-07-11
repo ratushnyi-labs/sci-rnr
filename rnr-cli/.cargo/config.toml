@@ -1,0 +1,19 @@
+# Cross-target linkers.  The musl targets use the bundled rust-lld so the
+# build needs no external cross toolchain and produces fully static
+# binaries (musl + crt-static is the Rust default for *-unknown-linux-musl).
+[target.x86_64-unknown-linux-musl]
+linker = "rust-lld"
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[target.aarch64-unknown-linux-musl]
+linker = "rust-lld"
+rustflags = ["-C", "target-feature=+crt-static"]
+
+# Windows MSVC targets link with the bundled lld-link; they still require
+# the MSVC import libraries (kernel32.lib etc.) to be present -- see
+# build.sh for the documented status on non-Windows hosts.
+[target.x86_64-pc-windows-msvc]
+linker = "lld-link"
+
+[target.aarch64-pc-windows-msvc]
+linker = "lld-link"

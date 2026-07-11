@@ -1,0 +1,15 @@
+{
+  "comment": "Coder lanes exposed to experiments/type1_scale/coders.py (protocol 4.1). argv[0] resolves inside rnr-cli/; the binary is built by `cargo build --release` (see run_checks.py R0) and is bit-identical to impl/rnr1.py (gate: rnr-cli/run_checks.py R1/R2). {in}/{out} are placeholders.",
+  "coders": {
+    "rnr-rust": {
+      "pack":   ["target/release/rnr", "pack", "{in}", "{out}", "--W", "3", "--K", "65536", "--threads", "1"],
+      "unpack": ["target/release/rnr", "unpack", "{in}", "{out}", "--threads", "1"],
+      "config": {"W": 3, "K": 65536, "threads": 1, "impl": "rust-cli", "bit_identical_to": "impl/rnr1.py"}
+    },
+    "rnr-rust-mt8": {
+      "pack":   ["target/release/rnr", "pack", "{in}", "{out}", "--W", "3", "--K", "65536", "--threads", "8"],
+      "unpack": ["target/release/rnr", "unpack", "{in}", "{out}", "--threads", "8"],
+      "config": {"W": 3, "K": 65536, "threads": 8, "impl": "rust-cli", "bit_identical_to": "impl/rnr1.py", "note": "output verified byte-identical to threads=1 (run_checks R2/R4)"}
+    }
+  }
+}

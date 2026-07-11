@@ -1,0 +1,19 @@
+[package]
+name = "rnr-cli"
+version = "1.0.0"
+edition = "2021"
+description = "RNR1 Type-I coder, production CLI (bit-identical to impl/rnr1.py)"
+license = "MIT"
+
+[[bin]]
+name = "rnr"
+path = "src/main.rs"
+
+[dependencies]
+sha2 = "0.10"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
