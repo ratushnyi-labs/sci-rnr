@@ -39,7 +39,24 @@ import two_pass  # noqa: E402
 
 MAGIC = b"RNRA"
 VER = 1
-W_CANDIDATES = (2, 3, 4, 5, 6)
+# Candidate orders extend to the measured plateau (~W7-8; returns < 0.005 bpb
+# beyond).  The achievable order is bounded by the block's data/memory, not by
+# the model (which the prune self-limits): the exact order-W count tables grow
+# ~ n * W^2 in peak RSS (measured: 1 MB text -> 312 MB @W6, 1.23 GB @W10).  So
+# the ceiling is set per block from a memory budget -- "push W to the block
+# size" made concrete.  (A future memory-bounded hashed counter would lift the
+# ceiling for large blocks; the exact-table model here is small-block-friendly.)
+W_CANDIDATES = (2, 3, 4, 5, 6, 7, 8)
+MEM_BUDGET_MB = 2048.0  # per-block training peak-RSS budget
+
+
+def w_ceiling(n_bytes: int, budget_mb: float = MEM_BUDGET_MB) -> int:
+    """Largest candidate order whose estimated training peak RSS
+    (~ 12 * n_MB * W^2 MB, fit from measurement) stays under the budget."""
+    n_mb = max(n_bytes / 1e6, 1e-3)
+    import math
+    w_mem = int(math.sqrt(budget_mb / (12.0 * n_mb))) if n_mb > 0 else 8
+    return max(2, min(max(W_CANDIDATES), w_mem))
 
 
 def _projected_total_bits(data, W):
@@ -58,8 +75,11 @@ def _projected_total_bits(data, W):
 def pack(data: bytes, W="auto", K: int = 65536, model_compress=True):
     n = len(data)
     if W == "auto":
+        wmax = w_ceiling(n)
         best = None
         for cand in W_CANDIDATES:
+            if cand > wmax:
+                break
             model, blob, mstore, mode, slen, tb = _projected_total_bits(
                 data, cand)
             if best is None or tb < best[0]:
