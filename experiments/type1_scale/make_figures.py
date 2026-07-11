@@ -102,7 +102,10 @@ def load_records(paths: list) -> list:
                 line = line.strip()
                 if line:
                     recs.append(json.loads(line))
-    # Drop superseded records (METHODS.md section 6).
+    # Drop superseded records (METHODS.md section 6).  Runset-store records
+    # (per-run generated test sets, run_testset.py) have their own schema
+    # and analysis pipeline -- not tier-campaign cells; skip them here.
+    recs = [r for r in recs if "corpus" in r]
     superseded = {tuple(r["supersedes"]) for r in recs if r.get("supersedes")}
     out = []
     for r in recs:
