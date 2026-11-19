@@ -202,6 +202,16 @@ Definitions 10.2/10.3, Theorems 10.3--10.6 and Remark 10.3a are blocks of
 [RNR-II] (§§10.7--10.8), restated statement-only in the Prerequisites
 below, and are distinct from this Part's own §10.3--§10.4 subsections.}
 
+In the 16 MiB text cell of the Type-I scale campaign, both the
+reference and fast implementations produced byte-exact round trips at
+3.6749 bits per input byte. In the recorded single-thread runs, the fast
+implementation encoded and decoded in 1.961 and 1.762 seconds,
+respectively, versus 258.378 and 262.488 seconds for the reference
+implementation. The same cell reports 2.2066 bits per byte for zstd -19.
+These measurements describe the context-model implementations on that
+corpus cell. See the \href{https://github.com/ratushnyi-labs/sci-rnr/blob/d287c6f18fa8dccbbca10b705e408c6e528edfb3/experiments/type1_scale/out/figures/summary_16.777MB_text.csv}{measured results}
+and \href{https://github.com/ratushnyi-labs/sci-rnr/blob/d287c6f18fa8dccbbca10b705e408c6e528edfb3/experiments/type1_scale/protocol.md}{benchmark protocol}.
+
 \textbf{Keywords:} lossless compression, neural compression, side
 information, Slepian--Wolf coding, syndrome coding, positional coding,
 enumerative coding, entropy‑field coding, tensor coding, Minimum
@@ -6982,7 +6992,7 @@ applications where $m$ is large, $L(M)$ effectively vanishes. The
 three regimes have different optimal model sizes and warrant separate
 evaluation. For a fixed shared frontier predictor, the regimes
 collapse to a single break-even volume: the headline
-$\approx 79\,\mathrm{MB}$ / $12.0\times$ figure of Theorem 7.15 of [RNR-II] is a
+$\approx 83\,\mathrm{MB}$ / $12.0\times$ figure of Theorem 7.15 of [RNR-II] is a
 bitstream-only rate, and charging the $\approx 140\,\mathrm{GB}$
 predictor leaves a net saving only once the combined amortized volume
 exceeds $V^*\approx 152\,\mathrm{GB}$ (the ``Side-information framing
@@ -7007,14 +7017,14 @@ under which charging $L(M)$ still leaves a net saving.
 \textbf{break-even / amortization condition}\\
 \hline
 Amortized / model-shared (side information; the headline)
-& $N\!\cdot\! H_{M'}\!\approx\! 79\,\mathrm{MB}$ at $H_{M'}\!=\!0.664$\,bpb,
+& $N\!\cdot\! H_{M'}\!\approx\! 83\,\mathrm{MB}$ at $H_{M'}\!=\!0.664$\,bpb,
 $N\!=\!1\,\mathrm{GB}$ (T7.15)
 & no
 & $12.0\times = 8/0.664$ (T7.15)
 & decoder holds $M'$ as shared side information (Slepian--Wolf 1973); the
 operational quantity is $N\!\cdot\! H_{M'}$ (T7.15 caveat)\\
 Self-contained single archive (Kolmogorov framing)
-& same $79\,\mathrm{MB}$ bitstream
+& same $83\,\mathrm{MB}$ bitstream
 & yes, full $140\,\mathrm{GB}$
 & $\approx 140\times$ \emph{expansion} (negative) for $N\!=\!1\,\mathrm{GB}$ (T7.15 caveat)
 & never net-positive at this $N$: $L(M)\!\approx\!140\,\mathrm{GB}$ dwarfs the
@@ -7522,13 +7532,13 @@ The end-to-end synthesis Theorem 7.15 of [RNR-II] gives an \emph{explicit
 numerical prediction}, not a conjecture: with a Chinchilla-70B-class
 transformer ($H_{M'} \approx 0.664$ bpb measured by Delétang et al.\
 2024 on enwik9, Table 1) and the balanced regime $K = \Theta(\sqrt{N})$,
-encoder output is $\approx 79\,\mathrm{MB}$ for the $1\,\mathrm{GB}$
+encoder output is $\approx 83\,\mathrm{MB}$ for the $1\,\mathrm{GB}$
 enwik9 source, with practical CLT-based concentration $\pm 0.04\,\mathrm{MB}$
 at $\delta = 10^{-6}$ (rigorous Azuma worst-case
 $\pm 1.4\,\mathrm{GB}$ for the $W_N = 2048$ Chinchilla transformer
 is hopelessly loose; see T7.15 worked-example dual-band discussion).
 This is a $12.0\times$ \emph{bitstream-rate}
-compression (matching Delétang et al.\ Table 1), \emph{exclusive} of
+compression (using the raw rate from Delétang et al.\ Table 1), \emph{exclusive} of
 the predictor itself; see the ``Side-information framing and model
 overhead'' caveat of Theorem 7.15 [RNR-II] for the amortization framing. Under
 amortization across $V \gtrsim 152\,\mathrm{GB}$ of compressible text
@@ -7997,8 +8007,8 @@ point to the relevant theorems.
   Azuma--Hoeffding concentration with the
   $(W_N + 1 + \rho/(1-\rho))$ factor (predictor-context plus
   source-mixing-tail under exp-mixing), and T7.15 is the explicit
-  end-to-end Chinchilla-class numerical prediction matching
-  Delétang et al.\ 2024 Table 1 ($79\,\mathrm{MB}$ on enwik9 at
+  end-to-end Chinchilla-class numerical prediction using the published raw rate
+  of Delétang et al.\ 2024, Table 1 ($83\,\mathrm{MB}$ on enwik9 at
   $12.0\times$ bitstream rate) with dual concentration framing
   (rigorous Azuma vs.\ practical CLT). \emph{Practical extensions}
   are theorems: T7.16 (adaptive per-region $K_r$ with strict

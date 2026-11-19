@@ -100,6 +100,14 @@ tight-corner theorem at $A=3,\dots,6$, Schur certificates at small and
 moderate $p$, a direct margin in the near-uniform pocket --- with the
 mid-band certification program stated as the named residual.
 
+Reduced-scale numerical checks on the binary symmetric Markov source
+agree with the finite-block variance formula to absolute error below
+$10^{-10}$ at $n=6,\ldots,14$ for three source/distortion settings. At
+$n=24$, the ratio of the scaled threshold shift to its predicted
+coefficient is 1.002, 0.990, and 0.974 at switch probabilities 0.1, 0.2,
+and 0.3, respectively. See the
+\href{https://github.com/ratushnyi-labs/sci-rnr/blob/d287c6f18fa8dccbbca10b705e408c6e528edfb3/experiments/part3_dispersion/README.md}{numerical protocol and tables}.
+
 \textbf{Keywords:} lossy source coding; rate-distortion dispersion;
 $d$-tilted information; operational second-order rate; finite blocklength;
 Gray region; varentropy; transfer operator; spectral radius convexity;
@@ -346,8 +354,7 @@ $p(1-p)\log_2^2\tfrac{1-p}p$ across the Gray region, mirroring the Gauss--Markov
 plateau --- is \emph{proven} in Remark 7.34b below: $V_{\mathrm{op}}=V_{\mathrm{lossless}}$ throughout
 the closed Gray region $0<D\le D_c(p)$ (the converse for all $n$; the achievability as
 an asymptotic theorem with explicit constants, the endpoint included via a dedicated verification
-round), the first discrete memory case resolved --- the general
-discrete-Markov/Hamming dispersion beyond the BSMS remains open (Krishnamachari 2026). Only
+round). The general discrete-Markov/Hamming dispersion beyond the BSMS remains open. Only
 \emph{outside} the Gray region
 ($D>D_c(p)$) does even the converse value fall below $V_{\mathrm{lossless}}$, a separate open question.
 Verified in
@@ -366,8 +373,7 @@ source (BSMS, switch probability $0<p<\tfrac12$) under Hamming distortion, we pr
   V_{\mathrm{op}}(D)= V_{\mathrm{lossless}}=p(1-p)\log_2^2\tfrac{1-p}p
   \qquad\text{throughout the closed Gray region }0<D\le D_c(p),
 \]
-with Gray's critical distortion $D_c(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (Gray 1970;
-Zhu--Alajaji) --- exactly the candidate value of Remark 7.34a. The \emph{converse}
+with Gray's critical distortion $D_c(p)=\tfrac12\big(1-\sqrt{1-2p}/(1-p)\big)$ (Gray 1970) --- exactly the candidate value of Remark 7.34a. The \emph{converse}
 $V_{\mathrm{op}}\ge V_{\mathrm{lossless}}$ holds throughout the closed region $0<D\le D_c(p)$ at every
 blocklength (the SLB-exact identity below); the matching \emph{achievability} is established by the
 chain developed in this remark --- the dual/polymer representation, the proven $4\times4$ replica
@@ -377,9 +383,8 @@ constants --- as an \emph{asymptotic} statement (explicit but large $n_0(p,D)$; 
 see the scope notes and the concluding theorem below; the endpoint $D=D_c$ is included via the
 M\"obius-orbit floor lemma and a dedicated endpoint verification round). This resolves the
 discrete-Markov (BSMS,
-Hamming) dispersion throughout Gray's region --- the first discrete memory case, the general
-discrete-Markov/Hamming dispersion beyond the BSMS remaining open (Krishnamachari 2026;
-Tasci--Kostina 2026 list Gauss--Markov as the only previously solved memory case).
+Hamming) dispersion throughout Gray's region --- with the general discrete-Markov/Hamming case remaining open. Tasci--Kostina (2026)
+treat Gaussian autoregressive sources with finite memory.
 
 \emph{The key identity and the converse.} Solving the $n$-letter rate--distortion problem exactly
 (Blahut--Arimoto over the $2^n$-word alphabet) and evaluating the operational $n$-letter d-tilted
@@ -417,9 +422,10 @@ $V_{\mathrm{conv}}<V_{\mathrm{lossless}}$; but that is outside the Gray region.)
 \emph{The achievability residual, correctly located at the dispersion level.} The
 matching upper bound $V_{\mathrm{op}}\le V_{\mathrm{lossless}}$ remained open prior to the chain
 developed below (the general discrete-Markov/Hamming dispersion beyond the BSMS is still open ---
-Krishnamachari 2026 leaves it
-explicitly open; before this remark only the Gauss--Markov memory class was resolved --- Tian--Kostina
-2019, Tasci--Kostina 2026 --- via $n$-letter informational quantities). Two facts locate the gap. \emph{(a)
+Krishnamachari (2026) studies a single-letter proxy with an open connection
+to operational dispersion; Tian--Kostina (2019) and Tasci--Kostina (2026) treat
+Gaussian sources with memory via $n$-letter informational quantities; Tian--Kostina
+2021 extend the scalar analysis to the nonstationary case). Two facts locate the gap. \emph{(a)
 The leading dispersion is a CDF Berry--Esseen object; the achievability residual is a (near-mean)
 local-limit object.} The $\sqrt{V/n}$ coefficient is carried by the additive d-tilted information
 $\jmath_n$ through a CDF Berry--Esseen (lattice-agnostic, ellipticity-free --- this is what the converse
@@ -432,7 +438,7 @@ over the $\sqrt n$-shell. (Only the sharp $\tfrac12\log n$ \emph{coefficient} be
 third-order and dispensable --- being deterministic, it drops from the variance --- not the local-limit
 \emph{machinery} that produces it, which the dispersion does need.) \emph{(b) The optimal kernel is temporally correlated:} for a Markov source
 the $n$-letter block-optimal test channel is \emph{not} a single-letter tilt of the marginal
-(Krishnamachari 2026), so the single-letter $d$-tilted information does not carry the operational
+in general, so the single-letter $d$-tilted information does not carry the operational
 dispersion and the relevant object is the genuinely $n$-letter forward-filter cocycle --- non-elliptic
 (atomic filter, no density floor) and schedule-inhomogeneous. Its CDF Berry--Esseen, uniform over the
 shell, holds \emph{homogeneously and density-floor-free even on singular laws}: Hennion--Herv\'e, and
@@ -1481,24 +1487,22 @@ with the plateau bounded by $D_c(p)$.)
 \emph{Beyond the Gray region ($D>D_c(p)$): a separate open question.} Outside the Gray region the
 SLB is no longer tight, $\jmath_n$ ceases to be additive, and the converse dispersion drops
 $n$-stably to $\rho(D)V_{\mathrm{lossless}}$ with $\rho(D)<1$ (e.g.\ $\rho\approx0.61$ at $p=0.1$,
-$D=0.05$). The ratio $\rho(D)$ has \emph{no elementary closed form} --- the best one-parameter fit
+$D=0.05$). The ratio $\rho(D)$ has \emph{no known elementary closed form} --- the best one-parameter fit
 $((1-2D)/(1-2D_c))^a$ has a $p$-dependent exponent ($a\approx5.2,3.5,2.8$ at $p=0.1,0.25,0.4$) and
 max-error $\approx0.02$--$0.08$, far above the $10^{-6}$ a closed form would need, and $\rho$ is not a
 separable function of $(D,p,D_c)$. Its clean characterization is the Green--Kubo variance rate
 $V_{\mathrm{conv}}(D)=\lim_n\mathrm{Var}(\jmath_n)/n=\chi''(0)$ (second cumulant-rate) of the
 $\lambda^*$-tilted joint (source, optimal-output) transfer operator: \emph{elementary in Gray}
 (order-$1$ output, $\rho\equiv1$, the $V_{\mathrm{lossless}}$ plateau) but, off Gray, the variance rate
-of an \emph{infinite-dimensional} operator, because the $n$-letter optimal output requires \emph{growing}
-Markov order (Eswaran--Gastpar 2022) --- \emph{the same growing-order obstruction that walls the in-Gray
-achievability}, now seen to govern the off-Gray converse-ratio's non-closed-form as well. There the
+of an operator on source and output histories. A fixed-order representation of
+the off-Gray optimal output and a closed form for the variance rate remain open. There the
 operational dispersion is unresolved: the converse gives
-$V_{\mathrm{op}}\ge\lim_n\mathrm{Var}(\jmath_n)/n$, the first order remains achievable (order-$k$
-Markov codebooks, Elshafiy--Rose 2022), and $\jmath_n$ is numerically $\approx91$--$99\%$ the i.i.d.\
+$V_{\mathrm{op}}\ge\lim_n\mathrm{Var}(\jmath_n)/n$, Elshafiy--Rose (2022) give a first-order result within a prescribed
+Markov order for the codebook law, and $\jmath_n$ is numerically $\approx91$--$99\%$ the i.i.d.\
 switch-count, but the matching second-order achievability needs a \emph{quenched, time-inhomogeneous}
 Bahadur--Rao / lossy-AEP lemma --- the discrete-Hamming analogue of the shell-probability step
 Tian--Kostina close for Gauss--Markov only via Karhunen--Lo\`eve decorrelation, with no discrete
-counterpart (the optimal-output ball measure is degenerate, and a fixed-order codebook is
-first-order rate-suboptimal). We leave the $D>D_c$ dispersion open; it does not affect the Gray-region
+counterpart for the optimal-output ball measure studied here. We leave the $D>D_c$ dispersion open; it does not affect the Gray-region
 resolution above. \emph{Validated} in
 \texttt{scripts/verify/remark\_7\_34b\_bsms\_rd\_dispersion\_numeric.py} (PART A: reproduces the
 proven memoryless Kostina--Verd\'u plateau exactly; PART C: the all-$n$ deconvolution is valid iff
@@ -1638,7 +1642,7 @@ Everything else in the chain --- the tail-lemma Markov$+$net assembly, the KP wi
 Cauchy bounds, the GAP-1 saddle machinery --- consumes only these inputs (re-instantiation checks,
 exact-rational or machine-precision throughout, in
 \texttt{scripts/verify/probe\_7\_34\_nonsym\_dual\_identity.py}). The general
-discrete-Markov/Hamming dispersion beyond the binary chain remains open (Krishnamachari 2026). What is new is the \emph{unification}: a single source-agnostic lower bound that
+discrete-Markov/Hamming dispersion beyond the binary chain remains open. What is new is the \emph{unification}: a single source-agnostic lower bound that
 collapses to Kostina 2017 in the memoryless case and extends the 7.34b converse to every finite-state
 source possessing an all-$n$ SLB-tight region, with the non-symmetric chain a worked second memory
 instance. \emph{Validated} in
@@ -3022,9 +3026,8 @@ lemma $+$ five sign certificates) &
 \hline
 \emph{Exact $V_{\mathrm{op}}$, beyond Gray} $D>D_c$ & \textbf{OPEN} & Rem 7.34o &
 \emph{obstacle:} needs the optimal non-SLB-tight, memory-aware test channel
-(optimal output of growing Markov order, Eswaran--Gastpar 2022); $V_{\mathrm{op}}$
-flat $=V_{\mathrm{lossless}}$ on $[0,D_c]$, decreasing below for $D>D_c$,
-continuous at $D_c$ (finite-$n$ map established; exact value open) & \texttt{probe\_7\_34o\_beyond\_gray} (O1--O3), \texttt{probe\_7\_34\_offgray\_rho}\\
+and a matching achievability bound. The finite-$n$ converse variance falls
+below the Gray plateau in the tested settings & \texttt{probe\_7\_34o\_beyond\_gray} (O1--O3), \texttt{probe\_7\_34\_offgray\_rho}\\
 \hline
 \end{tabular}
 \par\endgroup
@@ -3475,20 +3478,9 @@ $V_{\mathrm{conv}}(D)=\lim_n\mathrm{Var}(j_n)/n=\chi''(0)$ (the second
 cumulant-rate of the $\lambda^*$-tilted joint (source, optimal-output) transfer
 operator), equivalently the converse ratio $\rho(D)=\lim_n\mathrm{Var}(j_n)/
 \mathrm{Var}(i_n)$: elementary in Gray ($\rho\equiv1$, the plateau), but off Gray
-the variance rate of an \emph{infinite-dimensional} operator, because the
-$n$-letter optimal output requires a \emph{growing Markov order}
-(Eswaran--Gastpar 2022). This is the \emph{same growing-order obstruction} that
-walls the in-Gray general-A achievability capstone (the $a_k$ convexity bound of
-Remark 7.34m$'''$, row a3) and the BSMS beyond-Gray analysis (Remark 7.34b's
-``Beyond the Gray region'' discussion): a
-single structural wall governs both the in-Gray 2nd-order achievability \emph{and}
-the off-Gray exact value. Consequently $\rho(D)$ (and hence the exact
-$V_{\mathrm{op}}$ for $D>D_c$) has \emph{no elementary closed form} --- the best
-one-parameter fit $((1-2D)/(1-2D_c))^a$ carries a $p$-dependent exponent with
-max-error far above what a closed form would need (the same beyond-Gray
-discussion) --- so the
-residual is the optimal memory-aware test channel itself, not a missing formula;
-re-hunting an elementary $\rho(D)$ is provably futile.
+it remains a block-law quantity. A fixed-order representation of the optimal
+output law and the exact $V_{\mathrm{op}}$ for $D>D_c$ remain open. The numerical
+fits above do not identify a closed form for $\rho(D)$.
 
 \emph{Per-distortion.} The boundary is per-distortion: each balanced /
 group-difference distortion has its \emph{own} Gray region with its own
@@ -4018,16 +4010,15 @@ Theory, 63(7), 4268-4285.
 \textbf{{[}115{]}} Kontoyiannis, I., and Verd\'u, S. (2014). Optimal
 Lossless Data Compression: Non-Asymptotics and Asymptotics. IEEE
 Transactions on Information Theory, 60(2), 777-795.
-\textbf{{[}116{]}} Tian, C., and Kostina, V. (2019). The Dispersion of
+\textbf{{[}116{]}} Tian, P., and Kostina, V. (2019). The Dispersion of
 the Gauss--Markov Source. IEEE Transactions on Information Theory,
-65(10), 6355-6384.
-\textbf{{[}117{]}} Kostina, V., and Tian, C. (2020). Nonasymptotic and
-Second-Order Achievability Bounds for Coding With Side Information.
-IEEE Transactions on Information Theory (Gauss--Markov rate-distortion
-dispersion, achievability side).
-\textbf{{[}118{]}} Zhu, J., and Alajaji, F. Rate-distortion analysis of
-the binary memoryless source under the Hamming distortion measure
-(second-order / dispersion characterisation). Preprint.
+65(10), 6355--6384. \url{https://arxiv.org/abs/1804.09418}.
+\textbf{{[}117{]}} Tian, P., and Kostina, V. (2021). Nonstationary
+Gauss--Markov Processes: Parameter Estimation and Dispersion.
+IEEE Transactions on Information Theory. \url{https://arxiv.org/abs/1907.00304}.
+\textbf{{[}118{]}} Gray, R. M. (1970). Information Rates of Autoregressive
+Processes. IEEE Transactions on Information Theory, 16(4), 412--421.
+\url{https://doi.org/10.1109/TIT.1970.1054470}.
 \textbf{{[}119{]}} Hafouta, Y. (2020). Explicit Berry--Esseen and
 Edgeworth expansions for inhomogeneous Markov chains and
 locally-dependent random variables. Nonlinearity, 33; arXiv:1903.04018.
@@ -4040,18 +4031,19 @@ vol.\ 2331, Springer.
 \textbf{{[}122{]}} Dolgopyat, D., and Hafouta, Y. (2022). Edgeworth
 expansions for independent bounded integer valued random variables.
 Stochastic Processes and their Applications, 152, 486-532.
-\textbf{{[}123{]}} Krishnamachari, R. T. (2026). Second-order and
-dispersion analysis of finite-state Markov sources; the closed-form
-long-run varentropy of the binary Markov chain. Preprint.
-\textbf{{[}124{]}} Tasci, M. C., and Kostina, V. (2026). On the lossy
-dispersion of sources with memory. Preprint.
-\textbf{{[}125{]}} Eswaran, K., and Gastpar, M. (2022). Remote Source
-Coding under Gaussian Noise: Dueling Roles of Power and Distortion (and
-the growing-Markov-order requirement for universal coding of sources
-with memory). IEEE Transactions on Information Theory.
-\textbf{{[}126{]}} Elshafiy, A., and Rose, K. (2022). Fundamental limits
-and achievability for order-$k$ Markov codebooks in lossy source coding.
-IEEE International Symposium on Information Theory (ISIT).
+\textbf{{[}123{]}} Krishnamachari, B. (2026). On the Fluctuations of the
+Single-Letter $d$-Tilted Sum for Binary Markov Sources.
+\url{https://arxiv.org/abs/2603.07435}.
+\textbf{{[}124{]}} Tasci, E., and Kostina, V. (2026). Dispersion of Gaussian
+Sources with Memory and an Extension to Abstract Sources.
+\url{https://arxiv.org/abs/2602.09176}.
+\textbf{{[}125{]}} Gray, R. M. (1971). Rate Distortion Functions for
+Finite-State Finite-Alphabet Markov Sources. IEEE Transactions on
+Information Theory, 17(2), 127--134.
+\url{https://doi.org/10.1109/TIT.1971.1054604}.
+\textbf{{[}126{]}} Elshafiy, A., and Rose, K. (2022). Asymptotically Optimal
+Stochastic Lossy Coding of Markov Sources.
+\url{https://arxiv.org/abs/2211.04535}.
 \textbf{{[}127{]}} Diaconis, P., and Saloff-Coste, L. (1996). Logarithmic
 Sobolev Inequalities for Finite Markov Chains. Annals of Applied
 Probability, 6(3), 695-750.

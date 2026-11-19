@@ -88,6 +88,13 @@ query cost, and a functional central limit theorem governing the archive's
 buffers. Random-access deployment as a block device closes the Part
 (Section 10.7--10.8).
 
+A \href{https://github.com/ratushnyi-labs/sci-rnr/blob/d287c6f18fa8dccbbca10b705e408c6e528edfb3/scripts/verify/bug_008_random_access_cost.py}{deterministic position-count check}
+verifies the decode-window bound, short reads, and the granularity
+distinction. For a 64 KiB sub-block, the whole-sub-block mode decodes
+65,536 positions to serve a one-byte query. Wall-clock seek latency with a
+neural predictor remains
+\href{https://github.com/ratushnyi-labs/sci-rnr/blob/d287c6f18fa8dccbbca10b705e408c6e528edfb3/docs/backlog/blocked/BUG-008-D-measure-seek-latency-external.md}{unmeasured}.
+
 \textbf{Keywords:} lossless compression, neural side information, random
 access, byte-granular seek, finite-block dispersion, varentropy,
 large deviations, moderate deviations, extreme-value theory, functional CLT,
@@ -1943,11 +1950,11 @@ et al.\ 2024 ICLR arXiv:2309.10668, Table 1), $\eta = 2^{-32}$
 (English text empirical), $\delta = 10^{-6}$:
 \begin{itemize}
 \item Predictor cross-entropy: $N \cdot H_{M'} = 10^9 \cdot 0.664$ bits
-$\approx 79 \,\mathrm{MB}$.
+$\approx 83 \,\mathrm{MB}$.
 \item Sync overhead: $m \cdot \delta_\infty = (10^9 / 31623) \cdot 1
 \approx 3.16 \cdot 10^4$ bits $\approx 4 \,\mathrm{kB}$ (negligible).
 \item AC slack: $m \cdot p = (10^9 / 31623) \cdot 32 \approx 1.01 \cdot
-10^6$ bits $\approx 123 \,\mathrm{kB}$ (negligible).
+10^6$ bits $\approx 126 \,\mathrm{kB}$ (negligible).
 \item Concentration --- rigorous Azuma upper bound. The boxed formula
 gives $\sqrt{2N \log(2/\delta)} \cdot (W_N + 1 + \rho/(1-\rho)) \cdot p$;
 for Chinchilla-70B with $W_N = 2048$ tokens of context, $\rho = 0.5$
@@ -1974,7 +1981,7 @@ $\approx 1.92$): $\approx 15\,\mathrm{kB}$; at $\delta = 10^{-6}$
 (factor $\approx 5.4$): $\approx 43\,\mathrm{kB}$ ($\sim 0.05\%$
 of archive). This is the
 practical sizing estimate, well below the Azuma worst-case bound.
-\item Predicted total: $\approx 79\,\mathrm{MB}$ at $\delta = 10^{-6}$,
+\item Predicted total: $\approx 83\,\mathrm{MB}$ at $\delta = 10^{-6}$,
 with rigorous concentration bands of $\pm 1.4\,\mathrm{GB}$
 (Azuma worst-case, T7.14) or $\pm 2.1$--$4.2\,\mathrm{MB}$
 (variance-aware Bernstein, T7.25 with long-run variance
@@ -1982,7 +1989,8 @@ $v^2 = \sigma_\ell^2 (2W_N+1) + O(B^2)$ and
 empirical $\sigma_\ell \approx 2$ bits for English text) and
 practical concentration band $\pm 0.04\,\mathrm{MB}$ (CLT-based
 empirical), giving $\sim 12.0\times$ compression vs $1\,\mathrm{GB}$
-raw text, matching Del{\'e}tang et al.\ 2024 Table 1 measurement.
+raw text, using the external raw rate from Del{\'e}tang et al.\ 2024,
+Table 1, as input to the RNR estimate.
 \item Per-query random-access cost: $O(\sqrt{N} \cdot \mathrm{cost}(M'))
 \approx 31623 \cdot \mathrm{transformer\_eval} \approx$ tens of
 milliseconds on a single GPU.
@@ -2045,9 +2053,9 @@ Compression}, Hewlett-Packard Tech.\ Report; Witten--Neal--Cleary
 protocol is Theorem 10.3's byte-granular RA construction.
 
 \emph{Side-information framing and model overhead (caveat).}
-The $12.0\times$ ratio and $\approx 79\,\mathrm{MB}$ figure above
-measure the \emph{archive bitstream} produced by the encoder; they
-do \emph{not} include the size of the neural predictor $M'$ itself.
+The $12.0\times$ ratio and $\approx 83\,\mathrm{MB}$ figure above
+estimate the \emph{archive bitstream} from the published predictor rate.
+The estimate excludes the size of the neural predictor $M'$.
 In Shannon-style or side-information-assisted compression
 (Slepian--Wolf 1973, Wyner--Ziv 1976), the decoder is assumed to
 possess $M'$ as shared side information, in which case the rate
