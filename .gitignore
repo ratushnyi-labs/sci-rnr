@@ -1,5 +1,10 @@
 .DS_Store
 
+# Python bytecode and local environments
+__pycache__/
+*.py[cod]
+.venv/
+
 # LaTeX build artifacts
 build/
 *.aux

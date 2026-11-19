@@ -54,8 +54,6 @@
 
 \author{}
 \date{}
-\author{}
-\date{}
 \begin{document}
 
 \textbf{Ratushnyi Neural Repair Coding, Part II: Random Access,
@@ -459,8 +457,8 @@ per query, polylog in $N$ when $K, k, \mathrm{cost}(M), \log L(R) =
 
 \emph{Scope and significance.} Theorem 7.2 is the headline asymptotic
 claim of the RNR framework: \emph{any} stationary mixing source --- the
-canonical natural-data setting (Lemma 5.6c covers order-$W$ Markov
-chains, Lemma 5.6d covers HMMs, Lemma 5.6b covers latent-class
+canonical natural-data setting (Lemma 5.6c in [RNR-I] covers order-$W$ Markov
+chains, Lemma 5.6d in [RNR-I] covers HMMs, Lemma 5.6b in [RNR-I] covers latent-class
 mixtures, all under exp-mixing) --- is compressed to its Shannon
 entropy rate $h(X)$ asymptotically by RNR, \emph{with byte-granular
 random access} at polylog per-query cost. This unifies the four
@@ -474,7 +472,7 @@ and sources outside the exp-CMI-decay class fall outside this
 theorem's scope; for such sources weaker (or no) Shannon-rate
 attainability is currently provable. Corollary 7.2a (below) extends
 to polynomial-mixing sources with a sub-linear (rather than polylog)
-RA cost trade-off; Lemma 5.6f extends to AMS non-stationary sources
+RA cost trade-off; Lemma 5.6f in [RNR-I] extends to AMS non-stationary sources
 in a different sense (TC linearity, not Shannon-rate attainability).
 
 \textbf{Corollary 7.2a (Polynomial-mixing extension of Theorem 7.2:
@@ -561,7 +559,7 @@ L^{\mathrm{rep}}(X^N) \;\geq\; m \cdot H(D_K) \;=\; N \cdot h(X) + m \cdot \delt
 \]
 \emph{where $\delta_K := \sum_{n=1}^K [H(X_n \mid X_{<n}) - h(X)] \geq 0$
 is the cumulative conditional-entropy excess at length $K$
-(Lemma 5.6c). Combined with the Theorem 7.2 upper bound
+(Lemma 5.6c in [RNR-I]). Combined with the Theorem 7.2 upper bound
 $L^{\mathrm{rep}}_{\mathrm{RNR}}(X^N) \leq N \cdot h(X) +
 m \cdot \delta_\infty + O(1) + \varepsilon_{\mathrm{ac}}^{\mathrm{total}}$
 and the convergence $\delta_\infty - \delta_K = O(\rho^K)$ under
@@ -578,7 +576,7 @@ arithmetic-coding finite-precision overhead.}
 
 \emph{\textbf{Proof.}} \emph{Lower bound.} Conditions (i)--(iii) of
 Lemma 5.1e are satisfied by hypothesis; the lemma gives
-$L^{\mathrm{rep}}(X^N) \geq m \cdot H(D_K)$. By Lemma 5.6c (stationary
+$L^{\mathrm{rep}}(X^N) \geq m \cdot H(D_K)$. By Lemma 5.6c in [RNR-I] (stationary
 $X$, conditional entropy chain rule), $H(D_K) = K \cdot h(X) + \delta_K$
 with $\delta_K \geq 0$. Multiplying by $m = \lceil N/K \rceil$ and
 using $mK = N$ (or $N + O(K)$ for the ceiling case, absorbed in $O(1)$),
@@ -2088,9 +2086,10 @@ has no Gaussian analogue).} The predictor $M'$ of Theorem 7.15 defines a
 \emph{discrete autoregressive entropy field} --- the Type-III-C field of the
 neural-LM deployment, with per-position conditionals
 $Q_i(\cdot\mid x_{<i})$ in place of the Gaussian $\mathcal N(0,\Sigma)$ of
-§6.9. We record how the §6.9 support-selection theory (Lemma 6.9 fixed-field
-APX-hardness; Remark 6.9a free-field easiness; Corollary 6.9b greedy
-additive-regret encoder) ports to this field. As in §6.9 the
+§6.9. We transfer the support-selection results of §6.9 in [RNR-I]
+to this field. These are fixed-field APX-hardness (Lemma 6.9),
+free-field easiness (Remark 6.9a), and the greedy additive-regret
+encoder (Corollary 6.9b), all in [RNR-I]. As in §6.9 the
 \emph{fixed-field} lever is the operative one for Theorem 7.15, where $M'$
 is a pre-trained \emph{shared} predictor: choose a coded set $S$, $|S|=s$,
 of sub-block positions to store, the decoder reconstructing the complement
@@ -2101,12 +2100,12 @@ C_{\mathrm{sel}}(S) \;=\; H(X_{\bar S}\mid X_S)
 \;=\; H(X) - M(S), \qquad M(T):=H(X_T),
 \]
 so minimising it is the maximum-entropy-sampling (MESP) selection
-$\max_{|S|=s} M(S)$ --- the Shannon-entropy mirror of Lemma 6.9's log-det
-MESP (Lemma 6.9 writes the complementary form $H(X_S\mid X_{\bar S})=H(X)-
-M(\bar S)$; under $S\leftrightarrow\bar S$ the two are the \emph{same} MESP
-problem, and every claim below is identical for either direction --- the
-total archive rate is $H(X)$ regardless of $S$, so $C_{\mathrm{sel}}$ is the
-selection \emph{objective}, not the whole stored cost). Four facts (each
+$\max_{|S|=s} M(S)$ --- the Shannon-entropy mirror of the log-det MESP
+in Lemma 6.9 in [RNR-I], which writes the complementary form
+$H(X_S\mid X_{\bar S})=H(X)-M(\bar S)$. Under $S\leftrightarrow\bar S$
+the two are the \emph{same} MESP problem, and the claims below apply in
+either direction. The total archive rate is $H(X)$ regardless of $S$,
+so $C_{\mathrm{sel}}$ is the selection \emph{objective}. Four facts (each
 verified numerically in
 \texttt{scripts/verify/remark\_7\_15a\_transformer\_support\_selection.py};
 V1--V5):
@@ -2119,13 +2118,13 @@ $M(T\cup\{i\})-M(T)=H(X_i\mid X_T)\ge 0$ (monotone) and is non-increasing in
 $T$ (submodular, ``conditioning reduces entropy''). Unlike the Gaussian
 differential entropy --- which can be negative and whose monotonicity needs
 the calibration $\sigma^2\ge 1/(2\pi e)$ shown \emph{necessary} in Remark
-6.9d --- discrete entropy needs \emph{no} calibration: that noise floor
+6.9d in [RNR-I] --- discrete entropy needs \emph{no} calibration: that noise floor
 simply vanishes (V1).
 \item \emph{(Greedy retains the $(1-1/e)$ guarantee and the additive-regret
 identity.)} Greedy maximisation of $M$ gives $M(T_{\mathrm{greedy}})\ge
 (1-1/e)\,M(T_{\mathrm{opt}})$ (Nemhauser--Wolsey--Fisher, \emph{Math.\
 Programming} 14:265--294, 1978), and the residual transfers \emph{additively}
-exactly as in Corollary 6.9b: $C_{\mathrm{sel}}(\text{greedy}) -
+exactly as in Corollary 6.9b in [RNR-I]: $C_{\mathrm{sel}}(\text{greedy}) -
 C_{\mathrm{sel}}(\text{opt}) = M(T_{\mathrm{opt}}) - M(T_{\mathrm{greedy}})
 \le (1/e)\,M(T_{\mathrm{opt}})$ --- not a multiplicative ratio, since the cost
 is a difference $H(X)-M(S)$ (V2).
@@ -2137,7 +2136,7 @@ independent fair coins $E_1,\dots,E_U$ (not selectable); one selectable
 \emph{position} per candidate set $C_i$ with value $X_i:=(E_e)_{e\in C_i}$,
 so $H(X_S)=\bigl|\bigcup_{i\in S} C_i\bigr|$ for any position-subset $S$ and
 $\max_{|S|=s}H(X_S)$ is \textsc{Max-Coverage} --- a \emph{free} per-position
-selection, faithful to Lemma 6.9's MESP rather than a candidate-restricted
+selection, faithful to the MESP of Lemma 6.9 in [RNR-I] rather than a candidate-restricted
 variant (the positions $X_i$ are tuple-valued, within the general
 discrete-field scope below). Here the value oracle $H(X_S)=|\bigcup C_i|$ is
 poly-time, so the selection is hard \emph{even with an easy oracle} (V4).
@@ -2190,16 +2189,18 @@ neural-LM deployment carries \emph{two} independent obstacles --- NP-hard
 selection (3) \emph{and} a \#P-hard value oracle (4c) --- where the Gaussian
 theory of §6.9 carries only one (V3).
 \end{enumerate}
-\emph{Scope (honest, mirroring Lemma 6.9).} This is the \emph{fixed-field}
+\emph{Scope (honest, mirroring Lemma 6.9 in [RNR-I]).} This is the \emph{fixed-field}
 lever, the regime of Theorem 7.15 ($M'$ pre-trained and shared). In the
-\emph{free-field amortised} regime the Remark 6.9a collapse applies verbatim:
+\emph{free-field amortised} regime the collapse in Remark 6.9a
+in [RNR-I] applies verbatim:
 a free amortised predictor codes every block at the support-invariant rate
 $H(X)$, the chain rule $H(X_S)+H(X_{\bar S}\mid X_S)=H(X)$ erases the
 combinatorial selection, and the problem is in $\mathrm P$. The NP-/\#P-hardness
 of (3)--(4c) is established for \emph{general} discrete fields supplied by a
 poly-size representation; whether it persists on the restricted class of
 \emph{actual} transformer softmax fields is a separate question --- the
-discrete counterpart of Lemma 6.9's item-(4) $\Sigma$-restriction caveat ---
+discrete counterpart of the $\Sigma$-restriction caveat in item (4)
+of Lemma 6.9 in [RNR-I] ---
 and is left open. The transfer's two new contributions over §6.9 are
 therefore (i) unconditional/cleaner submodularity for the discrete field, and
 (ii) a representation-dependent value-oracle complexity split (poly endpoints
@@ -2285,7 +2286,7 @@ conclusion, driven here by contraction of the unobserved gap-transitions; it hol
 when the order-$w$ hidden chain is geometrically ergodic, under the usual
 filter-stability conditions adapted to a function-of-Markov-chain observation
 (Atar--Zeitouni 1997; Le Gland--M\'evel, \emph{Math.\ Control Signals Systems}
-13:63--93, 2000; cf.\ Lemma 5.6e). Note (FS) is \emph{stronger} than the bare
+13:63--93, 2000; cf.\ Lemma 5.6e in [RNR-I]). Note (FS) is \emph{stronger} than the bare
 conditional-MI mixing (5.8) of Theorem 7.2: $\sigma(Y)\subseteq\sigma(X)$ transfers
 $\beta$-mixing but \emph{not} the conditional-MI bound below (conditional MI is not
 monotone under dropping the skipped mediators), so (FS) is the right primitive.
@@ -2538,7 +2539,7 @@ computable with a $\#P$ oracle. So
 $\textsc{Coeff-HMM-Entropy}\in\mathrm{FP}^{\#P}$, giving $\mathrm{FP}^{\#P}$-completeness.
 
 \emph{Corollary (multi-information).} The same reduction makes the exact (coefficient-query)
-total correlation $\mathrm{TC}=\sum_i H(X_i)-H(X^N)$ (Theorem 5.5) \#P-hard: the single-symbol
+total correlation $\mathrm{TC}=\sum_i H(X_i)-H(X^N)$ (Theorem 5.5 in [RNR-I]) \#P-hard: the single-symbol
 marginals $H(X_i)$, hence their prime-log coefficients, are poly-computable, so
 $\kappa_P(H(X^N))=\kappa_P\!\bigl(\sum_i H(X_i)\bigr)-\kappa_P(\mathrm{TC})$ and an exact-$\mathrm{TC}$
 oracle again yields $\#\mathrm{SAT}$ (whether or not the marginals involve $P$; verified V7).
@@ -4056,7 +4057,7 @@ point at or before $p$. In particular, $C(K) \geq K \cdot
 \emph{Proof of Lemma 7.27a.} By Definition 10.3, the
 predictor-state and entropy-coder state at position $P$ are
 initialised to the same values as in the encoder's sync-point-aligned
-full decode. By Theorem 10.1 (bit-exact deterministic recompute), the
+full decode. By Theorem 10.1 in [RNR-I] (bit-exact deterministic recompute), the
 decoder must reproduce the encoder's $M(C_i)$ at every position
 $i \in [P, p]$ to keep its entropy-coder state synchronised with the
 encoder's. Suppose, for contradiction, that the decoder skips
@@ -4067,8 +4068,8 @@ sub-block, no memoisation is available; or (ii)~the decoder predicts
 $M(C_{i^*})$ from some other source --- but $M$ is a black-box
 $W$-bounded function (Definition 10.2) and there is no
 information-theoretic shortcut to its output (even an approximate
-prediction would yield an entropy-coder-state divergence, by
-Theorem 10.1 bit-exactness, propagating downstream and corrupting
+prediction would yield an entropy-coder-state divergence under the
+bit-exactness requirement of Theorem 10.1 in [RNR-I], corrupting
 the decoded byte at $p$). Hence the decoder must evaluate $M$
 at every position in $[P, p]$, giving $(p - P + 1)$ evaluations.
 In the worst case $p \equiv K - 1 \pmod{K}$, $p - P = K - 1$, so
@@ -4483,7 +4484,8 @@ the $K$ window positions; at the remaining $\geq (1-\epsilon)K$
 positions it has no stored predictor output or state and, by the
 black-box no-shortcut property of $M$ (Definition 10.2, exactly as in
 the proof of Lemma 7.27a: any skipped or approximated $M$-evaluation
-diverges the entropy-coder state by Theorem 10.1 bit-exactness and
+diverges the entropy-coder state under the bit-exactness requirement
+of Theorem 10.1 in [RNR-I] and
 corrupts the decoded byte), it must perform a fresh $M$-evaluation.
 Hence $C_{\mathrm{work}}(K) \geq (1-\epsilon) K \cdot \mathrm{cost}(M)$.
 Multiplying the two bounds and using $K \cdot \lceil N/K \rceil \geq N$
@@ -5313,7 +5315,7 @@ mixing rate is the wrong quantity; cf.\ Remark 7.15c). We close it under a
 open-middle oracle under one-sided filter stability.
 
 \emph{(TS-FS).} Assume the hidden chain is geometrically ergodic \textnormal{(GE)}
-with positive emissions \textnormal{(EP)} --- the Lemma 5.6e / Remark 7.15c hypotheses,
+with positive emissions \textnormal{(EP)} --- the Lemma 5.6e in [RNR-I] / Remark 7.15c hypotheses,
 under which the forward (and, by stationarity, the time-reversed) filter is
 exponentially stable (Atar--Zeitouni 1997, \emph{Ann.\ IHP}\ 33(6):697--725; van~Handel
 2008, \emph{PTRF}\ 145:35--74). A \emph{one-sided} screening argument then suffices, with
@@ -5353,7 +5355,7 @@ forgetting rate $\rho$ (controlled by TS-FS), not the marginal mixing rate.}
 \end{enumerate}
 
 \emph{Scope (honest).} TS-FS ($=$ GE${}+{}$EP $\Rightarrow$ smoother stability) is the
-two-sided analogue of the Remark 7.15c / Lemma 5.6e filter-stability hypothesis;
+two-sided analogue of the Remark 7.15c / Lemma 5.6e in [RNR-I] filter-stability hypothesis;
 it is \emph{sufficient, not necessary}, and --- as in Remark 7.15c --- it makes the CMI
 bound $\Delta(w)\le C\rho^w$ the operative primitive, sidestepping the non-monotonicity
 of conditional MI under anchor-conditioning that defeats a $\beta$-mixing-only argument.
@@ -6164,7 +6166,7 @@ mean $\sqrt{\pi/2}$, distinct from the net-surplus half-normal).
 
 \textbf{10.7 Random access}
 
-Theorems 10.1 and 10.2 concern bit-exact decoder reproduction. A
+Theorems 10.1 and 10.2 in [RNR-I] concern bit-exact decoder reproduction. A
 separate, operationally important question is whether a decoder can
 extract a small portion of $X$ without decoding all of it --- the
 seek-and-read functionality of bgzip and zstd seekable mode.
@@ -6407,7 +6409,7 @@ without sub-block sync (Remark 10.3a) and Type-III-B's direct or
 hierarchical partition strategies (i)/(ii) of §6.3. For Type-III-A,
 the encoder must therefore choose tile and sync-point sizes such
 that $K$ is an integer multiple of (or aligned to) the tile size,
-ensuring sync-point boundaries coincide with tile boundaries. Let $M$ be a $W$-bounded predictor satisfying Theorem 10.1
+ensuring sync-point boundaries coincide with tile boundaries. Let $M$ be a $W$-bounded predictor satisfying Theorem 10.1 in [RNR-I]
 and let sync points be placed
 at uniformly spaced source positions $j K$ for $j = 0, 1, \dots$
 (Definition 10.3). Assume the entropy coder operates under a
@@ -6491,7 +6493,7 @@ first $W$ positions after $P$ may have shortened context (positions
 $[P, P+W)$ see fewer than $W$ bytes), which the encoder accommodates
 by encoding those positions with reduced-context predictions; this is
 exactly the cold-context cost analyzed before. Continue decoding
-until position $p + k'$; output bytes $[p, p+k')$. By Theorem 10.1,
+until position $p + k'$; output bytes $[p, p+k')$. By Theorem 10.1 in [RNR-I],
 all predictor evaluations are deterministic and bit-identical to
 the encoder's sync-pointed full decode (i.e., the encoding produced
 under the same sync-point structure starting from position 0 and
@@ -6502,7 +6504,7 @@ positions: $p + k' - P \leq K + k$ since $P > p - K$.
 
 \textbf{Remark 10.3a (Type-II partition modes give only
 sub-block-granular random access).} Type-II's enumerative-rank
-coding encodes a whole-block partition (Theorems 5.2--5.3) as a
+coding encodes a whole-block partition (Theorems 5.2--5.3 in [RNR-I]) as a
 single combinatorial rank, not as a per-position sequential repair
 stream. As stated, Theorem 10.3 does not apply to a Type-II archive
 that uses a single global rank for the full block. The standard
@@ -6643,7 +6645,7 @@ position $P$ in the seek-index entry (so the decoder, when seeking
 to $P$, loads the stored state and proceeds with bit-exact
 continuation). Condition (b) on entropy-coder flush/reset remains
 unchanged. The augmented snapshot stores the predictor's recurrent
-hidden state, any adaptive parameter snapshot (if Theorem 10.2 is
+hidden state, any adaptive parameter snapshot (if Theorem 10.2 in [RNR-I] is
 in effect), and the entropy-coder boundary state (range/state for
 arithmetic coding or ANS state, if a different flush convention is
 used). Let $L(\text{state})$ be the bit length of this combined
@@ -6664,7 +6666,7 @@ resume.}
 
 \emph{\textbf{Proof.}} Augment each sync point's index entry with
 all boundary state at position $P$, serialized as a fixed-bit-width
-integer tuple as required by Theorem 10.1. The combined snapshot adds
+integer tuple as required by Theorem 10.1 in [RNR-I]. The combined snapshot adds
 $L(\text{state})$ bits per sync point, multiplying the index size by
 $(1 + L(\text{state}) / \log L(R))$. Under uniform sync-point
 spacing (Definition 10.3), to random-access bytes $[p, p+k)$, the
@@ -6683,7 +6685,7 @@ In either case, deserialize the boundary snapshot, restore the
 decoder's predictor, adaptive-parameter, and entropy-coder boundary
 states, and decode forward as in Theorem 10.3 (cost
 $O((K+k) \cdot \mathrm{cost}(M))$).
-The decoded output is bit-identical by Theorem 10.1 applied to the
+The decoded output is bit-identical by Theorem 10.1 in [RNR-I] applied to the
 restored state. \hfill$\blacksquare$
 
 For LSTM predictors with $d$-dimensional hidden state and
@@ -6719,8 +6721,8 @@ Three trade-offs govern random-access design in RNR archives.
   compression overhead. Typical choices: $K = 4$ KiB (aggressive
   seek), $K = 64$ KiB (balanced), $K = 1$ MiB (compression-favored).
 \item
-  Type-II semi-non-factorized coding. Theorem 5.4's $\Theta(N)$
-  separation requires joint structure across all $N$ positions of a
+  Type-II semi-non-factorized coding. The $\Theta(N)$ separation of Theorem 5.4 in [RNR-I]
+  requires joint structure across all $N$ positions of a
   block. Inserting sync points every $K$ positions partitions the
   block into independent $K$-length subblocks, recovering only
   $\Theta(K)$ separation per subblock. For $K = 64$ KiB and $N = 1$
@@ -6861,7 +6863,7 @@ is empirical and is the subject of §11.
 This is the framework\textquotesingle s deployment-grade distinguishing
 feature relative to other neural compressors. The bounded-context
 architecture, the deterministic reproducibility guarantee (Theorem
-10.1), and the sync-point construction (Definition 10.3) jointly
+10.1 in [RNR-I]), and the sync-point construction (Definition 10.3) jointly
 enable seek-and-read access at a parameter-dependent ratio
 overhead. For per-position sequential modes (Type-I, the per-byte
 sequential Type-III-B strategy, and the per-tile sequential
@@ -6907,7 +6909,7 @@ formalize the application.
 RNR coding modes; Type-II rank-coded modes give only
 sub-block-granular access per Remark 10.3a and require a separate
 unranking-cost analysis), let $X$ be compressed under RNR with a
-$W$-bounded predictor $M$ satisfying Theorem 10.1 and sync points
+$W$-bounded predictor $M$ satisfying Theorem 10.1 in [RNR-I] and sync points
 placed every $K$ positions; let $|X|$ denote the uncompressed
 source length. A block-device driver that maps logical-block-
 address-indexed read requests (LBA $\mathcal{L}$, length $k$ bytes)
@@ -6988,7 +6990,7 @@ compatibility.
 
 \textbf{Theorem 10.6 (Hardware-target portability, explicit
 conformance).} \emph{Let $M$ satisfy the integer-arithmetic,
-lookup-table, and fixed-reduction-order conditions of Theorem 10.1.
+lookup-table, and fixed-reduction-order conditions of Theorem 10.1 in [RNR-I].
 A hardware target $T$ is said to \emph{conform} for $M$ if it pins,
 in a target-specific test vector matched to the engineering spec,
 all of the following: (a)~signed integer representation (two's
@@ -7014,7 +7016,7 @@ and latency but not the produced bytes; the engineering spec lists
 the conformance tests that establish (a)-(g) for each named target
 class.}
 
-\emph{\textbf{Proof.}} Direct corollary of Theorem 10.1, with the
+\emph{\textbf{Proof.}} Direct corollary of Theorem 10.1 in [RNR-I], with the
 explicit observation that conformance is a property of the
 target\textquotesingle s integer-arithmetic, lookup-table, and
 data-layout semantics rather than of its parallelism strategy or
@@ -7023,7 +7025,7 @@ multiplication at a fixed bit-width are associative and commutative
 \emph{within the representable range and under a pinned wrap-vs-saturate
 convention}; condition (a) fixes the representation, (c) fixes the
 wrap-vs-saturate behaviour for each operation, and the per-layer
-bit-width bound of Theorem 10.1 keeps every accumulator within the
+bit-width bound of Theorem 10.1 in [RNR-I] keeps every accumulator within the
 representable range so neither wrap nor saturation triggers in a
 conforming forward pass --- under those conditions the produced
 bits are identical across platforms. Conditions (b), (d), (e), (f),
@@ -7117,7 +7119,7 @@ support read-write deployments.
   \emph{only when the predictor's behaviour at every subsequent
   position is independent of the bytes in $[P, P+K)$}, i.e., for a
   fixed-parameter predictor with no online adaptation. For adaptive
-  predictors (Theorem 10.2) the parameter trajectory after $P + K$
+  predictors (Theorem 10.2 in [RNR-I]) the parameter trajectory after $P + K$
   depends on the bytes in $[P, P+K)$; for non-$W$-bounded
   predictors (Theorem 10.4) the state snapshot at the \emph{next}
   sync point also depends on those bytes. In those cases the

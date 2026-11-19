@@ -13,7 +13,7 @@ within the section stated.
 +--------------------+
 | Header  (48 bytes) |
 +--------------------+
-| Seek index (m x 28)|
+| Seek index (m x 32)|
 +--------------------+
 | Repair stream      |
 +--------------------+
