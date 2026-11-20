@@ -189,9 +189,8 @@ $\kappa$, such that for all $N\geq2$,}
   C_{\mathrm{BE}}\cdot\frac{B\,(\log N)^2}{v\,\sqrt N}.
 \]
 \emph{Equivalently, the Kolmogorov distance between the law of the normalised
-repair length and the standard Gaussian is $O(N^{-1/2}(\log N)^2)$. (The
-$(\log N)^2$ factor is genuine for strongly mixing summands --- Tikhomirov
-1980 --- and cannot be removed in the Kolmogorov metric.)}
+repair length and the standard Gaussian is $O(N^{-1/2}(\log N)^2)$. This is the rate of the
+strong-mixing bound used here (Tikhomirov 1980).}
 
 \textbf{Theorem 7.29 ([RNR-II, Thm 7.29]; Second-order coding rate of RNR;
 the random-access / dispersion interplay).} \emph{Adopt the hypotheses of
@@ -464,12 +463,14 @@ any fixed Banach-algebra observable, so the additive-functional Berry--Esseen th
 \emph{arrangement} of $x^n$ --- a decoupling probe shows within-class spread $0.02$--$0.09$ bits) ---
 and \emph{(ii) schedule-inhomogeneous} (the per-step indicator $\mathbf 1[Y_i\ne x_i]$ is selected by
 the schedule symbol $x_i$, and for the correlated $Y^*$ the per-schedule flip-bits are not i.i.d.). The
-one inhomogeneous (sequential) CDF Berry--Esseen on the market --- Hafouta (\emph{Nonlinearity} 33,
-2020; arXiv:1903.04018, Thm.~2.10 on the Thm.~2.6 RPF triplet) --- needs the covering hypothesis
+early sequential RPF approach of Hafouta (2019, arXiv:1903.04018v4)
+uses a covering hypothesis
 $T_j^{n_0}B_j(x,\xi)=\mathcal E_{j+n_0}$ that \emph{forces} the eigenfunction floor
 $\min_x|h_j^{(z)}|\ge c>0$, a density-floor surrogate the atomic filter lacks; but, as Kloeckner's
 singular-case theorem shows, that is a limitation of \emph{that route}, not of the CDF Berry--Esseen
-grade (the sharper sequential Edgeworth of Hafouta 2025, arXiv:2511.06414, inherits it a fortiori).
+grade. Hafouta (2025, arXiv:2511.06414) treats non-uniform Edgeworth
+expansions for several classes under separate dependence hypotheses;
+their applicability to this filter would need verification.
 \emph{The dispersion residual is therefore the ball-probability$\,\to\,$additive-functional reduction.}
 That $\mathrm{Var}(\log_2 S_n)/n\to0$ uniformly over the $\sqrt n$-shell (equivalently, that $-\log_2
 S_n$ is $o_P(\sqrt n)$-dominated by an algebra-additive functional of the enlarged homogeneous chain
@@ -3659,29 +3660,34 @@ International Conference on Machine Learning.
 Prabhakaran, M., Sahai, A., and Shelat, A. (2005). The Smallest Grammar
 Problem. IEEE Transactions on Information Theory, 51(7), 2554-2576.
 
-\textbf{{[}8a{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B., and
-Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
-over Fixed Alphabets. Theory of Computing Systems, 65(1), 158-203.
+\textbf{{[}8a{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B.,
+and Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
+over Fixed Alphabets. Theory of Computing Systems, 65(2), 344--409.
+\url{https://doi.org/10.1007/s00224-020-10013-w}.
 
-\textbf{{[}8b{]}} Ga\'nczorz, M. (2018). Entropy bounds for grammar
-compression. arXiv:1804.08547 (also presented at DCC 2018/2020).
+\textbf{{[}8b{]}} Ga\'nczorz, M. (2018).
+Entropy Bounds for Grammar Compression. Preprint.
+\url{https://arxiv.org/abs/1804.08547}.
 
-\textbf{{[}8c{]}} Kozma, L., and Voderholzer, J. (2024). The
-Computational Complexity of Tokenisation. arXiv:2411.08671.
+\textbf{{[}8c{]}} Kozma, L., and Voderholzer, J. (2026).
+Theoretical Analysis of Byte-Pair Encoding. Extended version of ESA 2026.
+\url{https://arxiv.org/abs/2411.08671v2}.
 
-\textbf{{[}8d{]}} Je\.z, A. (2015). A really simple approximation of
-smallest grammar. Theoretical Computer Science, 616, 141-150.
+\textbf{{[}8d{]}} Je\.z, A. (2016). A Really Simple Approximation of
+Smallest Grammar. Theoretical Computer Science, 616, 141--150.
+\url{https://doi.org/10.1016/j.tcs.2015.12.032}.
 
 \textbf{{[}8e{]}} Karzanov, A. V. (1998). Minimum 0-Extensions of Graph
 Metrics. European Journal of Combinatorics, 19(1), 71-101.
 
-\textbf{{[}8f{]}} Schwartz, R., and Tur, S. (2023). Improved hardness
-of approximation for graph problems via Boolean PCPs.
-arXiv:2104.11670 (also conference version, ICALP 2023).
+\textbf{{[}8f{]}} Schwartz, R., and Tur, N. (2021). The
+Metric Relaxation for $0$-Extension Admits an $\Omega(\log^{2/3} k)$ Gap.
+STOC. \url{https://doi.org/10.1145/3406325.3451071}.
 \textbf{{[}6{]}} Cover, T. M. (1973). Enumerative Source Encoding. IEEE
 Transactions on Information Theory, 19(1), 73-77.
-\textbf{{[}7{]}} Cover, T. M., and Thomas, J. A. (2006). Elements of
-Information Theory, 2nd edition. Wiley.
+\textbf{{[}7{]}} Cover, T. M., and
+Thomas, J. A. (2006). Elements of Information Theory, 2nd edition. Wiley.
+\url{https://doi.org/10.1002/047174882X}.
 \textbf{{[}8{]}} Donoho, D. L. (2000). High-Dimensional Data Analysis:
 The Curses and Blessings of Dimensionality. AMS Math Challenges Lecture.
 \textbf{{[}9{]}} Duda, J. (2009). Asymmetric Numeral Systems.
@@ -3736,9 +3742,10 @@ Theory, 19(4), 471-480.
 \textbf{{[}26{]}} Tenenbaum, J. B., de Silva, V., and Langford, J. C.
 (2000). A Global Geometric Framework for Nonlinear Dimensionality
 Reduction. Science, 290(5500), 2319-2323.
-\textbf{{[}27{]}} Townsend, J., Bird, T., Kunze, J., and Barber, D.
-(2020). HiLLoC: Lossless Image Compression with Hierarchical Latent
-Variable Models. ICLR.
+\textbf{{[}27{]}} Townsend, J., Bird, T.,
+Kunze, J., and Barber, D. (2019). HiLLoC: Lossless Image Compression with
+Hierarchical Latent Variable Models. Preprint.
+\url{https://arxiv.org/abs/1912.09953}.
 \textbf{{[}28{]}} van den Berg, R., Gritsenko, A. A., Dehghani, M.,
 Sonderby, C. K., and Salimans, T. (2021). IDF++: Analyzing and Improving
 Integer Discrete Flows for Lossless Compression. ICLR.
@@ -3829,12 +3836,13 @@ Transactions on Information Theory, 56(8), 3901-3917.
 \textbf{{[}55{]}} Equitz, W. H. R., and Cover, T. M. (1991). Successive
 Refinement of Information. IEEE Transactions on Information Theory,
 37(2), 269-275.
-\textbf{{[}56{]}} Fagin, R. (1977). Generalized First-Order Spectra and
-Polynomial-Time Recognizable Sets. In: Complexity of Computation,
-SIAM-AMS Proceedings 7, 43-73.
+\textbf{{[}56{]}} Fagin, R. (1977). Asymptotic Miss Ratios
+over Independent References. Journal of Computer and System Sciences,
+14(2), 222--250. \url{https://s3.us.cloud-object-storage.appdomain.cloud/res-files/500-jcss77.pdf}.
 \textbf{{[}57{]}} Ferragut, A., Rodr{\'\i}guez, I., and Paganini, F.
-(2018). Optimizing TTL Caches under Heavy-Tailed Demand. Queueing
-Systems, 88(3-4), 207-241.
+(2018). Optimal Timer-Based Caching Policies for General Arrival
+Processes. Queueing Systems, 88(3--4), 207--241.
+\url{https://doi.org/10.1007/s11134-017-9540-3}.
 \textbf{{[}58{]}} Grossi, R., and Vitter, J. S. (2005). Compressed
 Suffix Arrays and Suffix Trees with Applications to Text Indexing and
 String Matching. SIAM Journal on Computing, 35(2), 378-407.
@@ -3927,9 +3935,10 @@ Systems of Linear Equations. Journal of Computer and System Sciences,
 \textbf{{[}88{]}} Birch, B. J. (1962). Approximations for the Entropy
 for Functions of Markov Chains. Annals of Mathematical Statistics,
 33(3), 930-938.
-\textbf{{[}89{]}} Pakzad, P., and Anantharam, V. (2002). Estimation
-and Marginalization Using Kikuchi Approximation Methods. Neural
-Computation, 17(8), 1836-1873.
+\textbf{{[}89{]}} Pakzad, P., and Anantharam, V. (2005).
+Estimation and Marginalization Using the Kikuchi Approximation Methods.
+Neural Computation, 17(8), 1836--1873.
+\url{https://doi.org/10.1162/0899766054026693}.
 \textbf{{[}90{]}} Kieffer, J. C., and Yang, E.-H. (2000). Grammar-Based
 Codes: A New Class of Universal Lossless Source Codes. IEEE Transactions
 on Information Theory, 46(3), 737-754.
@@ -3957,15 +3966,18 @@ an Upper Bound for the Entropy of English. Computational Linguistics,
 18(1), 31-40.
 \textbf{{[}98{]}} Lezaud, P. (1998). Chernoff-Type Bound for Finite
 Markov Chains. Annals of Applied Probability, 8(3), 849-867.
-\textbf{{[}99{]}} Che, H., Wang, Z., and Tung, Y. (2002). Analysis
-and Design of Hierarchical Web Caching Systems. Proceedings of IEEE
-INFOCOM, 1416-1424.
-\textbf{{[}100{]}} Aldous, D., and Diaconis, P. (1987). Shuffling
-Cards and Stopping Times. American Mathematical Monthly, 93(5),
-333-348.
-\textbf{{[}101{]}} Knudsen, J. B., and Tsitsiklis, J. N. (1990).
-On the Time Required to Drain a Network. Mathematics of Operations
-Research, 15(4), 685-708.
+\textbf{{[}99{]}} Che, H., Tung, Y., and Wang,
+Z. (2002). Hierarchical Web Caching Systems: Modeling, Design and
+Experimental Results. IEEE Journal on Selected Areas in Communications,
+20(7), 1305--1314. \url{https://doi.org/10.1109/JSAC.2002.801752}.
+\textbf{{[}100{]}} Aldous, D., and
+Diaconis, P. (1986). Shuffling Cards and Stopping Times. American
+Mathematical Monthly, 93(5), 333--348.
+\url{https://doi.org/10.1080/00029890.1986.11971821}.
+\textbf{{[}101{]}} Mattson, R. L., Gecsei, J., Slutz,
+D. R., and Traiger, I. L. (1970). Evaluation Techniques for Storage
+Hierarchies. IBM Systems Journal, 9(2), 78--117.
+\url{https://doi.org/10.1147/sj.92.0078}.
 \textbf{{[}102{]}} Paulin, D. (2015). Concentration Inequalities
 for Markov Chains by Marton Couplings and Spectral Methods.
 Electronic Journal of Probability, 20(79), 1-32.
@@ -3978,9 +3990,9 @@ Bounds for Eigenvalues of Markov Chains. Annals of Applied
 Probability, 1(1), 36-61.
 \textbf{{[}105{]}} King, W. F. (1971). Analysis of Demand Paging
 Algorithms. Proceedings of the IFIP Congress, 485-490.
-\textbf{{[}106{]}} Kesidis, G., Shan, Y., Fumagalli, A., Gulati,
-A., and Singh, A. (2017). An Analysis of LRU Replacement Caches
-under Independent Reference Models. arXiv:1704.04849.
+\textbf{{[}106{]}} Kesidis, G. (2017). Stationary Distribution of a
+Generalized LRU-MRU Content Cache. Preprint, revised 2019.
+\url{https://arxiv.org/abs/1704.04849v8}.
 \textbf{{[}107{]}} Niyogi, P., Smale, S., and Weinberger, S. (2008).
 Finding the Homology of Submanifolds with High Confidence from
 Random Samples. Discrete and Computational Geometry, 39(1-3),
@@ -4019,12 +4031,13 @@ IEEE Transactions on Information Theory. \url{https://arxiv.org/abs/1907.00304}.
 \textbf{{[}118{]}} Gray, R. M. (1970). Information Rates of Autoregressive
 Processes. IEEE Transactions on Information Theory, 16(4), 412--421.
 \url{https://doi.org/10.1109/TIT.1970.1054470}.
-\textbf{{[}119{]}} Hafouta, Y. (2020). Explicit Berry--Esseen and
-Edgeworth expansions for inhomogeneous Markov chains and
-locally-dependent random variables. Nonlinearity, 33; arXiv:1903.04018.
-\textbf{{[}120{]}} Hafouta, Y. (2025). Sharper sequential Berry--Esseen
-and Edgeworth expansions for uniformly elliptic inhomogeneous Markov
-chains. Preprint, arXiv:2511.06414.
+\textbf{{[}119{]}} Hafouta, Y. (2019). A Sequential RPF
+Theorem and Its Applications to Limit Theorems for Time Dependent
+Dynamical Systems and Inhomogeneous Markov Chains. Preprint, version 4.
+\url{https://arxiv.org/abs/1903.04018v4}.
+\textbf{{[}120{]}} Hafouta, Y. (2025). Non-uniform
+Edgeworth Expansions for Weakly Dependent Random Variables and Their
+Applications. Preprint. \url{https://arxiv.org/abs/2511.06414}.
 \textbf{{[}121{]}} Dolgopyat, D., and Sarig, O. (2023). Local Limit
 Theorems for Inhomogeneous Markov Chains. Lecture Notes in Mathematics,
 vol.\ 2331, Springer.
@@ -4063,9 +4076,9 @@ Wahrscheinlichkeitstheorie und verwandte Gebiete, 64(2), 211-239.
 \textbf{{[}133{]}} Lahiri, S. N. (1993). Refinements in asymptotic
 expansions for sums of weakly dependent random vectors. Annals of
 Probability, 21(2), 791-799.
-\textbf{{[}134{]}} Avram, F., and Berger, T. (1985). On critical
-distortion for Markov sources and the rate-distortion function. IEEE
-Transactions on Information Theory.
+\textbf{{[}134{]}} Avram, F., and Berger, T. (1985). On
+Critical Distortion for Markov Sources. IEEE Transactions on Information
+Theory, 31(5), 688--690. \url{https://doi.org/10.1109/TIT.1985.1057096}.
 \textbf{{[}135{]}} Aaronson, J., and Denker, M. (2001). Local limit
 theorems for partial sums of stationary sequences generated by
 Gibbs--Markov maps. Stochastics and Dynamics, 1(2), 193-237.
@@ -4077,11 +4090,11 @@ and convexity of the spectral bound and the type. Mathematische
 Zeitschrift, 180(3), 265-273.
 
 \textbf{{[}RNR-I{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
-Part I: Framework, Constructions, and Complexity. Companion paper (RNR
-series, Part I).
+Part I: Framework, Constructions, and Complexity.
+Companion manuscript. \href{https://github.com/ratushnyi-labs/sci-rnr/blob/8a284b011e8744319e407097617e6a0e8554a171/tex/papers/core/rnr_core.tex}{Repository version}.
 
 \textbf{{[}RNR-II{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
-Part II: Random Access, Finite-Block Surprisal, and the Deviation
-Hierarchy. Companion paper (RNR series, Part II).
+Part II: Random Access, Finite-Block Surprisal, and the Deviation Hierarchy.
+Companion manuscript. \href{https://github.com/ratushnyi-labs/sci-rnr/blob/8a284b011e8744319e407097617e6a0e8554a171/tex/papers/random_access/rnr_random_access.tex}{Repository version}.
 
 \end{document}

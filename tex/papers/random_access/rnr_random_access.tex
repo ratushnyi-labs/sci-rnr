@@ -3822,168 +3822,77 @@ Theorem 7.25 is the preferred bound for exp-mixing sources where
 the long-run-variance proxy $v$ can be measured or upper-bounded.
 
 \textbf{Theorem 7.26 (LRU+IRM miss-count concentration via
-Markov-chain Chernoff).} \emph{Let $(X_t)_{t \geq 1}$ be an IRM
-request sequence on a finite alphabet $[N_{\rm dist}]$ with
-popularity distribution $\pi$ satisfying full support
-($\pi_{\rm min} := \min_i \pi_i > 0$). Equip the decoder with an LRU
-cache of capacity $C \leq N_{\rm dist}$ (Theorem 7.20 setup). Let
-$M_Q := \sum_{t=1}^{Q} \mathbf{1}\{X_t \notin \mathrm{Cache}_t\}$
-denote the miss count over the first $Q$ queries, and $\mu_\infty
-:= \lim_{t \to \infty} \Pr(X_t \notin \mathrm{Cache}_t)$ the
-stationary miss rate (Fagin 1977; Che et al.\ 2002 characteristic-time
-approximation, exact in the $C \to \infty$ limit). Then the
-augmented cache-state Markov chain $(\mathrm{Cache}_t, X_t)_{t \geq
-1}$ is finite, irreducible, and aperiodic, with a unique stationary
-distribution and strictly positive spectral gap
-$\gamma_{\rm LRU} > 0$ (with $\gamma_{\rm LRU}$ depending only on
-$\pi$ and $C$, not on $Q$). By the Lezaud-Gillman Markov-chain
-Chernoff bound (Lezaud 1998, Annals of Applied Probability
-8(3):849--867; Gillman 1998, SIAM Journal on Computing
-27(4):1203--1220; sharpened by Paulin 2015, Electronic Journal of
-Probability 20(79)), for every $\varepsilon > 0$:
+Markov-chain Hoeffding).} \emph{Let $(X_t)_{t\geq 1}$ be independent
+requests on $[N_{\rm dist}]$ with the same full-support distribution
+$\pi$. Let $S_t$ be the ordered LRU stack of capacity $C$ immediately
+before request $X_t$, with $1\leq C\leq N_{\rm dist}$, and put
+$M_Q=\sum_{t=1}^Q\mathbf{1}\{X_t\notin S_t\}$. The chain
+$Y_t=(S_t,X_t)$ on full stacks has a unique invariant law $\rho$.
+Write $\mu_\infty=\mathbb E_\rho[\mathbf{1}\{X_t\notin S_t\}]$.
+Let $\gamma_{\rm LRU}=1-\max\{0,\lambda_2((P+P^*)/2)\}>0$,
+where $P$ is the transition kernel of $Y_t$ and $P^*$ is its
+$L^2(\rho)$ adjoint. For a one-state chain set $\gamma_{\rm LRU}=1$.
+If the initial stack is full and $Y_1$ has law $\nu$, then for
+$\varepsilon>0$,}
 \[
-  \Pr\!\bigl(|M_Q / Q - \mu_\infty| \geq \varepsilon\bigr)
-  \;\leq\; C_{\rm Chern} \cdot \exp\!\Bigl( -\tfrac{\varepsilon^2
-  \cdot Q \cdot \gamma_{\rm LRU}}{C_{\rm var}}\Bigr) ,
+  \Pr_\nu\{|M_Q/Q-\mu_\infty|\geq\varepsilon\}
+  \leq 2\|\nu/\rho\|_\infty\exp(-Q\gamma_{\rm LRU}\varepsilon^2).
 \]
-where $C_{\rm Chern}$ and $C_{\rm var}$ are absolute constants
-from the specific Markov-Chernoff form (Lezaud: $C_{\rm Chern} = 2$,
-$C_{\rm var} = 5$; Paulin sharper: $C_{\rm Chern} = 2$, $C_{\rm var}
-= 2$, requiring the pseudo-spectral gap rather than the additive
-reversibilization gap).}
-
-\emph{Scope and significance.} Theorem 7.26 closes the LRU+IRM
-finite-batch concentration open problem of §13.2, complementing
-Theorem 7.24's IRM + Perfect-LFU result (which sidesteps cache
-dynamics by using a \emph{static} LFU cache and applying classical
-Hoeffding to iid miss indicators). The novelty here is the
-positive-spectral-gap argument: under IRM with full-support $\pi$,
-the LRU cache-state chain is geometrically ergodic, and miss-count
-deviations enjoy a $\sqrt{Q}$-Hoeffding tail (sub-Gaussian rate
-$\Theta(Q \gamma_{\rm LRU})$ in the exponent). The bound combines
-with Theorem 7.20's expected-cost formula to give a complete
-characterization of the decoder-latency distribution: the mean
-follows T7.20's amortization, the deviation follows T7.26's
-$\sqrt{Q}/\gamma_{\rm LRU}$ scaling. The crude lower bound
-$\gamma_{\rm LRU} \geq \pi_{\rm min}$ (proof in Remark 7.26a below)
-suffices for the qualitative claim; tighter explicit constants
-require LRU-specific spectral analysis (Aldous-Diaconis 1987
-coupling-based bounds; Wolfer-Kontoyiannis 2019 non-reversible-chain
-spectral gaps), open for future work.
+\emph{For an initially partial or empty stack, choose any $C$ distinct
+request symbols $a_1,\ldots,a_C$ and let $p=\prod_{j=1}^C\pi_{a_j}$.
+For any integer $0\leq b\leq Q$ the corresponding bound is}
+\[
+  \Pr\{|M_Q/Q-\mu_\infty|\geq\varepsilon+b/Q\}
+  \leq 2\exp(-Q\gamma_{\rm LRU}\varepsilon^2)+(1-p)^{\lfloor b/C\rfloor}.
+\]
 
 \emph{\textbf{Proof.}}
-Under IRM with the standard LRU update rule, the state is most
-naturally encoded as the \emph{ordered LRU stack}
-$\mathbf{s}_t = (s_t^{(1)}, \ldots, s_t^{(C)})$ where $s_t^{(1)}$
-is the most-recently-requested item among those currently in cache
-(King 1971; Kesidis et al.\ 2017, arXiv:1704.04849). Together with
-the current query $X_t$, the joint state $(\mathbf{s}_t, X_t)$
-lives in the finite space $\mathcal{S} := \{(\mathbf{s}, x) :
-\mathbf{s} \in [N_{\rm dist}]^{(C)}, x \in [N_{\rm dist}]\}$ of
-cardinality $P(N_{\rm dist}, C) \cdot N_{\rm dist} = N_{\rm dist}!
-/ (N_{\rm dist} - C)! \cdot N_{\rm dist}$, where $[N_{\rm dist}]^{(C)}$
-denotes ordered $C$-tuples of distinct elements. The transition
-law is the standard LRU rule: $X_{t+1} \sim \pi$ independently;
-if $X_{t+1} \in \mathbf{s}_t$, move $X_{t+1}$ to position 1 and
-shift older items down; if $X_{t+1} \notin \mathbf{s}_t$, prepend
-$X_{t+1}$ at position 1 and evict the position-$C$ item.
+Given $(S_t,X_t)$, first apply the LRU update to $S_t$ using $X_t$,
+then draw $X_{t+1}$ independently. The ordered stack representation
+is standard (Mattson et al.\ 1970 and King 1971).
+After processing $X_t$, the next $C$ requests $a_C,\ldots,a_1$ fill
+the stack in order $(a_1,\ldots,a_C)$ regardless of its initial
+contents. Drawing any $x'$ next gives the state $((a_1,\ldots,a_C),x')$
+before processing $x'$. Thus $P^{C+1}$ has strictly positive entries.
+The finite chain is irreducible and aperiodic. Its reversibilization
+is irreducible, which gives $\gamma_{\rm LRU}>0$.
 
-\emph{Irreducibility.} For any target ordered stack $\mathbf{s}'
-= (a_1, \ldots, a_C)$ and any subsequent query $x' \in
-[N_{\rm dist}]$, the deterministic query sequence $X_{t+1} = a_C,
-X_{t+2} = a_{C-1}, \ldots, X_{t+C} = a_1, X_{t+C+1} = x'$ drives
-the chain to state $(\mathbf{s}', x')$ regardless of the starting
-state (each query moves its target item to position 1; after
-$C$ such queries in reverse order, the stack becomes
-$(a_1, \ldots, a_C) = \mathbf{s}'$). Each specific query has
-probability $\geq \pi_{\rm min} > 0$ under IRM, so any state is
-reached from any other in exactly $C + 1$ steps with probability
-$\geq \pi_{\rm min}^{C+1} > 0$. Hence the chain is irreducible.
+Apply Fan, Jiang, and Sun (2021, Theorem~3, \emph{JMLR}
+22(139):1--35, \href{https://jmlr.org/papers/v22/19-479.html}{publisher
+version}) to the stationary chain and the fixed function
+$f(s,x)=\mathbf{1}\{x\notin s\}$. The function has range $[0,1]$,
+and their spectral inflation factor is
+$(2-\gamma_{\rm LRU})/\gamma_{\rm LRU}$.
+Applying the inequality to both tails gives the stationary bound,
+since $2\gamma_{\rm LRU}/(2-\gamma_{\rm LRU})\geq\gamma_{\rm LRU}$.
+Changing the law of $Y_1$ from $\rho$ to $\nu$ multiplies any event
+probability by at most $\|\nu/\rho\|_\infty$.
 
-\emph{Aperiodicity.} For any state $(\mathbf{s}, x)$, querying
-$X_{t+1} = s^{(1)}$ (the current top of stack) leaves $\mathbf{s}$
-unchanged, giving the transition $(\mathbf{s}, x) \to
-(\mathbf{s}, s^{(1)})$. A subsequent query $X_{t+2} = s^{(1)}$
-yields $(\mathbf{s}, s^{(1)}) \to (\mathbf{s}, s^{(1)})$ --- a
-self-loop with probability $\pi_{s^{(1)}} > 0$. Hence the chain
-has period 1 (aperiodic).
+For a partial or empty initial stack, drive it and a stationary
+full stack with the same requests. Each disjoint $C$-request block
+has probability $p$ of matching $a_C,\ldots,a_1$. At the end of
+the first matching block both stacks coincide and stay equal.
+With probability at least $1-(1-p)^{\lfloor b/C\rfloor}$ their miss
+counts differ by at most $b$. The stationary bound and the union
+bound give the stated inequality. \hfill$\blacksquare$
 
-\emph{Stationary distribution and spectral gap.} As a finite,
-irreducible, aperiodic Markov chain, the joint chain admits a
-unique stationary distribution $\pi^*$ (Levin-Peres-Wilmer 2017
-``Markov Chains and Mixing Times'', Theorem 4.9), with
-$\mu_\infty = \mathbb{E}_{\pi^*}[\mathbf{1}\{x \notin \mathbf{s}\}]$.
-The chain is not reversible in general (LRU dynamics are
-directional). However, the additive reversibilization
-$\tilde{P} := (P + P^*)/2$ (where $P^*$ is the time-reversal of
-$P$ w.r.t.\ $\pi^*$) is reversible by construction, and Aldous-Fill
-(``Reversible Markov Chains and Random Walks on Graphs'', Chapter
-9.4.1, ``Reversibilizations'') establishes that the spectral gap
-$\gamma_{\rm LRU} := 1 - \lambda_2(\tilde{P})$ is strictly positive
-for any finite irreducible aperiodic non-reversible chain
-(equivalently: $\tilde{P}$ has eigenvalue 1 with multiplicity 1 by
-Perron-Frobenius applied to the connected aperiodic reversibilization).
-
-\emph{Application of Lezaud Chernoff.} Lezaud (1998, Theorem 1.1)
-applies to any bounded $L^2$-functional $f$ of a finite-state
-Markov chain with positive spectral gap. Taking
-$f(S, x) := \mathbf{1}\{x \notin S\} - \mu_\infty$ (the centred
-miss indicator, bounded by $\|f\|_\infty \leq 1$) and applying
-Theorem 1.1 yields
-\[
-  \Pr\!\bigl(|S_Q^f| \geq Q \varepsilon \bigr)
-  \;\leq\; C_{\rm Chern} \exp\!\Bigl( -\tfrac{\varepsilon^2 Q
-  \gamma_{\rm LRU}}{C_{\rm var}}\Bigr) ,
-\]
-where $S_Q^f := \sum_{t=1}^{Q} f(\mathrm{Cache}_t, X_t) = M_Q - Q
-\mu_\infty$, and the constants $C_{\rm Chern}, C_{\rm var}$ are
-those of Lezaud's specific form (Lezaud's original $C_{\rm Chern}
-= 2$, $C_{\rm var} = 5$ for bounded centred functionals with
-$\|f\|_\infty \leq 1$; alternative sharper forms by Paulin 2015
-via the pseudo-spectral gap give $C_{\rm var} = 2$). Rearranging
-gives the claim. \hfill$\blacksquare$
-
-\emph{Remark 7.26a (positivity of $\gamma_{\rm LRU}$ and explicit
-lower bounds).} The positivity $\gamma_{\rm LRU} > 0$ is immediate
-from the chain being finite, irreducible, and aperiodic (Aldous-Fill
-RWG §9.4.1; cf.\ proof above). Explicit lower bounds on
-$\gamma_{\rm LRU}$ are more subtle. A crude Dobrushin-style lower
-bound: from the irreducibility argument above, the $(C+1)$-step
-chain $P^{C+1}$ has Dobrushin coefficient $\beta_{C+1} := \max_{s,
-s'} \|P^{C+1}(s, \cdot) - P^{C+1}(s', \cdot)\|_{\rm TV} \leq 1 -
-\pi_{\rm min}^{C+1}$ (because the $C+1$-step deterministic-query
-coupling above succeeds with probability $\geq \pi_{\rm min}^{C+1}$
-from any pair of starting states). By the Dobrushin-spectral-gap
-inequality (Diaconis-Stroock 1991 ``Geometric bounds for
-eigenvalues of Markov chains''; LPW Theorem 13.1), $\gamma(P^{C+1})
-\geq 1 - \beta_{C+1} \geq \pi_{\rm min}^{C+1}$, and the
-multiplicative-step relation $\gamma(P^{C+1}) = 1 - (1 -
-\gamma(P))^{C+1} \leq (C+1) \gamma(P)$ gives the one-step bound
-$\gamma_{\rm LRU} := \gamma(P) \geq \pi_{\rm min}^{C+1} / (C+1)$.
-For Zipf popularity $\pi_i \propto i^{-\alpha}$ on $[N_{\rm dist}]$,
-$\pi_{\rm min} = N_{\rm dist}^{-\alpha} / \zeta_{N_{\rm dist}}(\alpha)$,
-giving $\gamma_{\rm LRU} \geq (N_{\rm dist}^{-\alpha}/\zeta(\alpha))^{C+1}
-/ (C+1)$ --- positive but exponentially small in $C$, hence not
-practically useful for moderate cache sizes. Tighter bounds via
-LRU-specific spectral structure (the Knudsen-Tsitsiklis 1990
-``stack distance'' representation; coupling-from-the-past analyses
-for the LRU permutation chain; Aldous-Diaconis 1987 cutoff
-phenomena for related permutation chains) are open for future
-work. The qualitative $\sqrt{Q}$-Hoeffding scaling of Theorem 7.26
-holds for any positive $\gamma_{\rm LRU}$, regardless of the
-explicit constant.
+\emph{Remark 7.26a (explicit spectral bound).} Let $d=C+1$ and
+$\pi_{\min}=\min_i\pi_i$. The prescribed requests in the proof give
+$P^d(y,z)\geq\pi_{\min}^d\geq\pi_{\min}^d\rho(z)$ for every
+pair of states. Under stationarity, for any $g$ the minorization
+implies
+$\mathbb E[(g(Y_{t+d})-g(Y_t))^2]\geq 2\pi_{\min}^d\operatorname{Var}_\rho(g)$.
+Cauchy--Schwarz on the $d$ increments and stationarity give an
+upper bound of $d^2\mathbb E[(g(Y_{t+1})-g(Y_t))^2]$ on the same
+quantity. The one-step expectation is twice the Dirichlet form of
+$(P+P^*)/2$. The variational characterization of the gap therefore
+gives $\gamma_{\rm LRU}\geq\pi_{\min}^d/d^2$.
 
 \emph{Remark 7.26b (relation to Theorems 7.20 and 7.24).}
-Theorem 7.20 gives the \emph{expected} per-query decoder latency
-under any cache + workload, including LRU + Zipf. Theorem 7.24
-gives the \emph{Hoeffding tail} under the restricted hypothesis of
-IRM + \emph{static} Perfect-LFU caching (no eviction dynamics).
-Theorem 7.26 extends T7.24's tail-bound machinery to LRU + IRM
-by replacing iid Hoeffding with Markov-chain Chernoff (Lezaud);
-the cost is the $1/\gamma_{\rm LRU}$ factor in the exponent
-(versus T7.24's iid rate). Together, T7.20 + T7.26 give the
-expected-and-tail characterization of LRU+IRM decoder latency
-that was open after T7.24's static-LFU restriction.
+Theorem 7.20 describes expected decoder latency. Theorem 7.24
+uses iid Hoeffding for static Perfect-LFU under the IRM.
+Theorem 7.26 gives the finite-batch LRU miss-count tail with
+an explicit dependence on the spectral gap and initialization.
 
 \textbf{Theorem 7.27 (Space-time product converse for sub-block
 RNR random access).} \emph{Let $X$ be a length-$N$ source compressed
@@ -4266,18 +4175,13 @@ RNR is structurally analogous to the classical compressed
 suffix-array sampling-rate trade-off (Sadakane 2003;
 Grossi-Vitter 2005), where sampling rate $s$ gives storage $O(N/s)$
 and query $O(s \log N)$, yielding $s = \Theta(\sqrt{N})$ at balance.
-The general cell-probe lower bound for static membership in the
-RAM model is $\Omega(\log N / \log\log N)$ per query under
-linear-space (Andersson-Miltersen 1999, Pătraşcu-Demaine 2006
-\emph{SIAM J.\ Comput.}\ 35(4):932); Larsen 2012
-\emph{52nd FOCS}, pp.\ 293--301 (`The cell probe complexity of
-dynamic range counting') established $\Omega(\log^{3/2} N)$ for
-dynamic predecessor under polynomial space. These bounds are
-weaker than T7.27 in absolute scale (they trade off probe count
-versus storage in bits, whereas T7.27 trades $K \cdot \mathrm{cost}(M)$
-versus seek-index storage), but they are of the same product-tradeoff
-type and lend literature precedent to the sub-block-restricted
-converse.
+Static membership admits constant worst-case lookup with linear
+space by perfect hashing (Fredman--Koml\'os--Szemer\'edi, 1984,
+\url{https://doi.org/10.1145/828.1884}). For comparison, P\v{a}tra\c{s}cu--Demaine
+(2006, \url{https://doi.org/10.1137/S0097539705447256}) study dynamic
+problems including partial sums. Larsen (2012, arXiv:1105.5933)
+studies dynamic weighted range counting. The converse here depends
+on the stated sub-block architecture.
 
 \textbf{Theorem 7.27$'$ (General-scheme converse is \emph{false}: a
 rate-respecting scheme beats the product bound).} \emph{The
@@ -4750,10 +4654,8 @@ hard cell-probe problem. (a)~Belazzougui--Navarro's lower bound is a
 \emph{rank}/\emph{select} bound, $\rho\cdot t_{\mathrm{acc}}\cdot
 t_{\mathrm{sel}} = \Omega(\log_2^2\sigma/w)$; it is vacuous for pure
 access ($t_{\mathrm{sel}}$ unconstrained), and the same authors show
-access alone runs in $O(1)$ time at the entropy bound. (b)~The generic
-static cell-probe \emph{access} floor at linear space is only $\Omega(\log
-N/\log\log N)$ (Andersson--Miltersen 1999; P\u{a}tra\c{s}cu--Demaine 2006
-\emph{SIAM J.\ Comput.}\ 35(4):932), asymptotically far below $\sqrt N$.
+access alone runs in $O(1)$ time at the entropy bound. (b)~Static membership can use constant-time perfect hashing
+(Fredman--Koml\'os--Szemer\'edi, 1984, \url{https://doi.org/10.1145/828.1884}).
 (c)~A genuine $\Omega(\sqrt N)$-type access bound is known only
 \textbf{conditionally}: through the BWT/MTF representation
 (Sinha--Weinstein, ``Local decodability of the Burrows--Wheeler
@@ -4913,49 +4815,28 @@ constants).
 The crucial point --- and the reason this is \emph{not} a routine
 ``CLT holds'' statement --- is the \emph{explicit log factor}. For
 \emph{independent} summands Berry--Esseen gives the log-free rate
-$O(N^{-1/2})$, but for strongly mixing summands the best known (and,
-for the Kolmogorov metric, generally unavoidable) rate carries a
+$O(N^{-1/2})$, and the strong-mixing bound used here carries a
 $(\log N)^2$ correction. This is Tikhomirov's (1980) theorem: under
 $\alpha(k) \leq K e^{-\beta k}$ and a finite $(2+\delta)$ absolute
 moment, the rate is $O\bigl(N^{-\delta/2}(\log N)^{1+\delta}\bigr)$ for
 $0 < \delta \leq 1$; the bounded case $|\ell_i| \leq B$ has all moments,
-so we take $\delta = 1$ and obtain $O(N^{-1/2}(\log N)^2)$. (The same
-leading term $A N^{-1/2}(\log N)^2$ appears in the recent mixing
-Berry--Esseen synthesis; cf.\ the survey rate in
-\texttt{arXiv:2604.03712}, Remark~1. Sunklodas 2007 obtains the milder
-$O(N^{-1/2}\log N)$ but only for \emph{smooth} / Lipschitz test
-functions; passing to indicator test functions --- i.e.\ Kolmogorov
-distance --- costs the extra logarithm.) A statement of T7.28 with a
-bare $N^{-1/2}$ rate would be \emph{incorrect}: the verify script shows
+so we take $\delta = 1$ and obtain $O(N^{-1/2}(\log N)^2)$
+(Tikhomirov, \url{https://doi.org/10.1137/1125092}). Williams and
+Hafouta (2026, arXiv:2604.03712) give bounds under $\phi$-mixing.
+Dropping the logarithms is unsupported by the bound used here: the verify script shows
 the $(\log N)^2 \approx 429$ factor at $N = 10^9$ inflates the naive
 estimate by two orders of magnitude.
 
-\emph{Reliability regime (honest limitation).} With a literature-order
-constant $C_{\mathrm{BE}} \in [1, 5]$, the certified CDF error at the
-enwik9 scale ($N = 10^9$, $v^2 \approx 2.1 \cdot 10^4$, $v \approx
-145$, $B = 32$) is $D_N = C_{\mathrm{BE}} B (\log N)^2 / (v\sqrt{N})
-\approx 3 \cdot 10^{-3}$ to $1.5 \cdot 10^{-2}$. Under the usual rule
-that a Gaussian tail estimate at level $\delta$ is trustworthy only
-when $\delta \gtrsim 10\,D_N$, the \emph{rigorous} worst-case bound
-certifies the Gaussian CI only for $\delta \gtrsim 1.5 \cdot 10^{-1}$
---- so for the extreme tail $\delta = 10^{-6}$, T7.28's certificate is
-\emph{vacuous} and Theorem 7.25's Bernstein bound remains the rigorous
-tool. (This estimate already treats $C_{\mathrm{BE}}$ as order-unity;
-the worst-case $W_N$-dependence of the Tikhomirov constant noted in the
-proof, Step 1, could inflate it further, only reinforcing the deferral
-to T7.25 for rigorous extreme tails.) We state this limitation plainly.
-The redeeming empirical fact
-(verified below) is that the \emph{realised} constant is far smaller
-than the worst-case $C_{\mathrm{BE}}$ (consistent with $\kappa \leq
-\sigma_\ell^2/v^2 \approx 1$ and $B/v \approx 0.22$ at enwik9): the
-simulated KS statistic obeys $\mathrm{KS} \cdot \sqrt{N} / (\log N)^2
-\approx 0.01$, giving an \emph{actual} CDF error $\approx 1.4 \cdot
-10^{-4}$ at enwik9 --- roughly $100\times$ below the certified worst
-case --- so the Gaussian CI is \emph{practically} accurate for moderate
-$\delta \gtrsim 10^{-3}$, the regime T7.28 is intended for. T7.28 is
-thus the sharp inner estimate (exact CIs for moderate $\delta$); T7.25
-is the rigorous outer envelope (certified tails for extreme $\delta$);
-the two are numerically consistent (below).
+\emph{Illustrative enwik9-scale calculation.} Taking $N=10^9$,
+$v \approx 145$, $B=32$, and an assumed $C_{\mathrm{BE}}\in[1,5]$ gives
+$C_{\mathrm{BE}} B(\log N)^2/(v\sqrt{N})\approx 0.003$--$0.015$.
+The bound therefore cannot resolve a tail probability of $10^{-6}$ at
+those settings. The constant and variance are model inputs for this
+calculation. Separately, the synthetic simulation in the verification
+script gives a normalized KS statistic of roughly $0.01$; extrapolating
+that value to $N=10^9$ yields about $1.4\cdot10^{-4}$. This is an
+extrapolation from the simulation, with no run at that block length.
+Theorem 7.25 provides a separate Bernstein bound for extreme tails.
 
 \emph{\textbf{Proof.}} The argument has three steps: (1) the cost
 sequence inherits exp-mixing; (2) it satisfies the hypotheses of a
@@ -4980,11 +4861,9 @@ moving-function structure enters, and it affects $C_{\mathrm{BE}}$
 
 A caution on this repackaging. Writing $\alpha_\ell(k) \leq C'_\alpha
 e^{-ck}$ with $C'_\alpha = e^{c W_N}$ is legitimate but \emph{lossy}:
-the BE constant of Tikhomirov's theorem (and of the
-\texttt{arXiv:2604.03712} synthesis) depends polynomially on the
-mixing prefactor $K = C'_\alpha$, so this packaging would make the
-\emph{rigorous} worst-case constant scale like $e^{O(c W_N)}$ ---
-catastrophic at $W_N = 2048$. The non-lossy quantity is the
+the constant in the cited stationary strong-mixing bound depends on
+the mixing parameters. This packaging gives a prefactor exponential
+in $W_N$ and does not settle the resulting bound's window dependence. The non-lossy quantity is the
 \emph{cumulative} mixing budget $\sum_{k \geq 1} \alpha_\ell(k) \leq
 W_N + \sum_{j \geq 1}\alpha_X(j) \leq W_N + C_\alpha/(e^c - 1)$, which
 is \emph{linear} in $W_N$; dependence-measure formulations of
@@ -5025,7 +4904,7 @@ where $m_{2+\delta} := \mathbb{E}|Y_1|^{2+\delta}$ and $A_\delta$
 depends only on $(\delta, c, C'_\alpha)$ (the explicit form of the
 dependence is in Tikhomirov's Theorem; see also the exposition in Rio
 2017, \emph{Asymptotic Theory of Weakly Dependent Random Processes},
-Ch.~7, and the mixing synthesis in \texttt{arXiv:2604.03712}).
+Ch.~7).
 Specialising to $\delta = 1$ and $S_N = L^{\mathrm{rep}}$: the third
 absolute moment satisfies $m_3 = \mathbb{E}|Y_1|^3 = \mathbb{E}\bigl[
 |Y_1|\, Y_1^2 \bigr] \leq B\, \mathbb{E}[Y_1^2] = B\, \sigma_\ell^2$
@@ -5434,7 +5313,7 @@ effective domain $h_{\mathrm{cross}}<R<r_+$,}
 $\Pr[L^{\mathrm{rep}}\ge NR]=2^{-N(E(R)+o(1))}$. Crucially this includes the
 matching \emph{lower} bound $\Pr[L^{\mathrm{rep}}\ge NR]\ge 2^{-N(E(R)+o(1))}$ ---
 the overflow is no rarer than $E(R)$ states --- which the one-sided tail bounds
-of Theorems 7.14 (Azuma), 7.25 (Bernstein) and 7.26 (Lezaud) do \emph{not}
+of Theorems 7.14 (Azuma), 7.25 (Bernstein) and 7.26 (LRU+IRM) do \emph{not}
 supply. (At the right endpoint $R=r_+$ the supremum is the $t\to\infty$ limit and
 $E$ stays finite --- realisations concentrating on the maximum-mean cycle; for
 $R>r_+$ no realisation sustains that average, the event is impossible, and
@@ -7294,29 +7173,34 @@ International Conference on Machine Learning.
 Prabhakaran, M., Sahai, A., and Shelat, A. (2005). The Smallest Grammar
 Problem. IEEE Transactions on Information Theory, 51(7), 2554-2576.
 
-\textbf{{[}8a{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B., and
-Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
-over Fixed Alphabets. Theory of Computing Systems, 65(1), 158-203.
+\textbf{{[}8a{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B.,
+and Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
+over Fixed Alphabets. Theory of Computing Systems, 65(2), 344--409.
+\url{https://doi.org/10.1007/s00224-020-10013-w}.
 
-\textbf{{[}8b{]}} Ga\'nczorz, M. (2018). Entropy bounds for grammar
-compression. arXiv:1804.08547 (also presented at DCC 2018/2020).
+\textbf{{[}8b{]}} Ga\'nczorz, M. (2018).
+Entropy Bounds for Grammar Compression. Preprint.
+\url{https://arxiv.org/abs/1804.08547}.
 
-\textbf{{[}8c{]}} Kozma, L., and Voderholzer, J. (2024). The
-Computational Complexity of Tokenisation. arXiv:2411.08671.
+\textbf{{[}8c{]}} Kozma, L., and Voderholzer, J. (2026).
+Theoretical Analysis of Byte-Pair Encoding. Extended version of ESA 2026.
+\url{https://arxiv.org/abs/2411.08671v2}.
 
-\textbf{{[}8d{]}} Je\.z, A. (2015). A really simple approximation of
-smallest grammar. Theoretical Computer Science, 616, 141-150.
+\textbf{{[}8d{]}} Je\.z, A. (2016). A Really Simple Approximation of
+Smallest Grammar. Theoretical Computer Science, 616, 141--150.
+\url{https://doi.org/10.1016/j.tcs.2015.12.032}.
 
 \textbf{{[}8e{]}} Karzanov, A. V. (1998). Minimum 0-Extensions of Graph
 Metrics. European Journal of Combinatorics, 19(1), 71-101.
 
-\textbf{{[}8f{]}} Schwartz, R., and Tur, S. (2023). Improved hardness
-of approximation for graph problems via Boolean PCPs.
-arXiv:2104.11670 (also conference version, ICALP 2023).
+\textbf{{[}8f{]}} Schwartz, R., and Tur, N. (2021). The
+Metric Relaxation for $0$-Extension Admits an $\Omega(\log^{2/3} k)$ Gap.
+STOC. \url{https://doi.org/10.1145/3406325.3451071}.
 \textbf{{[}8{]}} Cover, T. M. (1973). Enumerative Source Encoding. IEEE
 Transactions on Information Theory, 19(1), 73-77.
-\textbf{{[}9{]}} Cover, T. M., and Thomas, J. A. (2006). Elements of
-Information Theory, 2nd edition. Wiley.
+\textbf{{[}9{]}} Cover, T. M., and
+Thomas, J. A. (2006). Elements of Information Theory, 2nd edition. Wiley.
+\url{https://doi.org/10.1002/047174882X}.
 \textbf{{[}10{]}} Donoho, D. L. (2000). High-Dimensional Data Analysis:
 The Curses and Blessings of Dimensionality. AMS Math Challenges Lecture.
 \textbf{{[}11{]}} Duda, J. (2009). Asymmetric Numeral Systems.
@@ -7379,9 +7263,10 @@ Reduction. Science, 290(5500), 2319-2323.
 \textbf{{[}31{]}} Townsend, J., Bird, T., and Barber, D. (2019).
 Practical Lossless Compression with Latent Variables Using Bits Back
 Coding. ICLR.
-\textbf{{[}32{]}} Townsend, J., Bird, T., Kunze, J., and Barber, D.
-(2020). HiLLoC: Lossless Image Compression with Hierarchical Latent
-Variable Models. ICLR.
+\textbf{{[}32{]}} Townsend, J., Bird, T.,
+Kunze, J., and Barber, D. (2019). HiLLoC: Lossless Image Compression with
+Hierarchical Latent Variable Models. Preprint.
+\url{https://arxiv.org/abs/1912.09953}.
 \textbf{{[}33{]}} van den Berg, R., Gritsenko, A. A., Dehghani, M.,
 Sonderby, C. K., and Salimans, T. (2021). IDF++: Analyzing and Improving
 Integer Discrete Flows for Lossless Compression. ICLR.
@@ -7477,12 +7362,13 @@ Transactions on Information Theory, 56(8), 3901-3917.
 \textbf{{[}62{]}} Equitz, W. H. R., and Cover, T. M. (1991). Successive
 Refinement of Information. IEEE Transactions on Information Theory,
 37(2), 269-275.
-\textbf{{[}63{]}} Fagin, R. (1977). Generalized First-Order Spectra and
-Polynomial-Time Recognizable Sets. In: Complexity of Computation,
-SIAM-AMS Proceedings 7, 43-73.
+\textbf{{[}63{]}} Fagin, R. (1977). Asymptotic Miss Ratios
+over Independent References. Journal of Computer and System Sciences,
+14(2), 222--250. \url{https://s3.us.cloud-object-storage.appdomain.cloud/res-files/500-jcss77.pdf}.
 \textbf{{[}64{]}} Ferragut, A., Rodr{\'\i}guez, I., and Paganini, F.
-(2018). Optimizing TTL Caches under Heavy-Tailed Demand. Queueing
-Systems, 88(3-4), 207-241.
+(2018). Optimal Timer-Based Caching Policies for General Arrival
+Processes. Queueing Systems, 88(3--4), 207--241.
+\url{https://doi.org/10.1007/s11134-017-9540-3}.
 \textbf{{[}65{]}} Grossi, R., and Vitter, J. S. (2005). Compressed
 Suffix Arrays and Suffix Trees with Applications to Text Indexing and
 String Matching. SIAM Journal on Computing, 35(2), 378-407.
@@ -7592,12 +7478,13 @@ Systems of Linear Equations. Journal of Computer and System Sciences,
 \textbf{{[}102{]}} Birch, B. J. (1962). Approximations for the Entropy
 for Functions of Markov Chains. Annals of Mathematical Statistics,
 33(3), 930-938.
-\textbf{{[}103{]}} Manurangsi, P. (2017). Almost-Polynomial Ratio
-ETH-Hardness of Approximating Densest $k$-Subgraph. Proceedings of the
-49th Annual ACM Symposium on Theory of Computing (STOC), 19-23.
-\textbf{{[}104{]}} Pakzad, P., and Anantharam, V. (2002). Estimation
-and Marginalization Using Kikuchi Approximation Methods. Neural
-Computation, 17(8), 1836-1873.
+\textbf{{[}103{]}} Manurangsi, P.
+(2017). Almost-Polynomial Ratio ETH-Hardness of Approximating Densest
+$k$-Subgraph. STOC, 954--961. \url{https://doi.org/10.1145/3055399.3055412}.
+\textbf{{[}104{]}} Pakzad, P., and Anantharam, V. (2005).
+Estimation and Marginalization Using the Kikuchi Approximation Methods.
+Neural Computation, 17(8), 1836--1873.
+\url{https://doi.org/10.1162/0899766054026693}.
 \textbf{{[}105{]}} Kieffer, J. C., and Yang, E.-H. (2000). Grammar-Based
 Codes: A New Class of Universal Lossless Source Codes. IEEE Transactions
 on Information Theory, 46(3), 737-754.
@@ -7627,15 +7514,18 @@ an Upper Bound for the Entropy of English. Computational Linguistics,
 18(1), 31-40.
 \textbf{{[}114{]}} Lezaud, P. (1998). Chernoff-Type Bound for Finite
 Markov Chains. Annals of Applied Probability, 8(3), 849-867.
-\textbf{{[}115{]}} Che, H., Wang, Z., and Tung, Y. (2002). Analysis
-and Design of Hierarchical Web Caching Systems. Proceedings of IEEE
-INFOCOM, 1416-1424.
-\textbf{{[}116{]}} Aldous, D., and Diaconis, P. (1987). Shuffling
-Cards and Stopping Times. American Mathematical Monthly, 93(5),
-333-348.
-\textbf{{[}117{]}} Knudsen, J. B., and Tsitsiklis, J. N. (1990).
-On the Time Required to Drain a Network. Mathematics of Operations
-Research, 15(4), 685-708.
+\textbf{{[}115{]}} Che, H., Tung, Y., and Wang,
+Z. (2002). Hierarchical Web Caching Systems: Modeling, Design and
+Experimental Results. IEEE Journal on Selected Areas in Communications,
+20(7), 1305--1314. \url{https://doi.org/10.1109/JSAC.2002.801752}.
+\textbf{{[}116{]}} Aldous, D., and
+Diaconis, P. (1986). Shuffling Cards and Stopping Times. American
+Mathematical Monthly, 93(5), 333--348.
+\url{https://doi.org/10.1080/00029890.1986.11971821}.
+\textbf{{[}117{]}} Mattson, R. L., Gecsei, J., Slutz,
+D. R., and Traiger, I. L. (1970). Evaluation Techniques for Storage
+Hierarchies. IBM Systems Journal, 9(2), 78--117.
+\url{https://doi.org/10.1147/sj.92.0078}.
 \textbf{{[}118{]}} Levin, D. A., Peres, Y., and Wilmer, E. L. (2017).
 Markov Chains and Mixing Times, 2nd edition. American Mathematical
 Society.
@@ -7654,9 +7544,9 @@ Bounds for Eigenvalues of Markov Chains. Annals of Applied
 Probability, 1(1), 36-61.
 \textbf{{[}123{]}} King, W. F. (1971). Analysis of Demand Paging
 Algorithms. Proceedings of the IFIP Congress, 485-490.
-\textbf{{[}124{]}} Kesidis, G., Shan, Y., Fumagalli, A., Gulati,
-A., and Singh, A. (2017). An Analysis of LRU Replacement Caches
-under Independent Reference Models. arXiv:1704.04849.
+\textbf{{[}124{]}} Kesidis, G. (2017). Stationary Distribution of a
+Generalized LRU-MRU Content Cache. Preprint, revised 2019.
+\url{https://arxiv.org/abs/1704.04849v8}.
 \textbf{{[}125{]}} Niyogi, P., Smale, S., and Weinberger, S. (2008).
 Finding the Homology of Submanifolds with High Confidence from
 Random Samples. Discrete and Computational Geometry, 39(1-3),
@@ -7683,12 +7573,12 @@ T. J. (1995). The Context-Tree Weighting Method: Basic Properties.
 IEEE Transactions on Information Theory, 41(3), 653-664.
 
 \textbf{[RNR-I]} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
-Part I: Framework, Coder Types, and the Achievability--Converse Matrix.
-Companion paper (Part I of the RNR series).
+Part I: Framework, Constructions, and Complexity.
+Companion manuscript. \href{https://github.com/ratushnyi-labs/sci-rnr/blob/8a284b011e8744319e407097617e6a0e8554a171/tex/papers/core/rnr_core.tex}{Repository version}.
 
 \textbf{[RNR-III]} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
-Part III: Operational Rate--Distortion Dispersion. Companion paper (Part
-III of the RNR series).
+Part III: Operational Rate--Distortion Dispersion, the Gray Region, and the Replica Spectral Inequality.
+Companion manuscript. \href{https://github.com/ratushnyi-labs/sci-rnr/blob/8a284b011e8744319e407097617e6a0e8554a171/tex/papers/dispersion/rnr_dispersion.tex}{Repository version}.
 
 \textbf{[C-CB90]} Clarke, B. S., and Barron, A. R. (1990). Information-
 Theoretic Asymptotics of Bayes Methods. IEEE Transactions on Information
@@ -7722,9 +7612,9 @@ Science, 372(1), 115-121 (also SODA 2007).
 Representation of Balanced Parentheses and Static Trees. SIAM Journal on
 Computing, 31(3), 762-776.
 
-\textbf{[C-WK19]} Wolfer, G., and Kontoyiannis, I. (2019). Minimax
-Learning of Ergodic Markov Chains. Proceedings of the 30th International
-Conference on Algorithmic Learning Theory (ALT), PMLR 98, 904-930.
+\textbf{[C-WK19]} Wolfer, G., and Kontorovich, A.
+(2019). Minimax Learning of Ergodic Markov Chains. ALT, PMLR 98, 904--930.
+\url{https://proceedings.mlr.press/v98/wolfer19a.html}.
 
 \textbf{[C-Feige98]} Feige, U. (1998). A Threshold of $\ln n$ for
 Approximating Set Cover. Journal of the ACM, 45(4), 634-652.

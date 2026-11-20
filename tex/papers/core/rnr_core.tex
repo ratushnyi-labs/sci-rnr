@@ -3650,14 +3650,16 @@ X_{\mathrm{leaf}})$ if all leaf-center MIs equal.
 
 \emph{Beyond trees.} For loopy graphs (cycles present), the
 Pearl identity fails: the Bethe approximation
-$H \approx \sum_v H(X_v) - \sum_e I(X_u; X_v)$ is no longer exact
-but bounds the joint entropy from below (Pakzad--Anantharam 2002
-\emph{IEEE Trans.\ Inf.\ Theory} 48(7):2061; Yedidia--Freeman--Weiss
-2005 \emph{IEEE Trans.\ Inf.\ Theory} 51(7):2282 on Bethe-free-energy
-bounds). For high-girth graphs (girth $g = \omega(1)$), local
-tree-likeness gives Lemma 5.6g approximately, with error $O(1/g)$;
-formalising this is the natural next step toward closing the
-``factor graphs over expanders'' subcase of OP3 fully. Lemma 5.6h
+$H \approx \sum_v H(X_v) - \sum_e I(X_u; X_v)$ is generally only an approximation. On a triangle, take two
+independent fair bits and their XOR. Each pair is independent, giving
+three bits in the vertex-minus-edge expression against two bits of
+joint entropy. Pakzad--Anantharam (2005,
+\url{https://doi.org/10.1162/0899766054026693}) and
+Yedidia--Freeman--Weiss (2005,
+\url{https://doi.org/10.1109/TIT.2005.850085}) discuss variational
+approximations and graph conditions for exactness. Deriving a
+quantitative bound for the intended high-girth source class
+requires additional assumptions. Lemma 5.6h
 (below) closes the orthogonal subcase of chordal graphs with bounded
 treewidth via the junction-tree generalisation.
 
@@ -8042,11 +8044,10 @@ point to the relevant theorems.
   variance-substitution shortcut that conflated per-position
   $\sigma_\ell^2$ with long-run $v^2$; the Davydov-corrected version
   with the explicit $B^2$ correction in $v^2$ is the version stated),
-  and T7.26 (LRU+IRM miss-count concentration via Lezaud 1998
-  Chernoff bound for finite-state Markov chains, with positive
-  spectral gap $\gamma_{\rm LRU} \geq \pi_{\rm min}$ from Dobrushin
-  coupling: $\sqrt{Q}$-Hoeffding scaling under IRM with full-support
-  popularity, closing the open question from earlier drafts of §13.2
+  and T7.26 (LRU+IRM miss-count concentration via the
+  Hoeffding bound of Fan, Jiang, and Sun 2021 for nonreversible
+  chains, with explicit initialization and spectral-gap dependence:
+  $\sqrt{Q}$ scaling under IRM with full-support popularity, closing the open question from earlier drafts of §13.2
   about finite-batch concentration of LRU decoder latency that
   T7.24's static-LFU formulation sidestepped). \emph{Converse and
   distributional refinements}: T7.27 (tight space-time product
@@ -8216,7 +8217,7 @@ individual entries below give the full detail.
   $K$ (different functional form than $K_0 + \kappa \cdot |\sigma|$),
   potentially achieving lower bit-cost than the Charikar-format optimum.
   A literature search (Casel et al.\ 2021, Kozma \&
-  Voderholzer 2024, Ga\'nczorz 2018/2020) confirms that no
+  Voderholzer 2026, Ga\'nczorz 2018) confirms that no
   Pareto-frontier structural theorem is currently known that would
   rule out such ``escape grammars'' from beating Charikar's bit-cost
   Pareto point; this remains genuinely open. (b) APX-hardness of the
@@ -8264,11 +8265,12 @@ individual entries below give the full detail.
   $L(M) \geq N(n) \cdot n$ bits, dominating any savings; per-instance
   amortization $L(M)/N(n) \to 0$ forces $M$'s contribution to
   $o(1)$ bit/source while each $L(R_i)$ must still encode its SGP-instance.
-  The reformulation aligns with the Generalized Smallest Grammar
-  Problem of Carrascosa et al.\ (2016, arXiv:1608.08927) and connects
-  to the multi-instance distributional-hardness machinery of
-  Huang-Ilango-Ren STOC'23 (\emph{NP-Hardness of Meta-Complexity},
-  hanlin-ren.github.io). \emph{Caveat:} this is a definitional shift,
+  The reformulation introduces a shared grammar across several inputs.
+  Siyari and Gall\'e (2016, arXiv:1608.08927) study a single-input
+  generalization. For related hardness techniques in meta-complexity, see
+  Huang, Ilango, and Ren (STOC 2023), \emph{NP-Hardness of Approximating
+  Meta-Complexity: A Cryptographic Approach},
+  \url{https://doi.org/10.1145/3564246.3585154}. \emph{Caveat:} this is a definitional shift,
   not a proof of the literal single-source OP2(b); the literal version
   remains open with Remark 6.8b as the structural obstacle. The
   amortized-family variant is the natural research target where
@@ -8541,10 +8543,11 @@ individual entries below give the full detail.
   decoding reductions; (c)~Khot-style Closest Vector Problem
   reductions specialized to the $\mathbb{F}_2^{12}$ ambient
   space; (d)~adaptation of $0$-extension / metric labeling on
-  Hamming metrics (which admits constant-gap APX-hardness via
-  Karzanov 1998 SICOMP and subsequent gap-amplification by
-  Schwartz \& Tur 2021/2023, arXiv:2104.11670), to handle the
-  injective bijection requirement of $E_{12}$; (e)~quadratic
+  Hamming metrics, to handle the injective bijection requirement
+  of $E_{12}$. Karzanov (1998) studies minimum $0$-extensions, and
+  Schwartz \& Tur (2021, arXiv:2104.11670) prove an integrality
+  gap for the metric relaxation on general instances; a reduction
+  to the Hamming-bijection objective remains to be shown; (e)~quadratic
   assignment with hypercube Hamming distance matrices (Mittelmann \&
   Peng, recent SDP / heuristic literature), suitably restricted to
   yield constant-gap. A literature search through 2024 found no
@@ -8723,11 +8726,10 @@ individual entries below give the full detail.
   baseline, on standard problems, is open.
 \item
   Sharpening the constant $\gamma_{\rm LRU}$ in Theorem 7.26's ([RNR-II])
-  Lezaud Chernoff bound. The crude Dobrushin-coupling lower bound
-  $\gamma_{\rm LRU} \geq \pi_{\rm min}$ gives a positive but
-  conservative spectral gap; tighter explicit bounds via the
-  Knudsen-Tsitsiklis 1990 stack-distance representation, or via
-  Aldous-Diaconis 1987 coupling for permutation-like Markov chains
+  Markov-chain Hoeffding bound. The lower bound in
+  Remark~7.26a gives a conservative spectral gap; tighter explicit bounds via the
+  stack representation of Mattson et al. (1970), or via
+  Aldous--Diaconis 1986 coupling for permutation-like Markov chains
   on LRU stack states, would tighten the constant. Theorem 7.26's ([RNR-II])
   qualitative $\sqrt{Q}$-Hoeffding scaling holds for any positive
   $\gamma_{\rm LRU}$; only the multiplicative constant is at stake.
@@ -8809,9 +8811,7 @@ individual entries below give the full detail.
   but the redundancy budget caps $k = o(L)$, $L = \log_\sigma N$).
   \emph{Negatively (unconditional),} a fully architecture-free $\Omega(\sqrt
   N)$ converse is \textbf{unprovable}: pure single-symbol access is
-  $O(1)$-achievable at the entropy bound (Belazzougui--Navarro), the
-  generic cell-probe access floor is only $\Omega(\log N/\log\log N)$
-  (P\u{a}tra\c{s}cu--Demaine 2006), and the only $\sqrt{\cdot}$-type access
+  $O(1)$-achievable at the entropy bound (Belazzougui--Navarro), and the $\sqrt{\cdot}$-type access
   bounds are conditional on a specific representation (BWT/MTF,
   Sinha--Weinstein STOC 2019) or on exponential compressibility
   (Chen--Verbin--Yu ICALP 2012), neither holding in the
@@ -8958,62 +8958,21 @@ bit-cost-optimal regime. Open question: does VC-3 retain its
 $1 + 1/144$ inapproximability gap on denser graphs (the
 ``density-shifted Berman-Karpinski'' question)?
 
-\emph{Status update 2026-05-27 (failed path, literature blocker).}
-A systematic literature search (Karpinski--Zelikovsky 1997, Clementi--
-Trevisan 1999, Eremeev 1999, Imamura--Iwama 2005, Karpinski--Schmied
-2010, Austrin--Khot--Safra 2011) settles this attack vector
-\emph{negatively}. The target regime $|V| = N^{1/2}$, $|E| = N$
-corresponds to graphs of density $|E|/|V|^2 = 1$, i.e., asymptotically
-complete graphs, where VC is trivial (minimum cover $= |V| - 1$,
-exactly solvable in polynomial time --- no constant gap). Any
-intermediate regime with $|V| = N^{1-\alpha}$, $|E| = N$ for
-$\alpha \in (0, 1/2)$ yields average degree $\Theta(N^{\alpha})$ and
-density $|E|/|V|^2 = \Theta(N^{2\alpha - 1})$; for $\alpha > 1/2$
-this is subdense in Karpinski--Schmied's sense ($|E| =
-\Omega(|V|^2/\psi(|V|))$ with $\psi(|V|) = \omega(1)$), which
-\emph{admits a PTAS for VC} (Karpinski \& Schmied 2010,
-arXiv:1011.0078, ``Approximating Subdense Instances of Covering
-Problems''). For $\alpha \leq 1/2$, average degree is
-$O(\sqrt{|V|}) = O(|V|^{1/2})$ and $K_{\rm Charikar} \sim |V|
-= N^{1-\alpha}$, which remains $\omega(\sqrt{N})$ --- the
-$K$-shift does \emph{not} occur. Explicit hardness ratios in the
-dense regime degrade smoothly to 1: Eremeev's
-$(7+\delta^*)/(6+2\delta^*)$ NP-hardness for strongly
-$\delta^*$-dense graphs gives ratio $7/6$ at $\delta^* \to 0$
-(still sparse-like) but collapses to $1$ at $\delta^* = 1$
-(complete graphs); Karpinski--Zelikovsky's algorithmic upper bound
-$2/(1+\varepsilon)$ for everywhere $\varepsilon$-dense graphs
-likewise collapses to $1$ at $\varepsilon = 1$. Conclusion:
-\emph{the BK $1 + 1/144$ gap is a specific feature of the
-bounded-degree (sparse) regime}, derived from the 3-regular
-amplifier construction (Berman--Karpinski 1999 ECCC TR98-065); it
-does not extend to denser graphs while simultaneously shifting
-$K_{\rm Charikar}$ to $\sqrt{N}$. The density regime that
-preserves a constant VC gap (bounded degree, $|E| = O(|V|)$) is
-incompatible with the $K$-shift requirement
-($K_{\rm Charikar} \sim \sqrt{N}$ needs $|V| \sim \sqrt{N}$, which
-forces $|E| = \omega(|V|)$). This attack vector is therefore
-\emph{closed negatively}: density-shifted BK cannot work because
-the two requirements (constant VC gap on $H$; $K_{\rm Charikar}(H)
-\sim \sqrt{N}$ in Charikar's encoding) are mutually exclusive
-in the BK $\to$ Charikar framework. The Austrin--Khot--Safra 2011
-result ($2 - (2+o_d(1))\log\log d/\log d$ UG-hardness for VC on
-degree-$d$ graphs) gives a larger gap as $d \to \infty$, but is
-(a) Unique-Games-conditional rather than NP-hard, and (b) the
-underlying graphs are still sparse ($|E| = O(d|V|/2)$), so
-$K_{\rm Charikar} \sim |V|$ remains far above $\sqrt{N}$ unless
-one uses $|V| \sim \sqrt{N}$, which then requires $d \sim
-\sqrt{N}$ on $|V| = \sqrt{N}$ vertices --- producing complete
-graphs again. The Dinur--Safra 2005 result gives a stronger
-NP-hardness factor of $\approx 1.36$ on graphs of ``sufficiently
-large vertex degree'', but the Dinur--Safra hardness graphs
-(FGLSS-style from PCP composition with intersection-graph
-structure) do not admit a direct Charikar encoding preserving the
-$K$-shift; this remains a possible direction under item 2 if the
-FGLSS structural overhead can be absorbed into the SGP encoding,
-but is not addressed by the present density-shifted attack
-vector. Alternative attack vectors (items 2, 3, 4 below) remain
-open.
+\emph{Status update 2026-05-27 (density-shifted reduction).}
+The degree-three Berman--Karpinski construction has $|E|=\Theta(|V|)$.
+With $|E|=\Theta(N)$, it gives $K_{\rm Charikar}=\Theta(|V|)=\Theta(N)$.
+For $|V|=\Theta(N^{1-\alpha})$ and $0<\alpha<1/2$, the average degree is
+$\Theta(N^\alpha)$ and $K_{\rm Charikar}=\omega(\sqrt N)$. Achieving
+$K_{\rm Charikar}=\Theta(\sqrt N)$ with this encoding and $|E|=\Theta(N)$
+would require a different family of graphs with constant edge density.
+Constant edge density allows a range of graphs, including APX-hard
+families for Vertex Cover. Cardinal et al.\ (2010, arXiv:1011.0078v2,
+Sections~1--2 and Table~1) give a parameterized approximation bound for
+subdense Vertex Cover under their degree hypotheses. Their PTAS in
+Table~1 applies to Steiner Tree. The direct use of the degree-three
+construction stops at the size calculation above. Finding a different
+hardness family and preserving its gap in the bit-cost encoding remain
+separate requirements. The Dinur--Safra construction is considered below.
 \item \emph{Use a different source-of-hardness problem with
 $K$-uniformity built in.} Candidates: SAT (Karp 1972 NP-hardness),
 3-COL (Garey-Johnson 1979 APX-hardness via Khot-Saket 2014 with UGC),
@@ -9767,10 +9726,10 @@ the reduction is either not polynomial-time (random-oracle access)
 or routes through OWF (Liu--Pass, average-case decision only).
 Salting is therefore not an independent attack vector.
 \item \emph{Reduction from Generalised Smallest Grammar Problem.}
-Carrascosa et al.\ 2016 (arXiv:1608.08927) define GSGP as
-multi-string grammar inference. APX-hardness of GSGP (if it can be
-established) would directly imply joint OP2(b) hardness in the
-amortised setting.
+This route originally considered a hypothetical multi-string extension
+of the grammar objective. The definition of Siyari and Gall\'e
+(2016, arXiv:1608.08927) takes a single input sequence. A transfer
+to the joint amortised objective would require a separate reduction.
 
 \emph{Remaining-viable status 2026-05-27.} GSGP is the only attack
 vector in this list that does not collapse to predictor absorption,
@@ -9808,7 +9767,7 @@ GSGP-as-defined is a single-string problem, and the cited
 hardness results for single-string SGP (Charikar et al.\ 2005's
 $\gamma_{\mathrm{SGP}} = 8569/8568$, and Casel et al., \emph{On
 the Complexity of the Smallest Grammar Problem over Fixed
-Alphabets}, Theory Comput.\ Syst.\ 65(2):344--409, 2020,
+Alphabets}, Theory Comput.\ Syst.\ 65(2):344--409, 2021,
 doi:10.1007/s00224-020-10013-w, which establishes APX-hardness
 even for alphabets of size $\geq 17$) do not transfer to the
 amortised-family bit-cost objective without crossing the same
@@ -9828,8 +9787,9 @@ precisely shared non-terminals in the induced $k$-MSGP solution
 (and conversely). Both directions preserve grammar size up to
 the additive constant $2k$ (separators and start-rule pointers),
 which is $o(|s_\#|)$ when $\min_i |s_i| \to \infty$. Hence
-Casel et al.\ 2020's APX-hardness with $\gamma_{\mathrm{SGP}} =
-8569/8568$ transfers to $k$-MSGP for any constant $k$. This
+the single-string result of Charikar et al.\ (2005), with
+$\gamma_{\mathrm{SGP}} = 8569/8568$ for unbounded alphabets, supplies
+the gap used in this proposed transfer for constant $k$. This
 genuine grammar-size APX-hardness, however, does \emph{not}
 imply OP2(b) amortised-bit-cost APX-hardness, by step~(c) below.
 (c)~\emph{Predictor absorbs the family itself, not any specific
@@ -10506,9 +10466,9 @@ source.
 \item \emph{Use a different $A_s$ structure where the gap transfers.}
 Search for monotone $A_s$ families where DkS gap multiplies (not
 dilutes) into the support selection problem.
-\item \emph{Reduction from Densest-$k$-Subhypergraph} (Chuzhoy-Manurangsi-
-Schroeppel 2020), which has different gap structure than DkS and
-may transfer better.
+\item \emph{Reduction from Densest-$k$-Subhypergraph.}
+Its gap structure differs from that of DkS. See the analysis of
+Applebaum's conditional hardness result below.
 \item \emph{Average-case hardness via planted-clique.} If support
 selection on random graphs with a planted dense subgraph is
 average-case hard (under planted-clique conjecture, hardness for
@@ -10516,17 +10476,15 @@ $k \leq \sqrt{N}$ subgraphs), this gives conditional hardness.
 \end{enumerate}
 
 \emph{Status update 2026-05-29 (attack vector 2 closed negatively;
-the DkSH gap dilutes \textbf{worse} than DkS, and a citation correction).}
-We pursued attack vector~2 (Densest-$k$-Subhypergraph, DkSH) and
-verified the literature, with one correction. The attribution
-``Chuzhoy--Manurangsi--Schroeppel 2020'' above is a mis-citation: the
-DkSH inapproximability is due to \textbf{Applebaum} (\emph{Pseudorandom
+the DkSH gap dilutes \textbf{worse} than DkS).}
+We pursued attack vector~2 (Densest-$k$-Subhypergraph, DkSH).
+The conditional DkSH inapproximability result used here is due to \textbf{Applebaum} (\emph{Pseudorandom
 generators with long stretch and low locality from random local one-way
 functions}, SIAM J.\ Comput.\ 42(5):2008--2037, 2013; ECCC TR11-007;
-STOC 2012), and the nontrivial algorithmic upper bounds are due to
+STOC 2012, \url{https://eccc.weizmann.ac.il/report/2011/007/}). Approximation algorithms for DkSH are due to
 Chlamt\'ac--Dinitz--Konrad--Kortsarz--Rabanca (\emph{The Densest
 $k$-Subhypergraph Problem}, APPROX-RANDOM 2016 / SIAM J.\ Discrete
-Math.\ 32(2), 2018, arXiv:1605.04284). We adopt the corrected citations.
+Math.\ 32(2), 2018, arXiv:1605.04284).
 
 \emph{(i) Verified DkSH hardness.} Applebaum's $p$-Densest-Subhypergraph
 ($p$-DSH) is the promise problem on $d$-uniform hypergraphs ($d$ constant,
@@ -11537,12 +11495,14 @@ International Conference on Machine Learning.
 Prabhakaran, M., Sahai, A., and Shelat, A. (2005). The Smallest Grammar
 Problem. IEEE Transactions on Information Theory, 51(7), 2554-2576.
 
-\textbf{{[}9{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B., and
-Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
-over Fixed Alphabets. Theory of Computing Systems, 65(1), 158-203.
+\textbf{{[}9{]}} Casel, K., Fernau, H., Gaspers, S., Gras, B.,
+and Schmid, M. L. (2021). On the Complexity of the Smallest Grammar Problem
+over Fixed Alphabets. Theory of Computing Systems, 65(2), 344--409.
+\url{https://doi.org/10.1007/s00224-020-10013-w}.
 
-\textbf{{[}10{]}} Ga\'nczorz, M. (2018). Entropy bounds for grammar
-compression. arXiv:1804.08547 (also presented at DCC 2018/2020).
+\textbf{{[}10{]}} Ga\'nczorz, M. (2018).
+Entropy Bounds for Grammar Compression. Preprint.
+\url{https://arxiv.org/abs/1804.08547}.
 
 \textbf{{[}11{]}} Gallager, R. G. (1962). Low-Density Parity-Check Codes. IRE
 Transactions on Information Theory, 8(1), 21-28.
@@ -11550,11 +11510,13 @@ Transactions on Information Theory, 8(1), 21-28.
 \textbf{{[}12{]}} Ko, C.-W., Lee, J., and Queyranne, M. (1995). An Exact Algorithm for
 Maximum Entropy Sampling. Operations Research, 43(4), 684-691.
 
-\textbf{{[}13{]}} Kozma, L., and Voderholzer, J. (2024). The
-Computational Complexity of Tokenisation. arXiv:2411.08671.
+\textbf{{[}13{]}} Kozma, L., and Voderholzer, J. (2026).
+Theoretical Analysis of Byte-Pair Encoding. Extended version of ESA 2026.
+\url{https://arxiv.org/abs/2411.08671v2}.
 
-\textbf{{[}14{]}} Je\.z, A. (2015). A really simple approximation of
-smallest grammar. Theoretical Computer Science, 616, 141-150.
+\textbf{{[}14{]}} Je\.z, A. (2016). A Really Simple Approximation of
+Smallest Grammar. Theoretical Computer Science, 616, 141--150.
+\url{https://doi.org/10.1016/j.tcs.2015.12.032}.
 
 \textbf{{[}15{]}} Karzanov, A. V. (1998). Minimum 0-Extensions of Graph
 Metrics. European Journal of Combinatorics, 19(1), 71-101.
@@ -11567,15 +11529,16 @@ Mathematical Programming, 14(1), 265-294.
 and Exponentiated Determinantal Point Processes. Journal of Artificial
 Intelligence Research, 73, 709-735.
 
-\textbf{{[}18{]}} Schwartz, R., and Tur, S. (2023). Improved hardness
-of approximation for graph problems via Boolean PCPs.
-arXiv:2104.11670 (also conference version, ICALP 2023).
+\textbf{{[}18{]}} Schwartz, R., and Tur, N. (2021). The
+Metric Relaxation for $0$-Extension Admits an $\Omega(\log^{2/3} k)$ Gap.
+STOC. \url{https://doi.org/10.1145/3406325.3451071}.
 
 \textbf{{[}19{]}} Cover, T. M. (1973). Enumerative Source Encoding. IEEE
 Transactions on Information Theory, 19(1), 73-77.
 
-\textbf{{[}20{]}} Cover, T. M., and Thomas, J. A. (2006). Elements of
-Information Theory, 2nd edition. Wiley.
+\textbf{{[}20{]}} Cover, T. M., and
+Thomas, J. A. (2006). Elements of Information Theory, 2nd edition. Wiley.
+\url{https://doi.org/10.1002/047174882X}.
 
 \textbf{{[}21{]}} Donoho, D. L. (2000). High-Dimensional Data Analysis:
 The Curses and Blessings of Dimensionality. AMS Math Challenges Lecture.
@@ -11664,9 +11627,10 @@ Reduction. Science, 290(5500), 2319-2323.
 Practical Lossless Compression with Latent Variables Using Bits Back
 Coding. ICLR.
 
-\textbf{{[}46{]}} Townsend, J., Bird, T., Kunze, J., and Barber, D.
-(2020). HiLLoC: Lossless Image Compression with Hierarchical Latent
-Variable Models. ICLR.
+\textbf{{[}46{]}} Townsend, J., Bird, T.,
+Kunze, J., and Barber, D. (2019). HiLLoC: Lossless Image Compression with
+Hierarchical Latent Variable Models. Preprint.
+\url{https://arxiv.org/abs/1912.09953}.
 
 \textbf{{[}47{]}} van den Berg, R., Gritsenko, A. A., Dehghani, M.,
 Sonderby, C. K., and Salimans, T. (2021). IDF++: Analyzing and Improving
@@ -11796,12 +11760,14 @@ Transactions on Information Theory, 56(8), 3901-3917.
 Refinement of Information. IEEE Transactions on Information Theory,
 37(2), 269-275.
 
-\textbf{{[}78{]}} Fagin, R. (1977). Asymptotic Miss Ratios over Independent
-References. Journal of Computer and System Sciences, 14(2), 222-250.
+\textbf{{[}78{]}} Fagin, R. (1977). Asymptotic Miss Ratios
+over Independent References. Journal of Computer and System Sciences,
+14(2), 222--250. \url{https://s3.us.cloud-object-storage.appdomain.cloud/res-files/500-jcss77.pdf}.
 
 \textbf{{[}79{]}} Ferragut, A., Rodr{\'\i}guez, I., and Paganini, F.
-(2018). Optimizing TTL Caches under Heavy-Tailed Demand. Queueing
-Systems, 88(3-4), 207-241.
+(2018). Optimal Timer-Based Caching Policies for General Arrival
+Processes. Queueing Systems, 88(3--4), 207--241.
+\url{https://doi.org/10.1007/s11134-017-9540-3}.
 
 \textbf{{[}80{]}} Grossi, R., and Vitter, J. S. (2005). Compressed
 Suffix Arrays and Suffix Trees with Applications to Text Indexing and
@@ -11950,13 +11916,14 @@ Systems of Linear Equations. Journal of Computer and System Sciences,
 for Functions of Markov Chains. Annals of Mathematical Statistics,
 33(3), 930-938.
 
-\textbf{{[}118{]}} Manurangsi, P. (2017). Almost-Polynomial Ratio
-ETH-Hardness of Approximating Densest $k$-Subgraph. Proceedings of the
-49th Annual ACM Symposium on Theory of Computing (STOC), 19-23.
+\textbf{{[}118{]}} Manurangsi, P.
+(2017). Almost-Polynomial Ratio ETH-Hardness of Approximating Densest
+$k$-Subgraph. STOC, 954--961. \url{https://doi.org/10.1145/3055399.3055412}.
 
-\textbf{{[}119{]}} Pakzad, P., and Anantharam, V. (2002). Estimation
-and Marginalization Using Kikuchi Approximation Methods. Neural
-Computation, 17(8), 1836-1873.
+\textbf{{[}119{]}} Pakzad, P., and Anantharam, V. (2005).
+Estimation and Marginalization Using the Kikuchi Approximation Methods.
+Neural Computation, 17(8), 1836--1873.
+\url{https://doi.org/10.1162/0899766054026693}.
 
 \textbf{{[}120{]}} Kieffer, J. C., and Yang, E.-H. (2000). Grammar-Based
 Codes: A New Class of Universal Lossless Source Codes. IEEE Transactions
@@ -11997,17 +11964,20 @@ an Upper Bound for the Entropy of English. Computational Linguistics,
 \textbf{{[}129{]}} Lezaud, P. (1998). Chernoff-Type Bound for Finite
 Markov Chains. Annals of Applied Probability, 8(3), 849-867.
 
-\textbf{{[}130{]}} Che, H., Wang, Z., and Tung, Y. (2002). Analysis
-and Design of Hierarchical Web Caching Systems. Proceedings of IEEE
-INFOCOM, 1416-1424.
+\textbf{{[}130{]}} Che, H., Tung, Y., and Wang,
+Z. (2002). Hierarchical Web Caching Systems: Modeling, Design and
+Experimental Results. IEEE Journal on Selected Areas in Communications,
+20(7), 1305--1314. \url{https://doi.org/10.1109/JSAC.2002.801752}.
 
-\textbf{{[}131{]}} Aldous, D., and Diaconis, P. (1987). Shuffling
-Cards and Stopping Times. American Mathematical Monthly, 93(5),
-333-348.
+\textbf{{[}131{]}} Aldous, D., and
+Diaconis, P. (1986). Shuffling Cards and Stopping Times. American
+Mathematical Monthly, 93(5), 333--348.
+\url{https://doi.org/10.1080/00029890.1986.11971821}.
 
-\textbf{{[}132{]}} Knudsen, J. B., and Tsitsiklis, J. N. (1990).
-On the Time Required to Drain a Network. Mathematics of Operations
-Research, 15(4), 685-708.
+\textbf{{[}132{]}} Mattson, R. L., Gecsei, J., Slutz,
+D. R., and Traiger, I. L. (1970). Evaluation Techniques for Storage
+Hierarchies. IBM Systems Journal, 9(2), 78--117.
+\url{https://doi.org/10.1147/sj.92.0078}.
 
 \textbf{{[}133{]}} Levin, D. A., Peres, Y., and Wilmer, E. L. (2017).
 Markov Chains and Mixing Times, 2nd edition. American Mathematical
@@ -12033,9 +12003,9 @@ Probability, 1(1), 36-61.
 \textbf{{[}138{]}} King, W. F. (1971). Analysis of Demand Paging
 Algorithms. Proceedings of the IFIP Congress, 485-490.
 
-\textbf{{[}139{]}} Kesidis, G., Shan, Y., Fumagalli, A., Gulati,
-A., and Singh, A. (2017). An Analysis of LRU Replacement Caches
-under Independent Reference Models. arXiv:1704.04849.
+\textbf{{[}139{]}} Kesidis, G. (2017). Stationary Distribution of a
+Generalized LRU-MRU Content Cache. Preprint, revised 2019.
+\url{https://arxiv.org/abs/1704.04849v8}.
 
 \textbf{{[}140{]}} Niyogi, P., Smale, S., and Weinberger, S. (2008).
 Finding the Homology of Submanifolds with High Confidence from
@@ -12070,12 +12040,12 @@ T. J. (1995). The Context-Tree Weighting Method: Basic Properties.
 IEEE Transactions on Information Theory, 41(3), 653-664.
 
 
-\textbf{{[}RNR-II{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair
-Coding, Part II: Random Access and Deviation Theory. Companion paper (RNR
-series, Part II).
+\textbf{{[}RNR-II{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
+Part II: Random Access, Finite-Block Surprisal, and the Deviation Hierarchy.
+Companion manuscript. \href{https://github.com/ratushnyi-labs/sci-rnr/blob/8a284b011e8744319e407097617e6a0e8554a171/tex/papers/random_access/rnr_random_access.tex}{Repository version}.
 
-\textbf{{[}RNR-III{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair
-Coding, Part III: Operational Rate--Distortion Dispersion. Companion paper
-(RNR series, Part III).
+\textbf{{[}RNR-III{]}} Ratushnyi, P. (2026). Ratushnyi Neural Repair Coding,
+Part III: Operational Rate--Distortion Dispersion, the Gray Region, and the Replica Spectral Inequality.
+Companion manuscript. \href{https://github.com/ratushnyi-labs/sci-rnr/blob/8a284b011e8744319e407097617e6a0e8554a171/tex/papers/dispersion/rnr_dispersion.tex}{Repository version}.
 
 \end{document}
